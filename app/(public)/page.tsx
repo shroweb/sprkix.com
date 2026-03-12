@@ -16,6 +16,7 @@ import {
 import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import HeroReviewCycler from "@components/HeroReviewCycler";
+import FeaturedEventCycler from "@components/FeaturedEventCycler";
 
 export const dynamic = "force-dynamic";
 
@@ -119,12 +120,8 @@ export default async function Home() {
     .map((id) => trendingEvents.find((e) => e.id === id))
     .filter(Boolean) as typeof trendingEvents;
 
-  // Featured event: Recent event if exists, else first in rank
-  const featuredEvent = recentEvents[0] || allEventsForRank[0] || null;
-  const featuredRating = featuredEvent
-    ? featuredEvent.reviews.reduce((a: number, b: any) => a + b.rating, 0) /
-      (featuredEvent.reviews.length || 1)
-    : 0;
+  // Featured events: Recent events if exist, else first in rank
+  const featuredEvents = recentEvents.length > 0 ? recentEvents.slice(0, 5) : ranked.slice(0, 1);
 
   return (
     <div className="-mt-28 space-y-32 pb-32">
@@ -243,60 +240,12 @@ export default async function Home() {
               </div>
             </div>
           </div>
-
-          {/* Featured Card */}
-          {featuredEvent && (
-            <div className="hidden lg:block relative group animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
+          
+          {/* Featured Card Cycler */}
+          {featuredEvents.length > 0 && (
+            <div className="hidden lg:block relative group animate-in fade-in slide-in-from-right-12 duration-1000 delay-300 h-full">
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-blue-500/30 rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
-              <Link href={`/events/${featuredEvent.slug}`}>
-                <div className="relative aspect-[4/5] bg-card/40 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl group-hover:scale-[1.02] transition-all duration-700">
-                  <Image
-                    src={featuredEvent.posterUrl || "/placeholder.png"}
-                    alt={featuredEvent.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-
-                  <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
-                    <div className="flex items-center gap-2 bg-primary px-3 py-1.5 rounded-xl shadow-lg">
-                      <Calendar className="w-3.5 h-3.5 text-black" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-black">
-                        Recent Event
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10">
-                      <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                      <span className="text-sm font-black text-white">
-                        {(featuredRating || 0).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 p-7 space-y-3">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-1">
-                        {(featuredEvent as any).promotion}
-                      </p>
-                      <h3 className="text-xl font-black italic uppercase tracking-tighter leading-tight text-white">
-                        {featuredEvent.title
-                          .replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "")
-                          .trim()}
-                      </h3>
-                    </div>
-                    {featuredEvent.reviews.length > 0 && (
-                      <HeroReviewCycler reviews={featuredEvent.reviews} />
-                    )}
-                    <div className="flex items-center gap-2 pt-1">
-                      <div className="flex-1 h-px bg-white/10" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
-                        View Event
-                      </span>
-                      <ArrowRight className="w-3 h-3 text-primary" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <FeaturedEventCycler events={featuredEvents} />
             </div>
           )}
         </div>
