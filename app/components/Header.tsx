@@ -147,7 +147,7 @@ export default function Header({
                     <User className="w-4 h-4" /> Profile
                   </Link>
                   <Link
-                    href="/profile"
+                    href="/grapped"
                     className="flex items-center gap-3 p-3 text-sm font-black text-primary hover:bg-muted rounded-xl transition-colors uppercase italic"
                   >
                     <Zap className="w-4 h-4" /> Grapped
@@ -234,6 +234,9 @@ export default function Header({
                 )}
                 <Link href="/profile" className="text-lg font-bold">
                   My Profile
+                </Link>
+                <Link href="/grapped" className="text-lg font-black text-primary uppercase italic flex items-center gap-2">
+                  <Zap className="w-5 h-5" /> Grapped
                 </Link>
                 <button
                   onClick={logout}
