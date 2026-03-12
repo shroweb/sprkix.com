@@ -1,0 +1,14 @@
+/* app/admin/admin.css */
+.admin-dashboard {
+  font-family: system-ui, sans-serif;
+}
+
+.admin-dashboard a {
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+}
+
+.admin-dashboard a:hover {
+  background-color: #1f2937;
+}

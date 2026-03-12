@@ -1,0 +1,566 @@
+"use client";
+import { useState } from "react";
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  User,
+  Link as LinkIcon,
+  Camera,
+  X,
+  Save,
+  CheckCircle,
+  AlertCircle,
+  ImageIcon,
+  Upload,
+} from "lucide-react";
+import MediaPicker from "../components/MediaPicker";
+
+type Wrestler = {
+  id: string;
+  name: string;
+  slug: string;
+  bio?: string | null;
+  imageUrl?: string | null;
+};
+
+type MessageState = { type: "success" | "error"; text: string } | null;
+
+export default function AdminWrestlersPage({
+  initialWrestlers,
+}: {
+  initialWrestlers: Wrestler[];
+}) {
+  const [wrestlers, setWrestlers] = useState(initialWrestlers);
+  const [search, setSearch] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [message, setMessage] = useState<MessageState>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Controlled image state for both forms
+  const [addImageUrl, setAddImageUrl] = useState("");
+  const [addImageFile, setAddImageFile] = useState<File | null>(null);
+  const [editImageUrl, setEditImageUrl] = useState("");
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+
+  // Media picker state
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<
+    "add" | "edit" | null
+  >(null);
+
+  const filteredWrestlers = wrestlers.filter(
+    (w) =>
+      w.name.toLowerCase().includes(search.toLowerCase()) ||
+      w.slug.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const showMessage = (type: "success" | "error", text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 4000);
+  };
+
+  // Auto-generate slug from name
+  const slugify = (name: string) =>
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const buildFormData = (
+    form: HTMLFormElement,
+    imageUrl: string,
+    imageFile: File | null,
+  ) => {
+    const formData = new FormData(form);
+    // Remove any existing image entries to avoid conflict
+    formData.delete("image");
+    formData.delete("imageUrl");
+    if (imageFile) {
+      formData.append("image", imageFile);
+    } else if (imageUrl) {
+      formData.append("imageUrl", imageUrl);
+    }
+    return formData;
+  };
+
+  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const formData = buildFormData(e.currentTarget, addImageUrl, addImageFile);
+    try {
+      const res = await fetch("/api/admin/add-wrestler", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.wrestler) {
+        setWrestlers((prev) =>
+          [...prev, data.wrestler].sort((a, b) => a.name.localeCompare(b.name)),
+        );
+        setIsAdding(false);
+        setAddImageUrl("");
+        setAddImageFile(null);
+        showMessage("success", `${data.wrestler.name} added to the roster.`);
+        (e.target as HTMLFormElement).reset();
+      } else {
+        showMessage("error", data.error || "Failed to add wrestler.");
+      }
+    } catch {
+      showMessage("error", "Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEdit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    id: string,
+  ) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const formData = buildFormData(
+      e.currentTarget,
+      editImageUrl,
+      editImageFile,
+    );
+    try {
+      const res = await fetch(`/api/admin/wrestlers/${id}`, {
+        method: "PATCH",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setWrestlers((prev) =>
+          prev.map((w) => (w.id === id ? { ...w, ...data } : w)),
+        );
+        setEditingId(null);
+        setEditImageUrl("");
+        setEditImageFile(null);
+        showMessage("success", `${data.name} updated.`);
+      } else {
+        showMessage("error", data.error || "Failed to update wrestler.");
+      }
+    } catch {
+      showMessage("error", "Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (w: Wrestler) => {
+    if (!confirm(`Delete ${w.name}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/admin/wrestlers/${w.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setWrestlers((prev) => prev.filter((x) => x.id !== w.id));
+        showMessage("success", `${w.name} removed from the roster.`);
+      } else {
+        showMessage("error", "Failed to delete wrestler.");
+      }
+    } catch {
+      showMessage("error", "Network error. Please try again.");
+    }
+  };
+
+  const openEdit = (w: Wrestler) => {
+    setEditingId(w.id);
+    setEditImageUrl(w.imageUrl || "");
+    setEditImageFile(null);
+    setIsAdding(false);
+  };
+
+  const editingWrestler = wrestlers.find((w) => w.id === editingId);
+
+  // Shared image picker section component
+  const ImagePickerSection = ({
+    currentUrl,
+    currentFile,
+    onFileChange,
+    onPickerOpen,
+    onUrlChange,
+    label = "Profile Photo",
+  }: {
+    currentUrl: string;
+    currentFile: File | null;
+    onFileChange: (f: File | null) => void;
+    onPickerOpen: () => void;
+    onUrlChange: (url: string) => void;
+    label?: string;
+  }) => {
+    const previewSrc = currentFile
+      ? URL.createObjectURL(currentFile)
+      : currentUrl || null;
+    return (
+      <div>
+        <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">
+          {label}
+        </label>
+        <div className="flex items-start gap-4">
+          {/* Preview */}
+          <div className="w-20 h-20 rounded-2xl bg-secondary border-2 border-dashed border-border overflow-hidden flex items-center justify-center shrink-0">
+            {previewSrc ? (
+              <img
+                src={previewSrc}
+                alt="preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Camera className="w-6 h-6 text-muted-foreground" />
+            )}
+          </div>
+          <div className="flex-1 space-y-2">
+            {/* Buttons */}
+            <div className="flex gap-2 flex-wrap">
+              <label className="cursor-pointer flex items-center gap-1.5 bg-secondary px-3 py-2 rounded-xl text-xs font-bold hover:bg-muted transition-colors">
+                <Upload className="w-3.5 h-3.5" /> Upload File
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] || null;
+                    onFileChange(f);
+                    if (f) onUrlChange(""); // clear URL if file chosen
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={onPickerOpen}
+                className="flex items-center gap-1.5 bg-secondary px-3 py-2 rounded-xl text-xs font-bold hover:bg-muted transition-colors"
+              >
+                <ImageIcon className="w-3.5 h-3.5" /> From Library
+              </button>
+              {(currentUrl || currentFile) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onFileChange(null);
+                    onUrlChange("");
+                  }}
+                  className="flex items-center gap-1.5 bg-red-50 text-red-500 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" /> Clear
+                </button>
+              )}
+            </div>
+            {/* URL input */}
+            <input
+              type="text"
+              placeholder="Or paste image URL..."
+              value={currentUrl}
+              onChange={(e) => {
+                onUrlChange(e.target.value);
+                onFileChange(null);
+              }}
+              className="w-full bg-secondary border-none rounded-xl p-2.5 text-xs font-mono focus:ring-2 focus:ring-primary outline-none"
+            />
+            {currentFile && (
+              <p className="text-[10px] text-primary font-bold truncate">
+                📎 {currentFile.name}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Wrestlers</h1>
+          <p className="text-muted-foreground text-sm">
+            Manage the competitive roster.
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setIsAdding(!isAdding);
+            setEditingId(null);
+          }}
+          className="btn-primary flex items-center gap-2"
+        >
+          {isAdding ? (
+            <>
+              <X className="w-4 h-4" /> Cancel
+            </>
+          ) : (
+            <>
+              <Plus className="w-4 h-4" /> Add Wrestler
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Inline message */}
+      {message && (
+        <div
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
+            message.type === "success"
+              ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+              : "bg-red-50 border border-red-200 text-red-700"
+          }`}
+        >
+          {message.type === "success" ? (
+            <CheckCircle className="w-4 h-4 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0" />
+          )}
+          {message.text}
+        </div>
+      )}
+
+      {/* Add Form */}
+      {isAdding && (
+        <div className="bg-white p-8 rounded-2xl border border-border shadow-sm animate-in fade-in slide-in-from-top-4 duration-300 max-w-2xl">
+          <h2 className="text-lg font-bold mb-6">Register New Wrestler</h2>
+          <form onSubmit={handleAdd} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+                  Full Name
+                </label>
+                <input
+                  name="name"
+                  className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  placeholder="e.g. Cody Rhodes"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+                  Slug / URL Alias
+                </label>
+                <div className="relative">
+                  <LinkIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    name="slug"
+                    className="w-full pl-10 pr-4 py-3 bg-secondary border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="cody-rhodes"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <ImagePickerSection
+              label="Profile Photo"
+              currentUrl={addImageUrl}
+              currentFile={addImageFile}
+              onFileChange={setAddImageFile}
+              onUrlChange={setAddImageUrl}
+              onPickerOpen={() => setMediaPickerTarget("add")}
+            />
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+                Biography
+              </label>
+              <textarea
+                name="bio"
+                className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                rows={4}
+                placeholder="Career history, championships, and notable achievements..."
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsAdding(false)}
+                className="btn-secondary"
+              >
+                Discard
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn-primary px-8"
+              >
+                {submitting ? "Adding..." : "Register Wrestler"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Edit Form */}
+      {editingId && editingWrestler && (
+        <div className="bg-white p-8 rounded-2xl border border-border shadow-sm animate-in fade-in slide-in-from-top-4 duration-300 max-w-2xl">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold">Edit: {editingWrestler.name}</h2>
+            <button
+              onClick={() => setEditingId(null)}
+              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <form
+            onSubmit={(e) => handleEdit(e, editingId)}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+                  Full Name
+                </label>
+                <input
+                  name="name"
+                  defaultValue={editingWrestler.name}
+                  className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+                  Slug / URL Alias
+                </label>
+                <div className="relative">
+                  <LinkIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    name="slug"
+                    defaultValue={editingWrestler.slug}
+                    className="w-full pl-10 pr-4 py-3 bg-secondary border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <ImagePickerSection
+              label="Profile Photo"
+              currentUrl={editImageUrl}
+              currentFile={editImageFile}
+              onFileChange={setEditImageFile}
+              onUrlChange={setEditImageUrl}
+              onPickerOpen={() => setMediaPickerTarget("edit")}
+            />
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+                Biography
+              </label>
+              <textarea
+                name="bio"
+                defaultValue={editingWrestler.bio ?? ""}
+                className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                rows={4}
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setEditingId(null)}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn-primary px-8 flex items-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                {submitting ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Roster Table */}
+      <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-border flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="relative w-full sm:w-96">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Find wrestler by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-secondary border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <span className="text-xs font-medium text-muted-foreground tracking-wide">
+            {filteredWrestlers.length} Roster Members
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
+          {filteredWrestlers.map((w) => (
+            <div
+              key={w.id}
+              className={`bg-white p-4 flex items-center justify-between group hover:bg-slate-50 transition-colors ${editingId === w.id ? "bg-primary/5" : ""}`}
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-12 h-12 rounded-xl border border-border overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
+                  {w.imageUrl ? (
+                    <img
+                      src={w.imageUrl}
+                      alt={w.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-6 h-6 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-sm truncate">{w.name}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
+                    /{w.slug}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <button
+                  onClick={() =>
+                    editingId === w.id ? setEditingId(null) : openEdit(w)
+                  }
+                  className={`p-2 rounded-lg transition-colors ${editingId === w.id ? "bg-primary/10 text-primary" : "hover:bg-amber-50 text-amber-600"}`}
+                  title="Edit wrestler"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDelete(w)}
+                  className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
+                  title="Delete wrestler"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredWrestlers.length === 0 && (
+          <div className="p-20 text-center">
+            <User className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+            <p className="text-muted-foreground font-medium">
+              No wrestlers found in current roster.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Media Picker Modal */}
+      {mediaPickerTarget && (
+        <MediaPicker
+          title="Select Profile Photo"
+          onSelect={(url) => {
+            if (mediaPickerTarget === "add") {
+              setAddImageUrl(url);
+              setAddImageFile(null);
+            } else {
+              setEditImageUrl(url);
+              setEditImageFile(null);
+            }
+          }}
+          onClose={() => setMediaPickerTarget(null)}
+        />
+      )}
+    </div>
+  );
+}

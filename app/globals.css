@@ -1,0 +1,113 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Public Theme - Dark Mode First */
+  --background: #0a0b10;
+  --foreground: #f8fafc;
+
+  --card: #14161f;
+  --card-foreground: #f8fafc;
+
+  --popover: #14161f;
+  --popover-foreground: #f8fafc;
+
+  --primary: #fbbf24;
+  --primary-foreground: #0a0b10;
+
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #fbbf24;
+
+  --radius: 0.75rem;
+}
+
+/* Admin Theme - Professional & Clean */
+.admin-mode {
+  --background: #f8fafc;
+  --foreground: #020617;
+  --card: #ffffff;
+  --card-foreground: #020617;
+  --primary: #fbbf24;
+  --primary-foreground: #0a0b10;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --input: #ffffff;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", sans-serif;
+    line-height: 1.5;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Outfit", sans-serif;
+    @apply tracking-tighter leading-tight;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-opacity-20 backdrop-blur-lg bg-white border border-white border-opacity-10 shadow-xl;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg transition-all hover:opacity-90 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-secondary text-secondary-foreground font-semibold rounded-lg transition-all hover:bg-opacity-80 active:scale-95;
+  }
+
+  .admin-sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-muted-foreground hover:text-foreground hover:bg-secondary;
+  }
+
+  .admin-sidebar-link.active {
+    @apply text-foreground bg-secondary font-medium;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-accent;
+}

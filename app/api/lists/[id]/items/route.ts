@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../../../lib/prisma";
+import { getUserFromServerCookie } from "../../../../../lib/server-auth";
+
+// POST /api/lists/[id]/items — add event to list
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await getUserFromServerCookie();
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id: listId } = await params;
+  const list = await prisma.list.findUnique({ where: { id: listId } });
+  if (!list || list.userId !== user.id)
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { eventId, note } = await req.json();
+  try {
+    const item = await prisma.listItem.create({
+      data: { listId, eventId, note: note || null },
+      include: {
+        event: {
+          select: { id: true, title: true, posterUrl: true, slug: true },
+        },
+      },
+    });
+    return NextResponse.json(item, { status: 201 });
+  } catch {
+    return NextResponse.json(
+      { error: "Event already in this list" },
+      { status: 409 },
+    );
+  }
+}
+
+// DELETE /api/lists/[id]/items?eventId=xxx — remove event from list
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await getUserFromServerCookie();
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id: listId } = await params;
+  const list = await prisma.list.findUnique({ where: { id: listId } });
+  if (!list || list.userId !== user.id)
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { searchParams } = new URL(req.url);
+  const eventId = searchParams.get("eventId");
+  if (!eventId)
+    return NextResponse.json({ error: "eventId required" }, { status: 400 });
+
+  await prisma.listItem.deleteMany({ where: { listId, eventId } });
+  return NextResponse.json({ success: true });
+}

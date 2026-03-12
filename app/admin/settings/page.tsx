@@ -1,0 +1,451 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  Save,
+  RefreshCcw,
+  Layout,
+  Image as ImageIcon,
+  Type,
+  Info,
+  Upload,
+  Star,
+  MousePointer2,
+  CheckCircle,
+  AlertCircle,
+  Megaphone,
+  Link as LinkIcon,
+} from "lucide-react";
+
+type MessageState = { type: "success" | "error"; text: string } | null;
+
+export default function AdminSettings() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const [message, setMessage] = useState<MessageState>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [settings, setSettings] = useState({
+    HERO_TITLE: "",
+    HERO_DESC: "",
+    HERO_IMAGE: "",
+    FEATURED_EVENT_ID: "",
+    SITE_LOGO: "",
+    BANNER_TEXT: "",
+    BANNER_LINK: "",
+    BANNER_ENABLED: "false",
+  });
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        const configs = data.configs || {};
+        setSettings({
+          HERO_TITLE: configs.HERO_TITLE || "RATE. REVIEW. DISCOVER.",
+          HERO_DESC:
+            configs.HERO_DESC ||
+            "The definitive community archive for professional wrestling.",
+          HERO_IMAGE: configs.HERO_IMAGE || "",
+          FEATURED_EVENT_ID: configs.FEATURED_EVENT_ID || "",
+          SITE_LOGO: configs.SITE_LOGO || "",
+          BANNER_TEXT: configs.BANNER_TEXT || "",
+          BANNER_LINK: configs.BANNER_LINK || "",
+          BANNER_ENABLED: configs.BANNER_ENABLED || "false",
+        });
+        setEvents(data.events || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const showMessage = (type: "success" | "error", text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 4000);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+      if (res.ok) {
+        showMessage("success", "Settings saved and published.");
+      } else {
+        showMessage("error", "Failed to save settings.");
+      }
+    } catch {
+      showMessage("error", "Network error. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: "HERO_IMAGE" | "SITE_LOGO",
+  ) => {
+    if (!e.target.files?.[0]) return;
+    setUploading(field);
+    try {
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setSettings((s) => ({ ...s, [field]: data.url }));
+      } else {
+        showMessage("error", "Upload failed.");
+      }
+    } catch {
+      showMessage("error", "Upload failed. Please try again.");
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center p-32">
+        <RefreshCcw className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+
+  const inputClass =
+    "w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-xl outline-none focus:border-primary/40 focus:bg-white transition-all";
+  const labelClass =
+    "text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2";
+  const cardClass =
+    "bg-white rounded-[2.5rem] border border-border overflow-hidden shadow-sm";
+  const cardHeaderClass =
+    "p-6 border-b border-border bg-slate-50 flex items-center gap-3";
+
+  return (
+    <div className="space-y-8 max-w-5xl">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-4xl font-black tracking-tight text-foreground uppercase italic">
+          Site Settings
+        </h1>
+        <p className="text-muted-foreground font-medium italic">
+          Manage your site identity, branding, and public-facing content.
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSave}
+        className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8"
+      >
+        <div className="space-y-6">
+          {/* Logo */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <ImageIcon className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Site Logo
+              </h2>
+            </div>
+            <div className="p-8 space-y-5">
+              <div className="flex gap-6 items-start">
+                {/* Preview */}
+                <div className="w-24 h-24 rounded-2xl border-2 border-slate-100 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center">
+                  {settings.SITE_LOGO ? (
+                    <img
+                      src={settings.SITE_LOGO}
+                      alt="Logo"
+                      className="w-full h-full object-contain p-2"
+                    />
+                  ) : (
+                    <Star className="w-8 h-8 text-primary fill-current" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-3">
+                  <label className={labelClass}>
+                    <ImageIcon className="w-3.5 h-3.5" /> Logo Image
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.SITE_LOGO}
+                    onChange={(e) =>
+                      setSettings((s) => ({ ...s, SITE_LOGO: e.target.value }))
+                    }
+                    className={`${inputClass} font-mono text-xs`}
+                    placeholder="Upload or paste image URL..."
+                  />
+                  <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
+                    {uploading === "SITE_LOGO" ? (
+                      <RefreshCcw className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Upload className="w-3 h-3" />
+                    )}
+                    Upload Logo
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => handleUpload(e, "SITE_LOGO")}
+                    />
+                  </label>
+                  <p className="text-[10px] text-muted-foreground italic">
+                    Recommended: square PNG or SVG with transparency. Min
+                    200×200px.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Announcement Banner */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <Megaphone className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Announcement Banner
+              </h2>
+              <div className="ml-auto">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSettings((s) => ({
+                      ...s,
+                      BANNER_ENABLED:
+                        s.BANNER_ENABLED === "true" ? "false" : "true",
+                    }))
+                  }
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.BANNER_ENABLED === "true" ? "bg-primary" : "bg-slate-200"}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow ${settings.BANNER_ENABLED === "true" ? "translate-x-6" : "translate-x-1"}`}
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="p-8 space-y-5">
+              {settings.BANNER_ENABLED !== "true" && (
+                <div className="bg-slate-50 rounded-2xl p-4 text-xs text-muted-foreground italic font-medium">
+                  Toggle on to show a sitewide announcement banner above the
+                  navigation.
+                </div>
+              )}
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <Type className="w-3.5 h-3.5" /> Banner Message
+                </label>
+                <input
+                  type="text"
+                  value={settings.BANNER_TEXT}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, BANNER_TEXT: e.target.value }))
+                  }
+                  className={`${inputClass} font-medium`}
+                  placeholder="e.g. WrestleMania Season is here! Check out the latest events →"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <LinkIcon className="w-3.5 h-3.5" /> Banner Link{" "}
+                  <span className="font-medium normal-case tracking-normal opacity-60">
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={settings.BANNER_LINK}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, BANNER_LINK: e.target.value }))
+                  }
+                  className={`${inputClass} font-mono text-xs`}
+                  placeholder="/events or https://..."
+                />
+              </div>
+              {settings.BANNER_TEXT && (
+                <div
+                  className={`rounded-2xl px-4 py-3 text-sm font-bold text-center ${settings.BANNER_ENABLED === "true" ? "bg-primary text-black" : "bg-slate-100 text-slate-400"}`}
+                >
+                  {settings.BANNER_TEXT}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Hero Section */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <Layout className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Homepage Hero Section
+              </h2>
+            </div>
+            <div className="p-8 space-y-6">
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <Type className="w-3.5 h-3.5" /> Headline Title
+                </label>
+                <input
+                  type="text"
+                  value={settings.HERO_TITLE}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, HERO_TITLE: e.target.value }))
+                  }
+                  className={`${inputClass} font-black uppercase italic text-xl tracking-tight`}
+                  placeholder="RATE. REVIEW. DISCOVER."
+                />
+                <p className="text-[10px] text-muted-foreground italic">
+                  Tip: Use \n for manual line breaks.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <Info className="w-3.5 h-3.5" /> Sub-heading Description
+                </label>
+                <textarea
+                  value={settings.HERO_DESC}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, HERO_DESC: e.target.value }))
+                  }
+                  className={`${inputClass} font-medium leading-relaxed italic`}
+                  rows={3}
+                  placeholder="Enter description..."
+                />
+              </div>
+              <div className="space-y-4">
+                <label className={labelClass}>
+                  <ImageIcon className="w-3.5 h-3.5" /> Hero Backdrop Image
+                </label>
+                <input
+                  type="text"
+                  value={settings.HERO_IMAGE}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, HERO_IMAGE: e.target.value }))
+                  }
+                  className={`${inputClass} font-mono text-xs`}
+                  placeholder="Upload or paste image URL..."
+                />
+                <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
+                  {uploading === "HERO_IMAGE" ? (
+                    <RefreshCcw className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Upload className="w-3 h-3" />
+                  )}
+                  Upload Image
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => handleUpload(e, "HERO_IMAGE")}
+                  />
+                </label>
+                {settings.HERO_IMAGE && (
+                  <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-slate-100 bg-slate-100">
+                    <img
+                      src={settings.HERO_IMAGE}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                      <span className="text-white text-[10px] font-black uppercase tracking-widest italic">
+                        Live Preview
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Featured Event */}
+          <div className={cardClass}>
+            <div className={`${cardHeaderClass} text-amber-600`}>
+              <Star className="w-4 h-4 fill-current" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Community Choice Spotlight
+              </h2>
+            </div>
+            <div className="p-8 space-y-4">
+              <label className={labelClass}>
+                <MousePointer2 className="w-3.5 h-3.5" /> Featured Event
+              </label>
+              <select
+                value={settings.FEATURED_EVENT_ID}
+                onChange={(e) =>
+                  setSettings((s) => ({
+                    ...s,
+                    FEATURED_EVENT_ID: e.target.value,
+                  }))
+                }
+                className={`${inputClass} font-bold italic`}
+              >
+                <option value="">Auto-calculate (Most Rated)</option>
+                {events.map((event) => (
+                  <option key={event.id} value={event.id}>
+                    {event.title} ({event.promotion} -{" "}
+                    {new Date(event.date).getFullYear()})
+                  </option>
+                ))}
+              </select>
+              <p className="text-[10px] text-muted-foreground italic">
+                Manually pin an event to the hero spotlight card.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-4 lg:sticky lg:top-8 h-fit">
+          {message && (
+            <div
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
+                message.type === "success"
+                  ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+                  : "bg-red-50 border border-red-200 text-red-700"
+              }`}
+            >
+              {message.type === "success" ? (
+                <CheckCircle className="w-4 h-4 shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 shrink-0" />
+              )}
+              {message.text}
+            </div>
+          )}
+          <div className="bg-slate-900 rounded-[2rem] p-8 text-white space-y-6 shadow-2xl">
+            <h3 className="font-black italic uppercase tracking-tighter text-lg">
+              Platform Status
+            </h3>
+            <div className="h-px bg-white/10" />
+            <p className="text-xs font-medium italic opacity-60 leading-relaxed">
+              Changes apply instantly to the public storefront on publish.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full bg-primary text-black py-4 rounded-2xl font-black uppercase italic text-sm tracking-tighter flex items-center justify-center gap-2 shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform disabled:opacity-50"
+              >
+                {saving ? (
+                  <RefreshCcw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Publish Changes
+              </button>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="w-full py-3 text-xs font-black uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity"
+              >
+                Discard Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}

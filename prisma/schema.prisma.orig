@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  isAdmin   Boolean  @default(false)
+  password  String
+  slug      String   @unique
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  reviews       Review[]
+  WatchListItem WatchListItem[]
+  Reply         Reply[]
+
+  followers     Follow[]       @relation("followers")
+  following     Follow[]       @relation("following")
+  MatchRating   MatchRating[]
+  ReviewVote    ReviewVote[]
+  lists         List[]
+  notifications Notification[]
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "reply" | "review"
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  follower    User     @relation("followers", fields: [followerId], references: [id])
+  followerId  String
+  following   User     @relation("following", fields: [followingId], references: [id])
+  followingId String
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+
+model Event {
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  date          DateTime
+  promotion     String
+  posterUrl     String?
+  description   String?
+  type          String?
+  tmdbId        Int?
+  profightdbUrl String?
+  createdAt     DateTime        @default(now())
+  matches       Match[]
+  reviews       Review[]
+  WatchListItem WatchListItem[]
+  listItems     ListItem[]
+}
+
+model Match {
+  id           String             @id @default(cuid())
+  title        String
+  result       String?
+  rating       Float?
+  duration     Int?
+  type         String?
+  eventId      String
+  event        Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  participants MatchParticipant[]
+  ratings      MatchRating[]
+  createdAt    DateTime           @default(now())
+}
+
+model MatchRating {
+  id      String @id @default(cuid())
+  rating  Int
+  userId  String
+  matchId String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, matchId])
+}
+
+model Review {
+  id        String       @id @default(cuid())
+  rating    Int
+  comment   String?
+  userId    String
+  eventId   String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  Reply     Reply[]
+  votes     ReviewVote[]
+}
+
+model WatchListItem {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
+  watched   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, eventId])
+}
+
+model Reply {
+  id        String   @id @default(cuid())
+  comment   String
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Wrestler {
+  id        String             @id @default(cuid())
+  name      String
+  slug      String             @unique
+  imageUrl  String?
+  bio       String?
+  matches   MatchParticipant[]
+  createdAt DateTime           @default(now())
+}
+
+model MatchParticipant {
+  id         String   @id @default(cuid())
+  matchId    String
+  match      Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  wrestlerId String
+  wrestler   Wrestler @relation(fields: [wrestlerId], references: [id], onDelete: Cascade)
+  team       Int?
+  isWinner   Boolean?
+}
+
+model SiteConfig {
+  key   String @id
+  value String
+}
+
+model MediaItem {
+  id          String   @id @default(cuid())
+  filename    String
+  url         String
+  mimeType    String?
+  size        Int?
+  uploadedBy  String?
+  createdAt   DateTime @default(now())
+}
+
+model Promotion {
+  id        String            @id @default(cuid())
+  shortName String            @unique
+  fullName  String?
+  logoUrl   String?
+  createdAt DateTime          @default(now())
+  aliases   PromotionAlias[]
+}
+
+model PromotionAlias {
+  id          String    @id @default(cuid())
+  fullName    String    @unique
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+}
+
+model ReviewVote {
+  id        String   @id @default(cuid())
+  userId    String
+  reviewId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reviewId])
+}
+
+model List {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  isPublic    Boolean    @default(true)
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       ListItem[]
+  createdAt   DateTime   @default(now())
+}
+
+model ListItem {
+  id        String   @id @default(cuid())
+  listId    String
+  list      List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  note      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([listId, eventId])
+}
