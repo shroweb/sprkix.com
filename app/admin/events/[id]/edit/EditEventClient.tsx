@@ -764,7 +764,7 @@ export default function EditEventClient({
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Duration (Minutes)
+                  Duration (MM:SS or Minutes)
                 </label>
                 <input
                   type="text"
@@ -979,7 +979,7 @@ export default function EditEventClient({
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                        Duration (Minutes)
+                        Duration (MM:SS or Minutes)
                       </label>
                       <input
                         type="text"
