@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, X, Calendar, UserCircle, Loader2 } from "lucide-react";
+import { Search, X, Calendar, UserCircle, Loader2, TrendingUp } from "lucide-react";
 
 type SearchResult = {
   events: {
@@ -38,6 +38,7 @@ export default function SearchModal() {
     users: [],
   });
   const [loading, setLoading] = useState(false);
+  const [trending, setTrending] = useState<{ title: string; slug: string; posterUrl: string | null; promotion: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -54,10 +55,16 @@ export default function SearchModal() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  // Focus input when opened
+  // Focus input + fetch trending when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 50);
+      if (!trending) {
+        fetch("/api/search?q=wrestlemania")
+          .then((r) => r.json())
+          .then((d) => d.events?.[0] && setTrending(d.events[0]))
+          .catch(() => {});
+      }
     } else {
       setQuery("");
       setResults({ events: [], wrestlers: [], users: [] });
@@ -276,10 +283,50 @@ export default function SearchModal() {
         )}
 
         {!query && (
-          <div className="p-6 text-center">
-            <p className="text-muted-foreground font-medium italic text-sm">
-              Type to search events, wrestlers, and users
-            </p>
+          <div className="p-5 space-y-5">
+            {/* Promotion chips */}
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2">Browse by Promotion</p>
+              <div className="flex flex-wrap gap-2">
+                {["WWE", "AEW", "TNA", "NJPW", "ROH"].map((promo) => (
+                  <button
+                    key={promo}
+                    onClick={() => setQuery(promo)}
+                    className="px-3 py-1.5 bg-secondary border border-border rounded-lg text-xs font-black uppercase tracking-wider hover:bg-primary hover:text-black hover:border-primary transition-all"
+                  >
+                    {promo}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Trending event */}
+            {trending && (
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
+                  <TrendingUp className="w-3 h-3" /> Trending
+                </p>
+                <Link
+                  href={`/events/${trending.slug}`}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors group"
+                >
+                  <div className="w-10 h-14 relative rounded-lg overflow-hidden shrink-0 border border-white/5 bg-secondary">
+                    {trending.posterUrl ? (
+                      <Image src={trending.posterUrl} alt={trending.title} fill className="object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Calendar className="w-4 h-4 text-muted-foreground/30" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors truncate">{trending.title}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">{trending.promotion}</p>
+                  </div>
+                </Link>
+              </div>
+            )}
           </div>
         )}
 

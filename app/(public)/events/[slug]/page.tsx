@@ -12,6 +12,44 @@ import ShareButton from "@components/ShareButton";
 import ReviewUpvote from "@components/ReviewUpvote";
 import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, Share2 } from "lucide-react";
 import ShareReviewButton from "@components/ShareReviewButton";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const event = await prisma.event.findUnique({
+    where: { slug },
+    select: { title: true, description: true, posterUrl: true, promotion: true, date: true },
+  });
+
+  if (!event) return {};
+
+  const cleanTitle = event.title.replace(/–\s\d{4}.*$/, "").trim();
+  const year = new Date(event.date).getFullYear();
+  const desc = event.description
+    ? event.description.slice(0, 155)
+    : `Ratings, reviews and match results for ${cleanTitle} (${year}) by ${event.promotion}.`;
+
+  return {
+    title: `${cleanTitle} (${year}) – ${event.promotion} | Sprkix`,
+    description: desc,
+    openGraph: {
+      title: `${cleanTitle} – ${event.promotion}`,
+      description: desc,
+      images: event.posterUrl ? [{ url: event.posterUrl }] : [],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${cleanTitle} – ${event.promotion}`,
+      description: desc,
+      images: event.posterUrl ? [event.posterUrl] : [],
+    },
+  };
+}
 
 export default async function EventPage({
   params,
@@ -75,6 +113,8 @@ export default async function EventPage({
         ).toFixed(2),
       )
     : null;
+
+  const userReview = userId ? event.reviews.find((r: any) => r.userId === userId) ?? null : null;
 
   const inWatchList = user
     ? await prisma.watchListItem.findFirst({
@@ -272,11 +312,28 @@ export default async function EventPage({
                 </div>
               </div>
 
+              {userReview && (
+                <div className="flex justify-between items-center gap-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground shrink-0">
+                    Your Rating
+                  </span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${i < userReview.rating ? "text-primary fill-current" : "text-muted-foreground/20"}`}
+                      />
+                    ))}
+                    <span className="text-xs font-black italic text-primary ml-1">{userReview.rating.toFixed(1)}</span>
+                  </div>
+                </div>
+              )}
+
               <div className="pt-4 border-t border-border flex gap-3">
                 {user && (
                     <WatchListButton
                         eventId={event.id}
-                        isSavedInitial={!!inWatchList}
+                        initialState={!inWatchList ? "none" : inWatchList.watched ? "watched" : "watchlist"}
                     />
                 )}
                 <ShareButton />

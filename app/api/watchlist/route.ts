@@ -28,6 +28,24 @@ export async function POST(req: Request) {
   }
 }
 
+export async function PATCH(req: Request) {
+  const user = await getUserFromServerCookie();
+  if (!user)
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  const { eventId } = await req.json();
+
+  await prisma.watchListItem.upsert({
+    where: { userId_eventId: { userId: user.id, eventId } },
+    update: { watched: true },
+    create: { userId: user.id, eventId, watched: true },
+  });
+
+  revalidatePath("/watchlist", "page");
+  revalidatePath("/events/[slug]", "page");
+  return NextResponse.json({ success: true });
+}
+
 export async function DELETE(req: Request) {
   const user = await getUserFromServerCookie();
   if (!user)
