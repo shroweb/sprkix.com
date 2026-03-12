@@ -32,13 +32,19 @@ function secsToMmss(secs: number | null | undefined): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-/** Parse a "MM:SS" or plain-minutes string back to seconds for storage */
-function mmssToSecs(val: string): number | null {
-  if (!val.trim()) return null;
-  const colonMatch = val.match(/^(\d+):(\d+)$/);
+/** Parse a "MM:SS", decimal minutes, or plain-minutes string back to seconds for storage */
+function mmssToSecs(val: any): number | null {
+  if (val === null || val === undefined) return null;
+  const sVal = val.toString().trim();
+  if (!sVal) return null;
+
+  // Handle MM:SS
+  const colonMatch = sVal.match(/^(\d+):(\d+)$/);
   if (colonMatch) return parseInt(colonMatch[1]) * 60 + parseInt(colonMatch[2]);
-  const num = parseInt(val);
-  return isNaN(num) ? null : num * 60;
+
+  // Handle decimal or plain number (treat as minutes)
+  const num = parseFloat(sVal);
+  return isNaN(num) ? null : Math.round(num * 60);
 }
 
 type MessageState = { type: "success" | "error"; text: string } | null;
@@ -250,10 +256,15 @@ export default function EditEventClient({
     e.preventDefault();
     setSaving(true);
     try {
+      const formattedMatch = {
+        ...newMatch,
+        duration: mmssToSecs(newMatch.duration),
+      };
+
       const res = await fetch(`/api/admin/events/${event.id}/matches`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMatch),
+        body: JSON.stringify(formattedMatch),
       });
       if (res.ok) {
         const addedMatch = await res.json();
@@ -326,7 +337,10 @@ export default function EditEventClient({
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(editingMatchData),
+          body: JSON.stringify({
+            ...editingMatchData,
+            duration: mmssToSecs(editingMatchData.duration),
+          }),
         },
       );
       if (res.ok) {
@@ -753,13 +767,13 @@ export default function EditEventClient({
                   Duration (Minutes)
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   value={newMatch.duration}
                   onChange={(e) =>
                     setNewMatch({ ...newMatch, duration: e.target.value })
                   }
-                  placeholder="e.g. 33"
-                  className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all"
+                  placeholder="e.g. 14 or 14:30"
+                  className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold"
                 />
               </div>
             </div>
@@ -968,7 +982,7 @@ export default function EditEventClient({
                         Duration (Minutes)
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         value={editingMatchData.duration}
                         onChange={(e) =>
                           setEditingMatchData((d) => ({
@@ -976,7 +990,7 @@ export default function EditEventClient({
                             duration: e.target.value,
                           }))
                         }
-                        className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all text-sm"
+                        className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm"
                       />
                     </div>
                     <div className="space-y-1.5 md:col-span-2">
