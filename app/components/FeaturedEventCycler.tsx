@@ -34,7 +34,7 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
             }`}
           >
             <Link href={`/events/${event.slug}`}>
-              <div className="relative aspect-[4/5] bg-card/40 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl hover:scale-[1.02] transition-all duration-700">
+              <div className="relative aspect-[4/5] bg-card/40 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl hover:scale-[1.02] transition-all duration-700 group isolate">
                 <Image
                   src={event.posterUrl || "/placeholder.png"}
                   alt={event.title}
