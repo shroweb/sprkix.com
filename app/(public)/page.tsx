@@ -90,8 +90,14 @@ export default async function Home() {
 
   const hallOfFame = ranked.slice(0, 5);
 
-  // Trending = most recently reviewed events (activity in last 7 days)
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  // Recent events within the last 7 days (by event date)
+  const recentEvents = allEventsForRank
+    .filter(e => new Date(e.date) >= sevenDaysAgo)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Trending = most recently reviewed events (activity in last 7 days)
   const recentReviews = await prisma.review.findMany({
     where: { createdAt: { gte: sevenDaysAgo } },
     select: { eventId: true },
@@ -106,19 +112,15 @@ export default async function Home() {
     .slice(0, 5)
     .map(([id]) => id);
 
-  const trendingEvents = await prisma.event.findMany({
-    where: { id: { in: trendingIds } },
-    include: { reviews: { select: { rating: true } } },
-  });
+  const trendingEvents = allEventsForRank.filter(e => trendingIds.includes(e.id));
 
   // Sort by the trending order
   const trendingSorted = trendingIds
     .map((id) => trendingEvents.find((e) => e.id === id))
     .filter(Boolean) as typeof trendingEvents;
 
-  // Featured event
-  const featuredId = configMap["FEATURED_EVENT_ID"] || allEventsForRank[0]?.id;
-  const featuredEvent = allEventsForRank.find((e: any) => e.id === featuredId) || null;
+  // Featured event: Recent event if exists, else first in rank
+  const featuredEvent = recentEvents[0] || allEventsForRank[0] || null;
   const featuredRating = featuredEvent
     ? featuredEvent.reviews.reduce((a: number, b: any) => a + b.rating, 0) /
       (featuredEvent.reviews.length || 1)
@@ -258,9 +260,9 @@ export default async function Home() {
 
                   <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
                     <div className="flex items-center gap-2 bg-primary px-3 py-1.5 rounded-xl shadow-lg">
-                      <Award className="w-3.5 h-3.5 text-black" />
+                      <Calendar className="w-3.5 h-3.5 text-black" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-black">
-                        Community Choice
+                        Recent Event
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10">
