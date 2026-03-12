@@ -46,7 +46,7 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
                 <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
                   <div className="flex items-center gap-2 bg-primary px-3 py-1.5 rounded-xl shadow-lg">
                     <Calendar className="w-3.5 h-3.5 text-black" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-black">
+                    <span className="text-xs font-black uppercase tracking-widest text-black">
                       Recent Event
                     </span>
                   </div>

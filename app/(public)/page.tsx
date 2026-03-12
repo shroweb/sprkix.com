@@ -380,14 +380,14 @@ export default async function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
                       {/* Trending badge */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1 bg-primary/90 px-2 py-1 rounded-lg">
-                        <Flame className="w-2.5 h-2.5 text-black" />
-                        <span className="text-[8px] font-black uppercase text-black tracking-widest">
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-primary px-2.5 py-1 rounded-lg shadow-lg">
+                        <Flame className="w-3 h-3 text-black" />
+                        <span className="text-[10px] font-black uppercase text-black tracking-widest">
                           Hot
                         </span>
                       </div>
                       <div className="absolute bottom-4 left-4 right-4">
-                        <span className="px-2 py-0.5 bg-primary text-black text-[8px] font-black uppercase rounded">
+                        <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase rounded shadow-lg">
                           {event.promotion}
                         </span>
                       </div>
@@ -449,7 +449,7 @@ export default async function Home() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
                     <div className="absolute bottom-6 left-6 right-6">
-                      <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg">
+                      <span className="px-2 py-1 bg-primary text-black text-[10px] font-black uppercase rounded shadow-lg">
                         {event.promotion}
                       </span>
                     </div>
