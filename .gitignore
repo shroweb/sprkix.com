@@ -58,3 +58,4 @@ next-env.d.ts
 
 # Build output (if not Next.js-managed)
 /dist
+.env*.local

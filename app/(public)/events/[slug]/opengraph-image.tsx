@@ -16,17 +16,18 @@ export default async function OGImage({
     include: { reviews: { select: { rating: true } } },
   });
 
-  const avgRating = event?.reviews.length
+  const reviews = event?.reviews ?? [];
+  const avgRating = reviews.length
     ? (
-        event.reviews.reduce((sum, r) => sum + r.rating, 0) /
-        event.reviews.length
+        reviews.reduce((sum, r) => sum + r.rating, 0) /
+        reviews.length
       ).toFixed(1)
     : null;
 
   const title = event?.title?.replace(/–\s*\d{4}.*$/, "").trim() ?? "Event";
   const promotion = event?.promotion ?? "";
   const posterUrl = event?.posterUrl;
-  const reviewCount = event?.reviews.length ?? 0;
+  const reviewCount = reviews.length;
 
   return new ImageResponse(
     <div

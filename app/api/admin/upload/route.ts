@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      results.length === 1 ? { url: results[0].url, ...results[0] } : results,
+      results.length === 1 ? results[0] : results,
     );
   } catch (error) {
     console.error("Upload error:", error);
