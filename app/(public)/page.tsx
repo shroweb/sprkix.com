@@ -189,7 +189,7 @@ export default async function Home() {
                   const parts = line.split(/(WRESTLING\.?)/i);
                   return (
                     <span key={i} className="block">
-                      {parts.map((p, j) => (
+                      {parts.map((p: string, j: number) => (
                         <span
                           key={j}
                           className={
@@ -293,7 +293,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="space-y-3">
-              {hallOfFame.map((event, i) => (
+              {hallOfFame.map((event: any, i: number) => (
                 <Link
                   key={event.id}
                   href={`/events/${event.slug}`}
@@ -376,7 +376,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8">
-              {trendingSorted.map((event) => {
+               {trendingSorted.map((event: any) => {
                 const rating = event.reviews.length
                   ? event.reviews.reduce((a: any, r: any) => a + r.rating, 0) /
                     event.reviews.length
