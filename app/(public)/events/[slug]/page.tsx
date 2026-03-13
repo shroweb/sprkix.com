@@ -434,7 +434,7 @@ export default async function EventPage({
                     </h2>
                     <div className="bg-card border border-border rounded-[2rem] p-8">
                       {user ? (
-                        <ReviewForm event={event} user={user} />
+                        <ReviewForm event={event} user={user} initialReview={userReview} />
                       ) : (
                         <div className="text-center py-6">
                           <p className="italic font-bold text-muted-foreground mb-4">

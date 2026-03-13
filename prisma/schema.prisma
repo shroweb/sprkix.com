@@ -125,6 +125,8 @@ model Review {
   createdAt DateTime     @default(now())
   Reply     Reply[]
   votes     ReviewVote[]
+
+  @@unique([userId, eventId])
 }
 
 model WatchListItem {

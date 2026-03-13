@@ -6,7 +6,13 @@ export async function POST(req: Request) {
   const { eventId, rating, comment, userId } = body;
 
   const [review, event] = await Promise.all([
-    prisma.review.create({ data: { rating, comment, userId, eventId } }),
+    prisma.review.upsert({
+      where: {
+        userId_eventId: { userId, eventId }
+      },
+      update: { rating, comment },
+      create: { rating, comment, userId, eventId }
+    }),
     prisma.event.findUnique({
       where: { id: eventId },
       select: { title: true, slug: true },

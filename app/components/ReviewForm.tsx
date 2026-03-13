@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
@@ -9,18 +9,28 @@ export default function ReviewForm({
   event,
   user,
   isUpcoming,
+  initialReview,
 }: {
   event: { id: string; title: string; posterUrl: string | null; promotion: string };
   user: any;
   isUpcoming?: boolean;
+  initialReview?: { rating: number; comment: string | null } | null;
 }) {
-  const [comment, setComment] = useState("");
-  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState(initialReview?.comment || "");
+  const [rating, setRating] = useState(initialReview?.rating || 0);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [lastReview, setLastReview] = useState<{ rating: number; comment: string | null } | null>(null);
   const router = useRouter();
+
+  // Sync state if initialReview changes (from router.refresh)
+  useEffect(() => {
+    if (initialReview) {
+      setComment(initialReview.comment || "");
+      setRating(initialReview.rating || 0);
+    }
+  }, [initialReview]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +56,6 @@ export default function ReviewForm({
         rating: rating, 
         comment: comment || null 
     });
-    setComment("");
-    setRating(0);
     setSubmitting(false);
     setShowShareModal(true);
     router.refresh();
@@ -118,7 +126,7 @@ export default function ReviewForm({
           disabled={submitting || (!isUpcoming && rating === 0)}
           className="w-full h-14 bg-primary hover:bg-white text-black rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
         >
-          {submitting ? "Posting Review..." : (isUpcoming ? "Post Comment" : "Post Review")}
+          {submitting ? (isUpcoming ? "Posting..." : "Reviewing...") : (initialReview ? "Update Review" : (isUpcoming ? "Post Comment" : "Post Review"))}
         </button>
       </form>
 
