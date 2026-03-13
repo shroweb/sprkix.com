@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Star, Activity, UserPlus, Bookmark, Zap } from "lucide-react";
 
 export default async function ActivityFeedPage() {
-  const [reviews, ratings, users, watchlist] = await Promise.all([
+  const results = (await Promise.all([
     prisma.review.findMany({
       take: 30,
       orderBy: { createdAt: "desc" },
@@ -22,17 +22,26 @@ export default async function ActivityFeedPage() {
       orderBy: { createdAt: "desc" },
       select: { id: true, name: true, email: true, createdAt: true, slug: true },
     }),
-    prisma.watchListItem.findMany({
-      take: 20,
-      orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true } }, event: { select: { title: true, slug: true } } },
-    }),
-  ]);
+    (async () => {
+      try {
+        return await prisma.watchListItem.findMany({
+          take: 20,
+          orderBy: { createdAt: "desc" },
+          include: { user: { select: { name: true } }, event: { select: { title: true, slug: true } } },
+        });
+      } catch (err) {
+        console.error("Activity feed watchlist error:", err);
+        return [];
+      }
+    })(),
+  ])) as any[];
+
+  const [reviews, ratings, users, watchlist] = results;
 
   // Merge and sort all activity by date
   type FeedItem = { ts: Date; type: string; icon: any; color: string; label: string; link?: string };
   const feed: FeedItem[] = [
-    ...reviews.map(r => ({
+    ...reviews.map((r: any) => ({
       ts: r.createdAt,
       type: "review",
       icon: Star,
@@ -40,7 +49,7 @@ export default async function ActivityFeedPage() {
       label: `${r.user.name ?? "Someone"} reviewed ${r.event.title} — ${r.rating}★`,
       link: `/events/${r.event.slug}`,
     })),
-    ...ratings.map(r => ({
+    ...ratings.map((r: any) => ({
       ts: new Date(),  // fallback since createdAt may not be in types yet
       type: "rating",
       icon: Zap,
@@ -48,7 +57,7 @@ export default async function ActivityFeedPage() {
       label: `${r.user.name ?? "Someone"} rated "${r.match.title}" (${r.match.event.title}) ${r.rating}★`,
       link: `/events/${r.match.event.slug}`,
     })),
-    ...users.map(u => ({
+    ...users.map((u: any) => ({
       ts: u.createdAt,
       type: "signup",
       icon: UserPlus,
@@ -56,7 +65,7 @@ export default async function ActivityFeedPage() {
       label: `${u.name ?? u.email} joined sprkix`,
       link: undefined,
     })),
-    ...watchlist.map(w => ({
+    ...watchlist.map((w: any) => ({
       ts: w.createdAt,
       type: "watchlist",
       icon: Bookmark,

@@ -41,14 +41,7 @@ export default async function ProfilePage() {
     include: { profileThemeEvent: true }
   });
 
-  const [
-    reviews,
-    watchList,
-    followersCount,
-    followingCount,
-    matchRatings,
-    favMatches,
-  ] = (await Promise.all([
+  const results = (await Promise.all([
     prisma.review.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
@@ -59,11 +52,6 @@ export default async function ProfilePage() {
           orderBy: { createdAt: "asc" },
         },
       },
-    }),
-    prisma.watchListItem.findMany({
-      where: { userId: user.id },
-      include: { event: true },
-      orderBy: { createdAt: "desc" },
     }),
     prisma.follow.count({ where: { followingId: user.id } }),
     prisma.follow.count({ where: { followerId: user.id } }),
@@ -89,7 +77,29 @@ export default async function ProfilePage() {
         }
       }
     }),
+    // Fetch watchlist separately and safely
+    (async () => {
+      try {
+        return await prisma.watchListItem.findMany({
+          where: { userId: user.id },
+          include: { event: true },
+          orderBy: { createdAt: "desc" },
+        });
+      } catch (err) {
+        console.error("Watchlist fetch error on profile:", err);
+        return [];
+      }
+    })(),
   ])) as any[];
+
+  const [
+    reviews,
+    followersCount,
+    followingCount,
+    matchRatings,
+    favMatches,
+    watchList,
+  ] = results;
 
   const themePoster = currentUser?.profileThemeEvent?.posterUrl;
 
