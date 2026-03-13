@@ -93,39 +93,26 @@ export default function AdminSettings() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    setUploading(field);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) {
-        console.error("Upload server error:", data);
-        showMessage("error", data.error || "Upload failed on the server.");
-        return;
-      }
 
-      if (data.url) {
-        setSettings((s) => ({ ...s, [field]: data.url }));
-        showMessage("success", "Image uploaded successfully. Click Publish to save.");
-      } else {
-        showMessage("error", "Upload failed: No URL returned.");
-      }
-    } catch (err) {
-      console.error("Upload client error:", err);
-      showMessage("error", "Upload failed. Please check your connection.");
-    } finally {
+    // For site settings (Logo/Hero), we use Base64 Data URLs.
+    // This makes the uploader work instantly on Vercel by bypassing the read-only filesystem.
+    setUploading(field);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setSettings((s) => ({ ...s, [field]: base64 }));
       setUploading(null);
-      // Reset input value so same file can be uploaded again
-      e.target.value = "";
-    }
+      showMessage(
+        "success",
+        "Image processed locally. Click Publish to save to database.",
+      );
+      if (e.target) e.target.value = "";
+    };
+    reader.onerror = () => {
+      setUploading(null);
+      showMessage("error", "Failed to process image file.");
+    };
+    reader.readAsDataURL(file);
   };
 
   if (loading)

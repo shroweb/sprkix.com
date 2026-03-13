@@ -49,8 +49,11 @@ export async function POST(req: Request) {
     return NextResponse.json(
       results.length === 1 ? results[0] : results,
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Upload failed", details: error.message || String(error) },
+      { status: 500 },
+    );
   }
 }
