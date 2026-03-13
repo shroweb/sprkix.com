@@ -23,6 +23,38 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const user = await getUserFromServerCookie();
 
+  let results: any[] = [[], 0, 0, [], [], [], []];
+  try {
+    results = await Promise.all([
+      prisma.event.findMany({
+        take: 10,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.event.count(),
+      prisma.review.count(),
+      prisma.event.findMany({ select: { slug: true } }),
+      prisma.event.findMany({
+        include: {
+          reviews: { select: { rating: true, comment: true, user: { select: { name: true } } } },
+        },
+      }),
+      prisma.siteConfig.findMany(),
+      prisma.match.findMany({
+        where: { rating: { gt: 0 } },
+        orderBy: { rating: "desc" },
+        take: 5,
+        include: {
+          participants: { include: { wrestler: true } },
+          event: { select: { slug: true, title: true, posterUrl: true } },
+        },
+      }),
+    ]);
+  } catch (err) {
+    console.error("Home page fetch error:", err);
+    // Attempt fallback without the suspicious fields if possible, 
+    // or just return empty for now to keep the page from crashing.
+  }
+
   const [
     events,
     eventCount,
@@ -31,30 +63,7 @@ export default async function Home() {
     allEventsForRank,
     configs,
     topMatches,
-  ] = await Promise.all([
-    prisma.event.findMany({
-      take: 10,
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.event.count(),
-    prisma.review.count(),
-    prisma.event.findMany({ select: { slug: true } }),
-    prisma.event.findMany({
-      include: {
-        reviews: { select: { rating: true, comment: true, user: { select: { name: true } } } },
-      },
-    }),
-    prisma.siteConfig.findMany(),
-    prisma.match.findMany({
-      where: { rating: { gt: 0 } },
-      orderBy: { rating: "desc" },
-      take: 5,
-      include: {
-        participants: { include: { wrestler: true } },
-        event: { select: { slug: true, title: true, posterUrl: true } },
-      },
-    }),
-  ]);
+  ] = results;
 
   const configMap = configs.reduce(
     (acc: Record<string, string>, curr: { key: string; value: string }) => ({

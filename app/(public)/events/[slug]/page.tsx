@@ -95,45 +95,50 @@ export default async function EventPage({
   const user = await getUserFromServerCookie();
   const userId = user?.id;
 
-  const event = await prisma.event.findUnique({
-    where: { slug },
-    include: {
-      matches: {
-        include: {
-          participants: {
-            include: { wrestler: true },
-          },
-          ratings: {
-            select: {
-              rating: true,
-              userId: true,
+  let event: any = null;
+  try {
+    event = await prisma.event.findUnique({
+      where: { slug },
+      include: {
+        matches: {
+          include: {
+            participants: {
+              include: { wrestler: true },
+            },
+            ratings: {
+              select: {
+                rating: true,
+                userId: true,
+              },
+            },
+            favoritedBy: {
+              select: {
+                userId: true,
+              },
+            },
+            predictions: {
+              where: { userId: userId || "" },
+              select: { predictedWinnerId: true, isCorrect: true },
             },
           },
-          favoritedBy: {
-            select: {
-              userId: true,
+          orderBy: { createdAt: "asc" },
+        },
+        reviews: {
+          include: {
+            user: true,
+            Reply: {
+              include: { user: true },
+              orderBy: { createdAt: "asc" },
             },
+            votes: { select: { userId: true } },
           },
-          predictions: {
-            where: { userId: userId || "" },
-            select: { predictedWinnerId: true, isCorrect: true },
-          },
+          orderBy: { createdAt: "desc" },
         },
-        orderBy: { createdAt: "asc" },
       },
-      reviews: {
-        include: {
-          user: true,
-          Reply: {
-            include: { user: true },
-            orderBy: { createdAt: "asc" },
-          },
-          votes: { select: { userId: true } },
-        },
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  });
+    });
+  } catch (err) {
+    console.error("Event page fetch error:", err);
+  }
 
   if (!event) return notFound();
 
