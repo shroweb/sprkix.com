@@ -170,12 +170,12 @@ export default async function ProfilePage() {
   });
 
   // Serialize reviews for client component (dates → strings)
-  const serializedReviews = (reviews as any[]).map((r) => ({
+  const serializedReviews = (reviews || []).map((r: any) => ({
     ...r,
-    createdAt: r.createdAt.toISOString(),
-    Reply: r.Reply.map((reply: any) => ({
+    createdAt: (r.createdAt instanceof Date ? r.createdAt : new Date(r.createdAt || Date.now())).toISOString(),
+    Reply: (r.Reply || []).map((reply: any) => ({
       ...reply,
-      createdAt: reply.createdAt.toISOString(),
+      createdAt: (reply.createdAt instanceof Date ? reply.createdAt : new Date(reply.createdAt || Date.now())).toISOString(),
     })),
   }));
 
@@ -247,7 +247,7 @@ export default async function ProfilePage() {
                     <div className="space-y-1">
                       <p className="text-white/30 font-black uppercase tracking-[0.2em] text-[10px]">Email</p>
                       <p className="text-white/50 font-bold italic text-2xl tracking-tight">
-                        {(user as any).email}
+                        {user.email || (user as any).email}
                       </p>
                     </div>
                     <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
