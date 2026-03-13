@@ -6,7 +6,8 @@ import Image from "next/image";
 import { Star, Users, UserCheck, ChevronLeft, Heart, CheckCircle, Trophy, Activity, Calendar, Award, Target } from "lucide-react";
 import FollowButton from "@components/FollowButton";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
-import RankBadge, { getRank } from "@components/RankBadge";
+import RankBadge from "@components/RankBadge";
+import { getRank } from "@lib/ranks";
 import FollowListModal from "@components/FollowListModal";
 import VisualRating from "@components/VisualRating";
 

@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
-import { getRank } from "@components/RankBadge";
+import { getRank } from "@lib/ranks";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
 
 export const dynamic = "force-dynamic";
