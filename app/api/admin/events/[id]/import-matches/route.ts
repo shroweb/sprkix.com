@@ -1,7 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../../lib/server-auth";
-import { parseCagematchHtml } from "../../../../../../lib/cagematch";
+import { parseCagematchHtml, parseProfightDbHtml } from "../../../../../../lib/cagematch";
+
+async function fetchWithFallback(url: string): Promise<string> {
+  const headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+  };
+  // Try direct fetch first
+  try {
+    const res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+    if (res.ok) return await res.text();
+  } catch { /* fall through */ }
+
+  // Fallback: AllOrigins CORS proxy
+  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  const proxyRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+  if (!proxyRes.ok) throw new Error("Could not fetch page — site may be blocking automated requests");
+  const data = await proxyRes.json();
+  if (!data.contents) throw new Error("Proxy returned empty content");
+  return data.contents;
+}
 
 function slugify(name: string) {
   return name
@@ -27,15 +48,15 @@ export async function POST(
   }
 
   try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-      },
-    });
-    if (!res.ok) throw new Error("Failed to fetch Cagematch page");
-    const html = await res.text();
-    const parsedMatches = await parseCagematchHtml(html);
+    const html = await fetchWithFallback(url);
+    const isProfightDb = url.includes("profightdb.com");
+    const parsedMatches = isProfightDb
+      ? parseProfightDbHtml(html)
+      : await parseCagematchHtml(html);
+
+    if (parsedMatches.length === 0) {
+      return NextResponse.json({ error: "No matches found on that page — check the URL is a valid event card" }, { status: 422 });
+    }
 
     const existingWrestlers = await prisma.wrestler.findMany();
     const wrestlerByName = new Map(

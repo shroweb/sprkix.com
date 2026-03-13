@@ -105,6 +105,12 @@ export default function Header({
               >
                 Top Matches
               </Link>
+              <Link
+                href="/leaderboard"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                Predictions
+              </Link>
             </div>
           </div>
 
@@ -216,6 +222,9 @@ export default function Header({
               </Link>
               <Link href="/matches/top" className="block text-lg font-bold pl-2">
                 Top Matches
+              </Link>
+              <Link href="/leaderboard" className="block text-lg font-bold pl-2">
+                Predictions Leaderboard
               </Link>
             </div>
             <hr className="border-border" />

@@ -13,6 +13,7 @@ import {
   Star,
   ArrowUpDown,
   Zap,
+  Activity,
 } from "lucide-react";
 
 type Event = {
@@ -24,6 +25,8 @@ type Event = {
   posterUrl: string | null;
   avgRating?: number;
   reviewCount?: number;
+  startTime?: Date | string | null;
+  endTime?: Date | string | null;
 };
 
 type SortOption = "newest" | "oldest" | "top-rated" | "a-z";
@@ -255,10 +258,38 @@ export default function EventsGrid({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                 {/* Promotion badge */}
-                <div className="absolute top-3 left-3 z-10">
-                  <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg">
+                <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
+                  <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
                     {event.promotion}
                   </span>
+                  {(() => {
+                    const now = new Date();
+                    // Live only if admin explicitly set startTime (mirrors event page logic)
+                    const sTime = event.startTime ? new Date(event.startTime) : new Date(event.date);
+                    const eTime = event.endTime
+                      ? new Date(event.endTime)
+                      : event.startTime
+                      ? new Date(sTime.getTime() + 4 * 60 * 60 * 1000)
+                      : null;
+                    const isLive = !!event.startTime && now >= sTime && (eTime === null || now <= eTime);
+                    const isUpcoming = !isLive && now < sTime;
+
+                    if (isLive) {
+                      return (
+                        <span className="px-2 py-1 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
+                          <Activity className="w-2.5 h-2.5" /> Live
+                        </span>
+                      );
+                    }
+                    if (isUpcoming) {
+                      return (
+                        <span className="px-2 py-1 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                          Upcoming
+                        </span>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
 
                 {/* Reviewed badge */}

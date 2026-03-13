@@ -1,5 +1,6 @@
 // /app/api/admin/edit-event/[id]/add-match/route.ts
 import { prisma } from "../../../../../../lib/prisma";
+import { getUserFromServerCookie } from "../../../../../../lib/server-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 type MatchParticipantInput = {
@@ -8,6 +9,11 @@ type MatchParticipantInput = {
 };
 
 export async function POST(req: NextRequest) {
+  const user = await getUserFromServerCookie();
+  if (!user?.isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await req.formData();
     const title = formData.get("title") as string;

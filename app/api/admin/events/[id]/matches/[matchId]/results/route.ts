@@ -10,7 +10,7 @@ export async function PATCH(
   if (!user?.isAdmin)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id, matchId } = await params;
+  const { id: eventId, matchId } = await params;
   const { result, winners } = await req.json(); // winners = string[] of participantIds
 
   // Update match result text
@@ -31,6 +31,78 @@ export async function PATCH(
       data: { isWinner: true },
     });
   }
+
+  // ── Prediction Resolution ──────────────────────────────────────────────────
+  // Only resolve if winners were supplied
+  if (winners?.length > 0) {
+    // Get the wrestler IDs of the winners (predictions store wrestlerId, not participantId)
+    const winningParticipants = await prisma.matchParticipant.findMany({
+      where: { matchId, isWinner: true },
+      select: { wrestlerId: true },
+    });
+    const winningWrestlerIds = new Set(winningParticipants.map((p) => p.wrestlerId));
+
+    // Get the match + event for notification copy
+    const match = await prisma.match.findUnique({
+      where: { id: matchId },
+      select: { title: true, event: { select: { slug: true, title: true } } },
+    });
+
+    // Fetch all predictions for this match
+    const matchPredictions = await prisma.prediction.findMany({
+      where: { matchId },
+      select: { id: true, userId: true, predictedWinnerId: true },
+    });
+
+    if (matchPredictions.length > 0) {
+      // Resolve each prediction
+      const correctUserIds: string[] = [];
+
+      for (const prediction of matchPredictions) {
+        const isCorrect = prediction.predictedWinnerId
+          ? winningWrestlerIds.has(prediction.predictedWinnerId)
+          : false;
+
+        await prisma.prediction.update({
+          where: { id: prediction.id },
+          data: { isCorrect },
+        });
+
+        if (isCorrect) correctUserIds.push(prediction.userId);
+      }
+
+      // Recalculate each affected user's running totals from scratch
+      const uniqueUserIds = [...new Set(matchPredictions.map((p) => p.userId))];
+      await Promise.all(
+        uniqueUserIds.map(async (userId) => {
+          const [correctCount, resolvedCount] = await Promise.all([
+            prisma.prediction.count({ where: { userId, isCorrect: true } }),
+            prisma.prediction.count({ where: { userId, isCorrect: { not: null } } }),
+          ]);
+          await prisma.user.update({
+            where: { id: userId },
+            data: { predictionScore: correctCount, predictionCount: resolvedCount },
+          });
+        }),
+      );
+
+      // Fire notifications for correct predictors
+      if (correctUserIds.length > 0 && match?.event) {
+        const eventSlug = match.event.slug;
+        const matchTitle = match.title;
+        await prisma.notification.createMany({
+          data: correctUserIds.map((userId) => ({
+            userId,
+            type: "prediction_correct",
+            message: "You called it! 🎯",
+            detail: matchTitle,
+            link: `/events/${eventSlug}`,
+          })),
+        });
+      }
+    }
+  }
+  // ── End Resolution ─────────────────────────────────────────────────────────
 
   return NextResponse.json({ success: true });
 }

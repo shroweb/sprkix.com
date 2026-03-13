@@ -7,12 +7,13 @@ import * as cheerio from "cheerio";
 const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function GET(req: NextRequest) {
-  // Protect with a secret so only your scheduler can trigger this
-  if (CRON_SECRET) {
-    const secret = req.nextUrl.searchParams.get("secret");
-    if (secret !== CRON_SECRET) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  // Always require the secret — open endpoint if CRON_SECRET is unset is a security risk
+  if (!CRON_SECRET) {
+    return NextResponse.json({ error: "CRON_SECRET is not configured" }, { status: 503 });
+  }
+  const secret = req.nextUrl.searchParams.get("secret");
+  if (secret !== CRON_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {

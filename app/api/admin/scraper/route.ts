@@ -28,15 +28,16 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "No matching metadata found on TMDB" }, { status: 404 });
         }
 
+        // Always overwrite with fresh TMDB data so broken/404 images get replaced
         const updatedEvent = await prisma.event.update({
             where: { id: eventId },
             data: {
-                posterUrl: event.posterUrl || metadata.posterUrl,
-                description: event.description || metadata.description,
+                ...(metadata.posterUrl && { posterUrl: metadata.posterUrl }),
+                ...(metadata.description && { description: metadata.description }),
             }
         });
 
-        return NextResponse.json({ success: true, updatedEvent });
+        return NextResponse.json({ success: true, updatedEvent, matchedTitle: metadata.matchedTitle });
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });
     }

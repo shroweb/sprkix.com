@@ -11,6 +11,97 @@ interface ParsedMatch {
     result?: string
 }
 
+export function parseProfightDbHtml(html: string): ParsedMatch[] {
+    const $ = cheerio.load(html)
+    const matches: ParsedMatch[] = []
+
+    // ProfightDB: each match is a <tr> that contains wrestler links (/wrestlers/...)
+    $('table tr').each((_, tr) => {
+        const $tr = $(tr)
+        const text = $tr.text().trim()
+        if (!text) return
+
+        // Collect wrestler names from links
+        const seen = new Set<string>()
+        const wrestlerLinks: string[] = []
+        $tr.find('a').each((_, a) => {
+            const href = $(a).attr('href') || ''
+            if (href.includes('/wrestlers/') || href.includes('wrestler')) {
+                const name = $(a).text().trim()
+                if (name && !seen.has(name.toLowerCase())) {
+                    seen.add(name.toLowerCase())
+                    wrestlerLinks.push(name)
+                }
+            }
+        })
+        if (wrestlerLinks.length < 2) return
+
+        const lowerText = text.toLowerCase()
+        const defeatIdx = lowerText.includes(' defeated ') ? lowerText.indexOf(' defeated ')
+            : lowerText.includes(' def. ') ? lowerText.indexOf(' def. ')
+            : lowerText.includes(' defeats ') ? lowerText.indexOf(' defeats ')
+            : -1
+
+        const isFFA = /triple threat|three.?way|four.?way|five.?way|chamber|rumble|battle royal|scramble/i.test(text)
+
+        const wrestlers: string[] = []
+        const teams: number[] = []
+        const winners: boolean[] = []
+
+        wrestlerLinks.forEach(name => {
+            const ni = lowerText.indexOf(name.toLowerCase())
+            let team = 1
+            let isWinner = false
+            if (isFFA) {
+                team = wrestlers.length + 1
+                isWinner = defeatIdx !== -1 && ni !== -1 && ni < defeatIdx
+            } else {
+                if (defeatIdx !== -1 && ni !== -1 && ni > defeatIdx) {
+                    team = 2
+                    isWinner = false
+                } else {
+                    team = 1
+                    isWinner = defeatIdx !== -1
+                }
+            }
+            wrestlers.push(name)
+            teams.push(team)
+            winners.push(isWinner)
+        })
+
+        // Match type: look for a short td that isn't a number and doesn't contain wrestler names
+        let matchType = 'Singles Match'
+        $tr.find('td').each((_, td) => {
+            const t = $(td).text().trim()
+            if (!t || /^\d+$/.test(t)) return
+            if (t.length < 80 && !wrestlerLinks.some(w => t.includes(w))) {
+                matchType = t
+                return false // break
+            }
+        })
+
+        const durationMatch = text.match(/\((\d{1,3}:\d{2})\)/)
+        const duration = durationMatch ? parseDuration(durationMatch[1]) : undefined
+
+        matches.push({
+            wrestlers, teams, winners,
+            type: matchType,
+            title: matchType,
+            duration,
+            result: text.replace(/\(\d{1,3}:\d{2}\)/g, '').replace(/\s+/g, ' ').trim(),
+        })
+    })
+    return matches
+}
+
+export function parseHtmlForSite(url: string, html: string): ParsedMatch[] {
+    if (url.includes('profightdb.com')) {
+        return parseProfightDbHtml(html)
+    }
+    // Default: cagematch
+    return [] // will be filled by parseCagematchHtml caller
+}
+
 function slugify(name: string) {
     return name
         .toLowerCase()

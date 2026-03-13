@@ -49,6 +49,12 @@ function mmssToSecs(val: any): number | null {
 
 type MessageState = { type: "success" | "error"; text: string } | null;
 
+/** Format a UTC Date as a datetime-local input value in the browser's local timezone */
+function toLocalDatetimeInput(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function EditEventClient({
   event,
   initialMatches,
@@ -73,6 +79,9 @@ export default function EditEventClient({
     posterUrl: event.posterUrl || "",
     description: event.description || "",
     type: event.type || "ppv",
+    // Format as local datetime-local string (YYYY-MM-DDTHH:mm) in the browser's timezone
+    startTime: event.startTime ? toLocalDatetimeInput(new Date(event.startTime)) : "",
+    endTime: event.endTime ? toLocalDatetimeInput(new Date(event.endTime)) : "",
   });
   const [savingDetails, setSavingDetails] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -200,11 +209,21 @@ export default function EditEventClient({
   const handleSaveDetails = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingDetails(true);
+    // Convert datetime-local strings to full ISO (with timezone) before sending
+    const toISO = (val: string) => {
+      if (!val) return "";
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? "" : d.toISOString();
+    };
     try {
       const res = await fetch(`/api/admin/events/${event.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(details),
+        body: JSON.stringify({
+          ...details,
+          startTime: toISO(details.startTime),
+          endTime: toISO(details.endTime),
+        }),
       });
       if (res.ok) {
         showMessage("success", "Event details saved.");
@@ -487,6 +506,36 @@ export default function EditEventClient({
                   <option value="ppv">PPV / PLE</option>
                   <option value="tv">TV Show</option>
                 </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-primary">
+                    Start Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={details.startTime}
+                    onChange={(e) =>
+                      setDetails((d) => ({ ...d, startTime: e.target.value }))
+                    }
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm"
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1 italic">When Countdown ends.</p>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-primary">
+                    End Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={details.endTime}
+                    onChange={(e) =>
+                      setDetails((d) => ({ ...d, endTime: e.target.value }))
+                    }
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm"
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1 italic">When Chat archives.</p>
+                </div>
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">

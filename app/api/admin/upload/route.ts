@@ -26,7 +26,9 @@ export async function POST(req: Request) {
     for (const file of files) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const uniqueName = `${uuidv4()}-${file.name.replace(/\s+/g, "-")}`;
+      // Sanitize: strip path separators/dangerous chars before writing to disk
+      const safeName = require("path").basename(file.name).replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_").replace(/\s+/g, "-");
+      const uniqueName = `${uuidv4()}-${safeName}`;
       const path = join(uploadDir, uniqueName);
       await writeFile(path, buffer);
       const url = `/uploads/${uniqueName}`;

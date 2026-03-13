@@ -4,6 +4,9 @@
 Full-stack Next.js 15 / React 19 app — community platform for professional wrestling events.
 Stack: Next.js App Router, TypeScript, Tailwind CSS, Prisma + PostgreSQL (Docker), JWT auth via HTTP-only cookies, TMDB API.
 
+> [!CAUTION]
+> **DATABASE SAFETY RULE**: Never run `prisma db push --force-reset` or any destructive database command on this machine. `.env.local` often points to the LIVE production database via Prisma Accelerate. Always verify connection strings before running migrations.
+
 ## Key Paths
 - Admin pages: `/app/admin/` (layout, page, events/, wrestlers/, settings/)
 - Admin API routes: `/app/api/admin/`

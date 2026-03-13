@@ -1,7 +1,13 @@
 import { prisma } from "../../../../../../lib/prisma";
+import { getUserFromServerCookie } from "../../../../../../lib/server-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
+  const user = await getUserFromServerCookie();
+  if (!user?.isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const form = await req.formData();
     const title = form.get("title") as string;

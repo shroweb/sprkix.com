@@ -7,21 +7,18 @@ import {
   BookMarked,
   Trophy,
   Calendar,
-  BarChart2,
   Pencil,
   ChevronLeft,
-  Flame,
   Award,
   Users,
   Activity,
-  Zap,
-  Share2,
-  ArrowRight,
   Heart,
+  CheckCircle,
 } from "lucide-react";
 import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
 import RankBadge from "@components/RankBadge";
+import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +35,11 @@ export default async function ProfilePage() {
         </Link>
       </div>
     );
+
+  const currentUser = await (prisma.user as any).findFirst({
+    where: { id: user.id },
+    include: { profileThemeEvent: true }
+  });
 
   const [
     reviews,
@@ -89,7 +91,59 @@ export default async function ProfilePage() {
     }),
   ])) as any[];
 
+  const themePoster = currentUser?.profileThemeEvent?.posterUrl;
+
   const matchRatingsCount = matchRatings.length;
+  const curr = currentUser as any;
+
+  // Cards completed — events where user has rated every match
+  const userMatchRatingsForCards = await prisma.matchRating.findMany({
+    where: { userId: user.id },
+    include: { match: { select: { eventId: true } } },
+  });
+  const cardEventCounts: Record<string, number> = {};
+  userMatchRatingsForCards.forEach((r: any) => {
+    cardEventCounts[r.match.eventId] = (cardEventCounts[r.match.eventId] || 0) + 1;
+  });
+  const eventsForCards = await prisma.event.findMany({
+    where: { id: { in: Object.keys(cardEventCounts) } },
+    include: { _count: { select: { matches: true } } },
+  });
+  const cardsCompleted = eventsForCards.filter(
+    (e: any) => e._count.matches > 0 && cardEventCounts[e.id] >= e._count.matches,
+  ).length;
+
+  // Prediction accuracy stats — computed live
+  const allUserPredictions = await prisma.prediction.findMany({
+    where: {
+      userId: user.id,
+      predictedWinnerId: { not: null },
+      match: { participants: { some: { isWinner: true } } },
+    },
+    select: {
+      predictedWinnerId: true,
+      isCorrect: true,
+      match: {
+        select: {
+          participants: {
+            where: { isWinner: true },
+            select: { wrestlerId: true },
+          },
+        },
+      },
+    },
+  });
+  let predictionScore = 0;
+  const predictionCount = allUserPredictions.length;
+  for (const p of allUserPredictions) {
+    const correct =
+      p.isCorrect !== null
+        ? p.isCorrect
+        : p.match.participants.some((mp: any) => mp.wrestlerId === p.predictedWinnerId);
+    if (correct) predictionScore++;
+  }
+  const predictionAccuracy =
+    predictionCount > 0 ? Math.round((predictionScore / predictionCount) * 100) : null;
 
   const avgRating = reviews.length
     ? (reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length).toFixed(
@@ -114,39 +168,8 @@ export default async function ProfilePage() {
     year: "numeric",
   });
 
-  // Streak Calculation (Daily Activity)
-  const activityDates = [...reviews, ...matchRatings]
-    .map(a => new Date((a as any).createdAt).toDateString());
-  const uniqueDates = Array.from(new Set(activityDates))
-    .map(d => new Date(d))
-    .sort((a, b) => b.getTime() - a.getTime());
-
-  let streak = 0;
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  const lastActivity = uniqueDates[0];
-  if (lastActivity) {
-    const lastActivityDate = new Date(lastActivity);
-    lastActivityDate.setHours(0,0,0,0);
-    const diffDays = Math.floor((today.getTime() - lastActivityDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays <= 1) { // active today or yesterday
-      streak = 1;
-      for (let i = 0; i < uniqueDates.length - 1; i++) {
-        const d1 = new Date(uniqueDates[i]);
-        const d2 = new Date(uniqueDates[i+1]);
-        d1.setHours(0,0,0,0);
-        d2.setHours(0,0,0,0);
-        const diff = Math.floor((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
-        if (diff === 1) streak++;
-        else break;
-      }
-    }
-  }
-
   // Serialize reviews for client component (dates → strings)
-  const serializedReviews = reviews.map((r: any) => ({
+  const serializedReviews = (reviews as any[]).map((r) => ({
     ...r,
     createdAt: r.createdAt.toISOString(),
     Reply: r.Reply.map((reply: any) => ({
@@ -156,145 +179,186 @@ export default async function ProfilePage() {
   }));
 
   return (
-    <div className="space-y-16 pb-20 max-w-6xl mx-auto">
-      {/* Back Link */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group mb-6"
-      >
-        <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        Back to Home
-      </Link>
+    <div className="pb-20 relative px-6">
+      <ProfileThemeWrapper posterUrl={themePoster} />
 
-      {/* Profile Header */}
-      <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        <div className="relative bg-card/40 border border-white/5 rounded-[3rem] p-10 flex flex-col md:flex-row items-center md:items-start gap-10">
-          {/* Avatar Area */}
-          <div className="relative">
-            <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-5xl font-black text-black shrink-0 shadow-2xl shadow-primary/30 relative z-10">
-              {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+      {/* Hero Section / Cover Image */}
+      <div className="relative h-[500px] w-full mt-8 overflow-hidden rounded-[4rem] border border-white/5 shadow-2xl">
+         {/* Cover Photo */}
+         {themePoster && (
+           <div className="absolute inset-0 -z-10">
+             <Image 
+               src={themePoster} 
+               fill 
+               className="object-cover saturate-[0.8] brightness-[0.5] scale-110 blur-[2px]" 
+               alt="" 
+             />
+           </div>
+         )}
+         {/* Gradient Overlay for Title Readability */}
+         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
+         
+         <div className="max-w-6xl mx-auto px-6 h-full relative z-20 flex flex-col justify-end pb-16">
+            <Link
+              href="/"
+              className="absolute top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Back to Home
+            </Link>
+
+            <div className="flex flex-col md:flex-row items-end gap-10">
+               {/* Avatar Area */}
+               <div className="relative group/avatar">
+                 <div 
+                   className="w-48 h-48 rounded-full bg-primary flex items-center justify-center text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-8 border-background overflow-hidden"
+                   style={{ 
+                     backgroundColor: 'var(--profile-theme-color, var(--primary))',
+                     boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
+                   }}
+                 >
+                   {user.avatarUrl ? (
+                     <Image src={user.avatarUrl} fill className="object-cover" alt={user.name || "Avatar"} />
+                   ) : (
+                     user.name ? user.name.charAt(0).toUpperCase() : "U"
+                   )}
+                 </div>
+                 <div className="absolute -bottom-2 -right-2 z-20 scale-150">
+                    <RankBadge totalActivity={reviews.length + matchRatings.length} />
+                 </div>
+               </div>
+
+               {/* User Info */}
+               <div className="flex-1 space-y-6 pb-6">
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <h1 className="text-7xl font-black italic uppercase tracking-tighter flex items-center gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                      {user.name}
+                      {(currentUser as any)?.isVerified && (
+                        <CheckCircle className="w-12 h-12 text-blue-400 fill-blue-400/10" />
+                      )}
+                    </h1>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-8">
+                    <p className="text-white/50 font-bold italic text-2xl tracking-tight">
+                      {(user as any).email}
+                    </p>
+                    <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
+                    <Link
+                      href="/profile/edit"
+                      className="inline-flex items-center gap-2 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white hover:text-primary transition-all backdrop-blur-xl"
+                    >
+                      <Pencil className="w-4 h-4" /> Edit Profile
+                    </Link>
+                  </div>
+               </div>
+
+               {/* Stats Summary Panel */}
+               <div className="hidden lg:flex gap-12 pb-6 border-l border-white/10 pl-12 h-fit mb-4">
+                 <div className="space-y-1">
+                    <span className="text-4xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
+                      {avgRating || "—"}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Mean Rating</span>
+                 </div>
+                 <div className="space-y-1">
+                    <span className="text-4xl font-black italic text-white block leading-none">
+                      {reviews.length}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Reviews</span>
+                 </div>
+                 <div className="space-y-1">
+                    <span className="text-4xl font-black italic text-sky-400 block leading-none">
+                      {cardsCompleted}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Cards Completed</span>
+                 </div>
+                 {predictionAccuracy !== null && (
+                   <div className="space-y-1">
+                     <span className="text-4xl font-black italic text-emerald-400 block leading-none">
+                       {predictionAccuracy}%
+                     </span>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Prediction Acc.</span>
+                   </div>
+                 )}
+               </div>
             </div>
-            <RankBadge totalActivity={reviews.length + matchRatings.length} />
+         </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="max-w-6xl mx-auto px-6 space-y-16">
+        
+        {/* Quick Info Bar */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 -mt-6 relative z-30">
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Calendar className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
+              <p className="text-sm font-black italic">{memberSince}</p>
+            </div>
           </div>
-
-          <div className="space-y-6 text-center md:text-left flex-1">
-            <div className="space-y-2">
-              <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <h1 className="text-5xl font-black italic uppercase tracking-tighter">
-                  {user.name}
-                </h1>
-                <Link
-                  href="/profile/edit"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-all w-fit mx-auto md:mx-0"
-                >
-                  <Pencil className="w-3 h-3" /> Edit Profile
-                </Link>
-              </div>
-              <p className="text-muted-foreground font-bold italic text-lg opacity-60">
-                {(user as any).email}
-              </p>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Trophy className="w-6 h-6 text-primary" />
             </div>
-
-            {/* Social & Key Stats */}
-            <div className="flex flex-wrap justify-center md:justify-start gap-8 border-t border-white/5 pt-6">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
+              <p className="text-sm font-black italic truncate">{favPromotion ?? "—"}</p>
+            </div>
+          </div>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6 group">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <Activity className="w-6 h-6 text-emerald-500" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
+              {predictionCount > 0 ? (
+                <p className="text-sm font-black italic">
+                  {predictionScore}/{predictionCount}
+                  <span className="text-emerald-400 ml-2">{predictionAccuracy}%</span>
+                </p>
+              ) : (
+                <p className="text-sm font-black italic text-muted-foreground/50">None yet</p>
+              )}
+            </div>
+          </div>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex flex-row items-center justify-around">
               <FollowListModal
                 userId={user.id}
                 type="followers"
                 count={followersCount}
                 label="Followers"
               />
+              <div className="w-[1px] h-8 bg-white/5" />
               <FollowListModal
                 userId={user.id}
                 type="following"
                 count={followingCount}
                 label="Following"
               />
-              <div className="h-10 w-px bg-white/5 hidden md:block" />
-              <div className="flex flex-col items-start min-w-[80px]">
-                <span className="text-2xl font-black italic tracking-tighter text-primary">
-                  {avgRating || "—"}
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Mean Rating
-                </span>
-              </div>
-              <div className="flex flex-col items-start min-w-[80px]">
-                <span className="text-2xl font-black italic tracking-tighter">
-                  {reviews.length}
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Matches Rated
-                </span>
-              </div>
-            </div>
           </div>
         </div>
-      </div>
-
-      {/* Legacy Snapshot */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 space-y-4 hover:border-primary/20 transition-all group">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Calendar className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-              Member Since
-            </p>
-            <p className="text-xl font-black italic">{memberSince}</p>
-          </div>
-        </div>
-        <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 space-y-4 hover:border-primary/20 transition-all group">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Trophy className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-              Fav Promotion
-            </p>
-            <p className="text-xl font-black italic truncate">{favPromotion ?? "—"}</p>
-          </div>
-        </div>
-        <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 space-y-4 hover:border-primary/20 transition-all group">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Flame className="w-5 h-5 text-primary fill-current" />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-              Daily Streak
-            </p>
-            <p className="text-xl font-black italic">{streak} Days</p>
-          </div>
-        </div>
-        <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 space-y-4 hover:border-primary/20 transition-all group">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Activity className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-              Matches Rated
-            </p>
-            <p className="text-xl font-black italic">{matchRatingsCount}</p>
-          </div>
-        </div>
-      </div>
 
       {/* Favorite Matches */}
       <section className="space-y-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500">
-            Favorite Matches
-          </h2>
-          <div className="flex-1 h-[1px] bg-border" />
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+        <div className="flex items-center gap-6 pt-12">
+          <div className="px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-red-500">
+              Favorite Matches
+            </h2>
+          </div>
+          <div className="flex-1 h-[1px] bg-gradient-to-r from-red-500/20 to-transparent" />
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
               {favMatches.length} Saved
             </span>
-            {favMatches.length > 6 && (
+            {favMatches.length > 12 && (
               <Link
                 href="/profile/favorites"
-                className="text-xs font-black uppercase text-red-500 hover:underline"
+                className="text-[10px] font-black uppercase text-red-500 hover:text-red-400 underline underline-offset-4 decoration-2"
               >
                 See All
               </Link>
@@ -303,8 +367,9 @@ export default async function ProfilePage() {
         </div>
 
         {favMatches.length > 0 ? (
+          <div className="max-h-[540px] overflow-y-auto rounded-[2rem] pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {favMatches.slice(0, 6).map((fav: any) => (
+            {favMatches.slice(0, 12).map((fav: any) => (
               <Link
                 key={fav.match.id}
                 href={`/events/${fav.match.event.slug}`}
@@ -340,6 +405,7 @@ export default async function ProfilePage() {
               </Link>
             ))}
           </div>
+          </div>
         ) : (
           <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
             <Heart className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
@@ -352,65 +418,42 @@ export default async function ProfilePage() {
 
       {/* Reviews */}
       <section className="space-y-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter">
-            Your Reviews
-          </h2>
-          <div className="flex-1 h-[1px] bg-border" />
-          <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-            {reviews.length} Written
-          </span>
+        <div className="flex items-center gap-6 pt-12">
+          <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+              Your Reviews
+            </h2>
+          </div>
+          <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              {reviews.length} Written
+            </span>
+          </div>
         </div>
-        <ProfileReviews reviews={serializedReviews as any} />
+        <div className="max-h-[600px] overflow-y-auto rounded-[2rem] pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+          <ProfileReviews reviews={serializedReviews as any} />
+        </div>
       </section>
 
       {/* Watch List */}
       <section className="space-y-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter">
-            Watch List
-          </h2>
-          <div className="flex-1 h-[1px] bg-border" />
-          <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-            {watchList.length} Saved
-          </span>
+        <div className="flex items-center gap-6 pt-12">
+          <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+              Watch List
+            </h2>
+          </div>
+          <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
+          <div className="flex items-center gap-3">
+             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+               {watchList.length} Events Saved
+             </span>
+          </div>
         </div>
 
-      {/* Grapped CTA Banner */}
-      <section className="relative overflow-hidden group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-purple-600/30 rounded-[3rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
-        <Link
-          href="/grapped"
-          className="relative block bg-slate-950/40 border border-white/5 rounded-[3rem] p-8 md:p-12 hover:border-primary/30 transition-all duration-500"
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="space-y-3 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-3">
-                <span className="px-3 py-1 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-full">
-                  New Feature
-                </span>
-                <span className="text-white/40 text-xs font-black uppercase tracking-[0.2em] italic">
-                  Available Now
-                </span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
-                VIEW YOUR<span className="text-primary truncate"> GRAPPED</span>
-              </h2>
-              <p className="text-muted-foreground font-medium italic text-lg max-w-lg">
-                See your stats, rating distribution, and generate your monthly showcase graphic.
-              </p>
-            </div>
-            <div className="shrink-0 flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                <BarChart2 className="w-8 h-8 text-primary" />
-              </div>
-              <div className="w-12 h-12 rounded-full border border-primary/20 flex items-center justify-center group-hover:translate-x-2 transition-transform duration-500">
-                <ArrowRight className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-          </div>
-        </Link>
-      </section>
         {watchList.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {watchList.map((item: any) => (
@@ -455,5 +498,6 @@ export default async function ProfilePage() {
         )}
       </section>
     </div>
+  </div>
   );
 }

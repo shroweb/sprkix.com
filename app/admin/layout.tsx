@@ -1,6 +1,7 @@
 import Sidebar from "./components/Sidebar";
 import { UserCircle } from "lucide-react";
 import { getUserFromServerCookie } from "../../lib/getUserFromServerCookie";
+import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
   children,
@@ -8,6 +9,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const user = await getUserFromServerCookie();
+  if (!user?.isAdmin) redirect("/");
 
   return (
     <div className="admin-mode flex min-h-screen bg-background text-foreground">

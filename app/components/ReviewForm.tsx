@@ -20,6 +20,7 @@ export default function ReviewForm({
   const [rating, setRating] = useState(initialReview?.rating || 0);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [showShareModal, setShowShareModal] = useState(false);
   const [lastReview, setLastReview] = useState<{ rating: number; comment: string | null } | null>(null);
   const router = useRouter();
@@ -35,30 +36,33 @@ export default function ReviewForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setSubmitError("");
 
-    const reviewData = {
-        rating: isUpcoming ? null : rating,
-        comment,
-    };
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: event.id,
+          rating: isUpcoming ? null : rating,
+          comment,
+        }),
+      });
 
-    await fetch("/api/reviews", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        eventId: event.id,
-        ...reviewData,
-        userId: user.id,
-        userName: user.name,
-      }),
-    });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSubmitError(data.error ?? "Failed to post review. Please try again.");
+        return;
+      }
 
-    setLastReview({ 
-        rating: rating, 
-        comment: comment || null 
-    });
-    setSubmitting(false);
-    setShowShareModal(true);
-    router.refresh();
+      setLastReview({ rating, comment: comment || null });
+      setShowShareModal(true);
+      router.refresh();
+    } catch {
+      setSubmitError("Network error. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -83,8 +87,6 @@ export default function ReviewForm({
                 <div className="flex gap-1.5" onMouseLeave={() => setHoveredRating(null)}>
                     {[1, 2, 3, 4, 5].map((s) => {
                       const displayRating = hoveredRating ?? rating;
-                      const isFull = displayRating >= s;
-                      const isHalf = displayRating >= s - 0.5 && displayRating < s;
                       return (
                         <div key={s} className="relative group/star active:scale-90 transition-transform">
                           <div 
@@ -92,26 +94,38 @@ export default function ReviewForm({
                             onMouseMove={(e) => {
                                 const rect = e.currentTarget.getBoundingClientRect();
                                 const x = e.clientX - rect.left;
-                                setHoveredRating(x < rect.width / 2 ? s - 0.5 : s);
+                                const percent = x / rect.width;
+                                let val = s;
+                                if (percent < 0.25) val = s - 0.75;
+                                else if (percent < 0.5) val = s - 0.5;
+                                else if (percent < 0.75) val = s - 0.25;
+                                setHoveredRating(val);
                             }}
                             onClick={(e) => {
                                 const rect = e.currentTarget.getBoundingClientRect();
                                 const x = e.clientX - rect.left;
-                                setRating(x < rect.width / 2 ? s - 0.5 : s);
+                                const percent = x / rect.width;
+                                let val = s;
+                                if (percent < 0.25) val = s - 0.75;
+                                else if (percent < 0.5) val = s - 0.5;
+                                else if (percent < 0.75) val = s - 0.25;
+                                setRating(val);
                             }}
                           >
-                            <div className="flex-1 cursor-pointer" />
                             <div className="flex-1 cursor-pointer" />
                           </div>
                           <div className="relative">
                             <Star className="w-8 h-8 text-muted-foreground/20" />
-                            {isFull ? (
-                              <Star className="absolute inset-0 w-8 h-8 text-primary fill-current transition-all duration-200" />
-                            ) : isHalf ? (
-                              <div className="absolute inset-0 w-[50%] overflow-hidden transition-all duration-200">
-                                <Star className="w-8 h-8 text-primary fill-current" />
-                              </div>
-                            ) : null}
+                            {(() => {
+                              const diff = displayRating - (s - 1);
+                              if (diff >= 1) return <Star className="absolute inset-0 w-8 h-8 text-primary fill-current transition-all duration-200" />;
+                              if (diff <= 0) return null;
+                              return (
+                                <div className="absolute inset-0 overflow-hidden transition-all duration-200" style={{ width: `${diff * 100}%` }}>
+                                  <Star className="w-8 h-8 text-primary fill-current" />
+                                </div>
+                              );
+                            })()}
                           </div>
                         </div>
                       );
@@ -120,6 +134,12 @@ export default function ReviewForm({
             </div>
           )}
         </div>
+
+        {submitError && (
+          <p className="text-xs font-bold text-destructive bg-destructive/10 px-4 py-3 rounded-xl">
+            {submitError}
+          </p>
+        )}
 
         <button
           type="submit"

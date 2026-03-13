@@ -36,9 +36,9 @@ export default function StarRating({
     setAvg(averageRating);
   }, [averageRating]);
 
-  const handleClick = async (star: number, isHalf: boolean) => {
+  const handleClick = async (val: number) => {
     if (!user || !user.id || !matchId) return;
-    const finalRating = isHalf ? star - 0.5 : star;
+    const finalRating = val;
 
     try {
       setRating(finalRating);
@@ -64,8 +64,6 @@ export default function StarRating({
         onMouseLeave={() => setHovered(null)}
       >
         {stars.map((s) => {
-          const isFull = (hovered ?? rating) >= s;
-          const isHalf = (hovered ?? rating) >= s - 0.5 && (hovered ?? rating) < s;
           
           return (
             <div 
@@ -78,28 +76,41 @@ export default function StarRating({
                     if (!user) return;
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
-                    setHovered(x < rect.width / 2 ? s - 0.5 : s);
+                    const percent = x / rect.width;
+                    let val = s;
+                    if (percent < 0.25) val = s - 0.75;
+                    else if (percent < 0.5) val = s - 0.5;
+                    else if (percent < 0.75) val = s - 0.25;
+                    setHovered(val);
                 }}
                 onClick={(e) => {
                     if (!user) return;
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
-                    handleClick(s, x < rect.width / 2);
+                    const percent = x / rect.width;
+                    let val = s;
+                    if (percent < 0.25) val = s - 0.75;
+                    else if (percent < 0.5) val = s - 0.5;
+                    else if (percent < 0.75) val = s - 0.25;
+                    handleClick(val);
                 }}
               >
-                <div className="flex-1" />
                 <div className="flex-1" />
               </div>
 
               <div className="relative">
                 <Star className="w-4 h-4 text-slate-300" />
-                {isFull ? (
-                  <Star className="absolute inset-0 w-4 h-4 text-primary fill-current transition-all duration-150" />
-                ) : isHalf ? (
-                  <div className="absolute inset-0 w-[50%] overflow-hidden transition-all duration-150">
-                    <Star className="w-4 h-4 text-primary fill-current" />
-                  </div>
-                ) : null}
+                {(() => {
+                  const val = hovered ?? rating;
+                  const diff = val - (s - 1);
+                  if (diff >= 1) return <Star className="absolute inset-0 w-4 h-4 text-primary fill-current" />;
+                  if (diff <= 0) return null;
+                  return (
+                    <div className="absolute inset-0 overflow-hidden" style={{ width: `${diff * 100}%` }}>
+                      <Star className="w-4 h-4 text-primary fill-current" />
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           );

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Award } from "lucide-react";
 
 const RANKS = [
-  { name: "Enhancement Talent", min: 0,   max: 4,   color: "text-zinc-500",    desc: "You just showed up. Welcome to the card." },
+  { name: "Local Talent",       min: 0,   max: 4,   color: "text-zinc-500",    desc: "You just showed up. Welcome to the card." },
   { name: "Jobber",             min: 5,   max: 14,  color: "text-zinc-400",    desc: "Taking the losses so the business can run." },
   { name: "Curtain Jerker",     min: 15,  max: 29,  color: "text-slate-400",   desc: "Opening the show. The crowd is still finding seats." },
   { name: "Mid-Carder",         min: 30,  max: 49,  color: "text-blue-400",    desc: "A solid presence. The backbone of any roster." },
@@ -33,10 +33,10 @@ export default function RankBadge({ totalActivity }: { totalActivity: number }) 
       {/* Badge pill */}
       <button
         onClick={() => setOpen(v => !v)}
-        className={`flex items-center gap-1.5 bg-background border-4 border-card rounded-full px-2.5 py-1.5 shadow-xl hover:scale-105 transition-transform ${rank.color}`}
+        className={`flex items-center gap-2 bg-background/80 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 shadow-2xl hover:scale-105 transition-transform ${rank.color} w-max max-w-none`}
       >
         <Award className="w-3.5 h-3.5" />
-        <span className="text-[9px] font-black uppercase tracking-widest">{rank.name}</span>
+        <span className="text-[7px] font-black uppercase tracking-[0.2em] whitespace-nowrap">{rank.name}</span>
       </button>
 
       {/* Tooltip popup */}

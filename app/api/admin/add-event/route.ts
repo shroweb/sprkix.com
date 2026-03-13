@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { importMatchesFromCagematch } from "../../../../lib/cagematch";
+import { getUserFromServerCookie } from "../../../../lib/server-auth";
 
 export async function POST(req: Request) {
+  const user = await getUserFromServerCookie();
+  if (!user?.isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
 
@@ -16,6 +22,10 @@ export async function POST(req: Request) {
         posterUrl: body.posterUrl || null,
         description: body.description || null,
         profightdbUrl: body.profightdbUrl || null,
+        type: body.type || "tv",
+        tmdbId: body.tmdbId ? parseInt(body.tmdbId) : null,
+        startTime: body.startTime ? new Date(body.startTime) : null,
+        endTime: body.endTime ? new Date(body.endTime) : null,
       },
     });
 

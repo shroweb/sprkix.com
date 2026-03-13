@@ -27,15 +27,17 @@ export default async function EventsPage({
     (r) => r.eventId,
   );
 
-  const events = raw.map((e) => ({
+  const events = raw.map((e: any) => ({
     id: e.id,
     title: e.title,
     slug: e.slug,
     date: e.date,
     promotion: e.promotion,
     posterUrl: e.posterUrl,
+    startTime: e.startTime,
+    endTime: e.endTime,
     avgRating: e.reviews.length
-      ? e.reviews.reduce((s, r) => s + r.rating, 0) / e.reviews.length
+      ? e.reviews.reduce((s: number, r: any) => s + r.rating, 0) / e.reviews.length
       : 0,
     reviewCount: e.reviews.length,
   }));

@@ -13,16 +13,23 @@ model User {
   name      String?
   email     String   @unique
   isAdmin   Boolean  @default(false)
+  isVerified Boolean @default(false)
   password  String
   slug      String   @unique
   avatarUrl String?
   favoritePromotion String?
+  predictionScore Int @default(0)  // count of correct predictions (resolved)
+  predictionCount Int @default(0)  // count of all resolved predictions
+  profileThemeEventId String?
+  profileThemeEvent   Event?   @relation("ProfileTheme", fields: [profileThemeEventId], references: [id])
   createdAt DateTime @default(now())
 
   // Relations
   reviews       Review[]
   WatchListItem WatchListItem[]
   Reply         Reply[]
+  predictions   Prediction[]
+  liveComments  LiveComment[]
 
   followers     Follow[]       @relation("followers")
   following     Follow[]       @relation("following")
@@ -79,15 +86,21 @@ model Event {
   type          String?
   tmdbId        Int?
   profightdbUrl String?
+  startTime     DateTime?
+  endTime       DateTime?
+  currentMatchOrder Int? @default(1)
   createdAt     DateTime        @default(now())
   matches       Match[]
   reviews       Review[]
   WatchListItem WatchListItem[]
   listItems     ListItem[]
+  themedUsers   User[] @relation("ProfileTheme")
+  liveComments  LiveComment[]
 }
 
 model Match {
   id           String             @id @default(cuid())
+  order        Int?               @default(1)
   title        String
   result       String?
   rating       Float?
@@ -98,6 +111,7 @@ model Match {
   participants MatchParticipant[]
   ratings      MatchRating[]
   favoritedBy  FavoriteMatch[]
+  predictions  Prediction[]
   createdAt    DateTime           @default(now())
 }
 
@@ -136,6 +150,7 @@ model WatchListItem {
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String
   watched   Boolean  @default(false)
+  attended  Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@unique([userId, eventId])
@@ -235,4 +250,31 @@ model ListItem {
   createdAt DateTime @default(now())
 
   @@unique([listId, eventId])
+}
+
+model Prediction {
+  id                String   @id @default(cuid())
+  userId            String
+  matchId           String
+  predictedWinnerId String?  // ID of the wrestler predicted to win
+  isCorrect         Boolean? // null = unresolved, true/false = result set
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  match             Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, matchId])
+}
+
+model LiveComment {
+  id        String   @id @default(cuid())
+  text      String
+  userId    String
+  eventId   String
+  matchId   String?  // Optional: link comment to a specific match happening now
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }

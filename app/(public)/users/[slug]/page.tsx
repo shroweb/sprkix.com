@@ -3,8 +3,11 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Users, UserCheck, ChevronLeft, Heart } from "lucide-react";
+import { Star, Users, UserCheck, ChevronLeft, Heart, CheckCircle, Trophy, Activity, Calendar, Award, Target } from "lucide-react";
 import FollowButton from "@components/FollowButton";
+import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
+import RankBadge from "@components/RankBadge";
+import FollowListModal from "@components/FollowListModal";
 
 export default async function UserProfilePage({
   params,
@@ -37,7 +40,27 @@ export default async function UserProfilePage({
               }
             }
           }
-        }
+        },
+        predictions: {
+          // Fetch predictions on matches that have a declared winner (isCorrect may be null if
+          // results were saved without going through the resolution endpoint)
+          where: {
+            predictedWinnerId: { not: null },
+            match: { participants: { some: { isWinner: true } } },
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 10,
+          include: {
+            match: {
+              include: {
+                event: { select: { slug: true, title: true, posterUrl: true, promotion: true, date: true } },
+                participants: { include: { wrestler: true } },
+              },
+            },
+          },
+        },
+        profileThemeEvent: true,
+        MatchRating: true,
       },
     }),
     getUserFromServerCookie(),
@@ -68,255 +91,482 @@ export default async function UserProfilePage({
     : null;
 
   const isOwnProfile = currentUser?.id === profileUser.id;
+  
+  // Calculate Completionist Stat
+  const ratingsByEvent: Record<string, number> = {};
+  profileUser.MatchRating.forEach((r: any) => {
+    // We don't have eventId directly in MatchRating, let's include it in the query
+  });
+  
+  // Revised query approach for performance
+  const userMatchRatings = await prisma.matchRating.findMany({
+    where: { userId: profileUser.id },
+    include: { match: { select: { eventId: true } } }
+  });
+
+  const eventRatingCounts: Record<string, number> = {};
+  userMatchRatings.forEach(r => {
+    eventRatingCounts[r.match.eventId] = (eventRatingCounts[r.match.eventId] || 0) + 1;
+  });
+
+  const eventsRated = await prisma.event.findMany({
+    where: { id: { in: Object.keys(eventRatingCounts) } },
+    include: { _count: { select: { matches: true } } }
+  });
+
+  const cardsCompleted = eventsRated.filter(e => 
+    e._count.matches > 0 && eventRatingCounts[e.id] >= e._count.matches
+  ).length;
+
+  // Prediction accuracy stats — computed live from raw data so they're always accurate
+  // even when the denormalized predictionScore / predictionCount fields are stale.
+  const allUserPredictions = await prisma.prediction.findMany({
+    where: {
+      userId: profileUser.id,
+      predictedWinnerId: { not: null },
+      match: { participants: { some: { isWinner: true } } },
+    },
+    select: {
+      predictedWinnerId: true,
+      isCorrect: true,
+      match: {
+        select: {
+          participants: {
+            where: { isWinner: true },
+            select: { wrestlerId: true },
+          },
+        },
+      },
+    },
+  });
+
+  let predictionScore = 0;
+  const predictionCount = allUserPredictions.length;
+  for (const p of allUserPredictions) {
+    const isCorrect =
+      p.isCorrect !== null
+        ? p.isCorrect
+        : p.match.participants.some((mp) => mp.wrestlerId === p.predictedWinnerId);
+    if (isCorrect) predictionScore++;
+  }
+  const predictionAccuracy =
+    predictionCount > 0 ? Math.round((predictionScore / predictionCount) * 100) : null;
+
+  // Calculate member since
+  const memberSince = new Date(profileUser.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
-    <div className="space-y-16 pb-20 max-w-4xl mx-auto">
-      {/* Back Link */}
-      <Link
-        href="/events"
-        className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
-      >
-        <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        Back to Events
-      </Link>
+    <div className="pb-20 relative px-6">
+      <ProfileThemeWrapper posterUrl={profileUser.profileThemeEvent?.posterUrl ?? undefined} />
 
-      {/* Profile Header */}
-      <div className="bg-card/40 border border-white/5 rounded-[3rem] p-10 flex flex-col md:flex-row items-center md:items-start gap-8">
-        {/* Avatar */}
-        <div className="w-24 h-24 rounded-full shrink-0 shadow-2xl shadow-primary/30 overflow-hidden relative">
-          {profileUser.avatarUrl ? (
-            <Image
-              src={profileUser.avatarUrl}
-              alt={profileUser.name ?? "User"}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-primary flex items-center justify-center text-4xl font-black text-black">
-              {profileUser.name
-                ? profileUser.name.charAt(0).toUpperCase()
-                : "U"}
+      {/* Hero Section / Cover Image */}
+      <div className="relative h-[500px] w-full mt-8 overflow-hidden rounded-[4rem] border border-white/5 shadow-2xl">
+         {/* Cover Photo */}
+         {profileUser.profileThemeEvent?.posterUrl && (
+           <div className="absolute inset-0 -z-10">
+             <Image 
+               src={profileUser.profileThemeEvent.posterUrl} 
+               fill 
+               className="object-cover saturate-[0.8] brightness-[0.5] scale-110 blur-[2px]" 
+               alt="" 
+             />
+           </div>
+         )}
+         {/* Gradient Overlay */}
+         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
+         
+         <div className="max-w-6xl mx-auto px-6 h-full relative z-20 flex flex-col justify-end pb-16">
+            <Link
+              href="/events"
+              className="absolute top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Back to Events
+            </Link>
+
+            <div className="flex flex-col md:flex-row items-end gap-10">
+               {/* Avatar Area */}
+               <div className="relative group/avatar">
+                 <div 
+                   className="w-48 h-48 rounded-full bg-primary flex items-center justify-center text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-8 border-background overflow-hidden"
+                   style={{ 
+                     backgroundColor: 'var(--profile-theme-color, var(--primary))',
+                     boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
+                   }}
+                 >
+                   {profileUser.avatarUrl ? (
+                     <Image src={profileUser.avatarUrl} fill className="object-cover" alt={profileUser.name || "Avatar"} />
+                   ) : (
+                     profileUser.name ? profileUser.name.charAt(0).toUpperCase() : "U"
+                   )}
+                 </div>
+                 <div className="absolute -bottom-2 -right-2 z-20 scale-150">
+                    <RankBadge totalActivity={profileUser.reviews.length + (profileUser.MatchRating?.length || 0)} />
+                 </div>
+               </div>
+
+               {/* User Info */}
+               <div className="flex-1 space-y-6 pb-6">
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <h1 className="text-7xl font-black italic uppercase tracking-tighter flex items-center gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                      {profileUser.name}
+                      {(profileUser as any).isVerified && (
+                        <CheckCircle className="w-12 h-12 text-blue-400 fill-blue-400/10" />
+                      )}
+                    </h1>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-8">
+                    <p className="text-white/50 font-bold italic text-2xl tracking-tight">
+                       Community Member
+                    </p>
+                    <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
+                    
+                    {isOwnProfile ? (
+                      <Link
+                        href="/profile"
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all backdrop-blur-xl"
+                      >
+                         Edit My Profile
+                      </Link>
+                    ) : currentUser ? (
+                      <div className="scale-110 origin-left">
+                        <FollowButton
+                          targetUserId={profileUser.id}
+                          initialIsFollowing={!!isFollowing}
+                        />
+                      </div>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-black rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white transition-all"
+                      >
+                        Login to Follow
+                      </Link>
+                    )}
+                  </div>
+               </div>
+
+               {/* Stats Summary Panel */}
+               <div className="hidden lg:flex gap-12 pb-6 border-l border-white/10 pl-12 h-fit mb-4">
+                 <div className="space-y-1">
+                    <span className="text-4xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
+                      {avgRating || "—"}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Mean Rating</span>
+                 </div>
+                 <div className="space-y-1">
+                    <span className="text-4xl font-black italic text-white block leading-none">
+                      {profileUser.reviews.length}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Reviews</span>
+                 </div>
+                  <div className="space-y-1">
+                     <span className="text-4xl font-black italic text-sky-400 block leading-none">
+                       {cardsCompleted}
+                     </span>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Cards Completed</span>
+                  </div>
+                  {predictionAccuracy !== null && (
+                    <div className="space-y-1">
+                      <span className="text-4xl font-black italic text-emerald-400 block leading-none">
+                        {predictionAccuracy}%
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Prediction Acc.</span>
+                    </div>
+                  )}
+                </div>
             </div>
-          )}
+         </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="max-w-6xl mx-auto px-6 space-y-20 mt-12">
+        
+        {/* Quick Info Bar */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 -mt-20 relative z-30">
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Calendar className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
+              <p className="text-sm font-black italic">{memberSince}</p>
+            </div>
+          </div>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Trophy className="w-6 h-6 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
+              <p className="text-sm font-black italic truncate">{(profileUser as any).favoritePromotion ?? "—"}</p>
+            </div>
+          </div>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6 group">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <Target className="w-6 h-6 text-emerald-500" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
+              {predictionCount > 0 ? (
+                <p className="text-sm font-black italic">
+                  {predictionScore}/{predictionCount}
+                  <span className="text-emerald-400 ml-2">{predictionAccuracy}%</span>
+                </p>
+              ) : (
+                <p className="text-sm font-black italic text-muted-foreground/50">None yet</p>
+              )}
+            </div>
+          </div>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex flex-row items-center justify-around">
+              <FollowListModal
+                userId={profileUser.id}
+                type="followers"
+                count={followersCount}
+                label="Followers"
+              />
+              <div className="w-[1px] h-8 bg-white/5" />
+              <FollowListModal
+                userId={profileUser.id}
+                type="following"
+                count={followingCount}
+                label="Following"
+              />
+          </div>
         </div>
 
-        <div className="space-y-4 text-center md:text-left flex-1">
-          <div>
-            <h1 className="text-4xl font-black italic uppercase tracking-tighter">
-              {profileUser.name}
-            </h1>
-            <p className="text-muted-foreground font-medium italic mt-1">
-              Community Member
-            </p>
-          </div>
-
-          {/* Stats Row */}
-          <div className="flex flex-wrap justify-center md:justify-start gap-6">
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-primary" />
-              <span className="text-sm font-black">{followersCount}</span>
-              <span className="text-sm text-muted-foreground font-medium">
-                Followers
-              </span>
+        {/* Favorite Matches Section */}
+        <section className="space-y-8">
+          <div className="flex items-center gap-6">
+            <div className="px-5 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-red-500">
+                Favorite Matches
+              </h2>
             </div>
-            <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-primary" />
-              <span className="text-sm font-black">{followingCount}</span>
-              <span className="text-sm text-muted-foreground font-medium">
-                Following
+            <div className="flex-1 h-[1px] bg-gradient-to-r from-red-500/20 to-transparent" />
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                {profileUser.favoriteMatches?.length || 0} Saved
               </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-primary fill-current" />
-              <span className="text-sm font-black">
-                {profileUser.reviews.length}
-              </span>
-              <span className="text-sm text-muted-foreground font-medium">
-                Reviews
-              </span>
-              {avgRating && (
-                <span className="text-xs font-black text-primary">
-                  · avg {avgRating}
-                </span>
+              {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 6 && (
+                <Link
+                  href={`/users/${profileUser.slug}/favorites`}
+                  className="text-[10px] font-black uppercase text-red-500 hover:text-red-400 underline underline-offset-4 decoration-2"
+                >
+                  See All
+                </Link>
               )}
             </div>
           </div>
 
-          {/* Action */}
-          {isOwnProfile ? (
-            <Link
-              href="/profile"
-              className="btn-primary inline-block text-sm px-5 py-2.5"
-            >
-              Edit My Profile
-            </Link>
-          ) : currentUser ? (
-            <FollowButton
-              targetUserId={profileUser.id}
-              initialIsFollowing={!!isFollowing}
-            />
-          ) : (
-            <Link
-              href="/login"
-              className="btn-primary inline-block text-sm px-5 py-2.5"
-            >
-              Login to Follow
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {/* Favorite Matches Section */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500">
-            Favorite Matches
-          </h2>
-          <div className="flex-1 h-[1px] bg-border" />
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-              {profileUser.favoriteMatches?.length || 0} Saved
-            </span>
-            {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 6 && (
-              <Link
-                href={`/users/${profileUser.slug}/favorites`}
-                className="text-xs font-black uppercase text-red-500 hover:underline"
-              >
-                See All
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 0 ? (
-          <div className="grid sm:grid-cols-2 gap-4">
-            {profileUser.favoriteMatches.slice(0, 6).map((fav: any) => (
-              <Link
-                key={fav.match.id}
-                href={`/events/${fav.match.event.slug}`}
-                className="bg-card/40 border border-white/5 rounded-2xl p-5 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 p-3">
-                  <Heart className="w-4 h-4 text-red-500 fill-current" />
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-muted-foreground bg-secondary px-2 py-0.5 rounded">
-                      {fav.match.event.promotion}
-                    </span>
-                    <span className="text-[10px] font-black text-muted-foreground italic">
-                      {new Date(fav.match.event.date).getFullYear()}
-                    </span>
+          {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {profileUser.favoriteMatches.slice(0, 6).map((fav: any) => (
+                <Link
+                  key={fav.match.id}
+                  href={`/events/${fav.match.event.slug}`}
+                  className="bg-card/40 border border-white/5 rounded-[2rem] p-6 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden flex flex-col justify-between"
+                >
+                  <div className="absolute top-0 right-0 p-4">
+                    <Heart className="w-5 h-5 text-red-500 fill-current opacity-40 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <h3 className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
-                    {fav.match.title}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-1.5 pt-2">
-                    {fav.match.participants.slice(0, 3).map((p: any, i: number) => (
-                      <span key={i} className="flex items-center gap-1.5">
-                        {i > 0 && <span className="text-[10px] text-muted-foreground">&amp;</span>}
-                        <span className="text-xs font-bold">{p.wrestler.name}</span>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                       <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">
+                        {fav.match.event.promotion}
                       </span>
-                    ))}
-                    {fav.match.participants.length > 3 && (
-                      <span className="text-xs text-muted-foreground">...</span>
+                      <span className="w-1 h-1 rounded-full bg-white/10" />
+                      <span className="text-[10px] font-black text-white/40 italic">
+                        {new Date(fav.match.event.date).getFullYear()}
+                      </span>
+                    </div>
+                    <h3 className="font-black text-lg uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
+                      {fav.match.title}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-2 pt-2">
+                      {fav.match.participants.slice(0, 3).map((p: any, i: number) => (
+                        <span key={i} className="flex items-center gap-2">
+                          {i > 0 && <span className="text-[10px] text-white/20">&amp;</span>}
+                          <span className="text-xs font-bold text-white/60 group-hover:text-white transition-colors">{p.wrestler.name}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-card/20 border border-dashed border-white/5 rounded-[3rem] p-20 text-center">
+              <Heart className="w-12 h-12 text-white/5 mx-auto mb-4" />
+              <p className="text-white/40 font-bold italic text-lg uppercase tracking-tighter">
+                No favorite matches saved yet.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Predictions Section */}
+        {predictionCount > 0 && (
+          <section className="space-y-8">
+            <div className="flex items-center gap-6">
+              <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <h2 className="text-2xl font-black italic uppercase tracking-tighter text-emerald-400">
+                  Predictions
+                </h2>
+              </div>
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-emerald-500/20 to-transparent" />
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                  {predictionScore}/{predictionCount} correct · {predictionAccuracy}% accuracy
+                </span>
+              </div>
+            </div>
+
+            {(profileUser as any).predictions?.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3">
+                {(profileUser as any).predictions.map((pred: any) => {
+                  // Compute isCorrect on-the-fly if not stored
+                  const winnerIds = new Set(
+                    pred.match.participants
+                      .filter((p: any) => p.isWinner)
+                      .map((p: any) => p.wrestler.id),
+                  );
+                  const isCorrect =
+                    pred.isCorrect !== null
+                      ? pred.isCorrect
+                      : pred.predictedWinnerId
+                      ? winnerIds.has(pred.predictedWinnerId)
+                      : false;
+
+                  const names = pred.match.participants
+                    .map((p: any) => p.wrestler.name)
+                    .join(" vs ");
+                  const predictedWrestler = pred.match.participants.find(
+                    (p: any) => p.wrestler.id === pred.predictedWinnerId
+                  )?.wrestler;
+                  return (
+                    <Link
+                      key={pred.id}
+                      href={`/events/${pred.match.event.slug}`}
+                      className={`flex gap-5 items-center rounded-[2rem] p-5 border transition-all group ${
+                        isCorrect
+                          ? "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40"
+                          : "bg-red-500/5 border-red-500/15 hover:border-red-500/30"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+                        isCorrect ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
+                      }`}>
+                        {isCorrect ? (
+                          <CheckCircle className="w-5 h-5" />
+                        ) : (
+                          <span className="text-lg font-black">✗</span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-black uppercase tracking-widest text-white/30 mb-0.5">
+                          {pred.match.event.promotion} · {new Date(pred.match.event.date).getFullYear()}
+                        </p>
+                        <p className="text-sm font-black italic uppercase tracking-tight text-white/80 group-hover:text-white transition-colors truncate">
+                          {names}
+                        </p>
+                        {predictedWrestler && (
+                          <p className="text-[11px] font-bold text-muted-foreground mt-0.5">
+                            Picked: <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>{predictedWrestler.name}</span>
+                          </p>
+                        )}
+                      </div>
+                      <div className={`text-[10px] font-black uppercase tracking-widest shrink-0 ${
+                        isCorrect ? "text-emerald-400" : "text-red-400/70"
+                      }`}>
+                        {isCorrect ? "Correct ✓" : "Wrong"}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : null}
+          </section>
+        )}
+
+        {/* Reviews Section */}
+        <section className="space-y-8">
+           <div className="flex items-center gap-6">
+            <div className="px-5 py-2 bg-primary/10 border border-primary/20 rounded-xl">
+              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+                Reviews
+              </h2>
+            </div>
+            <div className="flex-1 h-[1px] bg-gradient-to-r from-primary/20 to-transparent" />
+            <div className="flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                 {profileUser.reviews.length} Written
+               </span>
+            </div>
+          </div>
+
+          {profileUser.reviews.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {profileUser.reviews.map((review) => (
+                <Link
+                  key={review.id}
+                  href={`/events/${review.event.slug}`}
+                  className="flex gap-6 items-center bg-card/40 border border-white/5 rounded-[2.5rem] p-6 hover:bg-card/60 hover:border-primary/20 transition-all group backdrop-blur-sm"
+                >
+                  <div className="relative w-16 aspect-[2/3] rounded-2xl overflow-hidden shrink-0 border border-white/5 shadow-xl">
+                    <Image
+                      src={review.event.posterUrl || "/placeholder.png"}
+                      alt={review.event.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="font-black text-xl uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-1">
+                          {review.event.title.replace(/–\s\d{4}.*$/, "")}
+                        </h3>
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.1em] mt-1">
+                          {new Date(review.createdAt).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                      <div className="flex text-primary gap-1 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full h-fit">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-3 h-3 ${i < review.rating ? "fill-current" : "text-white/10"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {review.comment && (
+                      <p className="text-lg text-white/60 font-medium italic line-clamp-2 leading-relaxed">
+                        &ldquo;{review.comment}&rdquo;
+                      </p>
                     )}
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
-            <Heart className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-bold italic">
-              No favorite matches saved yet.
-            </p>
-          </div>
-        )}
-      </section>
-
-      {/* Reviews Section */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter">
-            Reviews
-          </h2>
-          <div className="flex-1 h-[1px] bg-border" />
-          <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-            {profileUser.reviews.length} Written
-          </span>
-        </div>
-
-        {profileUser.reviews.length > 0 ? (
-          <div className="space-y-4">
-            {profileUser.reviews.map((review) => (
-              <Link
-                key={review.id}
-                href={`/events/${review.event.slug}`}
-                className="flex gap-5 items-center bg-card/40 border border-white/5 rounded-2xl p-5 hover:bg-card/60 hover:border-primary/20 transition-all group"
-              >
-                <div className="relative w-14 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
-                  <Image
-                    src={review.event.posterUrl || "/placeholder.png"}
-                    alt={review.event.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0 space-y-2">
-                  <div className="flex items-start justify-between gap-4">
-                    <h3 className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2">
-                      {review.event.title.replace(/–\s\d{4}.*$/, "")}
-                    </h3>
-                    <span className="text-[10px] font-black text-muted-foreground shrink-0">
-                      {new Date(review.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex text-primary gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3 h-3 ${i < review.rating ? "fill-current" : "text-muted-foreground/30"}`}
-                      />
-                    ))}
-                  </div>
-                  {review.comment && (
-                    <p className="text-sm text-foreground/60 font-medium italic line-clamp-2">
-                      &ldquo;{review.comment}&rdquo;
-                    </p>
-                  )}
-                </div>
-                <div className="text-muted-foreground/30 group-hover:text-primary/40 transition-colors shrink-0">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
-            <Star className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-bold italic">
-              No reviews posted yet.
-            </p>
-          </div>
-        )}
-      </section>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-card/20 border border-dashed border-white/5 rounded-[3rem] p-20 text-center">
+              <Star className="w-12 h-12 text-white/5 mx-auto mb-4" />
+              <p className="text-white/40 font-bold italic text-lg uppercase tracking-tighter">
+                No reviews posted yet.
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

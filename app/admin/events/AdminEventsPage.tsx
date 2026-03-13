@@ -23,6 +23,8 @@ export default function AdminEventsPage() {
     description: "",
     type: "tv",
     tmdbId: "",
+    startTime: "",
+    endTime: "",
   });
   const [message, setMessage] = useState("");
   const [events, setEvents] = useState<
@@ -136,10 +138,21 @@ export default function AdminEventsPage() {
       }
     }
 
+    // Convert datetime-local strings (no TZ info) to full ISO strings using
+    // the browser's local timezone so the server stores the correct UTC time.
+    const toISO = (val: string) => {
+      if (!val) return "";
+      // datetime-local is "YYYY-MM-DDTHH:mm" — create Date in local TZ
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? "" : d.toISOString();
+    };
+
     const body = {
       ...form,
       posterUrl: uploadedPosterUrl,
       profightdbUrl: importUrl,
+      startTime: toISO(form.startTime),
+      endTime: toISO(form.endTime),
       slug:
         form.slug ||
         form.title
@@ -166,6 +179,8 @@ export default function AdminEventsPage() {
         description: "",
         type: "tv",
         tmdbId: "",
+        startTime: "",
+        endTime: "",
       });
       setPosterFile(null);
       setIsAdding(false);
@@ -307,6 +322,32 @@ export default function AdminEventsPage() {
                       required
                     />
                   )}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block text-primary">
+                    Start Time
+                  </label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    type="datetime-local"
+                    value={form.startTime}
+                    onChange={(e) => update("startTime", e.target.value)}
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1">When the Countdown ends & Chat begins.</p>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block text-primary">
+                    End Time
+                  </label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    type="datetime-local"
+                    value={form.endTime}
+                    onChange={(e) => update("endTime", e.target.value)}
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1">When Chat archives & Reviews unlock.</p>
                 </div>
               </div>
             </div>

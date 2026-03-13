@@ -243,14 +243,16 @@ export default async function WrestlerPage({ params }: { params: any }) {
                   )
                 : null;
 
-              let resultText = mp.match.result || "No result recorded";
+              // Strip any HTML from the DB value before re-injecting to prevent XSS
+              const rawResult = (mp.match.result || "No result recorded").replace(/<[^>]*>/g, "");
+              let resultText = rawResult;
               mp.match.participants.forEach(({ wrestler: w }) => {
                 const escaped = w.name.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+                // Escape wrestler names before injecting into HTML
+                const safeName = w.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 resultText = resultText.replace(
                   new RegExp(`\\b${escaped}\\b`, "g"),
-                  w.slug === wrestler.slug
-                    ? `<strong>${w.name}</strong>`
-                    : w.name,
+                  w.slug === wrestler.slug ? `<strong>${safeName}</strong>` : safeName,
                 );
               });
 

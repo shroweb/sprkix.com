@@ -16,6 +16,8 @@ export async function POST(req: Request) {
     Math.random().toString(36).substring(2, 6);
   const user = await prisma.user.create({
     data: { name, email, password: hashed, slug },
+    // Never return the hashed password to the client
+    select: { id: true, name: true, email: true, slug: true, isAdmin: true, createdAt: true },
   });
 
   return NextResponse.json({ user });

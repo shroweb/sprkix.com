@@ -20,6 +20,8 @@ export default function EditProfilePage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [favoritePromotion, setFavoritePromotion] = useState("");
+  const [profileThemeEventId, setProfileThemeEventId] = useState("");
+  const [themeSlug, setThemeSlug] = useState("");
   const [promotions, setPromotions] = useState<any[]>([]);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -33,14 +35,23 @@ export default function EditProfilePage() {
           setAvatarUrl(data.user.avatarUrl || "");
           setSlug(data.user.slug || "");
           setFavoritePromotion(data.user.favoritePromotion || "");
+          setProfileThemeEventId(data.user.profileThemeEventId || "");
+          if (data.user.profileThemeEvent) {
+             setThemeSlug(data.user.profileThemeEvent.slug);
+          }
+        } else {
+          setError("Could not load your profile. Please refresh and try again.");
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setError("Could not load your profile. Please check your connection.");
+      });
 
     fetch("/api/admin/promotions")
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) setPromotions(data);
+        // Non-critical — promotions dropdown just stays empty if this fails
       })
       .catch(() => {});
   }, []);
@@ -51,7 +62,7 @@ export default function EditProfilePage() {
     try {
       const formData = new FormData();
       formData.append("file", e.target.files[0]);
-      const res = await fetch("/api/admin/upload", {
+      const res = await fetch("/api/upload/avatar", {
         method: "POST",
         body: formData,
       });
@@ -82,6 +93,7 @@ export default function EditProfilePage() {
           avatarUrl,
           slug: slug.trim().toLowerCase(),
           favoritePromotion: favoritePromotion || null,
+          profileThemeEventId: profileThemeEventId || null,
         }),
       });
       const data = await res.json();
@@ -223,6 +235,46 @@ export default function EditProfilePage() {
             <p className="text-[10px] text-muted-foreground font-medium">
               Manually pin your favorite promotion to your profile stats.
             </p>
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              Profile Theme (Event Slug)
+            </label>
+            <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={themeSlug}
+                  onChange={(e) => setThemeSlug(e.target.value)}
+                  placeholder="e.g. wrestlemania-40"
+                  className="flex-1 bg-black/20 border border-border rounded-xl p-4 font-bold text-sm outline-none focus:border-primary/50 transition-all text-foreground"
+                />
+                <button
+                    type="button"
+                    onClick={async () => {
+                        if (!themeSlug) return;
+                        const res = await fetch(`/api/search/event-by-slug?slug=${themeSlug}`);
+                        const data = await res.json();
+                        if (data.id) {
+                            setProfileThemeEventId(data.id);
+                            setError("");
+                        } else {
+                            setError("Event not found. Make sure the slug is correct.");
+                        }
+                    }}
+                    className="px-4 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+                >
+                    Apply
+                </button>
+            </div>
+            <p className="text-[10px] text-muted-foreground font-medium">
+              Personalise your profile with an event's poster as your theme.
+            </p>
+            {profileThemeEventId && (
+                <p className="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> Theme applied! Save to confirm.
+                </p>
+            )}
           </div>
 
           {error && (

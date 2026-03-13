@@ -26,10 +26,14 @@ export default function MatchList({
   matches,
   user,
   motNMatchId,
+  hideSpoilerToggle = false,
+  compact = false,
 }: {
   matches: any[];
   user: any;
   motNMatchId?: string;
+  hideSpoilerToggle?: boolean;
+  compact?: boolean;
 }) {
   const [showSpoilers, setShowSpoilers] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -62,23 +66,25 @@ export default function MatchList({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-end">
-        <button
-          type="button"
-          onClick={() => setShowSpoilers((prev) => !prev)}
-          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors pr-2"
-        >
-          {showSpoilers ? (
-            <>
-              <EyeOff className="w-4 h-4" /> Hide Results
-            </>
-          ) : (
-            <>
-              <Eye className="w-4 h-4" /> Reveal Results
-            </>
-          )}
-        </button>
-      </div>
+      {!hideSpoilerToggle && (
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            onClick={() => setShowSpoilers((prev) => !prev)}
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors pr-2"
+          >
+            {showSpoilers ? (
+              <>
+                <EyeOff className="w-4 h-4" /> Hide Results
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4" /> Reveal Results
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       <div className="space-y-3">
         {matches.map((match, idx) => {
@@ -276,41 +282,43 @@ export default function MatchList({
                     </div>
                   </div>
 
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="bg-secondary/30 p-4 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
-                        <div className="text-[10px] font-black text-muted-foreground uppercase mb-2 tracking-widest">
-                          Rate Match
+                    {!compact && (
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="bg-secondary/30 p-4 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
+                          <div className="text-[10px] font-black text-muted-foreground uppercase mb-2 tracking-widest">
+                            Rate Match
+                          </div>
+                          <StarRating
+                            matchId={match.id}
+                            initialRating={match.userRating || 0}
+                            averageRating={match.averageRating || 0}
+                            user={user}
+                            showAverage={true}
+                            hideStarLabel={true}
+                          />
                         </div>
-                        <StarRating
-                          matchId={match.id}
-                          initialRating={match.userRating || 0}
-                          averageRating={match.averageRating || 0}
-                          user={user}
-                          showAverage={true}
-                          hideStarLabel={true}
-                        />
+
+                        {user && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(match.id);
+                            }}
+                            disabled={isFavoriting[match.id]}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
+                              favorites[match.id]
+                                ? "bg-red-500/10 border-red-500/30 text-red-500"
+                                : "bg-secondary/30 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30"
+                            }`}
+                          >
+                            <Heart className={`w-4 h-4 ${favorites[match.id] ? "fill-current" : ""}`} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">
+                              {favorites[match.id] ? "Favourited" : "Favourite"}
+                            </span>
+                          </button>
+                        )}
                       </div>
-                      
-                      {user && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavorite(match.id);
-                          }}
-                          disabled={isFavoriting[match.id]}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
-                            favorites[match.id]
-                              ? "bg-red-500/10 border-red-500/30 text-red-500"
-                              : "bg-secondary/30 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30"
-                          }`}
-                        >
-                          <Heart className={`w-4 h-4 ${favorites[match.id] ? "fill-current" : ""}`} />
-                          <span className="text-[10px] font-black uppercase tracking-widest">
-                            {favorites[match.id] ? "Favourited" : "Favourite"}
-                          </span>
-                        </button>
-                      )}
-                    </div>
+                    )}
                 </div>
               </div>
             </div>

@@ -29,6 +29,15 @@ export async function GET(
     },
   });
   if (!list) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // Private lists are only visible to their owner
+  if (!list.isPublic) {
+    const requestUser = await getUserFromServerCookie();
+    if (!requestUser || requestUser.id !== list.user.id) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+  }
+
   return NextResponse.json(list);
 }
 
