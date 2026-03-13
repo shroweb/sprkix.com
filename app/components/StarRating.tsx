@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface StarRatingProps {
   matchId: string;
@@ -36,6 +37,8 @@ export default function StarRating({
     setAvg(averageRating);
   }, [averageRating]);
 
+  const router = useRouter();
+
   const handleClick = async (val: number) => {
     if (!user || !user.id || !matchId) return;
     const finalRating = val;
@@ -51,6 +54,7 @@ export default function StarRating({
       if (res.ok) {
         const data = await res.json();
         setAvg(data.average);
+        router.refresh();
       }
     } catch (error) {
       console.error("Error submitting rating:", error);

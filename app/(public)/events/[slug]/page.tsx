@@ -654,9 +654,20 @@ export default async function EventPage({
                           See All
                         </Link>
                       </div>
-                      {event.reviews.length > 0 ? (
-                        <div className="space-y-4">
-                          {event.reviews.slice(0, 5).map((review: any) => (
+                      {(() => {
+                        const reviews = event.reviews || [];
+                        const userLatestReview: Record<string, any> = {};
+                        reviews.forEach((r: any) => {
+                          const uid = r.userId || r.id; // fallback if userId missing
+                          if (!userLatestReview[uid]) {
+                            userLatestReview[uid] = r;
+                          }
+                        });
+                        const displayReviews = Object.values(userLatestReview).slice(0, 5);
+                        
+                        return displayReviews.length > 0 ? (
+                          <div className="space-y-4">
+                            {displayReviews.map((review: any) => (
                             <div
                               key={review.id}
                               className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors relative group"
@@ -687,19 +698,19 @@ export default async function EventPage({
                                 "{review.comment}"
                               </p>
                               {review.Reply && review.Reply.length > 0 && (
-                                <div className="mt-4 pt-4 border-t border-border space-y-3">
+                                <div className="mt-4 pt-4 border-t border-border space-y-3 text-left">
                                   {review.Reply.slice(0, 1).map((reply: any) => (
                                     <div
                                       key={reply.id}
-                                      className="flex gap-3 text-xs bg-secondary/50 p-3 rounded-xl italic leading-snug"
+                                      className="flex flex-col gap-1 text-xs bg-secondary/50 p-3 rounded-xl italic leading-snug"
                                     >
                                       <span className="font-black text-primary uppercase shrink-0">{reply.user?.name}</span>
-                                      <span className="text-muted-foreground w-full break-words">{reply.comment}</span>
+                                      <span className="text-muted-foreground break-words">{reply.comment}</span>
                                     </div>
                                   ))}
                                 </div>
                               )}
-                              <div className="mt-4 pt-4 border-t border-border flex flex-col gap-4">
+                              <div className="mt-4 pt-4 border-t border-border flex flex-col items-start gap-4">
                                 <ReviewUpvote
                                   reviewId={review.id}
                                   initialCount={review.votes?.length || 0}
@@ -711,11 +722,12 @@ export default async function EventPage({
                             </div>
                           ))}
                         </div>
-                      ) : (
-                        <p className="italic text-muted-foreground font-medium p-12 text-center bg-secondary/20 rounded-[2rem]">
-                          Silence from the crowd. No reviews yet.
-                        </p>
-                      )}
+                        ) : (
+                          <p className="italic text-muted-foreground font-medium p-12 text-center bg-secondary/20 rounded-[2rem]">
+                            Silence from the crowd. No reviews yet.
+                          </p>
+                        );
+                      })()}
                     </div>
                   </div>
                 );

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ReplyForm({
   reviewId,
@@ -12,6 +13,7 @@ export default function ReplyForm({
 }) {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,12 +25,13 @@ export default function ReplyForm({
       body: JSON.stringify({
         reviewId,
         comment,
-        rating: isUpcoming ? null : undefined,
+        isUpcoming: isUpcoming ? true : undefined,
       }),
     });
 
     setComment("");
     setLoading(false);
+    router.refresh();
     if (onReply) onReply();
   };
 
