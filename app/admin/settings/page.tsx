@@ -44,7 +44,7 @@ export default function AdminSettings() {
       .then((data) => {
         const configs = data.configs || {};
         setSettings({
-          HERO_TITLE: configs.HERO_TITLE || "RATE. REVIEW. DISCOVER.",
+          HERO_TITLE: configs.HERO_TITLE || "RATE. REVIEW. \nWRESTLING.",
           HERO_DESC:
             configs.HERO_DESC ||
             "The definitive community archive for professional wrestling.",
@@ -303,7 +303,7 @@ export default function AdminSettings() {
                     setSettings((s) => ({ ...s, HERO_TITLE: e.target.value }))
                   }
                   className={`${inputClass} font-black uppercase italic text-xl tracking-tight`}
-                  placeholder="RATE. REVIEW. DISCOVER."
+                  placeholder="RATE. REVIEW. WRESTLING."
                 />
                 <p className="text-[10px] text-muted-foreground italic">
                   Tip: Use \n for manual line breaks.

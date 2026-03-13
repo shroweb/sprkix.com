@@ -155,34 +155,20 @@ export default async function Home() {
             <h1 className="text-7xl md:text-8xl font-black tracking-tighter leading-[0.82] uppercase italic whitespace-pre-line text-white">
               {(configMap["HERO_TITLE"] || "RATE. REVIEW. \nWRESTLING.")
                 .split("\n")
-                .map((line: string, i: number, arr: string[]) => {
-                  if (arr.length > 1 && i === arr.length - 1) {
-                    return (
-                      <span key={i} className="block text-primary">
-                        {line}
-                      </span>
-                    );
-                  }
-                  if (arr.length === 1) {
-                    const parts = line.split(/(WRESTLING\.?)/i);
-                    return (
-                      <span key={i} className="block">
-                        {parts.map((p, j) => (
-                          <span
-                            key={j}
-                            className={
-                              /WRESTLING/i.test(p) ? "text-primary" : "text-white"
-                            }
-                          >
-                            {p}
-                          </span>
-                        ))}
-                      </span>
-                    );
-                  }
+                .map((line: string, i: number) => {
+                  const parts = line.split(/(WRESTLING\.?)/i);
                   return (
-                    <span key={i} className="block text-white">
-                      {line}
+                    <span key={i} className="block">
+                      {parts.map((p, j) => (
+                        <span
+                          key={j}
+                          className={
+                            /WRESTLING/i.test(p) ? "text-primary" : "text-white"
+                          }
+                        >
+                          {p}
+                        </span>
+                      ))}
                     </span>
                   );
                 })}
