@@ -95,11 +95,30 @@ export default async function EventPage({
   const user = await getUserFromServerCookie();
   const userId = user?.id;
 
+  const eventSelect = {
+    id: true,
+    title: true,
+    slug: true,
+    date: true,
+    promotion: true,
+    venue: true,
+    posterUrl: true,
+    description: true,
+    type: true,
+    tmdbId: true,
+    profightdbUrl: true,
+    startTime: true,
+    endTime: true,
+    currentMatchOrder: true,
+    createdAt: true,
+  };
+
   let event: any = null;
   try {
     event = await prisma.event.findUnique({
-      where: { slug },
-      include: {
+      where: { slug: slug },
+      select: {
+        ...eventSelect,
         matches: {
           include: {
             participants: {

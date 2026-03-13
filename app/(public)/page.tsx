@@ -23,18 +23,38 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const user = await getUserFromServerCookie();
 
+  const eventSelect = {
+    id: true,
+    title: true,
+    slug: true,
+    date: true,
+    promotion: true,
+    venue: true,
+    posterUrl: true,
+    description: true,
+    type: true,
+    tmdbId: true,
+    profightdbUrl: true,
+    startTime: true,
+    endTime: true,
+    currentMatchOrder: true,
+    createdAt: true,
+  };
+
   let results: any[] = [[], 0, 0, [], [], [], []];
   try {
     results = await Promise.all([
       prisma.event.findMany({
         take: 10,
         orderBy: { createdAt: "desc" },
+        select: eventSelect,
       }),
       prisma.event.count(),
       prisma.review.count(),
       prisma.event.findMany({ select: { slug: true } }),
       prisma.event.findMany({
-        include: {
+        select: {
+          ...eventSelect,
           reviews: { select: { rating: true, comment: true, user: { select: { name: true } } } },
         },
       }),
@@ -45,14 +65,12 @@ export default async function Home() {
         take: 5,
         include: {
           participants: { include: { wrestler: true } },
-          event: { select: { slug: true, title: true, posterUrl: true } },
+          event: { select: { ...eventSelect } },
         },
       }),
     ]);
   } catch (err) {
     console.error("Home page fetch error:", err);
-    // Attempt fallback without the suspicious fields if possible, 
-    // or just return empty for now to keep the page from crashing.
   }
 
   const [
