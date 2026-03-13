@@ -5,7 +5,6 @@ import Image from "next/image";
 import { cache } from "react";
 import { getPosterColors } from "@lib/poster-color";
 import ReviewForm from "@components/ReviewForm";
-import WatchListButton from "@components/WatchListButton";
 import ReplyForm from "@components/ReplyForm";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import MatchList from "@components/MatchList";
@@ -19,6 +18,8 @@ import PredictionCard from "@components/PredictionCard";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
 import EventTabs, { type EventTab } from "@components/EventTabs";
+import WatchlistIcon from "@components/WatchlistIcon";
+import WatchedIcon from "@components/WatchedIcon";
 import VisualRating from "@components/VisualRating";
 import type { Metadata } from "next";
 
@@ -424,10 +425,13 @@ export default async function EventPage({
                   <div className="flex gap-2">
                     {user && (
                       <>
-                        <WatchListButton
+                        <WatchlistIcon
                           eventId={event.id}
-                          initialState={!inWatchList ? "none" : inWatchList.watched ? "watched" : "watchlist"}
-                          minimal={true}
+                          initialActive={inWatchList ? (inWatchList as any).watchlist : false}
+                        />
+                        <WatchedIcon
+                          eventId={event.id}
+                          initialActive={inWatchList ? inWatchList.watched : false}
                         />
                         <AttendButton 
                           eventId={event.id}

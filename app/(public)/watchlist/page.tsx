@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, Eye, Bookmark, TrendingUp, Star, ChevronLeft } from "lucide-react";
-import ReviewForm from "@components/ReviewForm";
 
 export default async function WatchlistPage() {
   const user = await getUserFromServerCookie();
@@ -13,7 +12,10 @@ export default async function WatchlistPage() {
   }
 
   const watchListItems = await prisma.watchListItem.findMany({
-    where: { userId: user.id },
+    where: { 
+        userId: user.id,
+        watchlist: true,
+    },
     include: {
       event: {
         include: {

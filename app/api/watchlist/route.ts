@@ -15,6 +15,7 @@ export async function POST(req: Request) {
       data: {
         userId: user.id,
         eventId,
+        watchlist: true,
       },
     });
     revalidatePath("/watchlist", "page");
@@ -33,11 +34,12 @@ export async function PATCH(req: Request) {
   if (!user)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  const { eventId, watched, attended } = await req.json();
+  const { eventId, watched, attended, watchlist } = await req.json();
 
   const data: any = {};
   if (watched !== undefined) data.watched = watched;
   if (attended !== undefined) data.attended = attended;
+  if (watchlist !== undefined) data.watchlist = watchlist;
 
   await prisma.watchListItem.upsert({
     where: { userId_eventId: { userId: user.id, eventId } },

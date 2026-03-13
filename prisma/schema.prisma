@@ -149,6 +149,7 @@ model WatchListItem {
   userId    String
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String
+  watchlist Boolean  @default(true)
   watched   Boolean  @default(false)
   attended  Boolean  @default(false)
   createdAt DateTime @default(now())
