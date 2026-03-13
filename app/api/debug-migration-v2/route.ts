@@ -7,6 +7,7 @@ export async function GET() {
     // We use executeRawUnsafe because executeRaw doesn't support parameterized identifiers for DDL
     await prisma.$executeRawUnsafe(`ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "enableWatchParty" BOOLEAN NOT NULL DEFAULT true`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "enablePredictions" BOOLEAN NOT NULL DEFAULT true`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "profileThemeEventId" TEXT`);
     
     return NextResponse.json({ success: true, message: "Database columns added successfully" });
   } catch (error: any) {
