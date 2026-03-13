@@ -21,6 +21,20 @@ export async function getUserFromServerCookie() {
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              slug: true,
+              avatarUrl: true,
+              isVerified: true,
+              isBanned: true,
+              isAdmin: true,
+              favoritePromotion: true,
+              createdAt: true,
+              // Exclude profileThemeEventId until DB is migrated
+            }
         })
 
         if (!user) {
