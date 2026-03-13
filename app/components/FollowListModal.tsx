@@ -8,6 +8,7 @@ import FollowButton from "./FollowButton";
 type ConnectionUser = {
   id: string;
   name: string | null;
+  slug: string;
   isFollowing: boolean;
   isCurrentUser: boolean;
 };
@@ -115,7 +116,7 @@ export default function FollowListModal({
                       className="flex items-center justify-between px-6 py-4"
                     >
                       <Link
-                        href={`/users/${u.id}`}
+                        href={`/users/${u.slug || u.id}`}
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-3 hover:text-primary transition-colors group"
                       >

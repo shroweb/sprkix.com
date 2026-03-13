@@ -3,24 +3,41 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Users, UserCheck, ChevronLeft } from "lucide-react";
+import { Star, Users, UserCheck, ChevronLeft, Heart } from "lucide-react";
 import FollowButton from "@components/FollowButton";
 
 export default async function UserProfilePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
 
   const [profileUser, currentUser] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id },
+    prisma.user.findFirst({
+      where: {
+        OR: [
+          { slug },
+          { id: slug }
+        ]
+      },
       include: {
         reviews: {
           orderBy: { createdAt: "desc" },
           include: { event: true },
         },
+        favoriteMatches: {
+          include: {
+            match: {
+              include: {
+                event: true,
+                participants: {
+                  include: { wrestler: true }
+                }
+              }
+            }
+          }
+        }
       },
     }),
     getUserFromServerCookie(),
@@ -29,14 +46,14 @@ export default async function UserProfilePage({
   if (!profileUser) return notFound();
 
   const [followersCount, followingCount, isFollowing] = await Promise.all([
-    prisma.follow.count({ where: { followingId: id } }),
-    prisma.follow.count({ where: { followerId: id } }),
+    prisma.follow.count({ where: { followingId: profileUser.id } }),
+    prisma.follow.count({ where: { followerId: profileUser.id } }),
     currentUser
       ? prisma.follow.findUnique({
           where: {
             followerId_followingId: {
               followerId: currentUser.id,
-              followingId: id,
+              followingId: profileUser.id,
             },
           },
         })
@@ -50,7 +67,7 @@ export default async function UserProfilePage({
       ).toFixed(1)
     : null;
 
-  const isOwnProfile = currentUser?.id === id;
+  const isOwnProfile = currentUser?.id === profileUser.id;
 
   return (
     <div className="space-y-16 pb-20 max-w-4xl mx-auto">
@@ -135,7 +152,7 @@ export default async function UserProfilePage({
             </Link>
           ) : currentUser ? (
             <FollowButton
-              targetUserId={id}
+              targetUserId={profileUser.id}
               initialIsFollowing={!!isFollowing}
             />
           ) : (
@@ -148,6 +165,76 @@ export default async function UserProfilePage({
           )}
         </div>
       </div>
+
+      {/* Favorite Matches Section */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500">
+            Favorite Matches
+          </h2>
+          <div className="flex-1 h-[1px] bg-border" />
+          <div className="flex items-center gap-4">
+            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+              {profileUser.favoriteMatches?.length || 0} Saved
+            </span>
+            {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 6 && (
+              <Link
+                href={`/users/${profileUser.slug}/favorites`}
+                className="text-xs font-black uppercase text-red-500 hover:underline"
+              >
+                See All
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 0 ? (
+          <div className="grid sm:grid-cols-2 gap-4">
+            {profileUser.favoriteMatches.slice(0, 6).map((fav: any) => (
+              <Link
+                key={fav.match.id}
+                href={`/events/${fav.match.event.slug}`}
+                className="bg-card/40 border border-white/5 rounded-2xl p-5 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-3">
+                  <Heart className="w-4 h-4 text-red-500 fill-current" />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-muted-foreground bg-secondary px-2 py-0.5 rounded">
+                      {fav.match.event.promotion}
+                    </span>
+                    <span className="text-[10px] font-black text-muted-foreground italic">
+                      {new Date(fav.match.event.date).getFullYear()}
+                    </span>
+                  </div>
+                  <h3 className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
+                    {fav.match.title}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                    {fav.match.participants.slice(0, 3).map((p: any, i: number) => (
+                      <span key={i} className="flex items-center gap-1.5">
+                        {i > 0 && <span className="text-[10px] text-muted-foreground">&amp;</span>}
+                        <span className="text-xs font-bold">{p.wrestler.name}</span>
+                      </span>
+                    ))}
+                    {fav.match.participants.length > 3 && (
+                      <span className="text-xs text-muted-foreground">...</span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
+            <Heart className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
+            <p className="text-muted-foreground font-bold italic">
+              No favorite matches saved yet.
+            </p>
+          </div>
+        )}
+      </section>
 
       {/* Reviews Section */}
       <section className="space-y-6">

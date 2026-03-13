@@ -25,11 +25,20 @@ export async function GET() {
   const followers =
     followerIds.length > 0
       ? await prisma.user.findMany({
-          where: { id: { in: followerIds } },
-          select: { id: true, name: true, avatarUrl: true },
+          where: {
+            OR: [
+              { id: { in: followerIds } },
+              { slug: { in: followerIds } }
+            ]
+          },
+          select: { id: true, name: true, slug: true, avatarUrl: true },
         })
       : [];
-  const actorMap = Object.fromEntries(followers.map((f: any) => [f.id, f]));
+      
+  const actorMap = Object.fromEntries([
+    ...followers.map((f: any) => [f.id, f]),
+    ...followers.map((f: any) => [f.slug, f])
+  ]);
 
   const notifications = stored.map((n: any) => {
     const actorId = n.type === "follow" ? n.link?.split("/users/")[1] : null;

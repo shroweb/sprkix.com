@@ -22,7 +22,7 @@ type Reply = {
   id: string;
   comment: string;
   createdAt: string;
-  user: { id: string; name: string | null };
+  user: { id: string; name: string | null; slug: string };
 };
 type Review = {
   id: string;
@@ -317,7 +317,7 @@ export default function ProfileReviews({
                         </div>
                         <div className="flex-1 min-w-0">
                           <Link
-                            href={`/users/${reply.user.id}`}
+                            href={`/users/${reply.user.slug || reply.user.id}`}
                             className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest"
                           >
                             {reply.user.name}

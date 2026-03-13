@@ -23,7 +23,7 @@ export default function ReviewCard({
     <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors relative group">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Link href={`/users/${review.user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
+          <Link href={`/users/${review.user.slug || review.user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
             <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black text-white hover:bg-primary hover:text-black transition-colors">
               {review.user.name ? review.user.name.charAt(0).toUpperCase() : "A"}
             </div>

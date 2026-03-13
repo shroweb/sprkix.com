@@ -44,7 +44,7 @@ export default function FanReactionsCycler({
           <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <Link
-                href={`/users/${r.user?.id}`}
+                href={`/users/${r.user?.slug || r.user?.id}`}
                 className="flex items-center gap-3 hover:text-primary transition-colors group/user"
               >
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black group-hover/user:bg-primary group-hover/user:text-black transition-colors">

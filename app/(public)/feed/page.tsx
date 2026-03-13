@@ -111,7 +111,7 @@ export default async function FeedPage() {
               {/* User + time header */}
               <div className="flex items-center justify-between mb-5">
                 <Link
-                  href={`/users/${review.user.id}`}
+                  href={`/users/${review.user.slug || review.user.id}`}
                   className="flex items-center gap-3 group/user"
                 >
                   <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-black text-black group-hover/user:scale-110 transition-transform">

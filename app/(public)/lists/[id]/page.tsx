@@ -40,7 +40,7 @@ export default async function ListPage({
       {/* Header */}
       <div className="space-y-4">
         <Link
-          href={`/users/${list.user.id}`}
+          href={`/users/${list.user.slug || list.user.id}`}
           className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

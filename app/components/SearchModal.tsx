@@ -238,7 +238,7 @@ export default function SearchModal() {
                   {results.users.map((user) => (
                     <Link
                       key={user.id}
-                      href={`/users/${user.id}`}
+                      href={`/users/${user.slug || user.id}`}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors group"
                     >

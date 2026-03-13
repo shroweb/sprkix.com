@@ -19,6 +19,7 @@ import {
   Trophy,
   ChevronDown,
   Star,
+  Heart,
 } from "lucide-react";
 
 export default function MatchList({
@@ -32,6 +33,32 @@ export default function MatchList({
 }) {
   const [showSpoilers, setShowSpoilers] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [favorites, setFavorites] = useState<Record<string, boolean>>(
+    Object.fromEntries(matches.map(m => [m.id, m.isFavorited || false]))
+  );
+  const [isFavoriting, setIsFavoriting] = useState<Record<string, boolean>>({});
+
+  const toggleFavorite = async (matchId: string) => {
+    if (!user) return;
+    if (isFavoriting[matchId]) return;
+
+    setIsFavoriting(prev => ({ ...prev, [matchId]: true }));
+    try {
+      const res = await fetch("/api/matches/favorite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matchId }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFavorites(prev => ({ ...prev, [matchId]: data.favorited }));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsFavoriting(prev => ({ ...prev, [matchId]: false }));
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -106,7 +133,7 @@ export default function MatchList({
                   {/* Participants — avatars only, no names */}
                   <div className="hidden md:flex items-center gap-1 shrink-0">
                     {allParticipants.slice(0, 6).map((w: any, i: number) => (
-                      <span key={w.id} className="flex items-center gap-1">
+                      <span key={`${w.id}-${i}`} className="flex items-center gap-1">
                         {i > 0 && (
                           <span className="text-[8px] font-black text-muted-foreground/40">
                             ·
@@ -183,7 +210,7 @@ export default function MatchList({
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                         {teamEntries.map(([teamNum, participants], tIdx) => (
                           <div
-                            key={teamNum}
+                            key={`team-${teamNum}-${tIdx}`}
                             className="flex flex-wrap items-center gap-1.5"
                           >
                             {tIdx > 0 && (
@@ -195,7 +222,7 @@ export default function MatchList({
                               {(participants as any[]).map(
                                 (p: any, pIdx: number) => (
                                   <div
-                                    key={p.wrestler.id}
+                                    key={`${p.wrestler.id}-${pIdx}`}
                                     className="flex items-center gap-1"
                                   >
                                     {pIdx > 0 && (
@@ -249,19 +276,41 @@ export default function MatchList({
                     </div>
                   </div>
 
-                  <div className="bg-secondary/30 p-4 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase mb-2 tracking-widest">
-                      Rate Match
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="bg-secondary/30 p-4 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
+                        <div className="text-[10px] font-black text-muted-foreground uppercase mb-2 tracking-widest">
+                          Rate Match
+                        </div>
+                        <StarRating
+                          matchId={match.id}
+                          initialRating={match.userRating || 0}
+                          averageRating={match.averageRating || 0}
+                          user={user}
+                          showAverage={true}
+                          hideStarLabel={true}
+                        />
+                      </div>
+                      
+                      {user && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(match.id);
+                          }}
+                          disabled={isFavoriting[match.id]}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
+                            favorites[match.id]
+                              ? "bg-red-500/10 border-red-500/30 text-red-500"
+                              : "bg-secondary/30 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30"
+                          }`}
+                        >
+                          <Heart className={`w-4 h-4 ${favorites[match.id] ? "fill-current" : ""}`} />
+                          <span className="text-[10px] font-black uppercase tracking-widest">
+                            {favorites[match.id] ? "Favourited" : "Favourite"}
+                          </span>
+                        </button>
+                      )}
                     </div>
-                    <StarRating
-                      matchId={match.id}
-                      initialRating={match.userRating || 0}
-                      averageRating={match.averageRating || 0}
-                      user={user}
-                      showAverage={true}
-                      hideStarLabel={true}
-                    />
-                  </div>
                 </div>
               </div>
             </div>

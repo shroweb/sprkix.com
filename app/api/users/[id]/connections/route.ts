@@ -17,15 +17,15 @@ export async function GET(
   if (type === "followers") {
     const follows = await prisma.follow.findMany({
       where: { followingId: id },
-      include: { follower: { select: { id: true, name: true } } },
+      include: { follower: { select: { id: true, name: true, slug: true } } },
     });
-    users = follows.map((f) => f.follower);
+    users = follows.map((f) => f.follower as any);
   } else if (type === "following") {
     const follows = await prisma.follow.findMany({
       where: { followerId: id },
-      include: { following: { select: { id: true, name: true } } },
+      include: { following: { select: { id: true, name: true, slug: true } } },
     });
-    users = follows.map((f) => f.following);
+    users = follows.map((f) => f.following as any);
   }
 
   // If logged in, check which of these users the current user follows

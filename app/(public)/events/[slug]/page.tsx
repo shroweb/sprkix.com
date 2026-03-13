@@ -71,6 +71,11 @@ export default async function EventPage({
               userId: true,
             },
           },
+          favoritedBy: {
+            select: {
+              userId: true,
+            },
+          },
         },
       },
       reviews: {
@@ -100,7 +105,12 @@ export default async function EventPage({
         match.ratings.length
       : 0;
 
-    return { ...match, userRating, averageRating };
+    // Check if favorited by user
+    const isFavorited = user
+      ? (match as any).favoritedBy?.some((f: any) => f.userId === userId) || false
+      : false;
+
+    return { ...match, userRating, averageRating, isFavorited };
   });
 
   const isUpcoming = new Date(event.date) > new Date();

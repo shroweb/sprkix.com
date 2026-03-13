@@ -17,6 +17,7 @@ import {
   Zap,
   Share2,
   ArrowRight,
+  Heart,
 } from "lucide-react";
 import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
@@ -44,14 +45,15 @@ export default async function ProfilePage() {
     followersCount,
     followingCount,
     matchRatings,
-  ] = await Promise.all([
+    favMatches,
+  ] = (await Promise.all([
     prisma.review.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       include: {
         event: true,
         Reply: {
-          include: { user: { select: { id: true, name: true } } },
+          include: { user: { select: { id: true, name: true, slug: true } } },
           orderBy: { createdAt: "asc" },
         },
       },
@@ -74,12 +76,23 @@ export default async function ProfilePage() {
         }
       }
     }),
-  ]);
+    prisma.favoriteMatch.findMany({
+      where: { userId: user.id },
+      include: {
+        match: {
+          include: {
+            event: true,
+            participants: { include: { wrestler: true } }
+          }
+        }
+      }
+    }),
+  ])) as any[];
 
   const matchRatingsCount = matchRatings.length;
 
   const avgRating = reviews.length
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(
+    ? (reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length).toFixed(
         1,
       )
     : null;
@@ -133,10 +146,10 @@ export default async function ProfilePage() {
   }
 
   // Serialize reviews for client component (dates → strings)
-  const serializedReviews = reviews.map((r) => ({
+  const serializedReviews = reviews.map((r: any) => ({
     ...r,
     createdAt: r.createdAt.toISOString(),
-    Reply: r.Reply.map((reply) => ({
+    Reply: r.Reply.map((reply: any) => ({
       ...reply,
       createdAt: reply.createdAt.toISOString(),
     })),
@@ -267,6 +280,76 @@ export default async function ProfilePage() {
         </div>
       </div>
 
+      {/* Favorite Matches */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-red-500">
+            Favorite Matches
+          </h2>
+          <div className="flex-1 h-[1px] bg-border" />
+          <div className="flex items-center gap-4">
+            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+              {favMatches.length} Saved
+            </span>
+            {favMatches.length > 6 && (
+              <Link
+                href="/profile/favorites"
+                className="text-xs font-black uppercase text-red-500 hover:underline"
+              >
+                See All
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {favMatches.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {favMatches.slice(0, 6).map((fav: any) => (
+              <Link
+                key={fav.match.id}
+                href={`/events/${fav.match.event.slug}`}
+                className="bg-card/40 border border-white/5 rounded-2xl p-5 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-3">
+                  <Heart className="w-4 h-4 text-red-500 fill-current" />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-muted-foreground bg-secondary px-2 py-0.5 rounded">
+                      {fav.match.event.promotion}
+                    </span>
+                    <span className="text-[10px] font-black text-muted-foreground italic">
+                      {new Date(fav.match.event.date).getFullYear()}
+                    </span>
+                  </div>
+                  <h3 className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
+                    {fav.match.title}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                    {(fav.match.participants as any[]).slice(0, 3).map((p: any, i: number) => (
+                      <span key={i} className="flex items-center gap-1.5">
+                        {i > 0 && <span className="text-[10px] text-muted-foreground">&amp;</span>}
+                        <span className="text-xs font-bold">{p.wrestler.name}</span>
+                      </span>
+                    ))}
+                    {fav.match.participants.length > 3 && (
+                      <span className="text-xs text-muted-foreground">...</span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
+            <Heart className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
+            <p className="text-muted-foreground font-bold italic">
+              Your favorite matches list is empty.
+            </p>
+          </div>
+        )}
+      </section>
+
       {/* Reviews */}
       <section className="space-y-6">
         <div className="flex items-center gap-4">
@@ -330,7 +413,7 @@ export default async function ProfilePage() {
       </section>
         {watchList.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {watchList.map((item) => (
+            {watchList.map((item: any) => (
               <Link
                 key={item.id}
                 href={`/events/${item.event.slug}`}

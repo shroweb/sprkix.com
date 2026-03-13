@@ -16,6 +16,7 @@ export default function EditProfilePage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [slug, setSlug] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [favoritePromotion, setFavoritePromotion] = useState("");
@@ -30,6 +31,7 @@ export default function EditProfilePage() {
         if (data.user) {
           setName(data.user.name || "");
           setAvatarUrl(data.user.avatarUrl || "");
+          setSlug(data.user.slug || "");
           setFavoritePromotion(data.user.favoritePromotion || "");
         }
       })
@@ -78,6 +80,7 @@ export default function EditProfilePage() {
         body: JSON.stringify({
           name: name.trim(),
           avatarUrl,
+          slug: slug.trim().toLowerCase(),
           favoritePromotion: favoritePromotion || null,
         }),
       });
@@ -178,6 +181,26 @@ export default function EditProfilePage() {
             />
             <p className="text-[10px] text-muted-foreground font-medium">
               This is how you appear across the site.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              Profile Handle (URL)
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">@</span>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="your-handle"
+                className="w-full bg-black/20 border border-border rounded-xl p-4 pl-8 font-bold text-sm outline-none focus:border-primary/50 transition-all text-foreground"
+                maxLength={32}
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground font-medium italic">
+              Your profile: <span className="text-primary">sprkix.com/users/{slug || "username"}</span>
             </p>
           </div>
 
