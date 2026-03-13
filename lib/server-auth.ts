@@ -25,15 +25,16 @@ export async function getUserFromServerCookie() {
               id: true,
               email: true,
               name: true,
-              role: true,
               slug: true,
               avatarUrl: true,
               isVerified: true,
-              isBanned: true,
               isAdmin: true,
               favoritePromotion: true,
               createdAt: true,
-              // Exclude profileThemeEventId until DB is migrated
+              password: true,
+              predictionScore: true,
+              predictionCount: true,
+              // Still excluding profileThemeEventId until DB is migrated
             }
         })
 
@@ -42,7 +43,7 @@ export async function getUserFromServerCookie() {
             return null
         }
 
-        return user
+        return user as any
     } catch (err: any) {
         console.error('[Auth] Failed to verify JWT:', err.message, err.stack);
         return null;
