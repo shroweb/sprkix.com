@@ -8,6 +8,7 @@ import FollowButton from "@components/FollowButton";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
 import RankBadge, { getRank } from "@components/RankBadge";
 import FollowListModal from "@components/FollowListModal";
+import VisualRating from "@components/VisualRating";
 
 export default async function UserProfilePage({
   params,
@@ -87,7 +88,7 @@ export default async function UserProfilePage({
     ? (
         profileUser.reviews.reduce((sum, r) => sum + r.rating, 0) /
         profileUser.reviews.length
-      ).toFixed(1)
+      ).toFixed(2)
     : null;
 
   const isOwnProfile = currentUser?.id === profileUser.id;
@@ -277,8 +278,10 @@ export default async function UserProfilePage({
                     </div>
                   )}
                 </div>
-            </div>
-         </div>
+             </div>
+          </div>
+       </div>
+    </div>
 
       {/* Main Content Area */}
       <div className="max-w-6xl mx-auto px-6 space-y-20 mt-12">
@@ -537,13 +540,8 @@ export default async function UserProfilePage({
                           })}
                         </p>
                       </div>
-                      <div className="flex text-primary gap-1 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full h-fit">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-3 h-3 ${i < review.rating ? "fill-current" : "text-white/10"}`}
-                          />
-                        ))}
+                      <div className="flex text-primary px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full h-fit">
+                        <VisualRating rating={review.rating} size="xs" />
                       </div>
                     </div>
                     {review.comment && (

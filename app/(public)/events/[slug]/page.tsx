@@ -19,6 +19,7 @@ import PredictionCard from "@components/PredictionCard";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
 import EventTabs, { type EventTab } from "@components/EventTabs";
+import VisualRating from "@components/VisualRating";
 import type { Metadata } from "next";
 
 // Cached per-request: avoids running the full-table rating scan more than once
@@ -394,6 +395,7 @@ export default async function EventPage({
                   <span className="text-sm font-black italic">
                     {averageRating?.toFixed(2) || "0.00"}
                   </span>
+                  <VisualRating rating={averageRating || 0} size="xs" />
                 </div>
               </div>
 
@@ -515,9 +517,12 @@ export default async function EventPage({
                     <Star className="w-5 h-5 text-primary fill-current" />
                     <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-primary tracking-tighter">
                       {topMatch && topMatch.averageRating > 0
-                        ? topMatch.averageRating.toFixed(1)
+                        ? topMatch.averageRating.toFixed(2)
                         : "—"}
                     </span>
+                    {topMatch && topMatch.averageRating > 0 && (
+                      <VisualRating rating={topMatch.averageRating} size="xs" />
+                    )}
                   </div>
                   <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary/60 whitespace-nowrap">
                     Peak Performance
@@ -684,9 +689,8 @@ export default async function EventPage({
                                     )}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-primary">
-                                  <Star className="w-3.5 h-3.5 fill-current" />
-                                  <span className="text-sm font-black text-primary">{review.rating}</span>
+                                <div className="flex items-center gap-2 text-primary">
+                                  <VisualRating rating={review.rating} size="sm" />
                                 </div>
                                 <ShareReviewButton
                                   review={review}
