@@ -131,21 +131,21 @@ export default async function Home() {
     select: { eventId: true },
   });
   const trendingIds = Array.from(
-    recentReviews.reduce((acc: Map<string, number>, r) => {
+    recentReviews.reduce((acc: Map<string, number>, r: any) => {
       acc.set(r.eventId, (acc.get(r.eventId) || 0) + 1);
       return acc;
     }, new Map<string, number>()),
   )
-    .sort((a, b) => b[1] - a[1])
+    .sort((a: any, b: any) => b[1] - a[1])
     .slice(0, 5)
-    .map(([id]) => id);
+    .map(([id]: any) => id);
 
-  const trendingEvents = allEventsForRank.filter(e => trendingIds.includes(e.id));
-
-  // Sort by the trending order
-  const trendingSorted = trendingIds
-    .map((id) => trendingEvents.find((e) => e.id === id))
-    .filter(Boolean) as typeof trendingEvents;
+   const trendingEvents = allEventsForRank.filter((e: any) => trendingIds.includes(e.id));
+ 
+   // Sort by the trending order
+   const trendingSorted = trendingIds
+     .map((id: any) => trendingEvents.find((e: any) => e.id === id))
+     .filter(Boolean) as typeof trendingEvents;
 
   // Featured events: Recent events if exist, else first in rank
   const featuredEvents = recentEvents.length > 0 ? recentEvents.slice(0, 5) : ranked.slice(0, 1);
