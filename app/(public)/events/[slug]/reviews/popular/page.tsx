@@ -7,10 +7,11 @@ import { ChevronLeft } from "lucide-react";
 
 export default async function PopularReviewsPage(props: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; reviewId?: string }>;
 }) {
   const { slug } = await props.params;
   const searchParams = await props.searchParams;
+  const reviewId = searchParams.reviewId;
 
   const pageParam = searchParams?.page;
   let page = 1;
@@ -31,12 +32,12 @@ export default async function PopularReviewsPage(props: {
 
   const skip = (page - 1) * 5;
 
-  const reviews = await prisma.review.findMany({
+  let reviews = await prisma.review.findMany({
     where: { eventId: event.id },
     include: {
       user: true,
       Reply: { include: { user: true } },
-      _count: true, // this lets you access review._count.likes
+      _count: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -44,6 +45,30 @@ export default async function PopularReviewsPage(props: {
     skip,
     take: 5,
   });
+
+  // If we have a reviewId and it's not in the current page, we should ideally fetch it.
+  // For simplicity, if it's not and we're on page 1, let's try to ensure it's there.
+  if (reviewId && page === 1) {
+    const isFound = reviews.some(r => r.id === reviewId);
+    if (!isFound) {
+      const targetReview = await prisma.review.findUnique({
+        where: { id: reviewId },
+        include: {
+          user: true,
+          Reply: { include: { user: true } },
+          _count: true,
+        }
+      });
+      if (targetReview && targetReview.eventId === event.id) {
+        reviews = [targetReview, ...reviews.slice(0, 4)];
+      }
+    } else {
+      // Prioritize it at the top
+      const idx = reviews.findIndex(r => r.id === reviewId);
+      const [highlighted] = reviews.splice(idx, 1);
+      reviews = [highlighted, ...reviews];
+    }
+  }
 
   const user = await getUserFromServerCookie();
 
@@ -105,6 +130,7 @@ export default async function PopularReviewsPage(props: {
               key={review.id} 
               review={review} 
               user={user} 
+              highlighted={review.id === reviewId}
               event={{
                 title: event.title,
                 posterUrl: event.posterUrl,

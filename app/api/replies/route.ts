@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         type: "reply",
         message: `${user.name} replied to your review of ${review.event.title.replace(/–\s\d{4}.*$/, "").trim()}`,
         detail: comment,
-        link: `/events/${review.event.slug}`,
+        link: `/events/${review.event.slug}/reviews/popular?reviewId=${reviewId}#review-${reviewId}`,
       },
     });
   }

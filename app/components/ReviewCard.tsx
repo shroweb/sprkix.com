@@ -14,13 +14,22 @@ export default function ReviewCard({
   review,
   user,
   event,
+  highlighted = false,
 }: {
   review: FullReview;
   user?: User | null;
   event?: { title: string; posterUrl: string | null; promotion: string };
+  highlighted?: boolean;
 }) {
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors relative group">
+    <div 
+      id={`review-${review.id}`}
+      className={`bg-card border rounded-2xl p-6 transition-all relative group ${
+        highlighted 
+          ? "border-primary ring-1 ring-primary/20 shadow-lg shadow-primary/5" 
+          : "border-border hover:border-primary/30"
+      }`}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Link href={`/users/${review.user.slug || review.user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">

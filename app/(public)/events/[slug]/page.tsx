@@ -84,10 +84,13 @@ export async function generateMetadata({
 
 export default async function EventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
+  const { reviewId } = await searchParams;
   const user = await getUserFromServerCookie();
   const userId = user?.id;
 
@@ -668,14 +671,31 @@ export default async function EventPage({
                             userLatestReview[uid] = r;
                           }
                         });
-                        const displayReviews = Object.values(userLatestReview).slice(0, 5);
+                        
+                        let displayReviews = Object.values(userLatestReview);
+                        
+                        // If specific reviewId is in URL, prioritize it at the top
+                        if (reviewId && typeof reviewId === "string") {
+                          const highlightedIndex = displayReviews.findIndex(r => r.id === reviewId);
+                          if (highlightedIndex !== -1) {
+                            const [highlighted] = displayReviews.splice(highlightedIndex, 1);
+                            displayReviews = [highlighted, ...displayReviews];
+                          }
+                        }
+                        
+                        displayReviews = displayReviews.slice(0, 5);
                         
                         return displayReviews.length > 0 ? (
                           <div className="space-y-4">
                             {displayReviews.map((review: any) => (
                             <div
                               key={review.id}
-                              className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors relative group"
+                              id={`review-${review.id}`}
+                              className={`bg-card border rounded-2xl p-6 transition-all relative group ${
+                                review.id === reviewId
+                                  ? "border-primary ring-1 ring-primary/20 shadow-lg shadow-primary/5"
+                                  : "border-border hover:border-primary/30"
+                              }`}
                             >
                               <div className="flex items-center justify-between mb-4">
                                 {review.user ? (

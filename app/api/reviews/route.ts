@@ -40,7 +40,7 @@ export async function POST(req: Request) {
           userId: w.userId,
           type: "review",
           message: `New review posted for ${eventTitle}`,
-          link: `/events/${event.slug}`,
+          link: `/events/${event.slug}/reviews/popular?reviewId=${review.id}#review-${review.id}`,
         })),
         skipDuplicates: true,
       });
