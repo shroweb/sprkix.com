@@ -94,27 +94,27 @@ export default async function Home() {
   const eventSlugs = allEventSlugs.map((e: any) => e.slug);
 
   // Bayesian-weighted rankings for Hall of Fame
-  const allRatings = allEventsForRank.flatMap((e) =>
+  const allRatings = allEventsForRank.flatMap((e: any) =>
     e.reviews.map((r: any) => r.rating),
   );
   const globalAvg = allRatings.length
-    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
+    ? allRatings.reduce((a: any, b: any) => a + b, 0) / allRatings.length
     : 3;
   const minReviews = 1;
 
   const ranked = allEventsForRank
-    .map((e) => {
+    .map((e: any) => {
       const rats = e.reviews.map((r: any) => r.rating);
       const v = rats.length;
-      const R = v ? rats.reduce((a: number, b: number) => a + b, 0) / v : 0;
+      const R = v ? rats.reduce((a: any, b: any) => a + b, 0) / v : 0;
       const score =
         v > 0
           ? (v / (v + minReviews)) * R + (minReviews / (v + minReviews)) * globalAvg
           : 0;
       return { ...e, score, avgRating: R, reviewCount: v };
     })
-    .filter((e) => e.reviewCount > 0)
-    .sort((a, b) => b.score - a.score);
+    .filter((e: any) => e.reviewCount > 0)
+    .sort((a: any, b: any) => b.score - a.score);
 
   const hallOfFame = ranked.slice(0, 5);
 
@@ -122,8 +122,8 @@ export default async function Home() {
 
   // Recent events within the last 7 days (by event date)
   const recentEvents = allEventsForRank
-    .filter(e => new Date(e.date) >= sevenDaysAgo)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .filter((e: any) => new Date(e.date) >= sevenDaysAgo)
+    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Trending = most recently reviewed events (activity in last 7 days)
   const recentReviews = await prisma.review.findMany({
@@ -377,10 +377,10 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8">
               {trendingSorted.map((event) => {
-                const avgRating = event.reviews.length
-                  ? event.reviews.reduce((a, r) => a + r.rating, 0) /
+                const rating = event.reviews.length
+                  ? event.reviews.reduce((a: any, r: any) => a + r.rating, 0) /
                     event.reviews.length
-                  : null;
+                  : 0;
                 return (
                   <Link
                     key={event.id}
@@ -411,11 +411,11 @@ export default async function Home() {
                     <h3 className="font-black text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
-                    {avgRating !== null && (
+                    {rating > 0 && (
                       <div className="flex items-center gap-1 mt-2">
                         <Star className="w-3 h-3 text-primary fill-current" />
                         <span className="text-[10px] font-black text-primary">
-                          {avgRating.toFixed(2)}
+                          {rating.toFixed(2)}
                         </span>
                       </div>
                     )}
@@ -450,7 +450,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-10">
-              {events.map((event: any) => (
+              {recentEvents.map((event: any, i: number) => (
                 <Link
                   key={event.id}
                   href={`/events/${event.slug}`}
@@ -511,9 +511,9 @@ export default async function Home() {
               </Link>
             </div>
             <div className="space-y-3">
-              {topMatches.map((match, i) => {
+              {topMatches.map((match: any, i: number) => {
                 const names = match.participants
-                  .map((p) => p.wrestler.name)
+                  .map((p: any) => p.wrestler.name)
                   .join(", ");
                 return (
                   <Link
