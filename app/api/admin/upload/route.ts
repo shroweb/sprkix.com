@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { NextResponse } from "next/server";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { join, basename } from "path";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: Request) {
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       // Sanitize: strip path separators/dangerous chars before writing to disk
-      const safeName = require("path").basename(file.name).replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_").replace(/\s+/g, "-");
+      const safeName = basename(file.name).replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_").replace(/\s+/g, "-");
       const uniqueName = `${uuidv4()}-${safeName}`;
       const path = join(uploadDir, uniqueName);
       await writeFile(path, buffer);

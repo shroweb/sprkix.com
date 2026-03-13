@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     }
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 
   return NextResponse.json({ success: true });
 }

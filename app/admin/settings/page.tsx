@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Save,
   RefreshCcw,
@@ -35,6 +35,8 @@ export default function AdminSettings() {
     BANNER_LINK: "",
     BANNER_ENABLED: "false",
   });
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const heroInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -89,25 +91,40 @@ export default function AdminSettings() {
     e: React.ChangeEvent<HTMLInputElement>,
     field: "HERO_IMAGE" | "SITE_LOGO",
   ) => {
-    if (!e.target.files?.[0]) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
     setUploading(field);
     try {
       const formData = new FormData();
-      formData.append("file", e.target.files[0]);
+      formData.append("file", file);
+      
       const res = await fetch("/api/admin/upload", {
         method: "POST",
         body: formData,
       });
+      
       const data = await res.json();
+      
+      if (!res.ok) {
+        console.error("Upload server error:", data);
+        showMessage("error", data.error || "Upload failed on the server.");
+        return;
+      }
+
       if (data.url) {
         setSettings((s) => ({ ...s, [field]: data.url }));
+        showMessage("success", "Image uploaded successfully. Click Publish to save.");
       } else {
-        showMessage("error", "Upload failed.");
+        showMessage("error", "Upload failed: No URL returned.");
       }
-    } catch {
-      showMessage("error", "Upload failed. Please try again.");
+    } catch (err) {
+      console.error("Upload client error:", err);
+      showMessage("error", "Upload failed. Please check your connection.");
     } finally {
       setUploading(null);
+      // Reset input value so same file can be uploaded again
+      e.target.value = "";
     }
   };
 
@@ -178,20 +195,25 @@ export default function AdminSettings() {
                     className={`${inputClass} font-mono text-xs`}
                     placeholder="Upload or paste image URL..."
                   />
-                  <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
+                  <button
+                    type="button"
+                    onClick={() => logoInputRef.current?.click()}
+                    className="inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity"
+                  >
                     {uploading === "SITE_LOGO" ? (
                       <RefreshCcw className="w-3 h-3 animate-spin" />
                     ) : (
                       <Upload className="w-3 h-3" />
                     )}
                     Upload Logo
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={(e) => handleUpload(e, "SITE_LOGO")}
-                    />
-                  </label>
+                  </button>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => handleUpload(e, "SITE_LOGO")}
+                  />
                   <p className="text-[10px] text-muted-foreground italic">
                     Recommended: square PNG or SVG with transparency. Min
                     200×200px.
@@ -327,20 +349,25 @@ export default function AdminSettings() {
                   className={`${inputClass} font-mono text-xs`}
                   placeholder="Upload or paste image URL..."
                 />
-                <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
+                <button
+                  type="button"
+                  onClick={() => heroInputRef.current?.click()}
+                  className="inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity"
+                >
                   {uploading === "HERO_IMAGE" ? (
                     <RefreshCcw className="w-3 h-3 animate-spin" />
                   ) : (
                     <Upload className="w-3 h-3" />
                   )}
                   Upload Image
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={(e) => handleUpload(e, "HERO_IMAGE")}
-                  />
-                </label>
+                </button>
+                <input
+                  ref={heroInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => handleUpload(e, "HERO_IMAGE")}
+                />
                 {settings.HERO_IMAGE && (
                   <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-slate-100 bg-slate-100">
                     <img
