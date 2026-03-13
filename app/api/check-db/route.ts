@@ -3,12 +3,22 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const columns = await prisma.$queryRaw`
+    const eventColumns = await prisma.$queryRaw`
       SELECT column_name 
       FROM information_schema.columns 
       WHERE table_name = 'Event'
     `;
-    return NextResponse.json({ success: true, columns });
+    const userColumns = await prisma.$queryRaw`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'User'
+    `;
+    const watchlistColumns = await prisma.$queryRaw`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'WatchListItem'
+    `;
+    return NextResponse.json({ success: true, eventColumns, userColumns, watchlistColumns });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
