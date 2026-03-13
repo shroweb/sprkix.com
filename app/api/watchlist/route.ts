@@ -41,11 +41,18 @@ export async function PATCH(req: Request) {
   if (attended !== undefined) data.attended = attended;
   if (watchlist !== undefined) data.watchlist = watchlist;
 
-  await prisma.watchListItem.upsert({
+  const item = await prisma.watchListItem.upsert({
     where: { userId_eventId: { userId: user.id, eventId } },
     update: data,
-    create: { userId: user.id, eventId, ...data },
+    create: { userId: user.id, eventId, watchlist: true, ...data },
   });
+
+  // If nothing is active anymore, delete the record to keep DB clean
+  if (!item.watchlist && !item.watched && !item.attended) {
+    await prisma.watchListItem.delete({
+      where: { id: item.id }
+    });
+  }
 
   revalidatePath("/watchlist", "page");
   revalidatePath("/events/[slug]", "page");

@@ -101,17 +101,11 @@ export default async function WatchlistPage() {
               </div>
 
               <div className="bg-black/50 p-4 border-t border-white/5 mt-auto">
-                {item.event.reviews.length > 0 ? (
+                {item.watched ? (
                   <div className="flex items-center justify-between text-sm px-2">
                     <div className="flex items-center gap-2 font-black italic text-muted-foreground">
                       <Eye className="w-4 h-4 text-emerald-400" />
                       <span className="text-emerald-400">Watched</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-primary fill-current" />
-                      <span className="font-black">
-                        {item.event.reviews[0].rating}/5
-                      </span>
                     </div>
                   </div>
                 ) : (

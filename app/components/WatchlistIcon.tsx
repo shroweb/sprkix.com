@@ -20,7 +20,7 @@ export default function WatchlistIcon({
     const res = await fetch("/api/watchlist", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ eventId, watchlist: !active }),
+      body: JSON.stringify({ eventId, watchlist: !active, watched: false }), // Inverted logic for fallback
     });
     if (res.ok) {
       setActive(!active);
