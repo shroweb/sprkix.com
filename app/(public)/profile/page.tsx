@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
-import RankBadge from "@components/RankBadge";
+import { getRank } from "@components/RankBadge";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
 
 export const dynamic = "force-dynamic";
@@ -223,10 +223,7 @@ export default async function ProfilePage() {
                      user.name ? user.name.charAt(0).toUpperCase() : "U"
                    )}
                  </div>
-                 <div className="absolute -bottom-2 -right-2 z-20 scale-150">
-                    <RankBadge totalActivity={reviews.length + matchRatings.length} />
-                 </div>
-               </div>
+                </div>
 
                {/* User Info */}
                <div className="flex-1 space-y-6 pb-6">
@@ -239,9 +236,19 @@ export default async function ProfilePage() {
                     </h1>
                   </div>
                   <div className="flex flex-wrap items-center gap-8">
-                    <p className="text-white/50 font-bold italic text-2xl tracking-tight">
-                      {(user as any).email}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-white/30 font-black uppercase tracking-[0.2em] text-[10px]">Rank</p>
+                      <p className={`font-black italic text-2xl tracking-tight uppercase ${getRank(reviews.length + matchRatings.length).color}`}>
+                        {getRank(reviews.length + matchRatings.length).name}
+                      </p>
+                    </div>
+                    <div className="h-10 w-[1px] bg-white/20 hidden md:block" />
+                    <div className="space-y-1">
+                      <p className="text-white/30 font-black uppercase tracking-[0.2em] text-[10px]">Email</p>
+                      <p className="text-white/50 font-bold italic text-2xl tracking-tight">
+                        {(user as any).email}
+                      </p>
+                    </div>
                     <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
                     <Link
                       href="/profile/edit"

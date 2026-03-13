@@ -61,7 +61,11 @@ export default async function UserProfilePage({
           },
         },
         profileThemeEvent: true,
-        MatchRating: true,
+        MatchRating: {
+          include: {
+            match: { select: { eventId: true } }
+          }
+        },
       },
     }),
     getUserFromServerCookie(),
@@ -86,28 +90,19 @@ export default async function UserProfilePage({
 
   const avgRating = profileUser.reviews.length
     ? (
-        profileUser.reviews.reduce((sum, r) => sum + r.rating, 0) /
+        profileUser.reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
         profileUser.reviews.length
       ).toFixed(2)
     : null;
 
   const isOwnProfile = currentUser?.id === profileUser.id;
   
-  // Calculate Completionist Stat
-  const ratingsByEvent: Record<string, number> = {};
-  profileUser.MatchRating.forEach((r: any) => {
-    // We don't have eventId directly in MatchRating, let's include it in the query
-  });
-  
-  // Revised query approach for performance
-  const userMatchRatings = await prisma.matchRating.findMany({
-    where: { userId: profileUser.id },
-    include: { match: { select: { eventId: true } } }
-  });
-
   const eventRatingCounts: Record<string, number> = {};
-  userMatchRatings.forEach(r => {
-    eventRatingCounts[r.match.eventId] = (eventRatingCounts[r.match.eventId] || 0) + 1;
+  profileUser.MatchRating.forEach((r: any) => {
+    const eid = r.match?.eventId;
+    if (eid) {
+      eventRatingCounts[eid] = (eventRatingCounts[eid] || 0) + 1;
+    }
   });
 
   const eventsRated = await prisma.event.findMany({
@@ -115,7 +110,7 @@ export default async function UserProfilePage({
     include: { _count: { select: { matches: true } } }
   });
 
-  const cardsCompleted = eventsRated.filter(e => 
+  const cardsCompleted = eventsRated.filter((e: any) => 
     e._count.matches > 0 && eventRatingCounts[e.id] >= e._count.matches
   ).length;
 
@@ -147,7 +142,7 @@ export default async function UserProfilePage({
     const isCorrect =
       p.isCorrect !== null
         ? p.isCorrect
-        : p.match.participants.some((mp) => mp.wrestlerId === p.predictedWinnerId);
+        : p.match.participants.some((mp: any) => mp.wrestlerId === p.predictedWinnerId);
     if (isCorrect) predictionScore++;
   }
   const predictionAccuracy =
@@ -512,7 +507,7 @@ export default async function UserProfilePage({
 
           {profileUser.reviews.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
-              {profileUser.reviews.map((review) => (
+              {profileUser.reviews.map((review: any) => (
                 <Link
                   key={review.id}
                   href={`/events/${review.event.slug}`}

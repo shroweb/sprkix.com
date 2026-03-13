@@ -678,17 +678,21 @@ export default async function EventPage({
                               className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors relative group"
                             >
                               <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black text-white">
-                                    {review.user?.name ? review.user.name.charAt(0).toUpperCase() : "A"}
+                                <Link href={`/users/${review.user?.slug}`} className="flex items-center gap-3 group/user">
+                                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black text-white group-hover/user:ring-2 group-hover/user:ring-primary/50 transition-all overflow-hidden relative">
+                                    {review.user?.avatarUrl ? (
+                                      <Image src={review.user.avatarUrl} fill className="object-cover" alt="" />
+                                    ) : (
+                                      review.user?.name ? review.user.name.charAt(0).toUpperCase() : "A"
+                                    )}
                                   </div>
-                                  <span className="text-sm font-black italic flex items-center gap-1">
+                                  <span className="text-sm font-black italic flex items-center gap-1 group-hover/user:text-primary transition-colors">
                                     {review.user?.name || "Anonymous"}
                                     {(review.user as any)?.isVerified && (
                                       <CheckCircle className="w-3.5 h-3.5 text-blue-400 fill-blue-400/10" />
                                     )}
                                   </span>
-                                </div>
+                                </Link>
                                 <div className="flex items-center gap-2 text-primary">
                                   <VisualRating rating={review.rating} size="sm" />
                                 </div>

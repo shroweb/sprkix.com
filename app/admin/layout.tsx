@@ -32,6 +32,20 @@ export default async function AdminLayout({
         </header>
 
         <main className="p-8 max-w-[1600px] mx-auto w-full">{children}</main>
+        
+        <footer className="mt-auto px-8 py-6 border-t border-border flex justify-center items-center">
+          <p className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-[0.2em]">
+            Developed by{" "}
+            <a 
+              href="https://shroweb.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-primary hover:underline transition-all"
+            >
+              Shro Web
+            </a>
+          </p>
+        </footer>
       </div>
     </div>
   );
