@@ -426,27 +426,25 @@ export default async function EventPage({
               )}
 
               <div className="pt-4 border-t border-border">
-                <div className="flex flex-wrap gap-2 items-center justify-between">
-                  <div className="flex gap-2">
-                    {user && (
-                      <>
-                        <WatchlistIcon
-                          eventId={event.id}
-                          initialActive={inWatchList ? (inWatchList as any).watchlist : false}
-                        />
-                        <WatchedIcon
-                          eventId={event.id}
-                          initialActive={inWatchList ? inWatchList.watched : false}
-                        />
-                        <AttendButton 
-                          eventId={event.id}
-                          initialAttended={(inWatchList as any)?.attended || false}
-                          minimal={true}
-                        />
-                        <SetThemeButton eventId={event.id} minimal={true} />
-                      </>
-                    )}
-                  </div>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {user && (
+                    <>
+                      <WatchlistIcon
+                        eventId={event.id}
+                        initialActive={inWatchList ? (inWatchList as any).watchlist : false}
+                      />
+                      <WatchedIcon
+                        eventId={event.id}
+                        initialActive={inWatchList ? inWatchList.watched : false}
+                      />
+                      <AttendButton 
+                        eventId={event.id}
+                        initialAttended={(inWatchList as any)?.attended || false}
+                        minimal={true}
+                      />
+                      <SetThemeButton eventId={event.id} minimal={true} />
+                    </>
+                  )}
                   <ShareButton minimal={true} />
                 </div>
               </div>
