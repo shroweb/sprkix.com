@@ -419,25 +419,27 @@ export default async function EventPage({
                 </div>
               )}
 
-              <div className="pt-4 border-t border-border space-y-3">
-                <div className="flex gap-3">
-                  {user && (
-                      <WatchListButton
+              <div className="pt-4 border-t border-border">
+                <div className="flex flex-wrap gap-2 items-center justify-between">
+                  <div className="flex gap-2">
+                    {user && (
+                      <>
+                        <WatchListButton
                           eventId={event.id}
                           initialState={!inWatchList ? "none" : inWatchList.watched ? "watched" : "watchlist"}
-                      />
-                  )}
-                  <ShareButton />
-                </div>
-                {user && (
-                    <div className="space-y-3 pt-3 border-t border-border/50">
-                        <AttendButton 
-                            eventId={event.id}
-                            initialAttended={(inWatchList as any)?.attended || false}
+                          minimal={true}
                         />
-                        <SetThemeButton eventId={event.id} />
-                    </div>
-                )}
+                        <AttendButton 
+                          eventId={event.id}
+                          initialAttended={(inWatchList as any)?.attended || false}
+                          minimal={true}
+                        />
+                        <SetThemeButton eventId={event.id} minimal={true} />
+                      </>
+                    )}
+                  </div>
+                  <ShareButton minimal={true} />
+                </div>
               </div>
 
               {/* Completion Progress for Archived Shows */}

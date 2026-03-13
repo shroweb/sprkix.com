@@ -7,9 +7,11 @@ import { useRouter } from "next/navigation";
 export default function AttendButton({
   eventId,
   initialAttended,
+  minimal = false,
 }: {
   eventId: string;
   initialAttended: boolean;
+  minimal?: boolean;
 }) {
   const [attended, setAttended] = useState(initialAttended);
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ export default function AttendButton({
     <button
       onClick={toggle}
       disabled={loading}
-      className={`w-full h-12 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all border text-sm active:scale-95 disabled:opacity-50 ${
+      className={`${minimal ? "w-12" : "w-full"} h-12 rounded-xl font-bold flex items-center justify-center gap-2 transition-all border text-sm active:scale-95 disabled:opacity-50 ${
         attended
           ? "bg-primary text-black border-primary"
           : "bg-white/5 text-muted-foreground border-white/10 hover:border-primary/30 hover:text-primary"
@@ -41,9 +43,11 @@ export default function AttendButton({
       title={attended ? "I was there live!" : "Mark as attended live"}
     >
       <MapPin className={`w-4 h-4 ${attended ? "fill-current" : ""}`} />
-      <span className="text-sm font-black italic">
-        {attended ? "Attended" : "I was there"}
-      </span>
+      {!minimal && (
+        <span className="text-sm font-black italic">
+          {attended ? "Attended" : "I was there"}
+        </span>
+      )}
     </button>
   );
 }

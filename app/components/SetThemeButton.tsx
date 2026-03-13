@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 
 interface SetThemeButtonProps {
     eventId: string;
+    minimal?: boolean;
 }
 
-export default function SetThemeButton({ eventId }: SetThemeButtonProps) {
+export default function SetThemeButton({ eventId, minimal = false }: SetThemeButtonProps) {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
@@ -38,7 +39,8 @@ export default function SetThemeButton({ eventId }: SetThemeButtonProps) {
         <button
             onClick={setTheme}
             disabled={loading}
-            className={`w-full h-12 px-6 rounded-xl font-bold flex items-center justify-center gap-2 transition-all border text-sm active:scale-95 disabled:opacity-50 ${
+            title={success ? "Theme Applied!" : "Use as Profile Theme"}
+            className={`${minimal ? "w-12" : "w-full"} h-12 rounded-xl font-bold flex items-center justify-center gap-2 transition-all border text-sm active:scale-95 disabled:opacity-50 ${
                 success
                     ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                     : "bg-white/5 text-muted-foreground border-white/10 hover:border-primary/30 hover:text-primary"
@@ -46,11 +48,13 @@ export default function SetThemeButton({ eventId }: SetThemeButtonProps) {
         >
             {success ? (
                 <>
-                    <Check className="w-4 h-4" /> Theme Applied!
+                    <Check className="w-4 h-4" /> 
+                    {!minimal && "Selection Applied!"}
                 </>
             ) : (
                 <>
-                    <Palette className="w-4 h-4" /> Use as Profile Theme
+                    <Palette className="w-4 h-4" /> 
+                    {!minimal && "Use as Profile Theme"}
                 </>
             )}
         </button>
