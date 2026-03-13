@@ -153,7 +153,7 @@ export default async function Home() {
             </div>
 
             <h1 className="text-7xl md:text-8xl font-black tracking-tighter leading-[0.82] uppercase italic whitespace-pre-line text-white">
-              {(configMap["HERO_TITLE"] || "RATE. REVIEW. \nDISCOVER.")
+              {(configMap["HERO_TITLE"] || "RATE. REVIEW. \nWRESTLING.")
                 .split("\n")
                 .map((line: string, i: number, arr: string[]) => {
                   if (arr.length > 1 && i === arr.length - 1) {
