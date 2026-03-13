@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         .replace(/\s+/g, "-");
       const uniqueName = `${uuidv4()}-${safeName}`;
 
-      let url: string;
+      let url = "";
 
       // ── Vercel Blob (production) ────────────────────────────────────────────
       // Uses dynamic import so the app still compiles/runs without the package.

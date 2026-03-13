@@ -82,8 +82,8 @@ export default async function WrestlerPage({ params }: { params: any }) {
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
           </div>
         )}
-        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-10 p-10">
-          <div className="relative w-56 aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 shrink-0">
+        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10 p-5 sm:p-8 md:p-10">
+          <div className="relative w-40 sm:w-48 md:w-56 aspect-[2/3] rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 shrink-0">
             {wrestler.imageUrl ? (
               <Image
                 src={wrestler.imageUrl}
@@ -102,32 +102,32 @@ export default async function WrestlerPage({ params }: { params: any }) {
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">
                 Wrestler Profile
               </p>
-              <h1 className="text-6xl font-black italic uppercase tracking-tighter leading-none">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
                 {wrestler.name}
               </h1>
             </div>
 
             {/* Career Stats */}
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-6 py-4 text-center">
+              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black text-emerald-400">{wins}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
                   Wins
                 </p>
               </div>
-              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-6 py-4 text-center">
+              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black text-red-400">{losses}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
                   Losses
                 </p>
               </div>
-              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-6 py-4 text-center">
+              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black">{totalMatches}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
                   Matches
                 </p>
               </div>
-              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-6 py-4 text-center">
+              <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black">{uniqueEvents}</p>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
                   Events

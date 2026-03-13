@@ -96,7 +96,7 @@ export default function EventsGrid({
   );
 
   return (
-    <main className="max-w-7xl mx-auto px-6 pb-20 space-y-12">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-20 space-y-8 sm:space-y-12">
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
@@ -106,7 +106,7 @@ export default function EventsGrid({
       </Link>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <h1 className="text-5xl font-black italic uppercase tracking-tighter italic">
+          <h1 className="text-3xl sm:text-5xl font-black italic uppercase tracking-tighter">
             Event Archives
           </h1>
           <p className="text-muted-foreground font-medium">
@@ -237,7 +237,7 @@ export default function EventsGrid({
         </span>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8">
         {paginatedEvents.map((event) => {
           const isReviewed = reviewedEventIds.includes(event.id);
           const hasRating = (event.reviewCount ?? 0) > 0;

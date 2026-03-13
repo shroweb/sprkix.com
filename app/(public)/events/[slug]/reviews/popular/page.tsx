@@ -98,7 +98,7 @@ export default async function PopularReviewsPage(props: {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       <Link
         href={`/events/${event.slug}`}
         className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group mb-8"

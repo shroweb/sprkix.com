@@ -84,7 +84,7 @@ export default function RegisterPage() {
     <div className="py-20 px-4 flex justify-center bg-black/50 min-h-screen items-center">
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 backdrop-blur-xl bg-white/5 p-10 rounded-3xl shadow-2xl w-full max-w-md border border-white/10"
+        className="space-y-6 backdrop-blur-xl bg-white/5 p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-md border border-white/10"
       >
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-black text-white tracking-tighter uppercase italic">

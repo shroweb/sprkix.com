@@ -35,7 +35,7 @@ export default async function WatchlistPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8 sm:space-y-12 pb-20">
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
@@ -45,7 +45,7 @@ export default async function WatchlistPage() {
       </Link>
       <div className="flex items-center gap-4">
         <Bookmark className="w-8 h-8 text-primary" />
-        <h1 className="text-5xl font-black italic uppercase tracking-tighter">
+        <h1 className="text-3xl sm:text-5xl font-black italic uppercase tracking-tighter">
           My Watchlist
         </h1>
       </div>
@@ -65,7 +65,7 @@ export default async function WatchlistPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
           {watchListItems.map((item) => (
             <div
               key={item.id}

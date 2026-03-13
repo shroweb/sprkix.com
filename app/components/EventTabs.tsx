@@ -43,7 +43,7 @@ export default function EventTabs({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 flex-shrink-0 py-2.5 px-5 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all ${
+            className={`flex items-center gap-2 flex-shrink-0 py-2 px-3 sm:py-2.5 sm:px-5 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all ${
               activeTab === tab.id
                 ? "bg-primary text-black shadow-md shadow-primary/20"
                 : "text-muted-foreground hover:text-foreground hover:bg-white/5"

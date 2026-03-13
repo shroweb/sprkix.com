@@ -159,11 +159,11 @@ export default async function UserProfilePage({
   const userRank = getRank(totalActivity);
 
   return (
-    <div className="pb-20 relative px-6">
+    <div className="pb-20 relative px-2 sm:px-4 lg:px-6">
       <ProfileThemeWrapper posterUrl={profileUser.profileThemeEvent?.posterUrl ?? undefined} />
 
       {/* Hero Section / Cover Image */}
-      <div className="relative h-[500px] w-full mt-8 overflow-hidden rounded-[4rem] border border-white/5 shadow-2xl">
+      <div className="relative min-h-[320px] md:h-[500px] w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[4rem] border border-white/5 shadow-2xl">
          {/* Cover Photo */}
          {profileUser.profileThemeEvent?.posterUrl && (
            <div className="absolute inset-0 -z-10">
@@ -178,7 +178,7 @@ export default async function UserProfilePage({
          {/* Gradient Overlay */}
          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
          
-         <div className="max-w-6xl mx-auto px-6 h-full relative z-20 flex flex-col justify-end pb-16">
+         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full relative z-20 flex flex-col justify-end pb-8 sm:pb-16">
             <Link
               href="/events"
               className="absolute top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
@@ -187,11 +187,11 @@ export default async function UserProfilePage({
               Back to Events
             </Link>
 
-            <div className="flex flex-col md:flex-row items-end gap-10">
+            <div className="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-10">
                {/* Avatar Area */}
                 <div className="relative group/avatar">
-                  <div 
-                    className="w-48 h-48 rounded-full bg-primary flex items-center justify-center text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-8 border-background overflow-hidden"
+                  <div
+                    className="w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full bg-primary flex items-center justify-center text-4xl sm:text-6xl md:text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-4 sm:border-8 border-background overflow-hidden"
                     style={{ 
                       backgroundColor: 'var(--profile-theme-color, var(--primary))',
                       boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
@@ -208,15 +208,15 @@ export default async function UserProfilePage({
                 {/* User Info */}
                 <div className="flex-1 space-y-6 pb-6">
                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                     <h1 className="text-7xl font-black italic uppercase tracking-tighter flex items-center gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                     <h1 className="text-3xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter flex items-center gap-2 sm:gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
                        {profileUser.name}
                        {(profileUser as any).isVerified && (
-                         <CheckCircle className="w-12 h-12 text-blue-400 fill-blue-400/10" />
+                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 text-blue-400 fill-blue-400/10 shrink-0" />
                        )}
                      </h1>
                    </div>
                   <div className="flex flex-wrap items-center gap-8">
-                    <p className={`font-black italic text-2xl tracking-tight uppercase ${userRank.color}`}>
+                    <p className={`font-black italic text-base sm:text-2xl tracking-tight uppercase ${userRank.color}`}>
                        {userRank.name}
                     </p>
                     <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
@@ -280,45 +280,45 @@ export default async function UserProfilePage({
     </div>
 
       {/* Main Content Area */}
-      <div className="max-w-6xl mx-auto px-6 space-y-20 mt-12">
-        
+      <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-6 space-y-20 mt-12">
+
         {/* Quick Info Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 -mt-20 relative z-30">
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Calendar className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
-              <p className="text-sm font-black italic">{memberSince}</p>
-            </div>
-          </div>
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Trophy className="w-6 h-6 text-primary" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 -mt-20 relative z-30">
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
-              <p className="text-sm font-black italic truncate">{(profileUser as any).favoritePromotion ?? "—"}</p>
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
+              <p className="text-xs sm:text-sm font-black italic truncate">{memberSince}</p>
             </div>
           </div>
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex items-center gap-6 group">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-              <Target className="w-6 h-6 text-emerald-500" />
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
+            <div className="min-w-0">
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
+              <p className="text-xs sm:text-sm font-black italic truncate">{(profileUser as any).favoritePromotion ?? "—"}</p>
+            </div>
+          </div>
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6 group">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <Target className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
               {predictionCount > 0 ? (
-                <p className="text-sm font-black italic">
+                <p className="text-xs sm:text-sm font-black italic">
                   {predictionScore}/{predictionCount}
-                  <span className="text-emerald-400 ml-2">{predictionAccuracy}%</span>
+                  <span className="text-emerald-400 ml-1 sm:ml-2">{predictionAccuracy}%</span>
                 </p>
               ) : (
-                <p className="text-sm font-black italic text-muted-foreground/50">None yet</p>
+                <p className="text-xs sm:text-sm font-black italic text-muted-foreground/50">None yet</p>
               )}
             </div>
           </div>
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 flex flex-row items-center justify-around">
+          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex flex-row items-center justify-around">
               <FollowListModal
                 userId={profileUser.id}
                 type="followers"

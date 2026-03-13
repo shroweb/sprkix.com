@@ -297,7 +297,7 @@ export default async function EventPage({
       />
       <div className="fixed inset-0 z-0 bg-background/80" />
 
-      <div className="max-w-7xl mx-auto px-6 pt-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 relative z-10">
         {/* Back Link */}
         <Link
           href="/events"

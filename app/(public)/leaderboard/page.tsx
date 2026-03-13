@@ -85,7 +85,7 @@ export default async function LeaderboardPage() {
 
   return (
     <div className="min-h-screen pb-20">
-      <div className="max-w-4xl mx-auto px-6 pt-10 relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-10 relative z-10">
         {/* Back */}
         <Link
           href="/events"

@@ -204,51 +204,52 @@ export default function Header({
       {menuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border p-6 animate-in slide-in-from-top-4 duration-300 shadow-2xl">
           <nav className="flex flex-col gap-6">
-            <Link href="/events" className="text-lg font-bold">
+            <Link href="/events" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
               Events
             </Link>
-            <Link href="/promotions" className="text-lg font-bold">
+            <Link href="/promotions" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
               Promotions
             </Link>
-            <Link href="/wrestlers" className="text-lg font-bold">
+            <Link href="/wrestlers" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
               Wrestlers
             </Link>
             <div className="space-y-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                 Rankings
               </span>
-              <Link href="/rankings" className="block text-lg font-bold pl-2">
+              <Link href="/rankings" className="block text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 Top Events
               </Link>
-              <Link href="/matches/top" className="block text-lg font-bold pl-2">
+              <Link href="/matches/top" className="block text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 Top Matches
               </Link>
-              <Link href="/leaderboard" className="block text-lg font-bold pl-2">
+              <Link href="/leaderboard" className="block text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 Predictions Leaderboard
               </Link>
             </div>
             <hr className="border-border" />
             {user ? (
               <>
-                <Link href="/feed" className="text-lg font-bold">
+                <Link href="/feed" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
                   My Feed
                 </Link>
                 {user.isAdmin && (
                   <Link
                     href="/admin"
                     className="text-lg font-bold text-primary"
+                    onClick={() => setMenuOpen(false)}
                   >
                     Admin Dashboard
                   </Link>
                 )}
-                <Link href="/profile" className="text-lg font-bold">
+                <Link href="/profile" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
                   My Profile
                 </Link>
-                <Link href="/grapped" className="text-lg font-black text-primary uppercase italic flex items-center gap-2">
+                <Link href="/grapped" className="text-lg font-black text-primary uppercase italic flex items-center gap-2" onClick={() => setMenuOpen(false)}>
                   <Zap className="w-5 h-5" /> Grapped
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={() => { setMenuOpen(false); logout(); }}
                   className="text-left text-lg font-bold text-destructive"
                 >
                   Logout
@@ -256,10 +257,10 @@ export default function Header({
               </>
             ) : (
               <>
-                <Link href="/login" className="text-lg font-bold">
+                <Link href="/login" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
                   Login
                 </Link>
-                <Link href="/register" className="btn-primary text-center">
+                <Link href="/register" className="btn-primary text-center" onClick={() => setMenuOpen(false)}>
                   Join sprkix
                 </Link>
               </>

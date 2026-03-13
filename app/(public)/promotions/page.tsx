@@ -76,7 +76,7 @@ export default async function PromotionsPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pb-20 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-20 space-y-8 sm:space-y-12">
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
@@ -92,7 +92,7 @@ export default async function PromotionsPage() {
             Browse By
           </span>
         </div>
-        <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter uppercase italic">
           Promotions
         </h1>
         <p className="text-muted-foreground font-medium italic">

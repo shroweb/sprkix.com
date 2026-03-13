@@ -33,7 +33,7 @@ export default async function FavoritesPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pt-10 pb-20 relative z-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-20 relative z-10">
       <Link
         href="/profile"
         className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors mb-8 group"

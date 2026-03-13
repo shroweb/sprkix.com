@@ -34,7 +34,7 @@ export default async function RankingsPage() {
   const rest = ranked.slice(3);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pb-20 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-20 space-y-8 sm:space-y-12">
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
@@ -50,7 +50,7 @@ export default async function RankingsPage() {
             Community Voted
           </span>
         </div>
-        <h1 className="text-6xl font-black italic uppercase tracking-tighter leading-none">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
           Event
           <br />
           Rankings

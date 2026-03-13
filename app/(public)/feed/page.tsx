@@ -64,7 +64,7 @@ export default async function FeedPage() {
             Social Feed
           </span>
         </div>
-        <h1 className="text-5xl font-black tracking-tighter uppercase italic">
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tighter uppercase italic">
           Following
         </h1>
         <p className="text-muted-foreground font-medium italic">

@@ -124,7 +124,7 @@ export default async function Home() {
   const featuredEvents = recentEvents.length > 0 ? recentEvents.slice(0, 5) : ranked.slice(0, 1);
 
   return (
-    <div className="-mt-28 space-y-32 pb-32">
+    <div className="-mt-28 space-y-16 md:space-y-32 pb-20 md:pb-32">
       {/* ── Hero ── */}
       <section className="relative min-h-[90vh] flex items-center pt-24 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-slate-950">
@@ -143,7 +143,7 @@ export default async function Home() {
           <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10 grid lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-24 items-center w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 relative z-10 grid lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-24 items-center w-full">
           <div className="space-y-10 animate-in fade-in slide-in-from-left-12 duration-1000">
             <div className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 border border-primary/20 rounded-full shadow-lg shadow-primary/5">
               <TrendingUp className="w-4 h-4 text-primary" />
@@ -152,7 +152,7 @@ export default async function Home() {
               </span>
             </div>
 
-            <h1 className="text-7xl md:text-8xl font-black tracking-tighter leading-[0.82] uppercase italic whitespace-pre-line text-white">
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-[0.82] uppercase italic whitespace-pre-line text-white">
               {(configMap["HERO_TITLE"]?.includes("DISCOVER") || !configMap["HERO_TITLE"]
                 ? "RATE. REVIEW. \nWRESTLING."
                 : configMap["HERO_TITLE"]
@@ -186,7 +186,7 @@ export default async function Home() {
             <div className="flex flex-wrap gap-4 pt-4 items-center">
               <Link
                 href="/events"
-                className="h-14 px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all"
+                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all"
               >
                 Explore Archives <ArrowRight className="w-4 h-4" />
               </Link>
@@ -194,13 +194,13 @@ export default async function Home() {
               <RandomRingButton
                 eventSlugs={eventSlugs}
                 label="Random Event"
-                className="h-14 px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all shrink-0"
+                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all shrink-0"
               />
 
               {!user && (
                 <Link
                   href="/register"
-                  className="h-14 px-8 bg-card/60 border border-white/10 text-white text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-card hover:border-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  className="h-12 sm:h-14 px-6 sm:px-8 bg-card/60 border border-white/10 text-white text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-card hover:border-primary/20 hover:scale-105 active:scale-95 transition-all"
                 >
                   Join Free
                 </Link>
@@ -240,16 +240,16 @@ export default async function Home() {
         </div>
       </section>
 
-      <main className="max-w-7xl mx-auto px-8 space-y-40 relative z-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 md:space-y-40 relative z-10">
 
         {/* ── Hall of Fame ── */}
         {hallOfFame.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-16 px-2">
+            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
                     Hall of Fame
                   </h2>
                 </div>
@@ -328,11 +328,11 @@ export default async function Home() {
         {/* ── Trending This Week ── */}
         {trendingSorted.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-16 px-2">
+            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
                     Trending
                   </h2>
                 </div>
@@ -348,7 +348,7 @@ export default async function Home() {
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8">
               {trendingSorted.map((event) => {
                 const avgRating = event.reviews.length
                   ? event.reviews.reduce((a, r) => a + r.rating, 0) /
@@ -402,11 +402,11 @@ export default async function Home() {
         {/* ── Recent Archive ── */}
         {events.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-16 px-2">
+            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
                     Recent Archive
                   </h2>
                 </div>
@@ -422,7 +422,7 @@ export default async function Home() {
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-10">
               {events.map((event: any) => (
                 <Link
                   key={event.id}
@@ -463,11 +463,11 @@ export default async function Home() {
         {/* ── Top Matches ── */}
         {topMatches.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-16 px-2">
+            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
                     Top Matches
                   </h2>
                 </div>

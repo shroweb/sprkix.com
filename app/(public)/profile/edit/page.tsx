@@ -130,7 +130,7 @@ export default function EditProfilePage() {
         </h1>
       </div>
 
-      <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8">
+      <div className="bg-card/40 border border-white/5 rounded-[2rem] p-5 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">

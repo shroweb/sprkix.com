@@ -133,7 +133,7 @@ export default async function GrappedPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="h-1 w-12 bg-primary" />
-          <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter text-white">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter text-white">
             YOUR<span className="text-primary">GRAPPED</span>
           </h1>
         </div>
@@ -143,7 +143,7 @@ export default async function GrappedPage() {
       </div>
 
       {/* Monthly Snapshot */}
-      <section className="bg-slate-950 border border-primary/20 rounded-[3.5rem] p-10 md:p-16 relative overflow-hidden group">
+      <section className="bg-slate-950 border border-primary/20 rounded-[2rem] sm:rounded-[3.5rem] p-6 sm:p-10 md:p-16 relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -mr-48 -mt-48 transition-all duration-1000 group-hover:scale-110" />
 
         <div className="relative z-10 space-y-10">
