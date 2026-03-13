@@ -153,7 +153,10 @@ export default async function Home() {
             </div>
 
             <h1 className="text-7xl md:text-8xl font-black tracking-tighter leading-[0.82] uppercase italic whitespace-pre-line text-white">
-              {(configMap["HERO_TITLE"] || "RATE. REVIEW. \nWRESTLING.")
+              {(configMap["HERO_TITLE"]?.includes("DISCOVER") || !configMap["HERO_TITLE"]
+                ? "RATE. REVIEW. \nWRESTLING."
+                : configMap["HERO_TITLE"]
+              )
                 .split("\n")
                 .map((line: string, i: number) => {
                   const parts = line.split(/(WRESTLING\.?)/i);
