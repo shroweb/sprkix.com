@@ -233,11 +233,16 @@ export default async function EventPage({
     ? event.reviews.find((r: any) => r.userId === userId) ?? null
     : null;
 
-  const inWatchList = user
-    ? await prisma.watchListItem.findFirst({
-        where: { userId: user.id, eventId: event.id },
-      })
-    : null;
+  let inWatchList: any = null;
+  try {
+    inWatchList = user
+      ? await prisma.watchListItem.findFirst({
+          where: { userId: user.id, eventId: event.id },
+        })
+      : null;
+  } catch (err) {
+    console.error("Watchlist fetch error:", err);
+  }
 
   const watchCount = await prisma.watchListItem.count({
     where: { eventId: event.id },
