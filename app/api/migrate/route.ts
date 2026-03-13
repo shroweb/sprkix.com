@@ -8,6 +8,9 @@ export async function GET() {
     await prisma.$executeRawUnsafe(`ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "enableWatchParty" BOOLEAN NOT NULL DEFAULT true`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "enablePredictions" BOOLEAN NOT NULL DEFAULT true`);
     await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "profileThemeEventId" TEXT`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WatchListItem" ADD COLUMN IF NOT EXISTS "watchlist" BOOLEAN NOT NULL DEFAULT true`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WatchListItem" ADD COLUMN IF NOT EXISTS "watched" BOOLEAN NOT NULL DEFAULT false`);
+    await prisma.$executeRawUnsafe(`ALTER TABLE "WatchListItem" ADD COLUMN IF NOT EXISTS "attended" BOOLEAN NOT NULL DEFAULT false`);
     
     return NextResponse.json({ success: true, message: "Database columns added successfully" });
   } catch (error: any) {

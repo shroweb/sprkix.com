@@ -36,10 +36,29 @@ export default async function ProfilePage() {
       </div>
     );
 
-  const currentUser = await (prisma.user as any).findFirst({
-    where: { id: user.id },
-    include: { profileThemeEvent: true }
-  });
+  let currentUser: any = null;
+  try {
+    currentUser = await (prisma.user as any).findFirst({
+      where: { id: user.id },
+      include: { profileThemeEvent: true }
+    });
+  } catch (err) {
+    console.error("Profile user fetch error:", err);
+    currentUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+          id: true,
+          name: true,
+          email: true,
+          slug: true,
+          avatarUrl: true,
+          isAdmin: true,
+          isVerified: true,
+          favoritePromotion: true,
+          createdAt: true
+      }
+    });
+  }
 
   const results = (await Promise.all([
     prisma.review.findMany({
