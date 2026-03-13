@@ -554,10 +554,35 @@ export default async function EventPage({
             {/* ── Event Tabs ───────────────────────────────────────────────── */}
             {(() => {
               // ── Card tab content ─────────────────────────────────────────
-              const cardContent = isUpcoming ? (
-                processedMatches.length > 0 ? (
+              const cardContent = processedMatches.length > 0 ? (
+                <MatchList
+                  matches={processedMatches as any}
+                  user={user}
+                  motNMatchId={topMatch && topMatch.averageRating > 0 ? topMatch.id : undefined}
+                  compact={isUpcoming}
+                />
+              ) : (
+                <div className="bg-card/30 border border-border border-dashed rounded-[2rem] p-20 text-center">
+                  <Info className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-muted-foreground font-bold italic">
+                    {isUpcoming ? "No matches announced yet." : "No matches have been logged for this event."}
+                  </p>
+                </div>
+              );
+
+              // ── Predictions tab (upcoming = make picks, archive = results) ──
+              const matchesWithPredictions = processedMatches.filter(
+                (m: any) => m.participants?.length > 0 && communityStatsMap[m.id]?.length > 0
+              );
+
+              let predictionsContent: React.ReactNode = undefined;
+
+              // Upcoming: show the prediction picker as its own tab
+              if (isUpcoming && event.enablePredictions && processedMatches.length > 0) {
+                const matchesWithParticipants = processedMatches.filter((m: any) => m.participants?.length > 0);
+                predictionsContent = matchesWithParticipants.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {processedMatches.map((match: any) => (
+                    {matchesWithParticipants.map((match: any) => (
                       <PredictionCard
                         key={match.id}
                         match={match}
@@ -570,32 +595,13 @@ export default async function EventPage({
                 ) : (
                   <div className="bg-card/30 border border-border border-dashed rounded-[2rem] p-20 text-center">
                     <Info className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                    <p className="text-muted-foreground font-bold italic">No matches announced yet.</p>
+                    <p className="text-muted-foreground font-bold italic">No participants announced yet.</p>
                   </div>
-                )
-              ) : processedMatches.length > 0 ? (
-                <MatchList
-                  matches={processedMatches as any}
-                  user={user}
-                  motNMatchId={topMatch && topMatch.averageRating > 0 ? topMatch.id : undefined}
-                />
-              ) : (
-                <div className="bg-card/30 border border-border border-dashed rounded-[2rem] p-20 text-center">
-                  <Info className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-muted-foreground font-bold italic">No matches have been logged for this event.</p>
-                </div>
-              );
+                );
+              }
 
-              // ── Predictions tab (upcoming = make picks, archive = results) ──
-              const matchesWithPredictions = processedMatches.filter(
-                (m: any) => m.participants?.length > 0 && communityStatsMap[m.id]?.length > 0
-              );
-              const hasPredictions = isArchive
-                ? matchesWithPredictions.length > 0
-                : isUpcoming && processedMatches.length > 0; // upcoming already in card tab
-
-              let predictionsContent: React.ReactNode = undefined;
-              if (isArchive && matchesWithPredictions.length > 0) {
+              // Archive: show resolved picks
+              if (isArchive && event.enablePredictions && matchesWithPredictions.length > 0) {
                 const resolvedPicks = processedMatches.filter((m: any) => m.userPredictionIsCorrect !== null);
                 const correctPicks = resolvedPicks.filter((m: any) => m.userPredictionIsCorrect === true).length;
                 predictionsContent = (
@@ -626,10 +632,12 @@ export default async function EventPage({
 
               // ── Watch Party tab (live = active chat, archive = transcript) ──
               let watchPartyContent: React.ReactNode = undefined;
-              if (isLive) {
-                watchPartyContent = <LiveChatContainer eventId={event.id} user={user} fullWidth />;
-              } else if (isArchive && hasChatTranscript) {
-                watchPartyContent = <LiveChatContainer eventId={event.id} user={user} fullWidth readOnly />;
+              if (event.enableWatchParty) {
+                if (isLive) {
+                  watchPartyContent = <LiveChatContainer eventId={event.id} user={user} fullWidth />;
+                } else if (isArchive && hasChatTranscript) {
+                  watchPartyContent = <LiveChatContainer eventId={event.id} user={user} fullWidth readOnly />;
+                }
               }
 
               // ── Review tab (archive only) ────────────────────────────────
@@ -783,10 +791,10 @@ export default async function EventPage({
 
               // ── Build tabs list (only include what's relevant) ────────────
               const tabs: EventTab[] = [
-                { id: "card", label: isUpcoming ? "Predictions" : "Card", badge: processedMatches.length },
+                { id: "card", label: "Card", badge: processedMatches.length },
               ];
               if (predictionsContent) {
-                tabs.push({ id: "predictions", label: "Predictions", badge: matchesWithPredictions.length });
+                tabs.push({ id: "predictions", label: "Predictions", badge: isArchive ? matchesWithPredictions.length : undefined });
               }
               if (watchPartyContent) {
                 tabs.push({ id: "watchParty", label: isLive ? "Watch Party 🔴" : "Watch Party" });

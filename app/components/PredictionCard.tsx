@@ -63,10 +63,28 @@ export default function PredictionCard({
     teams[t].push(p);
   });
 
+  // Which team is currently selected?  (null = none selected)
+  const selectedParticipant = match.participants.find(
+    (p: any) => p.wrestler.id === selectedWinnerId
+  );
+  const selectedTeamNum: number | null = selectedParticipant
+    ? (selectedParticipant.team ?? 1)
+    : null;
+
   const handlePredict = async (wrestlerId: string) => {
     if (!user || isSubmitting || readOnly) return;
 
-    const newWinnerId = selectedWinnerId === wrestlerId ? null : wrestlerId;
+    // Identify which team the clicked wrestler belongs to
+    const clickedParticipant = match.participants.find(
+      (p: any) => p.wrestler.id === wrestlerId
+    );
+    const clickedTeam = clickedParticipant?.team ?? 1;
+
+    // Clicking the already-selected team → deselect; otherwise select
+    const newWinnerId =
+      selectedTeamNum !== null && clickedTeam === selectedTeamNum
+        ? null
+        : wrestlerId;
 
     setIsSubmitting(true);
     setSelectedWinnerId(newWinnerId);
@@ -300,7 +318,10 @@ export default function PredictionCard({
 
                 <div className="flex flex-col gap-2">
                   {participants.map((p: any) => {
-                    const isWinner = selectedWinnerId === p.wrestler.id;
+                    // Highlight the whole team when any member of it is selected
+                    const thisTeam = p.team ?? 1;
+                    const isWinner =
+                      selectedTeamNum !== null && thisTeam === selectedTeamNum;
                     const stats = communityStats.find((s) => s.winnerId === p.wrestler.id);
                     const progress = stats ? stats.percentage : 0;
 

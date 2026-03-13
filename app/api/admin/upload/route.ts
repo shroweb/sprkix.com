@@ -19,19 +19,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const uploadDir = join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-
     const results = [];
     for (const file of files) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      // Sanitize: strip path separators/dangerous chars before writing to disk
-      const safeName = basename(file.name).replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_").replace(/\s+/g, "-");
+      const safeName = basename(file.name)
+        .replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_")
+        .replace(/\s+/g, "-");
       const uniqueName = `${uuidv4()}-${safeName}`;
-      const path = join(uploadDir, uniqueName);
-      await writeFile(path, buffer);
-      const url = `/uploads/${uniqueName}`;
+
+      let url: string;
+
+      // ── Vercel Blob (production) ────────────────────────────────────────────
+      // Uses dynamic import so the app still compiles/runs without the package.
+      // To enable: npm install @vercel/blob and add BLOB_READ_WRITE_TOKEN to env.
+      let usedBlob = false;
+      if (process.env.BLOB_READ_WRITE_TOKEN) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const blobModule: any = await import("@vercel/blob").catch(() => null);
+          if (blobModule?.put) {
+            const blob = await blobModule.put(uniqueName, buffer, {
+              access: "public",
+              contentType: file.type || "application/octet-stream",
+            });
+            url = blob.url;
+            usedBlob = true;
+          }
+        } catch (blobErr) {
+          console.error("Vercel Blob upload failed, trying filesystem:", blobErr);
+        }
+      }
+
+      // ── Filesystem fallback (local dev / self-hosted) ───────────────────────
+      if (!usedBlob) {
+        const uploadDir = join(process.cwd(), "public", "uploads");
+        await mkdir(uploadDir, { recursive: true });
+        const path = join(uploadDir, uniqueName);
+        await writeFile(path, buffer);
+        url = `/uploads/${uniqueName}`;
+      }
 
       // Record in DB
       const media = await prisma.mediaItem.create({
@@ -46,9 +73,7 @@ export async function POST(req: Request) {
       results.push(media);
     }
 
-    return NextResponse.json(
-      results.length === 1 ? results[0] : results,
-    );
+    return NextResponse.json(results.length === 1 ? results[0] : results);
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(

@@ -64,6 +64,8 @@ export default function EditEventClient({
   initialMatches: any[];
   wrestlers: any[];
 }) {
+  // Local copy so we can add newly-created wrestlers after a Cagematch import
+  const [wrestlersList, setWrestlersList] = useState(wrestlers);
   const [matches, setMatches] = useState(initialMatches);
   const [isAddingMatch, setIsAddingMatch] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -82,6 +84,8 @@ export default function EditEventClient({
     // Format as local datetime-local string (YYYY-MM-DDTHH:mm) in the browser's timezone
     startTime: event.startTime ? toLocalDatetimeInput(new Date(event.startTime)) : "",
     endTime: event.endTime ? toLocalDatetimeInput(new Date(event.endTime)) : "",
+    enableWatchParty: event.enableWatchParty !== false,
+    enablePredictions: event.enablePredictions !== false,
   });
   const [savingDetails, setSavingDetails] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -137,7 +141,25 @@ export default function EditEventClient({
           createdNames: data.createdNames ?? [],
         });
         // API returns the full updated list — replace, don't append
-        setMatches(data.matches ?? []);
+        const updatedMatches = data.matches ?? [];
+        setMatches(updatedMatches);
+
+        // Merge any newly-created wrestlers into the local list so the edit
+        // form can show their names without a page reload.
+        setWrestlersList((prev) => {
+          const existingIds = new Set(prev.map((w: any) => w.id));
+          const toAdd: any[] = [];
+          for (const m of updatedMatches) {
+            for (const p of m.participants ?? []) {
+              if (p.wrestler && !existingIds.has(p.wrestler.id)) {
+                existingIds.add(p.wrestler.id);
+                toAdd.push(p.wrestler);
+              }
+            }
+          }
+          return toAdd.length > 0 ? [...prev, ...toAdd] : prev;
+        });
+
         showMessage(
           "success",
           `Imported ${data.matchesImported ?? 0} matches successfully!`,
@@ -171,13 +193,13 @@ export default function EditEventClient({
     setTimeout(() => setMessage(null), 4000);
   };
 
-  const filteredWrestlers = wrestlers.filter(
+  const filteredWrestlers = wrestlersList.filter(
     (w) =>
       w.name.toLowerCase().includes(participantSearch.toLowerCase()) &&
       !newMatch.participants.some((p) => p.wrestlerId === w.id),
   );
 
-  const filteredEditingWrestlers = wrestlers.filter(
+  const filteredEditingWrestlers = wrestlersList.filter(
     (w) =>
       w.name.toLowerCase().includes(editingSearch.toLowerCase()) &&
       !editingMatchData.participants.some((p) => p.wrestlerId === w.id),
@@ -537,6 +559,37 @@ export default function EditEventClient({
                   <p className="text-[10px] text-muted-foreground mt-1 italic">When Chat archives.</p>
                 </div>
               </div>
+
+              {/* Enable toggles */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center justify-between bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-foreground">Watch Party</p>
+                    <p className="text-[10px] text-muted-foreground italic">Enable live chat</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDetails((d) => ({ ...d, enableWatchParty: !d.enableWatchParty }))}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${details.enableWatchParty ? "bg-primary" : "bg-slate-300"}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${details.enableWatchParty ? "translate-x-5" : "translate-x-0"}`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-foreground">Predictions</p>
+                    <p className="text-[10px] text-muted-foreground italic">Enable pick 'em</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDetails((d) => ({ ...d, enablePredictions: !d.enablePredictions }))}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${details.enablePredictions ? "bg-primary" : "bg-slate-300"}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${details.enablePredictions ? "translate-x-5" : "translate-x-0"}`} />
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                   Description
@@ -867,7 +920,7 @@ export default function EditEventClient({
                   </div>
                 ) : (
                   newMatch.participants.map((p) => {
-                    const w = wrestlers.find((w) => w.id === p.wrestlerId);
+                    const w = wrestlersList.find((w: any) => w.id === p.wrestlerId);
                     return (
                       <div
                         key={p.wrestlerId}
@@ -1114,7 +1167,7 @@ export default function EditEventClient({
                         </div>
                       ) : (
                         editingMatchData.participants.map((p) => {
-                          const w = wrestlers.find(
+                          const w = wrestlersList.find(
                             (wr) => wr.id === p.wrestlerId,
                           );
                           return (

@@ -89,6 +89,8 @@ model Event {
   startTime     DateTime?
   endTime       DateTime?
   currentMatchOrder Int? @default(1)
+  enableWatchParty  Boolean  @default(true)
+  enablePredictions Boolean  @default(true)
   createdAt     DateTime        @default(now())
   matches       Match[]
   reviews       Review[]

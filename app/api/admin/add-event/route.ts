@@ -26,23 +26,26 @@ export async function POST(req: Request) {
         tmdbId: body.tmdbId ? parseInt(body.tmdbId) : null,
         startTime: body.startTime ? new Date(body.startTime) : null,
         endTime: body.endTime ? new Date(body.endTime) : null,
+        enableWatchParty: body.enableWatchParty !== false,
+        enablePredictions: body.enablePredictions !== false,
       },
     });
 
-    // Auto-import matches if URL is present and matches Cagematch pattern
-    if (body.profightdbUrl && body.profightdbUrl.includes("cagematch.net")) {
+    // Auto-import matches if URL is present and matches Cagematch/ProfightDB pattern
+    const importUrl = body.profightdbUrl;
+    if (importUrl && (importUrl.includes("cagematch.net") || importUrl.includes("profightdb.com"))) {
       try {
-        await importMatchesFromCagematch(newEvent.id, body.profightdbUrl);
+        await importMatchesFromCagematch(newEvent.id, importUrl);
       } catch (importErr) {
         console.error(
-          "❌ Error auto-importing matches from Cagematch:",
+          "❌ Error auto-importing matches:",
           importErr,
         );
         // We still return success for the event creation
       }
     }
 
-    return NextResponse.json({ success: true, id: newEvent.id });
+    return NextResponse.json({ success: true, id: newEvent.id, slug: newEvent.slug });
   } catch (error) {
     console.error("❌ Error adding event:", error);
     return NextResponse.json(

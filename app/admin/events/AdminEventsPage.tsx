@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import MediaPicker from "../components/MediaPicker";
 import {
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 export default function AdminEventsPage() {
+  const router = useRouter();
   const [form, setForm] = useState({
     title: "",
     slug: "",
@@ -25,6 +27,8 @@ export default function AdminEventsPage() {
     tmdbId: "",
     startTime: "",
     endTime: "",
+    enableWatchParty: true,
+    enablePredictions: true,
   });
   const [message, setMessage] = useState("");
   const [events, setEvents] = useState<
@@ -153,6 +157,8 @@ export default function AdminEventsPage() {
       profightdbUrl: importUrl,
       startTime: toISO(form.startTime),
       endTime: toISO(form.endTime),
+      enableWatchParty: form.enableWatchParty,
+      enablePredictions: form.enablePredictions,
       slug:
         form.slug ||
         form.title
@@ -168,6 +174,12 @@ export default function AdminEventsPage() {
     });
 
     if (res.ok) {
+      const data = await res.json();
+      // Redirect to edit page so admin can immediately add the match card
+      if (data.id) {
+        router.push(`/admin/events/${data.id}/edit`);
+        return;
+      }
       setMessage("✅ Event added successfully!");
       setForm({
         title: "",
@@ -181,6 +193,8 @@ export default function AdminEventsPage() {
         tmdbId: "",
         startTime: "",
         endTime: "",
+        enableWatchParty: true,
+        enablePredictions: true,
       });
       setPosterFile(null);
       setIsAdding(false);
@@ -390,6 +404,36 @@ export default function AdminEventsPage() {
                   onChange={(e) => update("venue", e.target.value)}
                 />
               </div>
+              {/* Enable toggles */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3">
+                  <div>
+                    <p className="text-xs font-bold uppercase text-foreground">Watch Party</p>
+                    <p className="text-[10px] text-muted-foreground">Enable live chat</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, enableWatchParty: !f.enableWatchParty }))}
+                    className={`relative w-10 h-5 rounded-full transition-colors ${form.enableWatchParty ? "bg-primary" : "bg-slate-300"}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.enableWatchParty ? "translate-x-5" : "translate-x-0"}`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3">
+                  <div>
+                    <p className="text-xs font-bold uppercase text-foreground">Predictions</p>
+                    <p className="text-[10px] text-muted-foreground">Enable pick 'em</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, enablePredictions: !f.enablePredictions }))}
+                    className={`relative w-10 h-5 rounded-full transition-colors ${form.enablePredictions ? "bg-primary" : "bg-slate-300"}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.enablePredictions ? "translate-x-5" : "translate-x-0"}`} />
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
                   Description
