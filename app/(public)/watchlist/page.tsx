@@ -11,23 +11,28 @@ export default async function WatchlistPage() {
     redirect("/login");
   }
 
-  const watchListItems = await prisma.watchListItem.findMany({
-    where: { 
-        userId: user.id,
-        watchlist: true,
-    },
-    include: {
-      event: {
+  let watchListItems: any[] = [];
+  try {
+      watchListItems = await prisma.watchListItem.findMany({
+        where: { 
+            userId: user.id,
+            watchlist: true,
+        },
         include: {
-          reviews: {
-            where: { userId: user.id },
-            take: 1,
+          event: {
+            include: {
+              reviews: {
+                where: { userId: user.id },
+                take: 1,
+              },
+            },
           },
         },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+        orderBy: { createdAt: "desc" },
+      });
+  } catch (err) {
+      console.error("Watchlist page error:", err);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-6 space-y-12">
