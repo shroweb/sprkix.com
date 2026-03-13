@@ -146,9 +146,10 @@ export default async function ProfilePage() {
     predictionCount > 0 ? Math.round((predictionScore / predictionCount) * 100) : null;
 
   const avgRating = reviews.length
-    ? (reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length).toFixed(
-        1,
-      )
+    ? (
+        reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
+        reviews.length
+      ).toFixed(1)
     : null;
 
   const promoCount: Record<string, number> = {};
