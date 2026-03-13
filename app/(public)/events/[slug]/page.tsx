@@ -683,7 +683,7 @@ export default async function EventPage({
                           }
                         }
                         
-                        displayReviews = displayReviews.slice(0, 5);
+                        displayReviews = displayReviews.slice(0, 1);
                         
                         return displayReviews.length > 0 ? (
                           <div className="space-y-4">
