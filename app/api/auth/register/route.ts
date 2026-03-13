@@ -1,24 +1,62 @@
 import { prisma } from "../../../../lib/prisma";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
-  const { name, email, password } = await req.json();
+  try {
+    const { name, email, password } = await req.json();
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing)
-    return NextResponse.json({ error: "User exists" }, { status: 400 });
+    if (!name || !email || !password) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
 
-  const hashed = await bcrypt.hash(password, 10);
-  const slug =
-    name.toLowerCase().replace(/[^a-z0-9]+/g, "-") +
-    "-" +
-    Math.random().toString(36).substring(2, 6);
-  const user = await prisma.user.create({
-    data: { name, email, password: hashed, slug },
-    // Never return the hashed password to the client
-    select: { id: true, name: true, email: true, slug: true, isAdmin: true, createdAt: true },
-  });
+    const trimmedEmail = email.trim().toLowerCase();
 
-  return NextResponse.json({ user });
+    const existing = await prisma.user.findUnique({ where: { email: trimmedEmail } });
+    if (existing) {
+      return NextResponse.json({ error: "User already exists with this email" }, { status: 400 });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+    const slug =
+      name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-") +
+      "-" +
+      Math.random().toString(36).substring(2, 6);
+
+    const user = await prisma.user.create({
+      data: { name: name.trim(), email: trimmedEmail, password: hashed, slug },
+    });
+
+    // Automatically log in the user
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, name: user.name },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" },
+    );
+
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        slug: user.slug,
+      },
+    });
+
+    response.cookies.set({
+      name: "token",
+      value: token,
+      path: "/",
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: "lax",
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Registration error:", error);
+    return NextResponse.json({ error: "Registration failed" }, { status: 500 });
+  }
 }

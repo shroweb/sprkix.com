@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Award } from "lucide-react";
 
-const RANKS = [
+export const RANKS = [
   { name: "Local Talent",       min: 0,   max: 4,   color: "text-zinc-500",    desc: "You just showed up. Welcome to the card." },
   { name: "Jobber",             min: 5,   max: 14,  color: "text-zinc-400",    desc: "Taking the losses so the business can run." },
   { name: "Curtain Jerker",     min: 15,  max: 29,  color: "text-slate-400",   desc: "Opening the show. The crowd is still finding seats." },
@@ -16,7 +16,7 @@ const RANKS = [
   { name: "Hall of Famer",      min: 325, max: Infinity, color: "text-primary", desc: "The highest honour. Your plaque is in the rafters." },
 ];
 
-function getRank(total: number) {
+export function getRank(total: number) {
   return RANKS.find(r => total >= r.min && total <= r.max) ?? RANKS[0];
 }
 

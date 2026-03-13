@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Star, Users, UserCheck, ChevronLeft, Heart, CheckCircle, Trophy, Activity, Calendar, Award, Target } from "lucide-react";
 import FollowButton from "@components/FollowButton";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
-import RankBadge from "@components/RankBadge";
+import RankBadge, { getRank } from "@components/RankBadge";
 import FollowListModal from "@components/FollowListModal";
 
 export default async function UserProfilePage({
@@ -158,6 +158,9 @@ export default async function UserProfilePage({
     year: "numeric",
   });
 
+  const totalActivity = profileUser.reviews.length + (profileUser.MatchRating?.length || 0);
+  const userRank = getRank(totalActivity);
+
   return (
     <div className="pb-20 relative px-6">
       <ProfileThemeWrapper posterUrl={profileUser.profileThemeEvent?.posterUrl ?? undefined} />
@@ -189,38 +192,35 @@ export default async function UserProfilePage({
 
             <div className="flex flex-col md:flex-row items-end gap-10">
                {/* Avatar Area */}
-               <div className="relative group/avatar">
-                 <div 
-                   className="w-48 h-48 rounded-full bg-primary flex items-center justify-center text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-8 border-background overflow-hidden"
-                   style={{ 
-                     backgroundColor: 'var(--profile-theme-color, var(--primary))',
-                     boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
-                   }}
-                 >
-                   {profileUser.avatarUrl ? (
-                     <Image src={profileUser.avatarUrl} fill className="object-cover" alt={profileUser.name || "Avatar"} />
-                   ) : (
-                     profileUser.name ? profileUser.name.charAt(0).toUpperCase() : "U"
-                   )}
-                 </div>
-                 <div className="absolute -bottom-2 -right-2 z-20 scale-150">
-                    <RankBadge totalActivity={profileUser.reviews.length + (profileUser.MatchRating?.length || 0)} />
-                 </div>
-               </div>
-
-               {/* User Info */}
-               <div className="flex-1 space-y-6 pb-6">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <h1 className="text-7xl font-black italic uppercase tracking-tighter flex items-center gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                      {profileUser.name}
-                      {(profileUser as any).isVerified && (
-                        <CheckCircle className="w-12 h-12 text-blue-400 fill-blue-400/10" />
-                      )}
-                    </h1>
+                <div className="relative group/avatar">
+                  <div 
+                    className="w-48 h-48 rounded-full bg-primary flex items-center justify-center text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-8 border-background overflow-hidden"
+                    style={{ 
+                      backgroundColor: 'var(--profile-theme-color, var(--primary))',
+                      boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
+                    }}
+                  >
+                    {profileUser.avatarUrl ? (
+                      <Image src={profileUser.avatarUrl} fill className="object-cover" alt={profileUser.name || "Avatar"} />
+                    ) : (
+                      profileUser.name ? profileUser.name.charAt(0).toUpperCase() : "U"
+                    )}
                   </div>
+                </div>
+
+                {/* User Info */}
+                <div className="flex-1 space-y-6 pb-6">
+                   <div className="flex flex-col md:flex-row md:items-center gap-4">
+                     <h1 className="text-7xl font-black italic uppercase tracking-tighter flex items-center gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                       {profileUser.name}
+                       {(profileUser as any).isVerified && (
+                         <CheckCircle className="w-12 h-12 text-blue-400 fill-blue-400/10" />
+                       )}
+                     </h1>
+                   </div>
                   <div className="flex flex-wrap items-center gap-8">
-                    <p className="text-white/50 font-bold italic text-2xl tracking-tight">
-                       Community Member
+                    <p className={`font-black italic text-2xl tracking-tight uppercase ${userRank.color}`}>
+                       {userRank.name}
                     </p>
                     <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
                     
@@ -247,7 +247,6 @@ export default async function UserProfilePage({
                       </Link>
                     )}
                   </div>
-               </div>
 
                {/* Stats Summary Panel */}
                <div className="hidden lg:flex gap-12 pb-6 border-l border-white/10 pl-12 h-fit mb-4">
@@ -280,7 +279,6 @@ export default async function UserProfilePage({
                 </div>
             </div>
          </div>
-      </div>
 
       {/* Main Content Area */}
       <div className="max-w-6xl mx-auto px-6 space-y-20 mt-12">
