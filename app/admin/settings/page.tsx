@@ -31,6 +31,7 @@ export default function AdminSettings() {
     HERO_IMAGE: "",
     FEATURED_EVENT_ID: "",
     SITE_LOGO: "",
+    LOGO_SIZE: "md",
     BANNER_TEXT: "",
     BANNER_LINK: "",
     BANNER_ENABLED: "false",
@@ -51,6 +52,7 @@ export default function AdminSettings() {
           HERO_IMAGE: configs.HERO_IMAGE || "",
           FEATURED_EVENT_ID: configs.FEATURED_EVENT_ID || "",
           SITE_LOGO: configs.SITE_LOGO || "",
+          LOGO_SIZE: configs.LOGO_SIZE || "md",
           BANNER_TEXT: configs.BANNER_TEXT || "",
           BANNER_LINK: configs.BANNER_LINK || "",
           BANNER_ENABLED: configs.BANNER_ENABLED || "false",
@@ -206,6 +208,39 @@ export default function AdminSettings() {
                     200×200px.
                   </p>
                 </div>
+              </div>
+              <div className="space-y-3 pt-2 border-t border-slate-100">
+                <label className={labelClass}>
+                  <ImageIcon className="w-3.5 h-3.5" /> Logo Display Size
+                </label>
+                <div className="flex gap-2">
+                  {(["sm", "md", "lg", "xl"] as const).map((size) => {
+                    const label = size.toUpperCase();
+                    const barHeight = { sm: 8, md: 12, lg: 16, xl: 24 }[size];
+                    const active = settings.LOGO_SIZE === size;
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => setSettings((s) => ({ ...s, LOGO_SIZE: size }))}
+                        className={`flex-1 flex flex-col items-center justify-end gap-2 py-3 rounded-xl border-2 text-xs font-black uppercase tracking-wider transition-all ${
+                          active
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-slate-100 bg-slate-50 text-muted-foreground hover:border-primary/30"
+                        }`}
+                      >
+                        <div
+                          className="rounded w-5 bg-current opacity-40"
+                          style={{ height: barHeight }}
+                        />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-muted-foreground italic">
+                  Controls the height of the logo in the navigation bar.
+                </p>
               </div>
             </div>
           </div>

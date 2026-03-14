@@ -20,12 +20,21 @@ import {
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
 
+const logoSizeMap: Record<string, string> = {
+  sm: "h-8",
+  md: "h-12",
+  lg: "h-16",
+  xl: "h-24",
+};
+
 export default function Header({
   user,
   siteLogo,
+  logoSize,
 }: {
   user: any;
   siteLogo?: string;
+  logoSize?: string;
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -54,7 +63,7 @@ export default function Header({
             <img
               src={siteLogo}
               alt="Logo"
-              className="h-10 w-auto object-contain group-hover:scale-105 transition-transform"
+              className={`${logoSizeMap[logoSize || "md"] ?? "h-12"} w-auto object-contain group-hover:scale-105 transition-transform`}
             />
           ) : (
             <>

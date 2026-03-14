@@ -10,16 +10,19 @@ export default async function PublicLayout({
   const user = await getUserFromServerCookie();
 
   let siteLogo = "";
+  let logoSize = "md";
   try {
-    const row = await (prisma as any).siteConfig.findUnique({
-      where: { key: "SITE_LOGO" },
-    });
-    siteLogo = row?.value || "";
+    const [logoRow, sizeRow] = await Promise.all([
+      (prisma as any).siteConfig.findUnique({ where: { key: "SITE_LOGO" } }),
+      (prisma as any).siteConfig.findUnique({ where: { key: "LOGO_SIZE" } }),
+    ]);
+    siteLogo = logoRow?.value || "";
+    logoSize = sizeRow?.value || "md";
   } catch {}
 
   return (
     <>
-      <Header user={user} siteLogo={siteLogo} />
+      <Header user={user} siteLogo={siteLogo} logoSize={logoSize} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-10">{children}</main>
       <footer className="mt-16 border-t border-white/5 text-center py-10 px-4 max-w-7xl mx-auto space-y-4">
         <p className="text-[10px] sm:text-xs text-muted-foreground/60 uppercase tracking-widest font-black italic">
