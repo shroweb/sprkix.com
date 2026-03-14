@@ -16,6 +16,7 @@ export const GET = withErrorHandling(async (_req: NextRequest, ctx: any) => {
       imageUrl: true,
       bio: true,
       createdAt: true,
+      aliases: { select: { id: true, alias: true }, orderBy: { alias: "asc" } },
       matches: {
         orderBy: { match: { event: { date: "desc" } } },
         take: 50,

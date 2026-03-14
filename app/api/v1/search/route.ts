@@ -18,10 +18,15 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
       select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true },
     }),
     prisma.wrestler.findMany({
-      where: { name: { contains: q, mode: "insensitive" } },
+      where: {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { aliases: { some: { alias: { contains: q, mode: "insensitive" } } } },
+        ],
+      },
       take: 10,
       orderBy: { name: "asc" },
-      select: { id: true, name: true, slug: true, imageUrl: true },
+      select: { id: true, name: true, slug: true, imageUrl: true, aliases: { select: { alias: true } } },
     }),
     prisma.user.findMany({
       where: { name: { contains: q, mode: "insensitive" } },

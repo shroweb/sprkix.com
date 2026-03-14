@@ -410,6 +410,9 @@ export default function AdminWrestlersPage({
   const [editImageUrl, setEditImageUrl] = useState("");
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
   const [editBio, setEditBio] = useState("");
+  const [editAliases, setEditAliases] = useState<{ id: string; alias: string }[]>([]);
+  const [newAlias, setNewAlias] = useState("");
+  const [aliasLoading, setAliasLoading] = useState(false);
 
   // Media picker state
   const [mediaPickerTarget, setMediaPickerTarget] = useState<
@@ -537,12 +540,50 @@ export default function AdminWrestlersPage({
     }
   };
 
-  const openEdit = (w: Wrestler) => {
+  const openEdit = async (w: Wrestler) => {
     setEditingId(w.id);
     setEditImageUrl(w.imageUrl || "");
     setEditImageFile(null);
     setEditBio(w.bio || "");
     setIsAdding(false);
+    setNewAlias("");
+    // Load aliases
+    try {
+      const res = await fetch(`/api/admin/wrestlers/${w.id}/aliases`);
+      const data = await res.json();
+      setEditAliases(data.aliases || []);
+    } catch {
+      setEditAliases([]);
+    }
+  };
+
+  const addAlias = async () => {
+    if (!newAlias.trim() || !editingId) return;
+    setAliasLoading(true);
+    try {
+      const res = await fetch(`/api/admin/wrestlers/${editingId}/aliases`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alias: newAlias.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setEditAliases((prev) => [...prev, data.alias]);
+        setNewAlias("");
+      }
+    } finally {
+      setAliasLoading(false);
+    }
+  };
+
+  const removeAlias = async (aliasId: string) => {
+    if (!editingId) return;
+    await fetch(`/api/admin/wrestlers/${editingId}/aliases`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aliasId }),
+    });
+    setEditAliases((prev) => prev.filter((a) => a.id !== aliasId));
   };
 
   const editingWrestler = wrestlers.find((w) => w.id === editingId);
@@ -877,6 +918,41 @@ export default function AdminWrestlersPage({
                 rows={4}
               />
             </div>
+            {/* Alternative Names / Aliases */}
+            <div>
+              <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">
+                Alternative Names
+              </label>
+              <div className="space-y-2">
+                {editAliases.map((a) => (
+                  <div key={a.id} className="flex items-center justify-between bg-secondary rounded-xl px-3 py-2 text-sm">
+                    <span>{a.alias}</span>
+                    <button type="button" onClick={() => removeAlias(a.id)} className="text-red-400 hover:text-red-600 transition-colors">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. Dean Ambrose"
+                    value={newAlias}
+                    onChange={(e) => setNewAlias(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addAlias(); } }}
+                    className="flex-1 bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={addAlias}
+                    disabled={aliasLoading || !newAlias.trim()}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold disabled:opacity-50 hover:bg-primary/90 transition-colors"
+                  >
+                    {aliasLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div className="flex justify-end gap-3">
               <button
                 type="button"

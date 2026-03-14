@@ -17,6 +17,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
   const wrestler = await prisma.wrestler.findUnique({
     where: { slug },
     include: {
+      aliases: { orderBy: { alias: "asc" } },
       matches: {
         include: {
           match: {
@@ -106,6 +107,12 @@ export default async function WrestlerPage({ params }: { params: any }) {
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
                 {wrestler.name}
               </h1>
+              {wrestler.aliases.length > 0 && (
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                  aka{" "}
+                  {wrestler.aliases.map((a) => a.alias).join(" · ")}
+                </p>
+              )}
             </div>
 
             {/* Career Stats */}

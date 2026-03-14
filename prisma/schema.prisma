@@ -176,7 +176,17 @@ model Wrestler {
   imageUrl  String?
   bio       String?
   matches   MatchParticipant[]
+  aliases   WrestlerAlias[]
   createdAt DateTime           @default(now())
+}
+
+model WrestlerAlias {
+  id         String   @id @default(cuid())
+  alias      String
+  wrestlerId String
+  wrestler   Wrestler @relation(fields: [wrestlerId], references: [id], onDelete: Cascade)
+
+  @@index([wrestlerId])
 }
 
 model MatchParticipant {

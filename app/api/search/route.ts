@@ -29,7 +29,12 @@ export async function GET(req: Request) {
       take: 5,
     }),
     prisma.wrestler.findMany({
-      where: { name: { contains: q, mode: "insensitive" } },
+      where: {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { aliases: { some: { alias: { contains: q, mode: "insensitive" } } } },
+        ],
+      },
       select: { id: true, name: true, slug: true, imageUrl: true },
       take: 5,
     }),
