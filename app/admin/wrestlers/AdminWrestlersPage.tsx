@@ -416,6 +416,7 @@ export default function AdminWrestlersPage({
     "add" | "edit" | null
   >(null);
   const [bulkTmdbOpen, setBulkTmdbOpen] = useState(false);
+  const [fixingSlugs, setFixingSlugs] = useState(false);
 
   const filteredWrestlers = wrestlers.filter(
     (w) =>
@@ -651,6 +652,31 @@ export default function AdminWrestlersPage({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={async () => {
+              if (!confirm("This will rename all wrestlers with timestamp slugs (e.g. arashi-1773411326104) to clean slugs. Continue?")) return;
+              setFixingSlugs(true);
+              try {
+                const res = await fetch("/api/admin/wrestlers/fix-slugs", { method: "POST" });
+                const data = await res.json();
+                setWrestlers((prev) =>
+                  prev.map((w) => {
+                    const fix = data.results?.find((r: any) => r.id === w.id);
+                    return fix ? { ...w, slug: fix.newSlug } : w;
+                  }),
+                );
+                showMessage("success", `Fixed ${data.fixed} slug${data.fixed !== 1 ? "s" : ""}.`);
+              } catch {
+                showMessage("error", "Slug fix failed.");
+              } finally {
+                setFixingSlugs(false);
+              }
+            }}
+            disabled={fixingSlugs}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-600 rounded-xl text-sm font-bold hover:bg-amber-100 transition-colors disabled:opacity-50"
+          >
+            {fixingSlugs ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />} Fix Slugs
+          </button>
           <button
             onClick={() => setBulkTmdbOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-100 transition-colors"

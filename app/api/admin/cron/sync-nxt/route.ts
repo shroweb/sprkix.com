@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../lib/prisma";
 import { importMatchesFromCagematch } from "../../../../../lib/cagematch";
 import { fetchCagematchEventInfo } from "../../../../../lib/cagematch-info";
+import { uniqueEventSlug } from "../../../../../lib/slug-utils";
 import * as cheerio from "cheerio";
 
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -73,7 +74,7 @@ export async function GET(req: NextRequest) {
     const newEvent = await prisma.event.create({
       data: {
         title: info.title || eventTitle,
-        slug: `${slug}-${Date.now()}`,
+        slug: await uniqueEventSlug(info.title || eventTitle),
         date: info.date ? new Date(info.date) : new Date(),
         promotion: info.promotion || "WWE",
         posterUrl: info.posterUrl || null,

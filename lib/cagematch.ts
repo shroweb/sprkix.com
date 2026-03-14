@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { uniqueWrestlerSlug } from './slug-utils'
 import * as cheerio from 'cheerio'
 
 interface ParsedMatch {
@@ -229,7 +230,7 @@ export async function importMatchesFromCagematch(eventId: string, url: string) {
 
             if (!wrestler) {
                 wrestler = await prisma.wrestler.create({
-                    data: { name: rawName, slug: slugify(rawName) + '-' + Date.now() }
+                    data: { name: rawName, slug: await uniqueWrestlerSlug(rawName) }
                 })
                 wrestlerByName.set(key, wrestler)
             }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../../lib/server-auth";
 import { parseCagematchHtml, parseProfightDbHtml } from "../../../../../../lib/cagematch";
+import { uniqueWrestlerSlug } from "../../../../../../lib/slug-utils";
 
 async function fetchWithFallback(url: string): Promise<string> {
   const headers = {
@@ -88,7 +89,7 @@ export async function POST(
           wrestlersMatched++;
         } else {
           wrestler = await prisma.wrestler.create({
-            data: { name: rawName, slug: `${slugify(rawName)}-${Date.now()}` },
+            data: { name: rawName, slug: await uniqueWrestlerSlug(rawName) },
           });
           wrestlerByName.set(key, wrestler);
           wrestlersCreated++;
