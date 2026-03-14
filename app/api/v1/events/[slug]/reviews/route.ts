@@ -34,7 +34,7 @@ export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
         user: {
           select: { id: true, name: true, slug: true, avatarUrl: true },
         },
-        replies: {
+        Reply: {
           select: {
             id: true,
             comment: true,
