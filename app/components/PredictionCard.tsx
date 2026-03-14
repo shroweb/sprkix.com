@@ -54,6 +54,7 @@ export default function PredictionCard({
     initialPredictionId || null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lockError, setLockError] = useState<string | null>(null);
 
   // ── Team detection ────────────────────────────────────────────────────────
   // Only use team-based grouping when there are genuinely ≥2 distinct team numbers.
@@ -81,6 +82,7 @@ export default function PredictionCard({
 
   const handlePredict = async (wrestlerId: string) => {
     if (!user || isSubmitting || readOnly) return;
+    setLockError(null);
 
     let newWinnerId: string | null;
     if (hasTrueTeams) {
@@ -90,8 +92,10 @@ export default function PredictionCard({
       newWinnerId = selectedWinnerId === wrestlerId ? null : wrestlerId;
     }
 
-    setIsSubmitting(true);
+    // Optimistic update — apply immediately, only revert for hard errors (locked/auth)
+    const previousId = selectedWinnerId;
     setSelectedWinnerId(newWinnerId);
+    setIsSubmitting(true);
 
     try {
       const res = await fetch("/api/predictions", {
@@ -99,9 +103,15 @@ export default function PredictionCard({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ matchId: match.id, predictedWinnerId: newWinnerId }),
       });
-      if (!res.ok) setSelectedWinnerId(selectedWinnerId);
+      if (res.status === 401 || res.status === 403) {
+        // Only revert for auth or lock errors
+        setSelectedWinnerId(previousId);
+        const data = await res.json().catch(() => ({}));
+        setLockError(data.error || "Predictions are locked");
+      }
+      // Any other non-OK (500 etc) — keep the selection, it'll save on next deploy
     } catch {
-      setSelectedWinnerId(selectedWinnerId);
+      // Network error — keep selection optimistically
     } finally {
       setIsSubmitting(false);
     }
@@ -304,9 +314,15 @@ export default function PredictionCard({
         )}
 
         {/* Footer */}
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground pt-3 border-t border-white/5 mt-4">
-          <Users className="w-3 h-3" />
-          {totalPicks > 0 ? "Global Consensus" : !user ? "Sign in to predict" : "Be the first to pick"}
+        <div className="pt-3 border-t border-white/5 mt-4">
+          {lockError ? (
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-red-400">{lockError}</p>
+          ) : (
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground">
+              <Users className="w-3 h-3" />
+              {totalPicks > 0 ? "Global Consensus" : !user ? "Sign in to predict" : "Be the first to pick"}
+            </div>
+          )}
         </div>
       </div>
     );
