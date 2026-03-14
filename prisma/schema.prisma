@@ -14,6 +14,7 @@ model User {
   email     String   @unique
   isAdmin   Boolean  @default(false)
   isVerified Boolean @default(false)
+  isSuspended Boolean @default(false)
   password  String
   slug      String   @unique
   avatarUrl String?

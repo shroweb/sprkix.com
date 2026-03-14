@@ -18,6 +18,7 @@ import {
   Loader2,
   Zap,
   SkipForward,
+  GitMerge,
 } from "lucide-react";
 import MediaPicker from "../components/MediaPicker";
 
@@ -45,6 +46,243 @@ type BulkMatch = {
   bio: string | null;
   accepted: boolean; // user toggle
 };
+
+function WrestlerMergeModal({
+  wrestlers,
+  onClose,
+  onMerged,
+}: {
+  wrestlers: Wrestler[];
+  onClose: () => void;
+  onMerged: (keepId: string, mergeId: string) => void;
+}) {
+  const [keepQuery, setKeepQuery] = useState("");
+  const [mergeQuery, setMergeQuery] = useState("");
+  const [keepOpen, setKeepOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
+  const [keepWrestler, setKeepWrestler] = useState<Wrestler | null>(null);
+  const [mergeWrestler, setMergeWrestler] = useState<Wrestler | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const keepRef = useRef<HTMLDivElement>(null);
+  const mergeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (keepRef.current && !keepRef.current.contains(e.target as Node)) setKeepOpen(false);
+      if (mergeRef.current && !mergeRef.current.contains(e.target as Node)) setMergeOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const keepFiltered = keepQuery.trim()
+    ? wrestlers.filter(
+        (w) =>
+          w.name.toLowerCase().includes(keepQuery.toLowerCase()) &&
+          w.id !== mergeWrestler?.id,
+      )
+    : [];
+
+  const mergeFiltered = mergeQuery.trim()
+    ? wrestlers.filter(
+        (w) =>
+          w.name.toLowerCase().includes(mergeQuery.toLowerCase()) &&
+          w.id !== keepWrestler?.id,
+      )
+    : [];
+
+  const handleConfirm = async () => {
+    if (!keepWrestler || !mergeWrestler) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/wrestlers/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keepId: keepWrestler.id, mergeId: mergeWrestler.id }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setResult(`Merged "${data.removed}" into "${data.kept}" successfully.`);
+        onMerged(keepWrestler.id, mergeWrestler.id);
+      } else {
+        setError(data.error || "Merge failed.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
+              <GitMerge className="w-4 h-4 text-purple-600" />
+            </div>
+            <div>
+              <h2 className="font-bold text-base">Merge Wrestlers</h2>
+              <p className="text-xs text-muted-foreground">Combine two wrestler records into one</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-xl transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-5">
+          {/* Keep input */}
+          <div ref={keepRef} className="relative">
+            <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+              Keep (primary)
+            </label>
+            <input
+              type="text"
+              value={keepWrestler ? keepWrestler.name : keepQuery}
+              onChange={(e) => {
+                setKeepQuery(e.target.value);
+                setKeepWrestler(null);
+                setKeepOpen(true);
+              }}
+              onFocus={() => setKeepOpen(true)}
+              placeholder="Search for wrestler to keep..."
+              className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+            />
+            {keepOpen && keepFiltered.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-2xl shadow-xl z-10 max-h-52 overflow-y-auto">
+                {keepFiltered.map((w) => (
+                  <button
+                    key={w.id}
+                    type="button"
+                    onClick={() => {
+                      setKeepWrestler(w);
+                      setKeepQuery(w.name);
+                      setKeepOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
+                      {w.imageUrl ? (
+                        <img src={w.imageUrl} alt={w.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <span className="text-sm font-bold truncate">{w.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Merge input */}
+          <div ref={mergeRef} className="relative">
+            <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
+              Remove (will be deleted)
+            </label>
+            <input
+              type="text"
+              value={mergeWrestler ? mergeWrestler.name : mergeQuery}
+              onChange={(e) => {
+                setMergeQuery(e.target.value);
+                setMergeWrestler(null);
+                setMergeOpen(true);
+              }}
+              onFocus={() => setMergeOpen(true)}
+              placeholder="Search for wrestler to remove..."
+              className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+            />
+            {mergeOpen && mergeFiltered.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-2xl shadow-xl z-10 max-h-52 overflow-y-auto">
+                {mergeFiltered.map((w) => (
+                  <button
+                    key={w.id}
+                    type="button"
+                    onClick={() => {
+                      setMergeWrestler(w);
+                      setMergeQuery(w.name);
+                      setMergeOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
+                      {w.imageUrl ? (
+                        <img src={w.imageUrl} alt={w.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <span className="text-sm font-bold truncate">{w.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Confirmation card */}
+          {keepWrestler && mergeWrestler && (
+            <div className="bg-purple-50 rounded-2xl p-4 space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-purple-400 mb-0.5">Keep</p>
+                  <div className="flex items-center gap-2">
+                    {keepWrestler.imageUrl && (
+                      <img src={keepWrestler.imageUrl} alt={keepWrestler.name} className="w-6 h-6 rounded-lg object-cover shrink-0" />
+                    )}
+                    <p className="font-bold text-purple-900 truncate">{keepWrestler.name}</p>
+                  </div>
+                </div>
+                <GitMerge className="w-4 h-4 text-purple-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-red-400 mb-0.5">Remove</p>
+                  <div className="flex items-center gap-2">
+                    {mergeWrestler.imageUrl && (
+                      <img src={mergeWrestler.imageUrl} alt={mergeWrestler.name} className="w-6 h-6 rounded-lg object-cover shrink-0" />
+                    )}
+                    <p className="font-bold text-red-700 truncate">{mergeWrestler.name}</p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-purple-700 font-medium">
+                This will permanently delete <strong>{mergeWrestler.name}</strong> and merge their match history into <strong>{keepWrestler.name}</strong>.
+              </p>
+            </div>
+          )}
+
+          {error && <p className="text-xs text-red-500 font-bold">{error}</p>}
+          {result && <p className="text-xs text-emerald-600 font-bold">{result}</p>}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between shrink-0">
+          <button onClick={onClose} className="btn-secondary">Cancel</button>
+          <button
+            onClick={handleConfirm}
+            disabled={!keepWrestler || !mergeWrestler || submitting}
+            className="flex items-center gap-2 px-6 py-2.5 bg-purple-600 text-white font-bold rounded-xl disabled:opacity-40 hover:bg-purple-700 transition-colors text-sm"
+          >
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Merging…</>
+            ) : (
+              <><GitMerge className="w-4 h-4" /> Confirm Merge</>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function BulkTmdbModal({
   wrestlers,
@@ -419,6 +657,7 @@ export default function AdminWrestlersPage({
     "add" | "edit" | null
   >(null);
   const [bulkTmdbOpen, setBulkTmdbOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
   const [fixingSlugs, setFixingSlugs] = useState(false);
 
   const filteredWrestlers = wrestlers.filter(
@@ -723,6 +962,12 @@ export default function AdminWrestlersPage({
             className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-100 transition-colors"
           >
             <Zap className="w-4 h-4" /> Bulk TMDB
+          </button>
+          <button
+            onClick={() => setMergeOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-xl text-sm font-bold hover:bg-purple-100 transition-colors"
+          >
+            <GitMerge className="w-4 h-4" /> Merge
           </button>
           <button
             onClick={() => {
@@ -1063,6 +1308,19 @@ export default function AdminWrestlersPage({
             );
             setBulkTmdbOpen(false);
             showMessage("success", `${updates.length} wrestlers updated from TMDB.`);
+          }}
+        />
+      )}
+
+      {/* Wrestler Merge Modal */}
+      {mergeOpen && (
+        <WrestlerMergeModal
+          wrestlers={wrestlers}
+          onClose={() => setMergeOpen(false)}
+          onMerged={(keepId, mergeId) => {
+            setWrestlers((prev) => prev.filter((w) => w.id !== mergeId));
+            setMergeOpen(false);
+            showMessage("success", "Wrestlers merged successfully.");
           }}
         />
       )}
