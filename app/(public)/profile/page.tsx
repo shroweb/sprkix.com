@@ -101,7 +101,15 @@ export default async function ProfilePage() {
       try {
         return await prisma.watchListItem.findMany({
           where: { userId: user.id },
-          include: { event: true },
+          select: {
+            id: true,
+            userId: true,
+            eventId: true,
+            watched: true,
+            attended: true,
+            createdAt: true,
+            event: true
+          },
           orderBy: { createdAt: "desc" },
         });
       } catch (err) {
