@@ -80,7 +80,8 @@ export default function AdminSettings() {
       if (res.ok) {
         showMessage("success", "Settings saved and published.");
       } else {
-        showMessage("error", "Failed to save settings.");
+        const data = await res.json().catch(() => ({}));
+        showMessage("error", data.detail || data.error || "Failed to save settings.");
       }
     } catch {
       showMessage("error", "Network error. Please try again.");

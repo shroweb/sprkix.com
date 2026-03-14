@@ -48,7 +48,16 @@ export async function POST(req: Request) {
     );
   }
 
-  const body = await req.json();
+  let body: any;
+  try {
+    body = await req.json();
+  } catch (e: any) {
+    return NextResponse.json(
+      { error: "Failed to parse request body", detail: e?.message },
+      { status: 400 },
+    );
+  }
+
   const {
     HERO_TITLE,
     HERO_DESC,
@@ -73,14 +82,22 @@ export async function POST(req: Request) {
     { key: "BANNER_ENABLED", value: BANNER_ENABLED },
   ];
 
-  for (const update of updates) {
-    if (update.value !== undefined) {
-      await (prisma as any).siteConfig.upsert({
-        where: { key: update.key },
-        update: { value: update.value },
-        create: { key: update.key, value: update.value },
-      });
+  try {
+    for (const update of updates) {
+      if (update.value !== undefined) {
+        await (prisma as any).siteConfig.upsert({
+          where: { key: update.key },
+          update: { value: update.value },
+          create: { key: update.key, value: update.value },
+        });
+      }
     }
+  } catch (e: any) {
+    console.error("[admin/settings POST] DB error:", e);
+    return NextResponse.json(
+      { error: "Database error", detail: e?.message },
+      { status: 500 },
+    );
   }
 
   revalidatePath("/", "layout");
