@@ -77,7 +77,11 @@ export default function FollowListModal({
           />
 
           {/* Modal */}
-          <div className="relative bg-[#0d1020] border border-white/10 rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative bg-[#0d1020] border border-white/10 rounded-[2.5rem] w-full max-w-lg sm:max-w-xl lg:max-w-2xl max-h-[85vh] shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200 flex flex-col"
+          >
             {/* Header */}
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-white/[0.02]">
               <div className="flex items-center gap-4">
@@ -98,7 +102,7 @@ export default function FollowListModal({
             </div>
 
             {/* Body */}
-            <div className="max-h-80 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto overscroll-contain">
               {loading ? (
                 <div className="flex items-center justify-center py-16">
                   <Loader2 className="w-6 h-6 text-primary animate-spin" />
@@ -115,27 +119,28 @@ export default function FollowListModal({
                   {users.map((u) => (
                     <div
                       key={u.id}
-                      className="flex items-center justify-between px-6 py-4"
+                      className="flex items-center gap-4 px-6 py-4"
                     >
                       <Link
                         href={`/users/${u.slug || u.id}`}
                         onClick={() => setOpen(false)}
-                        className="flex items-center gap-3 hover:text-primary transition-colors group"
+                        className="flex min-w-0 flex-1 items-center gap-3 hover:text-primary transition-colors group"
                       >
                         <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-black text-black shrink-0">
                           {u.name?.charAt(0).toUpperCase() ?? "U"}
                         </div>
-                        <span className="font-black text-sm italic group-hover:text-primary transition-colors">
+                        <span className="font-black text-sm italic group-hover:text-primary transition-colors truncate">
                           {u.name ?? "Unknown"}
                         </span>
                       </Link>
 
                       {/* Show follow button only if this isn't the current user */}
                       {currentUserId && !u.isCurrentUser && (
-                        <div className="shrink-0 scale-90 origin-right">
+                        <div className="shrink-0">
                           <FollowButton
                             targetUserId={u.id}
                             initialIsFollowing={u.isFollowing}
+                            size="sm"
                           />
                         </div>
                       )}
