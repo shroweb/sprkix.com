@@ -64,27 +64,25 @@ export default function PredictionCard({
   });
 
   // Which team is currently selected?  (null = none selected)
+  // Only meaningful when participants actually have explicit team numbers assigned.
   const selectedParticipant = match.participants.find(
     (p: any) => p.wrestler.id === selectedWinnerId
   );
-  const selectedTeamNum: number | null = selectedParticipant
-    ? (selectedParticipant.team ?? 1)
-    : null;
+  const selectedTeamNum: number | null = selectedParticipant?.team ?? null;
 
   const handlePredict = async (wrestlerId: string) => {
     if (!user || isSubmitting || readOnly) return;
 
-    // Identify which team the clicked wrestler belongs to
     const clickedParticipant = match.participants.find(
       (p: any) => p.wrestler.id === wrestlerId
     );
-    const clickedTeam = clickedParticipant?.team ?? 1;
+    const clickedTeam: number | null = clickedParticipant?.team ?? null;
 
-    // Clicking the already-selected team → deselect; otherwise select
-    const newWinnerId =
-      selectedTeamNum !== null && clickedTeam === selectedTeamNum
-        ? null
-        : wrestlerId;
+    // If participants have explicit team numbers, toggle by team.
+    // Otherwise toggle by individual wrestler ID.
+    const newWinnerId = clickedTeam !== null
+      ? (selectedTeamNum !== null && clickedTeam === selectedTeamNum ? null : wrestlerId)
+      : (selectedWinnerId === wrestlerId ? null : wrestlerId);
 
     setIsSubmitting(true);
     setSelectedWinnerId(newWinnerId);
@@ -318,10 +316,11 @@ export default function PredictionCard({
 
                 <div className="flex flex-col gap-2">
                   {participants.map((p: any) => {
-                    // Highlight the whole team when any member of it is selected
-                    const thisTeam = p.team ?? 1;
-                    const isWinner =
-                      selectedTeamNum !== null && thisTeam === selectedTeamNum;
+                    // Highlight by team when explicit teams are set, otherwise by wrestler ID
+                    const thisTeam: number | null = p.team ?? null;
+                    const isWinner = thisTeam !== null
+                      ? selectedTeamNum !== null && thisTeam === selectedTeamNum
+                      : p.wrestler.id === selectedWinnerId;
                     const stats = communityStats.find((s) => s.winnerId === p.wrestler.id);
                     const progress = stats ? stats.percentage : 0;
 
