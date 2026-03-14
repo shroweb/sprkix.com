@@ -31,13 +31,21 @@ export default function Header({
   user,
   siteLogo,
   logoSize,
+  bannerEnabled,
+  bannerText,
+  bannerLink,
 }: {
   user: any;
   siteLogo?: string;
   logoSize?: string;
+  bannerEnabled?: boolean;
+  bannerText?: string;
+  bannerLink?: string;
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const showBanner = !!bannerEnabled && !!bannerText?.trim();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,6 +69,21 @@ export default function Header({
             "bg-gradient-to-b from-background/85 via-background/35 to-transparent backdrop-blur-md py-6"
       }`}
     >
+      {showBanner && (
+        <div className="w-full px-4 sm:px-6 pb-3">
+          <a
+            href={bannerLink?.trim() || "#"}
+            target={bannerLink?.trim()?.startsWith("http") ? "_blank" : undefined}
+            rel={bannerLink?.trim()?.startsWith("http") ? "noopener noreferrer" : undefined}
+            className="mx-auto max-w-7xl block rounded-2xl bg-primary text-black px-5 py-3 text-center text-xs sm:text-sm font-black uppercase tracking-wider hover:opacity-90 transition-opacity"
+            onClick={(e) => {
+              if (!bannerLink?.trim()) e.preventDefault();
+            }}
+          >
+            {bannerText}
+          </a>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
