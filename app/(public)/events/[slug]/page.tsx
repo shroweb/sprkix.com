@@ -264,7 +264,7 @@ export default async function EventPage({
     inWatchList = user
       ? await prisma.watchListItem.findFirst({
           where: { userId: user.id, eventId: event.id },
-          select: { id: true },
+          select: { id: true, watchlist: true, watched: true, attended: true },
         })
       : null;
   } catch (err) {
