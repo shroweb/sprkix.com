@@ -4,6 +4,9 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import { writeFile, mkdir } from "fs/promises";
 import { join, basename } from "path";
 import { v4 as uuidv4 } from "uuid";
+import { put } from "@vercel/blob";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const user = await getUserFromServerCookie();
@@ -19,6 +22,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    const isVercel = !!process.env.VERCEL;
+    if (isVercel && !process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        {
+          error:
+            "Uploads are not configured for production. Set BLOB_READ_WRITE_TOKEN (Vercel Blob) to enable admin uploads on Vercel.",
+        },
+        { status: 500 },
+      );
+    }
+
     const results = [];
     for (const file of files) {
       const bytes = await file.arrayBuffer();
@@ -31,24 +45,14 @@ export async function POST(req: Request) {
       let url = "";
 
       // ── Vercel Blob (production) ────────────────────────────────────────────
-      // Uses dynamic import so the app still compiles/runs without the package.
-      // To enable: npm install @vercel/blob and add BLOB_READ_WRITE_TOKEN to env.
       let usedBlob = false;
       if (process.env.BLOB_READ_WRITE_TOKEN) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const blobModule: any = await import("@vercel/blob").catch(() => null);
-          if (blobModule?.put) {
-            const blob = await blobModule.put(uniqueName, buffer, {
-              access: "public",
-              contentType: file.type || "application/octet-stream",
-            });
-            url = blob.url;
-            usedBlob = true;
-          }
-        } catch (blobErr) {
-          console.error("Vercel Blob upload failed, trying filesystem:", blobErr);
-        }
+        const blob = await put(uniqueName, buffer, {
+          access: "public",
+          contentType: file.type || "application/octet-stream",
+        });
+        url = blob.url;
+        usedBlob = true;
       }
 
       // ── Filesystem fallback (local dev / self-hosted) ───────────────────────

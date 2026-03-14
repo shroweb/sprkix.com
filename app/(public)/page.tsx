@@ -159,8 +159,8 @@ export default async function Home() {
   return (
     <div className="-mt-28 space-y-16 md:space-y-32 pb-20 md:pb-32">
       {/* ── Hero ── */}
-      <section className="relative min-h-[90vh] flex items-center pt-24 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-slate-950">
+      <section className="relative min-h-[90vh] flex items-center pt-24 overflow-hidden rounded-b-[3rem]">
+        <div className="absolute inset-0 z-0 bg-slate-950 rounded-b-[3rem] overflow-hidden">
           <Image
             src={
               configMap["HERO_IMAGE"] ||
@@ -168,10 +168,11 @@ export default async function Home() {
             }
             alt="Hero Background"
             fill
-            className="object-cover opacity-25 scale-105"
+            className="object-cover opacity-45 scale-105 contrast-110 saturate-125"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/70 to-background" />
+          {/* Keep the bottom readable, but let the image breathe. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/25 to-background/95 rounded-b-[3rem]" />
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[160px] pointer-events-none" />
           <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
         </div>

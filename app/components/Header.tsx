@@ -54,7 +54,12 @@ export default function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? "bg-background/80 backdrop-blur-xl border-b border-border py-4 shadow-2xl" : "bg-transparent py-8"}`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled
+          ? "bg-background/80 backdrop-blur-xl border-b border-border py-4 shadow-2xl"
+          : // Give the nav its own readable fade without smothering the hero image.
+            "bg-gradient-to-b from-background/85 via-background/35 to-transparent backdrop-blur-md py-6"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
