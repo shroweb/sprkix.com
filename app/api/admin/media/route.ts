@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../lib/server-auth";
+import { deletePublicFile } from "../../../../lib/uploads";
+
+export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const user = await getUserFromServerCookie();
@@ -34,13 +37,15 @@ export async function DELETE(req: NextRequest) {
   const item = await prisma.mediaItem.findUnique({ where: { id } });
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Delete file from disk
   try {
-    const { unlink } = await import("fs/promises");
-    const { join } = await import("path");
-    await unlink(join(process.cwd(), "public", item.url));
-  } catch {
-    /* file may already be gone */
+    await deletePublicFile(item.url);
+  } catch (err) {
+    // If we're on Vercel and Blob isn't configured, don't delete the DB row.
+    const msg = err instanceof Error ? err.message : String(err);
+    if (process.env.VERCEL && msg.includes("BLOB_READ_WRITE_TOKEN")) {
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+    /* file may already be gone / best-effort */
   }
 
   await prisma.mediaItem.delete({ where: { id } });

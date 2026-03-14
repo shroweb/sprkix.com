@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../lib/server-auth";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { v4 as uuid } from "uuid";
+import { uploadPublicFile } from "@lib/uploads";
 
-/** Strip path separators and dangerous chars from uploaded filenames */
-function sanitizeFilename(name: string): string {
-  return path.basename(name).replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_");
-}
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const user = await getUserFromServerCookie();
@@ -32,11 +27,12 @@ export async function POST(req: NextRequest) {
     const imageUrlField = formData.get("imageUrl") as string | null;
 
     if (file && typeof file === "object" && "arrayBuffer" in file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = `${uuid()}-${sanitizeFilename(file.name)}`;
-      const filepath = path.join(process.cwd(), "public/uploads", filename);
-      await writeFile(filepath, buffer);
-      imageUrl = `/uploads/${filename}`;
+      const uploaded = await uploadPublicFile({
+        file,
+        folder: "wrestlers",
+        prefix: "wrestler",
+      });
+      imageUrl = uploaded.url;
     } else if (imageUrlField) {
       imageUrl = imageUrlField;
     }
