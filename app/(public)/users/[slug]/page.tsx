@@ -162,21 +162,11 @@ export default async function UserProfilePage({
 
   return (
     <div className="pb-20 relative px-2 sm:px-4 lg:px-6">
-      <ProfileThemeWrapper posterUrl={profileUser.profileThemeEvent?.posterUrl ?? undefined} />
+      <ProfileThemeWrapper posterUrl={undefined} />
 
       {/* Hero Section / Cover Image */}
       <div className="relative min-h-[320px] md:h-[500px] w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[4rem] border border-white/5 shadow-2xl">
-         {/* Cover Photo */}
-         {profileUser.profileThemeEvent?.posterUrl && (
-           <div className="absolute inset-0 -z-10">
-             <Image 
-               src={profileUser.profileThemeEvent.posterUrl} 
-               fill 
-               className="object-cover saturate-[0.8] brightness-[0.5] scale-110 blur-[2px]" 
-               alt="" 
-             />
-           </div>
-         )}
+         {/* Cover Photo — re-enable once profileThemeEventId DB column is migrated */}
          {/* Gradient Overlay */}
          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
          
