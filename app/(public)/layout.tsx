@@ -1,4 +1,5 @@
 import Header from "@components/Header";
+import GoogleAnalytics from "@components/GoogleAnalytics";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { prisma } from "@lib/prisma";
 
@@ -8,6 +9,7 @@ export default async function PublicLayout({
   children: React.ReactNode;
 }) {
   const user = await getUserFromServerCookie();
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   let siteLogo = "";
   let logoSize = "md";
@@ -22,6 +24,7 @@ export default async function PublicLayout({
 
   return (
     <>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       <Header user={user} siteLogo={siteLogo} logoSize={logoSize} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-10">{children}</main>
       <footer className="mt-16 border-t border-white/5 text-center py-10 px-4 max-w-7xl mx-auto space-y-4">
