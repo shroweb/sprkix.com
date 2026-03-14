@@ -16,6 +16,8 @@ import {
   Upload,
   Film,
   Loader2,
+  Zap,
+  SkipForward,
 } from "lucide-react";
 import MediaPicker from "../components/MediaPicker";
 
@@ -33,6 +35,247 @@ type TmdbResult = {
   known_for_department: string;
   imageUrl: string | null;
 };
+
+type BulkMatch = {
+  wrestlerId: string;
+  wrestlerName: string;
+  tmdbId: number | null;
+  tmdbName: string | null;
+  imageUrl: string | null;
+  bio: string | null;
+  accepted: boolean; // user toggle
+};
+
+function BulkTmdbModal({
+  wrestlers,
+  onClose,
+  onApplied,
+}: {
+  wrestlers: Wrestler[];
+  onClose: () => void;
+  onApplied: (updated: { id: string; imageUrl: string | null; bio: string | null }[]) => void;
+}) {
+  const [phase, setPhase] = useState<"idle" | "searching" | "review" | "saving" | "done">("idle");
+  const [matches, setMatches] = useState<BulkMatch[]>([]);
+  const [progress, setProgress] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  // Only target wrestlers without an image
+  const targets = wrestlers.filter((w) => !w.imageUrl);
+
+  const runSearch = async () => {
+    if (targets.length === 0) return;
+    setPhase("searching");
+    setProgress(0);
+    setError(null);
+
+    // Split into batches of 10 to show incremental progress
+    const BATCH = 10;
+    const allMatches: BulkMatch[] = [];
+    for (let i = 0; i < targets.length; i += BATCH) {
+      const batch = targets.slice(i, i + BATCH);
+      try {
+        const res = await fetch("/api/admin/tmdb", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ wrestlers: batch.map((w) => ({ id: w.id, name: w.name })) }),
+        });
+        const data = await res.json();
+        for (const m of data.matches || []) {
+          allMatches.push({ ...m, accepted: !!m.imageUrl });
+        }
+      } catch {
+        // push nulls for this batch
+        for (const w of batch) {
+          allMatches.push({ wrestlerId: w.id, wrestlerName: w.name, tmdbId: null, tmdbName: null, imageUrl: null, bio: null, accepted: false });
+        }
+      }
+      setProgress(Math.min(i + BATCH, targets.length));
+    }
+    setMatches(allMatches);
+    setPhase("review");
+  };
+
+  const toggle = (wrestlerId: string) => {
+    setMatches((prev) =>
+      prev.map((m) => (m.wrestlerId === wrestlerId ? { ...m, accepted: !m.accepted } : m)),
+    );
+  };
+
+  const applySelected = async () => {
+    const toSave = matches.filter((m) => m.accepted && m.imageUrl);
+    if (toSave.length === 0) return;
+    setPhase("saving");
+    try {
+      const res = await fetch("/api/admin/wrestlers/bulk-update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          updates: toSave.map((m) => ({ id: m.wrestlerId, imageUrl: m.imageUrl, bio: m.bio })),
+        }),
+      });
+      const data = await res.json();
+      setSavedCount(data.saved ?? 0);
+      onApplied(toSave.map((m) => ({ id: m.wrestlerId, imageUrl: m.imageUrl, bio: m.bio })));
+      setPhase("done");
+    } catch {
+      setError("Save failed. Please try again.");
+      setPhase("review");
+    }
+  };
+
+  const accepted = matches.filter((m) => m.accepted).length;
+  const noMatch = matches.filter((m) => !m.imageUrl).length;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Zap className="w-4.5 h-4.5 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="font-bold text-base">Bulk TMDB Match</h2>
+              <p className="text-xs text-muted-foreground">{targets.length} wrestlers without a photo</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-secondary rounded-xl transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {phase === "idle" && (
+            <div className="text-center py-10 space-y-4">
+              <Film className="w-12 h-12 text-blue-200 mx-auto" />
+              <div>
+                <p className="font-bold text-base">Auto-match {targets.length} wrestlers to TMDB</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  We'll search TMDB for each wrestler, pick the top result, and let you review before saving.
+                </p>
+              </div>
+              {targets.length === 0 ? (
+                <p className="text-sm text-emerald-600 font-bold">All wrestlers already have photos!</p>
+              ) : (
+                <button onClick={runSearch} className="btn-primary px-8 mx-auto flex items-center gap-2">
+                  <Zap className="w-4 h-4" /> Start Matching
+                </button>
+              )}
+            </div>
+          )}
+
+          {phase === "searching" && (
+            <div className="text-center py-10 space-y-5">
+              <Loader2 className="w-10 h-10 text-blue-500 mx-auto animate-spin" />
+              <div>
+                <p className="font-bold">Searching TMDB...</p>
+                <p className="text-sm text-muted-foreground mt-1">{progress} / {targets.length} complete</p>
+              </div>
+              <div className="max-w-xs mx-auto h-2 bg-secondary rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                  style={{ width: `${(progress / targets.length) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {(phase === "review" || phase === "saving") && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                <span className="text-emerald-600">{accepted} selected</span>
+                <span>·</span>
+                <span className="text-red-400">{noMatch} no match</span>
+                <span>·</span>
+                <span>{matches.length} total</span>
+              </div>
+              {matches.map((m) => (
+                <div
+                  key={m.wrestlerId}
+                  className={`flex items-center gap-4 p-3 rounded-2xl border transition-colors ${
+                    m.accepted ? "border-emerald-200 bg-emerald-50/50" : "border-border bg-slate-50"
+                  }`}
+                >
+                  {/* Wrestler */}
+                  <div className="w-36 shrink-0">
+                    <p className="text-xs font-bold truncate">{m.wrestlerName}</p>
+                    <p className="text-[10px] text-muted-foreground">No photo</p>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="text-muted-foreground shrink-0">→</div>
+
+                  {/* TMDB match */}
+                  {m.imageUrl ? (
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <img src={m.imageUrl} alt={m.tmdbName ?? ""} className="w-9 h-12 rounded-lg object-cover shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold truncate">{m.tmdbName}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{m.bio ? m.bio.slice(0, 60) + "…" : "No bio"}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 flex-1 text-muted-foreground">
+                      <SkipForward className="w-4 h-4 shrink-0" />
+                      <span className="text-xs">No TMDB match found</span>
+                    </div>
+                  )}
+
+                  {/* Toggle */}
+                  {m.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => toggle(m.wrestlerId)}
+                      className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
+                        m.accepted ? "bg-emerald-500 text-white" : "bg-secondary text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {m.accepted ? <CheckCircle className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                    </button>
+                  )}
+                </div>
+              ))}
+              {error && <p className="text-xs text-red-500 font-bold">{error}</p>}
+            </div>
+          )}
+
+          {phase === "done" && (
+            <div className="text-center py-10 space-y-4">
+              <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto" />
+              <div>
+                <p className="font-bold text-base">Done! {savedCount} wrestlers updated.</p>
+                <p className="text-sm text-muted-foreground mt-1">Photos and bios have been saved.</p>
+              </div>
+              <button onClick={onClose} className="btn-primary px-8 mx-auto">Close</button>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        {(phase === "review" || phase === "saving") && (
+          <div className="px-6 py-4 border-t border-border flex items-center justify-between shrink-0">
+            <button onClick={onClose} className="btn-secondary">Cancel</button>
+            <button
+              onClick={applySelected}
+              disabled={accepted === 0 || phase === "saving"}
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
+            >
+              {phase === "saving" ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
+              ) : (
+                <><CheckCircle className="w-4 h-4" /> Apply {accepted} Match{accepted !== 1 ? "es" : ""}</>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function TmdbSearchButton({
   seedName,
@@ -172,6 +415,7 @@ export default function AdminWrestlersPage({
   const [mediaPickerTarget, setMediaPickerTarget] = useState<
     "add" | "edit" | null
   >(null);
+  const [bulkTmdbOpen, setBulkTmdbOpen] = useState(false);
 
   const filteredWrestlers = wrestlers.filter(
     (w) =>
@@ -406,23 +650,31 @@ export default function AdminWrestlersPage({
             Manage the competitive roster.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setIsAdding(!isAdding);
-            setEditingId(null);
-          }}
-          className="btn-primary flex items-center gap-2"
-        >
-          {isAdding ? (
-            <>
-              <X className="w-4 h-4" /> Cancel
-            </>
-          ) : (
-            <>
-              <Plus className="w-4 h-4" /> Add Wrestler
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setBulkTmdbOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-100 transition-colors"
+          >
+            <Zap className="w-4 h-4" /> Bulk TMDB
+          </button>
+          <button
+            onClick={() => {
+              setIsAdding(!isAdding);
+              setEditingId(null);
+            }}
+            className="btn-primary flex items-center gap-2"
+          >
+            {isAdding ? (
+              <>
+                <X className="w-4 h-4" /> Cancel
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4" /> Add Wrestler
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Inline message */}
@@ -694,6 +946,24 @@ export default function AdminWrestlersPage({
           </div>
         )}
       </div>
+
+      {/* Bulk TMDB Modal */}
+      {bulkTmdbOpen && (
+        <BulkTmdbModal
+          wrestlers={wrestlers}
+          onClose={() => setBulkTmdbOpen(false)}
+          onApplied={(updates) => {
+            setWrestlers((prev) =>
+              prev.map((w) => {
+                const u = updates.find((x) => x.id === w.id);
+                return u ? { ...w, imageUrl: u.imageUrl ?? w.imageUrl, bio: u.bio ?? w.bio } : w;
+              }),
+            );
+            setBulkTmdbOpen(false);
+            showMessage("success", `${updates.length} wrestlers updated from TMDB.`);
+          }}
+        />
+      )}
 
       {/* Media Picker Modal */}
       {mediaPickerTarget && (
