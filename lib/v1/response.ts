@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 type Meta = {
   page?: number;
@@ -31,15 +31,15 @@ export function preflight() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
 
+type RouteHandler = (req: NextRequest, ctx?: any) => Promise<NextResponse>;
+
 /**
  * Wrap a route handler so auth errors thrown by requireAuth() are caught cleanly.
  */
-export function withErrorHandling(
-  handler: (req: Request | import("next/server").NextRequest, ctx?: unknown) => Promise<NextResponse>
-) {
-  return async (req: Request, ctx?: unknown) => {
+export function withErrorHandling(handler: RouteHandler): RouteHandler {
+  return async (req: NextRequest, ctx?: any) => {
     try {
-      return await handler(req as any, ctx);
+      return await handler(req, ctx);
     } catch (e: any) {
       if (e?.status && e?.message) {
         return err(e.message, e.status);
