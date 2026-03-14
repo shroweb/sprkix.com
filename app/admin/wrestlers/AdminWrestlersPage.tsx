@@ -691,6 +691,9 @@ export default function AdminWrestlersPage({
       formData.append("image", imageFile);
     } else if (imageUrl) {
       formData.append("imageUrl", imageUrl);
+    } else {
+      // Explicitly signal to the API to clear the image
+      formData.append("clearImage", "true");
     }
     return formData;
   };

@@ -43,10 +43,13 @@ export async function PATCH(
     const bio = formData.get("bio") as string | null;
     const file = formData.get("image") as File | null;
     const imageUrlField = formData.get("imageUrl") as string | null;
+    const clearImage = formData.get("clearImage") === "true";
 
-    let imageUrl: string | undefined = undefined;
+    let imageUrl: string | null | undefined = undefined; // undefined = don't touch
 
-    if (file && typeof file === "object" && "arrayBuffer" in file && file.size > 0) {
+    if (clearImage) {
+      imageUrl = null; // explicitly clear
+    } else if (file && typeof file === "object" && "arrayBuffer" in file && file.size > 0) {
       const uploaded = await uploadPublicFile({
         file,
         folder: "wrestlers",
@@ -57,11 +60,11 @@ export async function PATCH(
       imageUrl = imageUrlField;
     }
 
-    const updateData: Record<string, string | undefined> = {};
+    const updateData: Record<string, string | null | undefined> = {};
     if (name) updateData.name = name;
     if (slug) updateData.slug = slug;
     if (bio !== null) updateData.bio = bio ?? undefined;
-    if (imageUrl) updateData.imageUrl = imageUrl;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl; // null clears, string sets
 
     const wrestler = await prisma.wrestler.update({ where: { id }, data: updateData });
     return NextResponse.json(wrestler);
