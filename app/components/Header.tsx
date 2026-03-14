@@ -13,6 +13,7 @@ import {
   Bookmark,
   ChevronDown,
   Zap,
+  Rss,
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
@@ -122,9 +123,10 @@ export default function Header({
             <div className="flex items-center gap-4">
               <Link
                 href="/feed"
-                className="text-sm font-semibold hover:text-primary transition-colors"
+                title="Feed"
+                className="hover:text-primary transition-colors"
               >
-                Feed
+                <Rss className="w-5 h-5" />
               </Link>
               <NotificationBell />
               {user.isAdmin && (
