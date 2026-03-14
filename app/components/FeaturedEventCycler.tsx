@@ -25,6 +25,7 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
         const rating = event.reviews.length
           ? (event.reviews.reduce((a: number, b: any) => a + b.rating, 0) / event.reviews.length)
           : 0;
+        const isUpcoming = new Date(event.date) > new Date();
 
         return (
           <div
@@ -47,7 +48,7 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
                   <div className="flex items-center gap-2 bg-primary px-3 py-1.5 rounded-xl shadow-lg">
                     <Calendar className="w-3.5 h-3.5 text-black" />
                     <span className="text-xs font-black uppercase tracking-widest text-black">
-                      Recent Event
+                      {isUpcoming ? "Upcoming Event" : "Recent Event"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10">
