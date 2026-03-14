@@ -1,26 +1,47 @@
--- DropForeignKey
-ALTER TABLE "Reply" DROP CONSTRAINT "Reply_reviewId_fkey";
+-- DropForeignKey (idempotent)
+DO $$ BEGIN
+  ALTER TABLE "Reply" DROP CONSTRAINT "Reply_reviewId_fkey";
+EXCEPTION WHEN undefined_object THEN NULL;
+END $$;
 
--- AlterTable
-ALTER TABLE "Event" ADD COLUMN     "venue" TEXT;
+-- AlterTable Event
+DO $$ BEGIN
+  ALTER TABLE "Event" ADD COLUMN "venue" TEXT;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
--- AlterTable
-ALTER TABLE "MatchRating" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ALTER COLUMN "rating" SET DATA TYPE DOUBLE PRECISION;
+-- AlterTable MatchRating
+DO $$ BEGIN
+  ALTER TABLE "MatchRating" ADD COLUMN "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "MatchRating" ADD COLUMN "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+ALTER TABLE "MatchRating" ALTER COLUMN "rating" SET DATA TYPE DOUBLE PRECISION;
 
--- AlterTable
+-- AlterTable Review
 ALTER TABLE "Review" ALTER COLUMN "rating" SET DATA TYPE DOUBLE PRECISION;
 
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "avatarUrl" TEXT,
-ADD COLUMN     "favoritePromotion" TEXT;
+-- AlterTable User
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN "avatarUrl" TEXT;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN "favoritePromotion" TEXT;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
--- AlterTable
-ALTER TABLE "WatchListItem" ADD COLUMN     "watched" BOOLEAN NOT NULL DEFAULT false;
+-- AlterTable WatchListItem
+DO $$ BEGIN
+  ALTER TABLE "WatchListItem" ADD COLUMN "watched" BOOLEAN NOT NULL DEFAULT false;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
 -- CreateTable
-CREATE TABLE "Notification" (
+CREATE TABLE IF NOT EXISTS "Notification" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "type" TEXT NOT NULL,
@@ -34,7 +55,7 @@ CREATE TABLE "Notification" (
 );
 
 -- CreateTable
-CREATE TABLE "SiteConfig" (
+CREATE TABLE IF NOT EXISTS "SiteConfig" (
     "key" TEXT NOT NULL,
     "value" TEXT NOT NULL,
 
@@ -42,7 +63,7 @@ CREATE TABLE "SiteConfig" (
 );
 
 -- CreateTable
-CREATE TABLE "MediaItem" (
+CREATE TABLE IF NOT EXISTS "MediaItem" (
     "id" TEXT NOT NULL,
     "filename" TEXT NOT NULL,
     "url" TEXT NOT NULL,
@@ -55,7 +76,7 @@ CREATE TABLE "MediaItem" (
 );
 
 -- CreateTable
-CREATE TABLE "Promotion" (
+CREATE TABLE IF NOT EXISTS "Promotion" (
     "id" TEXT NOT NULL,
     "shortName" TEXT NOT NULL,
     "fullName" TEXT,
@@ -66,7 +87,7 @@ CREATE TABLE "Promotion" (
 );
 
 -- CreateTable
-CREATE TABLE "PromotionAlias" (
+CREATE TABLE IF NOT EXISTS "PromotionAlias" (
     "id" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
     "promotionId" TEXT NOT NULL,
@@ -75,7 +96,7 @@ CREATE TABLE "PromotionAlias" (
 );
 
 -- CreateTable
-CREATE TABLE "ReviewVote" (
+CREATE TABLE IF NOT EXISTS "ReviewVote" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "reviewId" TEXT NOT NULL,
@@ -85,7 +106,7 @@ CREATE TABLE "ReviewVote" (
 );
 
 -- CreateTable
-CREATE TABLE "List" (
+CREATE TABLE IF NOT EXISTS "List" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
@@ -97,7 +118,7 @@ CREATE TABLE "List" (
 );
 
 -- CreateTable
-CREATE TABLE "ListItem" (
+CREATE TABLE IF NOT EXISTS "ListItem" (
     "id" TEXT NOT NULL,
     "listId" TEXT NOT NULL,
     "eventId" TEXT NOT NULL,
@@ -109,37 +130,61 @@ CREATE TABLE "ListItem" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Promotion_shortName_key" ON "Promotion"("shortName");
+CREATE UNIQUE INDEX IF NOT EXISTS "Promotion_shortName_key" ON "Promotion"("shortName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PromotionAlias_fullName_key" ON "PromotionAlias"("fullName");
+CREATE UNIQUE INDEX IF NOT EXISTS "PromotionAlias_fullName_key" ON "PromotionAlias"("fullName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ReviewVote_userId_reviewId_key" ON "ReviewVote"("userId", "reviewId");
+CREATE UNIQUE INDEX IF NOT EXISTS "ReviewVote_userId_reviewId_key" ON "ReviewVote"("userId", "reviewId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ListItem_listId_eventId_key" ON "ListItem"("listId", "eventId");
+CREATE UNIQUE INDEX IF NOT EXISTS "ListItem_listId_eventId_key" ON "ListItem"("listId", "eventId");
 
 -- AddForeignKey
-ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Notification" ADD CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "Reply" ADD CONSTRAINT "Reply_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Reply" ADD CONSTRAINT "Reply_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "PromotionAlias" ADD CONSTRAINT "PromotionAlias_promotionId_fkey" FOREIGN KEY ("promotionId") REFERENCES "Promotion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "PromotionAlias" ADD CONSTRAINT "PromotionAlias_promotionId_fkey" FOREIGN KEY ("promotionId") REFERENCES "Promotion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "ReviewVote" ADD CONSTRAINT "ReviewVote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "ReviewVote" ADD CONSTRAINT "ReviewVote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "ReviewVote" ADD CONSTRAINT "ReviewVote_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "ReviewVote" ADD CONSTRAINT "ReviewVote_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "Review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "List" ADD CONSTRAINT "List_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "List" ADD CONSTRAINT "List_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "ListItem" ADD CONSTRAINT "ListItem_listId_fkey" FOREIGN KEY ("listId") REFERENCES "List"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "ListItem" ADD CONSTRAINT "ListItem_listId_fkey" FOREIGN KEY ("listId") REFERENCES "List"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "ListItem" ADD CONSTRAINT "ListItem_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "ListItem" ADD CONSTRAINT "ListItem_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;

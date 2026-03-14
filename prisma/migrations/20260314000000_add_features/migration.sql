@@ -1,24 +1,57 @@
--- AlterTable
-ALTER TABLE "Event" ADD COLUMN     "currentMatchOrder" INTEGER DEFAULT 1,
-ADD COLUMN     "enablePredictions" BOOLEAN NOT NULL DEFAULT true,
-ADD COLUMN     "enableWatchParty" BOOLEAN NOT NULL DEFAULT true,
-ADD COLUMN     "endTime" TIMESTAMP(3),
-ADD COLUMN     "startTime" TIMESTAMP(3);
+-- AlterTable Event
+DO $$ BEGIN
+  ALTER TABLE "Event" ADD COLUMN "currentMatchOrder" INTEGER DEFAULT 1;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "Event" ADD COLUMN "enablePredictions" BOOLEAN NOT NULL DEFAULT true;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "Event" ADD COLUMN "enableWatchParty" BOOLEAN NOT NULL DEFAULT true;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "Event" ADD COLUMN "endTime" TIMESTAMP(3);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "Event" ADD COLUMN "startTime" TIMESTAMP(3);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
--- AlterTable
-ALTER TABLE "Match" ADD COLUMN     "order" INTEGER DEFAULT 1;
+-- AlterTable Match
+DO $$ BEGIN
+  ALTER TABLE "Match" ADD COLUMN "order" INTEGER DEFAULT 1;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "isVerified" BOOLEAN NOT NULL DEFAULT false,
-ADD COLUMN     "predictionCount" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "predictionScore" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "profileThemeEventId" TEXT;
+-- AlterTable User
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN "isVerified" BOOLEAN NOT NULL DEFAULT false;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN "predictionCount" INTEGER NOT NULL DEFAULT 0;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN "predictionScore" INTEGER NOT NULL DEFAULT 0;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN "profileThemeEventId" TEXT;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
--- AlterTable
-ALTER TABLE "WatchListItem" ADD COLUMN     "attended" BOOLEAN NOT NULL DEFAULT false;
+-- AlterTable WatchListItem
+DO $$ BEGIN
+  ALTER TABLE "WatchListItem" ADD COLUMN "attended" BOOLEAN NOT NULL DEFAULT false;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
 -- CreateTable
-CREATE TABLE "FavoriteMatch" (
+CREATE TABLE IF NOT EXISTS "FavoriteMatch" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "matchId" TEXT NOT NULL,
@@ -28,7 +61,7 @@ CREATE TABLE "FavoriteMatch" (
 );
 
 -- CreateTable
-CREATE TABLE "Prediction" (
+CREATE TABLE IF NOT EXISTS "Prediction" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "matchId" TEXT NOT NULL,
@@ -41,7 +74,7 @@ CREATE TABLE "Prediction" (
 );
 
 -- CreateTable
-CREATE TABLE "LiveComment" (
+CREATE TABLE IF NOT EXISTS "LiveComment" (
     "id" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -53,31 +86,52 @@ CREATE TABLE "LiveComment" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "FavoriteMatch_userId_matchId_key" ON "FavoriteMatch"("userId", "matchId");
+CREATE UNIQUE INDEX IF NOT EXISTS "FavoriteMatch_userId_matchId_key" ON "FavoriteMatch"("userId", "matchId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Prediction_userId_matchId_key" ON "Prediction"("userId", "matchId");
+CREATE UNIQUE INDEX IF NOT EXISTS "Prediction_userId_matchId_key" ON "Prediction"("userId", "matchId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Review_userId_eventId_key" ON "Review"("userId", "eventId");
+CREATE UNIQUE INDEX IF NOT EXISTS "Review_userId_eventId_key" ON "Review"("userId", "eventId");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_profileThemeEventId_fkey" FOREIGN KEY ("profileThemeEventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "User" ADD CONSTRAINT "User_profileThemeEventId_fkey" FOREIGN KEY ("profileThemeEventId") REFERENCES "Event"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "FavoriteMatch" ADD CONSTRAINT "FavoriteMatch_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "FavoriteMatch" ADD CONSTRAINT "FavoriteMatch_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "FavoriteMatch" ADD CONSTRAINT "FavoriteMatch_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "FavoriteMatch" ADD CONSTRAINT "FavoriteMatch_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "Prediction" ADD CONSTRAINT "Prediction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Prediction" ADD CONSTRAINT "Prediction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "Prediction" ADD CONSTRAINT "Prediction_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Prediction" ADD CONSTRAINT "Prediction_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "LiveComment" ADD CONSTRAINT "LiveComment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "LiveComment" ADD CONSTRAINT "LiveComment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "LiveComment" ADD CONSTRAINT "LiveComment_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "LiveComment" ADD CONSTRAINT "LiveComment_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
