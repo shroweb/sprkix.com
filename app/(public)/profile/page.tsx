@@ -14,6 +14,9 @@ import {
   Activity,
   Heart,
   CheckCircle,
+  List,
+  Globe,
+  Lock,
 } from "lucide-react";
 import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
@@ -115,6 +118,21 @@ export default async function ProfilePage() {
         return [];
       }
     })(),
+    // Fetch user's lists
+    (async () => {
+      try {
+        return await prisma.list.findMany({
+          where: { userId: user.id },
+          include: {
+            _count: { select: { items: true } },
+          },
+          orderBy: { createdAt: "desc" },
+        });
+      } catch (err) {
+        console.error("Lists fetch error on profile:", err);
+        return [];
+      }
+    })(),
   ])) as any[];
 
   const [
@@ -124,6 +142,7 @@ export default async function ProfilePage() {
     matchRatings,
     favMatches,
     watchList,
+    userLists,
   ] = results;
 
   const themePoster = currentUser?.profileThemeEvent?.posterUrl;
@@ -529,6 +548,96 @@ export default async function ProfilePage() {
               className="btn-primary inline-block mt-4 text-sm"
             >
               Discover Events
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* Lists */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-6 pt-12">
+          <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+              My Lists
+            </h2>
+          </div>
+          <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              {userLists.length} Lists
+            </span>
+            <Link
+              href="/lists/create"
+              className="text-[10px] font-black uppercase text-primary hover:text-primary/80 underline underline-offset-4 decoration-2"
+            >
+              + New List
+            </Link>
+          </div>
+        </div>
+
+        {userLists.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {userLists.map((list: any) => (
+              <div
+                key={list.id}
+                className="bg-card/40 border border-white/5 hover:border-primary/20 rounded-2xl p-5 transition-all group space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <Link
+                    href={`/lists/${list.id}`}
+                    className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight"
+                  >
+                    {list.title}
+                  </Link>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {list.isPublic ? (
+                      <Globe className="w-3 h-3 text-muted-foreground" />
+                    ) : (
+                      <Lock className="w-3 h-3 text-muted-foreground" />
+                    )}
+                    <span
+                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        list.isPublic
+                          ? "bg-emerald-500/10 text-emerald-400"
+                          : "bg-secondary text-muted-foreground"
+                      }`}
+                    >
+                      {list.isPublic ? "Public" : "Private"}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-[10px] font-bold text-muted-foreground">
+                  {list._count.items} event{list._count.items !== 1 ? "s" : ""}
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <Link
+                    href={`/lists/${list.id}`}
+                    className="flex-1 text-center px-3 py-2 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+                  >
+                    View
+                  </Link>
+                  <Link
+                    href={`/lists/${list.id}/edit`}
+                    className="flex-1 text-center px-3 py-2 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+                  >
+                    Edit
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
+            <List className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
+            <p className="text-muted-foreground font-bold italic">
+              You haven&apos;t created any lists yet.
+            </p>
+            <Link
+              href="/lists/create"
+              className="btn-primary inline-block mt-4 text-sm"
+            >
+              Create a List
             </Link>
           </div>
         )}

@@ -20,6 +20,7 @@ import Countdown from "@components/Countdown";
 import EventTabs, { type EventTab } from "@components/EventTabs";
 import WatchlistIcon from "@components/WatchlistIcon";
 import WatchedIcon from "@components/WatchedIcon";
+import AddToListButton from "@components/AddToListButton";
 import VisualRating from "@components/VisualRating";
 import type { Metadata } from "next";
 
@@ -484,6 +485,7 @@ export default async function EventPage({
                         minimal={true}
                       />
                       <SetThemeButton eventId={event.id} minimal={true} />
+                      <AddToListButton eventId={event.id} isLoggedIn={!!user} />
                     </>
                   )}
                   <ShareButton minimal={true} />

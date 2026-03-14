@@ -35,6 +35,38 @@ export async function POST(
   }
 }
 
+// PATCH /api/lists/[id]/items — update note or order of a list item
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await getUserFromServerCookie();
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id: listId } = await params;
+  const list = await prisma.list.findUnique({ where: { id: listId } });
+  if (!list || list.userId !== user.id)
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { itemId, note, order } = await req.json();
+  if (!itemId)
+    return NextResponse.json({ error: "itemId required" }, { status: 400 });
+
+  const updateData: { note?: string | null; order?: number } = {};
+  if (note !== undefined) updateData.note = note || null;
+  if (order !== undefined) updateData.order = order;
+
+  const updated = await prisma.listItem.update({
+    where: { id: itemId },
+    data: updateData,
+    include: {
+      event: { select: { id: true, title: true, posterUrl: true, slug: true } },
+    },
+  });
+  return NextResponse.json(updated);
+}
+
 // DELETE /api/lists/[id]/items?eventId=xxx — remove event from list
 export async function DELETE(
   req: NextRequest,
