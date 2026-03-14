@@ -485,7 +485,7 @@ export default async function EventPage({
                         minimal={true}
                       />
                       <SetThemeButton eventId={event.id} minimal={true} />
-                      <AddToListButton eventId={event.id} isLoggedIn={!!user} />
+                      <AddToListButton eventId={event.id} isLoggedIn={!!user} minimal={true} />
                     </>
                   )}
                   <ShareButton minimal={true} />

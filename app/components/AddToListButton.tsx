@@ -9,9 +9,11 @@ type ListOption = { id: string; title: string; items: { eventId: string }[] };
 export default function AddToListButton({
   eventId,
   isLoggedIn,
+  minimal = false,
 }: {
   eventId: string;
   isLoggedIn: boolean;
+  minimal?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [lists, setLists] = useState<ListOption[]>([]);
@@ -82,9 +84,15 @@ export default function AddToListButton({
     <div className="relative" ref={ref}>
       <button
         onClick={openDropdown}
-        className="flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border rounded-xl text-xs font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+        title="Add to list"
+        className={
+          minimal
+            ? "w-12 h-12 bg-secondary/50 hover:bg-secondary text-foreground rounded-xl flex items-center justify-center transition-all border border-white/5 active:scale-95"
+            : "flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border rounded-xl text-xs font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+        }
       >
-        <ListPlus className="w-3.5 h-3.5" /> Add to List
+        <ListPlus className="w-4 h-4" />
+        {!minimal && <span>Add to List</span>}
       </button>
 
       {open && (
