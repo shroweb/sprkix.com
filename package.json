@@ -7,7 +7,7 @@
     "predev": "prisma generate",
     "postinstall": "prisma generate",
     "dev": "next dev --turbopack",
-    "prebuild": "prisma generate && prisma migrate deploy",
+    "prebuild": "bash scripts/migrate.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
