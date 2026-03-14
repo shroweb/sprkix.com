@@ -278,13 +278,6 @@ export default async function ProfilePage() {
                         {getRank(reviews.length + matchRatings.length).name}
                       </p>
                     </div>
-                    <div className="h-10 w-[1px] bg-white/20 hidden md:block" />
-                    <div className="space-y-1">
-                      <p className="text-white/30 font-black uppercase tracking-[0.2em] text-[10px]">Email</p>
-                      <p className="text-white/50 font-bold italic text-xs sm:text-lg md:text-2xl tracking-tight break-all">
-                        {user.email || (user as any).email}
-                      </p>
-                    </div>
                     <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
                     <Link
                       href="/profile/edit"

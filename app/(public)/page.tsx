@@ -12,6 +12,7 @@ import {
   Calendar,
   Zap,
   Flame,
+  Activity,
 } from "lucide-react";
 import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
@@ -117,6 +118,11 @@ export default async function Home() {
     .sort((a: any, b: any) => b.score - a.score);
 
   const hallOfFame = ranked.slice(0, 5);
+
+  // Latest events by date (upcoming first, then most recent past)
+  const latestEvents = [...allEventsForRank]
+    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 8);
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -269,6 +275,83 @@ export default async function Home() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 md:space-y-40 relative z-10">
 
+        {/* ── Latest Events ── */}
+        {latestEvents.length > 0 && (
+          <section>
+            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="w-1 h-8 bg-primary rounded-full block" />
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                    Latest Events
+                  </h2>
+                </div>
+                <p className="text-muted-foreground font-medium italic pl-4">
+                  Upcoming and recently added events.
+                </p>
+              </div>
+              <Link
+                href="/events"
+                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+              >
+                All Events <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {latestEvents.map((event: any) => {
+                const rating = event.reviews?.length
+                  ? event.reviews.reduce((a: any, r: any) => a + r.rating, 0) / event.reviews.length
+                  : 0;
+                const now = new Date();
+                const sTime = event.startTime ? new Date(event.startTime) : new Date(event.date);
+                const eTime = event.endTime ? new Date(event.endTime) : event.startTime ? new Date(sTime.getTime() + 4 * 60 * 60 * 1000) : null;
+                const isLive = !!event.startTime && now >= sTime && (eTime === null || now <= eTime);
+                const isUpcoming = !isLive && now < new Date(event.date);
+                return (
+                  <Link key={event.id} href={`/events/${event.slug}`} className="group relative">
+                    <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-4 border border-white/5">
+                      <Image
+                        src={event.posterUrl || "/placeholder.png"}
+                        alt={event.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
+                        <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
+                          {event.promotion}
+                        </span>
+                        {isLive && (
+                          <span className="px-2 py-1 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
+                            <Activity className="w-2.5 h-2.5" /> Live
+                          </span>
+                        )}
+                        {isUpcoming && !isLive && (
+                          <span className="px-2 py-1 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                            Upcoming
+                          </span>
+                        )}
+                      </div>
+                      {rating > 0 && (
+                        <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
+                          <Star className="w-2.5 h-2.5 text-primary fill-current" />
+                          <span className="text-[10px] font-black text-white">{rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="font-black text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                      {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
+                    </h3>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
+                      {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* ── Hall of Fame ── */}
         {hallOfFame.length > 0 && (
           <section>
@@ -395,24 +478,23 @@ export default async function Home() {
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-                      {/* Trending badge */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-primary px-2.5 py-1 rounded-lg shadow-lg">
-                        <Flame className="w-3 h-3 text-black" />
-                        <span className="text-[10px] font-black uppercase text-black tracking-widest">
-                          Hot
-                        </span>
-                      </div>
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <span className="px-2 py-0.5 bg-primary text-black text-[10px] font-black uppercase rounded shadow-lg">
+                      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
+                        <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
                           {event.promotion}
+                        </span>
+                        <span className="px-2 py-1 bg-primary/80 text-black text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 w-fit">
+                          <Flame className="w-2.5 h-2.5" /> Hot
                         </span>
                       </div>
                     </div>
                     <h3 className="font-black text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
+                      {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </p>
                     {rating > 0 && (
-                      <div className="flex items-center gap-1 mt-2">
+                      <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3 h-3 text-primary fill-current" />
                         <span className="text-[10px] font-black text-primary">
                           {rating.toFixed(2)}
@@ -464,23 +546,36 @@ export default async function Home() {
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <span className="px-2 py-1 bg-primary text-black text-[10px] font-black uppercase rounded shadow-lg">
+                    <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
+                      <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
                         {event.promotion}
                       </span>
+                      {(() => {
+                        const now = new Date();
+                        const sTime = event.startTime ? new Date(event.startTime) : new Date(event.date);
+                        const eTime = event.endTime ? new Date(event.endTime) : event.startTime ? new Date(sTime.getTime() + 4 * 60 * 60 * 1000) : null;
+                        const isLive = !!event.startTime && now >= sTime && (eTime === null || now <= eTime);
+                        const isUpcoming = !isLive && now < new Date(event.date);
+                        if (isLive) return (
+                          <span className="px-2 py-1 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
+                            <Activity className="w-2.5 h-2.5" /> Live
+                          </span>
+                        );
+                        if (isUpcoming) return (
+                          <span className="px-2 py-1 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                            Upcoming
+                          </span>
+                        );
+                        return null;
+                      })()}
                     </div>
                   </div>
                   <h3 className="font-black text-sm leading-tight uppercase italic group-hover:text-primary transition-colors line-clamp-2">
-                    {event.title
-                      .replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "")
-                      .trim()}
+                    {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                   </h3>
-                  <div className="flex items-center gap-3 mt-3">
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                      <Calendar className="w-3 h-3 text-primary" />
-                      {new Date(event.date).getFullYear()}
-                    </div>
-                  </div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
+                    {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </p>
                 </Link>
               ))}
             </div>
