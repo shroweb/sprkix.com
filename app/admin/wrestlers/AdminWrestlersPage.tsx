@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -14,6 +14,8 @@ import {
   AlertCircle,
   ImageIcon,
   Upload,
+  Film,
+  Loader2,
 } from "lucide-react";
 import MediaPicker from "../components/MediaPicker";
 
@@ -24,6 +26,124 @@ type Wrestler = {
   bio?: string | null;
   imageUrl?: string | null;
 };
+
+type TmdbResult = {
+  id: number;
+  name: string;
+  known_for_department: string;
+  imageUrl: string | null;
+};
+
+function TmdbSearchButton({
+  seedName,
+  onSelect,
+}: {
+  seedName: string;
+  onSelect: (imageUrl: string, bio: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState(seedName);
+  const [results, setResults] = useState<TmdbResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selecting, setSelecting] = useState<number | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const search = async () => {
+    if (!query.trim()) return;
+    setLoading(true);
+    setResults([]);
+    try {
+      const res = await fetch(`/api/admin/tmdb?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setResults(data.results || []);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pick = async (r: TmdbResult) => {
+    setSelecting(r.id);
+    try {
+      const res = await fetch(`/api/admin/tmdb?id=${r.id}`);
+      const detail = await res.json();
+      onSelect(detail.imageUrl || r.imageUrl || "", detail.bio || "");
+      setOpen(false);
+    } finally {
+      setSelecting(null);
+    }
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); if (!open && results.length === 0) search(); }}
+        className="flex items-center gap-1.5 bg-blue-50 text-blue-600 px-3 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors"
+      >
+        <Film className="w-3.5 h-3.5" /> Search TMDB
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-2 w-80 bg-white border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+          <div className="p-3 border-b border-border flex gap-2">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && search()}
+              placeholder="Search TMDB people..."
+              className="flex-1 bg-secondary rounded-xl px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-primary"
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={search}
+              disabled={loading}
+              className="bg-primary text-black px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/90 disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <div className="max-h-72 overflow-y-auto">
+            {results.length === 0 && !loading && (
+              <p className="text-xs text-muted-foreground text-center p-6">No results yet</p>
+            )}
+            {results.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => pick(r)}
+                disabled={selecting === r.id}
+                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left"
+              >
+                <div className="w-9 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+                  {r.imageUrl ? (
+                    <img src={r.imageUrl} alt={r.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-5 h-5 text-muted-foreground m-auto mt-3" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold truncate">{r.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{r.known_for_department}</p>
+                </div>
+                {selecting === r.id && <Loader2 className="w-3.5 h-3.5 animate-spin text-primary shrink-0" />}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 type MessageState = { type: "success" | "error"; text: string } | null;
 
@@ -39,11 +159,14 @@ export default function AdminWrestlersPage({
   const [message, setMessage] = useState<MessageState>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Controlled image state for both forms
+  // Controlled image + bio state for both forms
   const [addImageUrl, setAddImageUrl] = useState("");
   const [addImageFile, setAddImageFile] = useState<File | null>(null);
+  const [addBio, setAddBio] = useState("");
+  const [addName, setAddName] = useState("");
   const [editImageUrl, setEditImageUrl] = useState("");
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editBio, setEditBio] = useState("");
 
   // Media picker state
   const [mediaPickerTarget, setMediaPickerTarget] = useState<
@@ -102,6 +225,8 @@ export default function AdminWrestlersPage({
         setIsAdding(false);
         setAddImageUrl("");
         setAddImageFile(null);
+        setAddBio("");
+        setAddName("");
         showMessage("success", `${data.wrestler.name} added to the roster.`);
         (e.target as HTMLFormElement).reset();
       } else {
@@ -138,6 +263,7 @@ export default function AdminWrestlersPage({
         setEditingId(null);
         setEditImageUrl("");
         setEditImageFile(null);
+        setEditBio("");
         showMessage("success", `${data.name} updated.`);
       } else {
         showMessage("error", data.error || "Failed to update wrestler.");
@@ -170,6 +296,7 @@ export default function AdminWrestlersPage({
     setEditingId(w.id);
     setEditImageUrl(w.imageUrl || "");
     setEditImageFile(null);
+    setEditBio(w.bio || "");
     setIsAdding(false);
   };
 
@@ -328,6 +455,8 @@ export default function AdminWrestlersPage({
                 </label>
                 <input
                   name="name"
+                  value={addName}
+                  onChange={(e) => setAddName(e.target.value)}
                   className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
                   placeholder="e.g. Cody Rhodes"
                   required
@@ -357,11 +486,22 @@ export default function AdminWrestlersPage({
               onPickerOpen={() => setMediaPickerTarget("add")}
             />
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
-                Biography
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase">
+                  Biography
+                </label>
+                <TmdbSearchButton
+                  seedName={addName}
+                  onSelect={(imageUrl, bio) => {
+                    if (imageUrl) { setAddImageUrl(imageUrl); setAddImageFile(null); }
+                    if (bio) setAddBio(bio);
+                  }}
+                />
+              </div>
               <textarea
                 name="bio"
+                value={addBio}
+                onChange={(e) => setAddBio(e.target.value)}
                 className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
                 rows={4}
                 placeholder="Career history, championships, and notable achievements..."
@@ -439,12 +579,22 @@ export default function AdminWrestlersPage({
               onPickerOpen={() => setMediaPickerTarget("edit")}
             />
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
-                Biography
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase">
+                  Biography
+                </label>
+                <TmdbSearchButton
+                  seedName={editingWrestler.name}
+                  onSelect={(imageUrl, bio) => {
+                    if (imageUrl) { setEditImageUrl(imageUrl); setEditImageFile(null); }
+                    if (bio) setEditBio(bio);
+                  }}
+                />
+              </div>
               <textarea
                 name="bio"
-                defaultValue={editingWrestler.bio ?? ""}
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
                 className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
                 rows={4}
               />

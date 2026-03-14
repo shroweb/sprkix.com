@@ -21,6 +21,47 @@ export async function fetchWrestlingTVShows(query = "wrestling") {
         }))
 }
 
+// ── Wrestler / person search ─────────────────────────────────────────────────
+
+const TMDB_IMAGE = "https://image.tmdb.org/t/p/w500";
+
+export type TmdbPersonResult = {
+  id: number;
+  name: string;
+  known_for_department: string;
+  imageUrl: string | null;
+};
+
+export async function searchTmdbPeople(query: string): Promise<TmdbPersonResult[]> {
+  const key = process.env.TMDB_API_KEY;
+  if (!key) throw new Error("TMDB_API_KEY is not set");
+  const url = `https://api.themoviedb.org/3/search/person?query=${encodeURIComponent(query)}&api_key=${key}&language=en-US&page=1`;
+  const res = await fetch(url, { next: { revalidate: 3600 } });
+  if (!res.ok) throw new Error(`TMDB search failed: ${res.status}`);
+  const data = await res.json();
+  return ((data.results || []) as any[]).slice(0, 8).map((p) => ({
+    id: p.id,
+    name: p.name,
+    known_for_department: p.known_for_department ?? "",
+    imageUrl: p.profile_path ? `${TMDB_IMAGE}${p.profile_path}` : null,
+  }));
+}
+
+export async function getTmdbPerson(tmdbId: number): Promise<{ imageUrl: string | null; bio: string | null }> {
+  const key = process.env.TMDB_API_KEY;
+  if (!key) throw new Error("TMDB_API_KEY is not set");
+  const url = `https://api.themoviedb.org/3/person/${tmdbId}?api_key=${key}&language=en-US`;
+  const res = await fetch(url, { next: { revalidate: 86400 } });
+  if (!res.ok) throw new Error(`TMDB person fetch failed: ${res.status}`);
+  const p = await res.json();
+  return {
+    imageUrl: p.profile_path ? `${TMDB_IMAGE}${p.profile_path}` : null,
+    bio: p.biography || null,
+  };
+}
+
+// ── Event search ─────────────────────────────────────────────────────────────
+
 export async function findEventOnTMDB(title: string) {
     const apiKey = process.env.TMDB_API_KEY;
     if (!apiKey) {
