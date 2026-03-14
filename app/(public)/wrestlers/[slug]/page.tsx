@@ -10,6 +10,7 @@ import {
   UserCircle,
   Star,
 } from "lucide-react";
+import BioExpand from "./BioExpand";
 
 export default async function WrestlerPage({ params }: { params: any }) {
   const { slug } = await params;
@@ -164,11 +165,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
               </div>
             )}
 
-            {wrestler.bio && (
-              <p className="text-foreground/70 font-medium italic leading-relaxed max-w-2xl border-l-2 border-primary/30 pl-4">
-                {wrestler.bio}
-              </p>
-            )}
+            {wrestler.bio && <BioExpand bio={wrestler.bio} />}
           </div>
         </div>
       </div>
