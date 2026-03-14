@@ -40,7 +40,7 @@ export default function ShareReviewModal({
         pixelRatio: 2,
       });
       const link = document.createElement("a");
-      link.download = `sprkix-review-${event.title.toLowerCase().replace(/\s+/g, "-")}.png`;
+      link.download = `poison-rana-review-${event.title.toLowerCase().replace(/\s+/g, "-")}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -97,7 +97,7 @@ export default function ShareReviewModal({
             <div className="w-24 h-24 relative mt-4">
                 <Image 
                     src="/img/logo.png" 
-                    alt="Sprkix" 
+                    alt="Poison Rana" 
                     fill 
                     className="object-contain filter brightness-0 invert" 
                 />
@@ -134,7 +134,7 @@ export default function ShareReviewModal({
                     {event.title}
                 </h3>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary pt-2">
-                    WWW.SPRKIX.COM
+                    WWW.POISONRANA.COM
                 </p>
             </div>
           </div>

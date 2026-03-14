@@ -62,7 +62,7 @@ export default async function ActivityFeedPage() {
       type: "signup",
       icon: UserPlus,
       color: "text-emerald-600 bg-emerald-50 border-emerald-100",
-      label: `${u.name ?? u.email} joined sprkix`,
+      label: `${u.name ?? u.email} joined Poison Rana`,
       link: undefined,
     })),
     ...watchlist.map((w: any) => ({

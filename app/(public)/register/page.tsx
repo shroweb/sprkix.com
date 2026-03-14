@@ -88,7 +88,7 @@ export default function RegisterPage() {
       >
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-black text-white tracking-tighter uppercase italic">
-            Join sprkix
+            Join Poison Rana
           </h1>
           <p className="text-gray-400 text-sm font-medium">
             The definitive wrestling archive

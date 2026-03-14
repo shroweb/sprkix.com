@@ -33,8 +33,8 @@ export default function GrappedClient({
     ratingBreakdown.five + ratingBreakdown.four + ratingBreakdown.three +
     ratingBreakdown.two + ratingBreakdown.one;
 
-  const shareText = `I reviewed ${reviewsCount} show${reviewsCount !== 1 ? "s" : ""} and rated ${matchesCount} match${matchesCount !== 1 ? "es" : ""} on sprkix this month${avgThisMonth ? ` — avg rating: ${avgThisMonth}★` : ""}. Check your GRAPPED stats! #GRAPPED #Wrestling`;
-  const shareUrl = "https://sprkix.com/grapped";
+  const shareText = `I reviewed ${reviewsCount} show${reviewsCount !== 1 ? "s" : ""} and rated ${matchesCount} match${matchesCount !== 1 ? "es" : ""} on Poison Rana this month${avgThisMonth ? ` — avg rating: ${avgThisMonth}★` : ""}. Check your GRAPPED stats! #GRAPPED #Wrestling`;
+  const shareUrl = "https://poisonrana.com/grapped";
 
   const generateImage = async (): Promise<string | null> => {
     if (!cardRef.current) return null;
@@ -154,7 +154,7 @@ export default function GrappedClient({
                 {/* Header */}
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-400/70">sprkix.com</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-yellow-400/70">poisonrana.com</p>
                     <h2 className="text-4xl font-black italic uppercase text-white leading-none mt-0.5">GRAPPED</h2>
                   </div>
                   <div className="text-right">
@@ -232,7 +232,7 @@ export default function GrappedClient({
 
                 {/* Footer */}
                 <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(255,255,255,0.25)", fontStyle: "italic" }}>Join at sprkix.com</span>
+                  <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(255,255,255,0.25)", fontStyle: "italic" }}>Join at poisonrana.com</span>
                   <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(251,191,36,0.5)" }}>#GRAPPED</span>
                 </div>
               </div>

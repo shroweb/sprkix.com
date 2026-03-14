@@ -93,7 +93,7 @@ const sections = [
       },
       {
         q: "What promotions are covered?",
-        a: "sprkix covers all major promotions including WWE, AEW, NJPW, ROH, TNA, and many more. Use the promotion filter on the Events page to browse by company.",
+        a: "Poison Rana covers all major promotions including WWE, AEW, NJPW, ROH, TNA, and many more. Use the promotion filter on the Events page to browse by company.",
       },
     ],
   },
@@ -148,7 +148,7 @@ const sections = [
     color: "text-purple-400",
     qa: [
       {
-        q: "Is sprkix free?",
+        q: "Is Poison Rana free?",
         a: "Yes — creating an account and using all features is completely free.",
       },
       {
@@ -194,7 +194,7 @@ export default function FAQPage() {
           </h1>
         </div>
         <p className="text-muted-foreground font-medium italic pl-4 text-lg max-w-2xl">
-          Everything you need to know about sprkix — the community archive for professional wrestling.
+          Everything you need to know about Poison Rana — the community archive for professional wrestling.
         </p>
       </div>
 

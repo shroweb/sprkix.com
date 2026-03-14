@@ -212,7 +212,7 @@ export default function EditProfilePage() {
               />
             </div>
             <p className="text-[10px] text-muted-foreground font-medium italic">
-              Your profile: <span className="text-primary">sprkix.com/users/{slug || "username"}</span>
+              Your profile: <span className="text-primary">poisonrana.com/users/{slug || "username"}</span>
             </p>
           </div>
 

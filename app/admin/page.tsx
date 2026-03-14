@@ -35,7 +35,7 @@ export default async function AdminHome() {
           Dashboard
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Overview of the sprkix database.
+          Overview of the Poison Rana database.
         </p>
       </div>
 

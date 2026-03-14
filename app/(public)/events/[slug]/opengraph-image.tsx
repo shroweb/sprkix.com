@@ -103,7 +103,7 @@ export default async function OGImage({
           gap: 0,
         }}
       >
-        {/* Sprkix brand */}
+        {/* Poison Rana brand */}
         <div
           style={{
             display: "flex",
@@ -135,7 +135,7 @@ export default async function OGImage({
               letterSpacing: "-0.5px",
             }}
           >
-            sprkix
+            Poison Rana
           </span>
         </div>
 

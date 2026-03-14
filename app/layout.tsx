@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "sprkix",
+  title: "Poison Rana",
   description: "Discover. Rate. Share Pro Wrestling Events.",
 };
 

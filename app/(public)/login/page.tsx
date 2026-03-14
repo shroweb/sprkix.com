@@ -32,7 +32,7 @@ export default function LoginPage() {
         className="space-y-6 backdrop-blur p-8 rounded-lg shadow-lg w-full max-w-sm border border-white/10"
       >
         <h1 className="text-2xl font-extrabold text-white text-center">
-          Login to sprkix
+          Login to Poison Rana
         </h1>
         <input
           type="email"

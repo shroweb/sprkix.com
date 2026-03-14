@@ -23,7 +23,7 @@ export default async function PublicLayout({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-10">{children}</main>
       <footer className="mt-16 border-t border-white/5 text-center py-10 px-4 max-w-7xl mx-auto space-y-4">
         <p className="text-[10px] sm:text-xs text-muted-foreground/60 uppercase tracking-widest font-black italic">
-          © {new Date().getFullYear()} sprkix · The definitive wrestling archive
+          © {new Date().getFullYear()} Poison Rana · The definitive wrestling archive
         </p>
         <p className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest">
           Developed by{" "}

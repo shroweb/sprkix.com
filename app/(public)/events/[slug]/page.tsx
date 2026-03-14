@@ -66,7 +66,7 @@ export async function generateMetadata({
     : `Ratings, reviews and match results for ${cleanTitle} (${year}) by ${event.promotion}.`;
 
   return {
-    title: `${cleanTitle} (${year}) – ${event.promotion} | Sprkix`,
+    title: `${cleanTitle} (${year}) – ${event.promotion} | Poison Rana`,
     description: desc,
     openGraph: {
       title: `${cleanTitle} – ${event.promotion}`,

@@ -39,7 +39,7 @@ export default function Sidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-black tracking-tighter leading-none italic uppercase">
-              sprkix
+              Poison Rana
             </span>
             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em]">
               Foundation

@@ -62,7 +62,7 @@ export default function Header({
                 <Star className="w-5 h-5 text-primary-foreground fill-current" />
               </div>
               <span className="text-2xl font-black tracking-tighter text-foreground">
-                sprkix
+                Poison Rana
               </span>
             </>
           )}
@@ -214,7 +214,7 @@ export default function Header({
                 href="/register"
                 className="btn-primary py-2.5 px-6 text-sm shadow-xl shadow-primary/20"
               >
-                Join sprkix
+                Join Poison Rana
               </Link>
             </div>
           )}
@@ -301,7 +301,7 @@ export default function Header({
                   Login
                 </Link>
                 <Link href="/register" className="btn-primary text-center" onClick={() => setMenuOpen(false)}>
-                  Join sprkix
+                  Join Poison Rana
                 </Link>
               </>
             )}

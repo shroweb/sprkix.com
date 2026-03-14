@@ -40,7 +40,7 @@ type Section = {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const BASE_URL = "https://sprkix.com/api/v1";
+const BASE_URL = "https://poisonrana.com/api/v1";
 
 const sections: Section[] = [
   {
@@ -215,7 +215,7 @@ const sections: Section[] = [
     id: "rankings",
     title: "Rankings",
     description:
-      "Ranked lists using the sprkix Bayesian weighted rating formula: (v/(v+m)) × R + (m/(v+m)) × C — where v = review count, m = minimum review threshold, R = event average, C = global average.",
+      "Ranked lists using the Poison Rana Bayesian weighted rating formula: (v/(v+m)) × R + (m/(v+m)) × C — where v = review count, m = minimum review threshold, R = event average, C = global average.",
     endpoints: [
       {
         method: "GET",
@@ -637,7 +637,7 @@ export default function ApiDocsPage() {
           </h1>
         </div>
         <p className="text-muted-foreground font-medium italic pl-4 text-lg max-w-2xl">
-          The sprkix REST API — build apps, integrations, and tools on top of the world's wrestling archive.
+          The Poison Rana REST API — build apps, integrations, and tools on top of the world's wrestling archive.
         </p>
       </div>
 
@@ -927,8 +927,8 @@ await api.post("/matches/clxm1/rate", { rating: 4.5 });`}
                 contact page
               </Link>{" "}
               or email{" "}
-              <a href="mailto:hello@sprkix.com" className="text-primary hover:opacity-80 transition-opacity">
-                hello@sprkix.com
+              <a href="mailto:hello@poisonrana.com" className="text-primary hover:opacity-80 transition-opacity">
+                hello@poisonrana.com
               </a>
               .
             </p>

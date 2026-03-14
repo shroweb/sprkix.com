@@ -6,8 +6,8 @@ import { Target, Trophy, ChevronLeft, Crown } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prediction Leaderboard | Sprkix",
-  description: "The most accurate wrestling event predictors on Sprkix.",
+  title: "Prediction Leaderboard | Poison Rana",
+  description: "The most accurate wrestling event predictors on Poison Rana.",
 };
 
 export default async function LeaderboardPage() {
