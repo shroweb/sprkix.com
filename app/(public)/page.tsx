@@ -93,6 +93,7 @@ export default async function Home() {
   );
 
   const eventSlugs = allEventSlugs.map((e: any) => e.slug);
+  const heroImage = (configMap["HERO_IMAGE"] || "").trim();
 
   // Bayesian-weighted rankings for Hall of Fame
   const allRatings = allEventsForRank.flatMap((e: any) =>
@@ -161,18 +162,25 @@ export default async function Home() {
       {/* ── Hero ── */}
       <section className="relative min-h-[90vh] flex items-center pt-24 overflow-hidden rounded-b-[3rem]">
         <div className="absolute inset-0 z-0 bg-slate-950 rounded-b-[3rem] overflow-hidden">
-          <Image
-            src={
-              configMap["HERO_IMAGE"] ||
-              "https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=2669&auto=format&fit=crop"
-            }
-            alt="Hero Background"
-            fill
-            className="object-cover opacity-45 scale-105 contrast-110 saturate-125"
-            priority
-          />
-          {/* Keep the bottom readable, but let the image breathe. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/25 to-background/95 rounded-b-[3rem]" />
+          {heroImage ? (
+            <>
+              <Image
+                src={heroImage}
+                alt="Hero Background"
+                fill
+                className="object-cover opacity-45 scale-105 contrast-110 saturate-125"
+                priority
+              />
+              {/* Keep the bottom readable, but let the image breathe. */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/25 to-background/95 rounded-b-[3rem]" />
+            </>
+          ) : (
+            <>
+              {/* No hero image set: gradient-only hero backdrop */}
+              <div className="absolute inset-0 bg-[radial-gradient(1000px_700px_at_20%_10%,rgba(251,191,36,0.18)_0%,transparent_60%),radial-gradient(900px_600px_at_85%_20%,rgba(59,130,246,0.10)_0%,transparent_55%),linear-gradient(to_bottom,rgba(2,6,23,0.92)_0%,rgba(2,6,23,0.88)_40%,rgba(0,0,0,0.98)_100%)]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/10 to-background/95 rounded-b-[3rem]" />
+            </>
+          )}
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[160px] pointer-events-none" />
           <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
         </div>
