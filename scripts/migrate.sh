@@ -40,8 +40,17 @@ BASELINE=(
 )
 
 for migration in "${BASELINE[@]}"; do
-  # Suppress error if already marked (idempotent on repeat deploys)
+  # A failed migration must be rolled-back before it can be marked applied.
+  # Both commands are no-ops if the migration is already in the right state.
+  npx prisma migrate resolve --rolled-back "$migration" 2>&1 || true
   npx prisma migrate resolve --applied "$migration" 2>&1 || true
+done
+
+echo "→ Prisma: resetting any previously-failed new migrations..."
+# If a prior deploy attempt ran these and left them in failed state,
+# roll them back so migrate deploy can re-run them cleanly.
+for migration in 20260312112122_init 20260313214500_add_watchlist_flag 20260314000000_add_features; do
+  npx prisma migrate resolve --rolled-back "$migration" 2>&1 || true
 done
 
 echo "→ Prisma: deploying new migrations..."
