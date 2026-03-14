@@ -14,6 +14,8 @@ import {
   ChevronDown,
   Zap,
   Rss,
+  HelpCircle,
+  Mail,
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
@@ -111,6 +113,31 @@ export default function Header({
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
               >
                 Predictions
+              </Link>
+            </div>
+          </div>
+
+          <div className="relative group">
+            <button
+              className="flex items-center gap-1 text-sm font-semibold hover:text-primary transition-colors py-2"
+            >
+              More
+              <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-all group-hover:rotate-180" />
+            </button>
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-44 bg-card border border-border rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 z-50">
+              <Link
+                href="/faq"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                <HelpCircle className="w-4 h-4 text-muted-foreground" />
+                How it Works
+              </Link>
+              <Link
+                href="/contact"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                Contact
               </Link>
             </div>
           </div>
@@ -227,6 +254,17 @@ export default function Header({
               </Link>
               <Link href="/leaderboard" className="block text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 Predictions Leaderboard
+              </Link>
+            </div>
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                More
+              </span>
+              <Link href="/faq" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
+                <HelpCircle className="w-5 h-5" /> How it Works
+              </Link>
+              <Link href="/contact" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
+                <Mail className="w-5 h-5" /> Contact
               </Link>
             </div>
             <hr className="border-border" />
