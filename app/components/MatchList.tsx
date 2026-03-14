@@ -274,12 +274,14 @@ export default function MatchList({
                       </p>
                     )}
 
-                    <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3 h-3" />
-                        {secsToMmss(match.duration)}
+                    {match.duration ? (
+                      <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3 h-3" />
+                          {secsToMmss(match.duration)}
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                   </div>
 
                     {!compact && (

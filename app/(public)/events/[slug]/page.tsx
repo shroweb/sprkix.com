@@ -543,14 +543,16 @@ export default async function EventPage({
                     Matches Card
                   </span>
                 </div>
-                <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
-                  <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
-                    {durationStr ?? "—"}
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">
-                    Card Duration
-                  </span>
-                </div>
+                {!isUpcoming && (
+                  <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                    <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
+                      {durationStr ?? "—"}
+                    </span>
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">
+                      Card Duration
+                    </span>
+                  </div>
+                )}
                 <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <div className="flex items-center gap-1.5">
                     <Star className="w-5 h-5 text-primary fill-current" />
