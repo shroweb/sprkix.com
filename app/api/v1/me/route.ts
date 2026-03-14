@@ -23,10 +23,10 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
       _count: {
         select: {
           reviews: true,
-          matchRatings: true,
+          MatchRating: true,
           followers: true,
           following: true,
-          watchlist: true,
+          WatchListItem: true,
         },
       },
     },
@@ -38,10 +38,10 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
   return ok({
     ...rest,
     reviewCount: _count.reviews,
-    matchRatingCount: _count.matchRatings,
+    matchRatingCount: _count.MatchRating,
     followerCount: _count.followers,
     followingCount: _count.following,
-    watchlistCount: _count.watchlist,
+    watchlistCount: _count.WatchListItem,
   });
 });
 
