@@ -13,16 +13,20 @@ export async function GET() {
     return NextResponse.json({ configs: {}, events: [] });
   }
 
-  const [configs, events] = await Promise.all([
-    (prisma as any).siteConfig.findMany(),
+  // Fetch small config rows and large image fields separately to stay under
+  // Prisma Accelerate's 5 MB response limit.
+  const [configs, logoRow, heroRow, events] = await Promise.all([
+    (prisma as any).siteConfig.findMany({
+      where: { key: { notIn: ["SITE_LOGO", "HERO_IMAGE"] } },
+    }),
+    (prisma as any).siteConfig
+      .findUnique({ where: { key: "SITE_LOGO" }, select: { key: true, value: true } })
+      .catch(() => null),
+    (prisma as any).siteConfig
+      .findUnique({ where: { key: "HERO_IMAGE" }, select: { key: true, value: true } })
+      .catch(() => null),
     prisma.event.findMany({
-      select: {
-        id: true,
-        title: true,
-        promotion: true,
-        date: true,
-        slug: true,
-      },
+      select: { id: true, title: true, promotion: true, date: true, slug: true },
       orderBy: { date: "desc" },
     }),
   ]);
@@ -30,7 +34,9 @@ export async function GET() {
   const mapped = (configs || []).reduce((acc: any, curr: any) => {
     acc[curr.key] = curr.value;
     return acc;
-  }, {});
+  }, {} as Record<string, string>);
+  if (logoRow) mapped["SITE_LOGO"] = logoRow.value;
+  if (heroRow) mapped["HERO_IMAGE"] = heroRow.value;
 
   return NextResponse.json({ configs: mapped, events });
 }
@@ -68,6 +74,8 @@ export async function POST(req: Request) {
     BANNER_TEXT,
     BANNER_LINK,
     BANNER_ENABLED,
+    SITE_TAGLINE,
+    SITE_DESCRIPTION,
   } = body;
 
   const updates = [
@@ -80,6 +88,8 @@ export async function POST(req: Request) {
     { key: "BANNER_TEXT", value: BANNER_TEXT },
     { key: "BANNER_LINK", value: BANNER_LINK },
     { key: "BANNER_ENABLED", value: BANNER_ENABLED },
+    { key: "SITE_TAGLINE", value: SITE_TAGLINE },
+    { key: "SITE_DESCRIPTION", value: SITE_DESCRIPTION },
   ];
 
   try {
@@ -89,6 +99,7 @@ export async function POST(req: Request) {
           where: { key: update.key },
           update: { value: update.value },
           create: { key: update.key, value: update.value },
+          select: { key: true }, // don't return value — base64 blows Prisma Accelerate 5 MB limit
         });
       }
     }

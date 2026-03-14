@@ -35,6 +35,8 @@ export default function AdminSettings() {
     BANNER_TEXT: "",
     BANNER_LINK: "",
     BANNER_ENABLED: "false",
+    SITE_TAGLINE: "",
+    SITE_DESCRIPTION: "",
   });
   const logoInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +58,8 @@ export default function AdminSettings() {
           BANNER_TEXT: configs.BANNER_TEXT || "",
           BANNER_LINK: configs.BANNER_LINK || "",
           BANNER_ENABLED: configs.BANNER_ENABLED || "false",
+          SITE_TAGLINE: configs.SITE_TAGLINE || "Discover. Rate. Share.",
+          SITE_DESCRIPTION: configs.SITE_DESCRIPTION || "The authoritative community archive for professional wrestling.",
         });
         setEvents(data.events || []);
         setLoading(false);
@@ -405,6 +409,52 @@ export default function AdminSettings() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+
+          {/* Site Metadata */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <Info className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Site Identity & SEO
+              </h2>
+            </div>
+            <div className="p-8 space-y-5">
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <Type className="w-3.5 h-3.5" /> Site Tagline
+                </label>
+                <input
+                  type="text"
+                  value={settings.SITE_TAGLINE}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, SITE_TAGLINE: e.target.value }))
+                  }
+                  className={`${inputClass} font-bold italic`}
+                  placeholder="e.g. Discover. Rate. Share."
+                />
+                <p className="text-[10px] text-muted-foreground italic">
+                  Appears in the browser tab title after the site name.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <Info className="w-3.5 h-3.5" /> Site SEO Description
+                </label>
+                <textarea
+                  value={settings.SITE_DESCRIPTION}
+                  onChange={(e) =>
+                    setSettings((s) => ({ ...s, SITE_DESCRIPTION: e.target.value }))
+                  }
+                  className={`${inputClass} font-medium leading-relaxed italic`}
+                  rows={3}
+                  placeholder="The definitive community archive for professional wrestling..."
+                />
+                <p className="text-[10px] text-muted-foreground italic">
+                  The primary description for search engines and social sharing.
+                </p>
               </div>
             </div>
           </div>

@@ -1,9 +1,36 @@
 import "./globals.css";
 
-export const metadata = {
-  title: "Poison Rana",
-  description: "Discover. Rate. Share Pro Wrestling Events.",
-};
+import { prisma } from "@lib/prisma";
+
+export async function generateMetadata() {
+  let siteName = "Poison Rana";
+  let tagline = "Discover. Rate. Share Pro Wrestling Events.";
+  let description = "The authoritative community archive for professional wrestling.";
+
+  try {
+    const configs = await (prisma as any).siteConfig.findMany({
+      where: { key: { in: ["SITE_TAGLINE", "SITE_DESCRIPTION"] } },
+    });
+    
+    const mapped = configs.reduce((acc: any, curr: any) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {});
+
+    if (mapped.SITE_TAGLINE) tagline = mapped.SITE_TAGLINE;
+    if (mapped.SITE_DESCRIPTION) description = mapped.SITE_DESCRIPTION;
+  } catch (e) {
+    console.error("Metadata fetch error:", e);
+  }
+
+  return {
+    title: {
+      template: `%s | ${siteName}`,
+      default: `${siteName} | ${tagline}`,
+    },
+    description,
+  };
+}
 
 export default function RootLayout({
   children,

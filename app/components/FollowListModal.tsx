@@ -58,10 +58,12 @@ export default function FollowListModal({
     <>
       <button
         onClick={openModal}
-        className="flex flex-col items-center hover:text-primary transition-colors group cursor-pointer"
+        className="flex flex-col items-center hover:opacity-70 transition-opacity group cursor-pointer"
       >
-        <span className="text-sm font-black">{count}</span>
-        <span className="text-sm text-muted-foreground font-medium">
+        <span className="text-2xl font-black italic text-white leading-none">
+          {count}
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
           {label}
         </span>
       </button>
@@ -75,23 +77,23 @@ export default function FollowListModal({
           />
 
           {/* Modal */}
-          <div className="relative bg-card border border-border rounded-[2rem] w-full max-w-sm shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+          <div className="relative bg-[#0d1020] border border-white/10 rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-border">
-              <div className="flex items-center gap-3">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="font-black uppercase italic tracking-tighter text-sm">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-white/[0.02]">
+              <div className="flex items-center gap-4">
+                <Users className="w-5 h-5 text-primary" />
+                <span className="font-black uppercase italic tracking-tighter text-lg">
                   {label}
                 </span>
-                <span className="text-[10px] font-black text-muted-foreground bg-secondary px-2 py-0.5 rounded">
+                <span className="text-[12px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                   {count}
                 </span>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 hover:bg-secondary rounded-xl transition-colors"
+                className="p-3 hover:bg-white/5 rounded-2xl transition-all group"
               >
-                <X className="w-4 h-4 text-muted-foreground" />
+                <X className="w-5 h-5 text-white/40 group-hover:text-white" />
               </button>
             </div>
 
@@ -130,10 +132,12 @@ export default function FollowListModal({
 
                       {/* Show follow button only if this isn't the current user */}
                       {currentUserId && !u.isCurrentUser && (
-                        <FollowButton
-                          targetUserId={u.id}
-                          initialIsFollowing={u.isFollowing}
-                        />
+                        <div className="shrink-0 scale-90 origin-right">
+                          <FollowButton
+                            targetUserId={u.id}
+                            initialIsFollowing={u.isFollowing}
+                          />
+                        </div>
                       )}
                     </div>
                   ))}
