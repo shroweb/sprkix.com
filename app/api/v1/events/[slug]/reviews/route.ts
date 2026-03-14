@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@lib/prisma";
-import { getUserFromBearer, requireAuth } from "@lib/v1/auth";
+import { requireAuth } from "@lib/v1/auth";
 import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
 
 export const OPTIONS = () => preflight();
@@ -31,7 +31,6 @@ export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
         rating: true,
         comment: true,
         createdAt: true,
-        updatedAt: true,
         user: {
           select: { id: true, name: true, slug: true, avatarUrl: true },
         },
@@ -73,7 +72,6 @@ export const POST = withErrorHandling(async (req: NextRequest, ctx: any) => {
       rating: true,
       comment: true,
       createdAt: true,
-      updatedAt: true,
       user: { select: { id: true, name: true, slug: true, avatarUrl: true } },
     },
   });
