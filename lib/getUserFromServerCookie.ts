@@ -19,7 +19,26 @@ export async function getUserFromServerCookie() {
         const userId = decoded.userId || decoded.id
         if (!userId) throw new Error('userId not found in token payload')
 
-        return await prisma.user.findUnique({ where: { id: userId } })
+        // Explicit select so adding new columns to the schema never breaks auth
+        // before the production DB migration has been applied.
+        return await prisma.user.findUnique({
+          where: { id: userId },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            slug: true,
+            avatarUrl: true,
+            isVerified: true,
+            isAdmin: true,
+            favoritePromotion: true,
+            createdAt: true,
+            password: true,
+            predictionScore: true,
+            predictionCount: true,
+            profileThemeEventId: true,
+          },
+        })
     } catch (err) {
         console.error('[getUserFromServerCookie] Error:', err)
         return null

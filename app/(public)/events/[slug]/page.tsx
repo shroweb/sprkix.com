@@ -146,9 +146,23 @@ export default async function EventPage({
         },
         reviews: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true, name: true, slug: true, avatarUrl: true,
+                isAdmin: true, isVerified: true, favoritePromotion: true,
+                createdAt: true, predictionScore: true, predictionCount: true,
+                profileThemeEventId: true,
+              },
+            },
             Reply: {
-              include: { user: true },
+              include: {
+                user: {
+                  select: {
+                    id: true, name: true, slug: true, avatarUrl: true,
+                    isAdmin: true, isVerified: true,
+                  },
+                },
+              },
               orderBy: { createdAt: "asc" },
             },
             votes: { select: { userId: true } },

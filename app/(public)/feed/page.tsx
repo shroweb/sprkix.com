@@ -23,7 +23,14 @@ export default async function FeedPage() {
       ? await prisma.review.findMany({
           where: { userId: { in: followingIds } },
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true, name: true, slug: true, avatarUrl: true,
+                isAdmin: true, isVerified: true, favoritePromotion: true,
+                createdAt: true, predictionScore: true, predictionCount: true,
+                profileThemeEventId: true,
+              },
+            },
             event: {
               select: {
                 title: true,

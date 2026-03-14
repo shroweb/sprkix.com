@@ -33,11 +33,20 @@ export default async function PopularReviewsPage(props: {
 
   const skip = (page - 1) * 5;
 
+  const userSelect = {
+    select: {
+      id: true, name: true, slug: true, avatarUrl: true,
+      isAdmin: true, isVerified: true, favoritePromotion: true,
+      createdAt: true, predictionScore: true, predictionCount: true,
+      profileThemeEventId: true,
+    },
+  };
+
   let reviews = await prisma.review.findMany({
     where: { eventId: event.id },
     include: {
-      user: true,
-      Reply: { include: { user: true } },
+      user: userSelect,
+      Reply: { include: { user: userSelect } },
       _count: true,
     },
     orderBy: {
@@ -55,8 +64,8 @@ export default async function PopularReviewsPage(props: {
       const targetReview = await prisma.review.findUnique({
         where: { id: reviewId },
         include: {
-          user: true,
-          Reply: { include: { user: true } },
+          user: userSelect,
+          Reply: { include: { user: userSelect } },
           _count: true,
         }
       });
