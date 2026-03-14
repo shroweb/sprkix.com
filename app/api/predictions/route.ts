@@ -15,15 +15,18 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Check if match exists and has a result — use safe select (no startTime yet if migration pending)
+    // Check if match exists and has been resolved (a winner marked on participants)
     const match = await prisma.match.findUnique({
       where: { id: matchId },
-      select: { result: true },
+      select: {
+        participants: { select: { isWinner: true } },
+      },
     });
     if (!match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
-    if (match.result) {
+    const isResolved = match.participants.some((p: any) => p.isWinner === true);
+    if (isResolved) {
       return NextResponse.json(
         { error: "Predictions are locked — this match has already been resolved" },
         { status: 403 }
