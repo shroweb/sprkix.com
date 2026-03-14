@@ -13,7 +13,10 @@ export default async function OGImage({
 
   const event = await prisma.event.findUnique({
     where: { slug },
-    include: { reviews: { select: { rating: true } } },
+    select: {
+      title: true, date: true, promotion: true, posterUrl: true,
+      reviews: { select: { rating: true } },
+    },
   });
 
   const reviews = event?.reviews ?? [];

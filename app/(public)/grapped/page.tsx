@@ -32,7 +32,7 @@ export default async function GrappedPage() {
     prisma.review.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
-      include: { event: true },
+      include: { event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } } },
     }),
     prisma.matchRating.findMany({
       where: { userId: user.id },

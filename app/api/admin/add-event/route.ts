@@ -26,8 +26,9 @@ export async function POST(req: Request) {
         tmdbId: body.tmdbId ? parseInt(body.tmdbId) : null,
         startTime: body.startTime ? new Date(body.startTime) : null,
         endTime: body.endTime ? new Date(body.endTime) : null,
-        enableWatchParty: body.enableWatchParty !== false,
-        enablePredictions: body.enablePredictions !== false,
+        // enableWatchParty / enablePredictions omitted until DB migration runs
+        // enableWatchParty: body.enableWatchParty !== false,
+        // enablePredictions: body.enablePredictions !== false,
       },
     });
 

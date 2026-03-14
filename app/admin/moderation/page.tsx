@@ -4,7 +4,7 @@ import ModerationQueue from "./ModerationQueue";
 export default async function ModerationPage() {
     const pendingReviews = await prisma.review.findMany({
         orderBy: { createdAt: 'desc' },
-        include: { user: true, event: true },
+        include: { user: true, event: { select: { id: true, title: true, slug: true, promotion: true } } },
         take: 30
     });
 

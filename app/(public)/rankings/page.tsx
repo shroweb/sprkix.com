@@ -7,7 +7,12 @@ export const dynamic = "force-dynamic";
 
 export default async function RankingsPage() {
   const events = await prisma.event.findMany({
-    include: { reviews: { select: { rating: true } } },
+    select: {
+      id: true, title: true, slug: true, date: true, promotion: true,
+      venue: true, posterUrl: true, description: true, type: true,
+      createdAt: true,
+      reviews: { select: { rating: true } },
+    },
   });
 
   const allRatings = events.flatMap((e) => e.reviews.map((r) => r.rating));

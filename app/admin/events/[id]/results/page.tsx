@@ -17,7 +17,9 @@ export default async function BulkResultsPage({
 
   const event = await prisma.event.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true, title: true, slug: true, date: true, promotion: true,
+      posterUrl: true, description: true, type: true, venue: true, createdAt: true,
       matches: {
         include: {
           participants: {

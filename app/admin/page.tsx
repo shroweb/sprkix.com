@@ -25,7 +25,7 @@ export default async function AdminHome() {
   const recentReviews = await prisma.review.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
-    include: { user: true, event: true },
+    include: { user: true, event: { select: { id: true, title: true, slug: true, promotion: true } } },
   });
 
   return (

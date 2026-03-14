@@ -29,7 +29,7 @@ export default async function AnalyticsPage() {
     // Top events by review count (last 30 days)
     prisma.event.findMany({
       take: 8,
-      include: { reviews: { select: { rating: true } } },
+      select: { id: true, title: true, slug: true, promotion: true, posterUrl: true, reviews: { select: { rating: true } } },
       orderBy: { reviews: { _count: "desc" } },
     }),
 

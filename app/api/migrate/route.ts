@@ -16,9 +16,16 @@ export async function GET() {
       }
     };
 
+    // Event columns
     await run(`ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "enableWatchParty" BOOLEAN NOT NULL DEFAULT true`);
     await run(`ALTER TABLE "Event" ADD COLUMN IF NOT EXISTS "enablePredictions" BOOLEAN NOT NULL DEFAULT true`);
+    
+    // User columns
     await run(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "profileThemeEventId" TEXT`);
+    await run(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "predictionScore" INTEGER NOT NULL DEFAULT 0`);
+    await run(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "predictionCount" INTEGER NOT NULL DEFAULT 0`);
+    
+    // WatchListItem columns
     await run(`ALTER TABLE "WatchListItem" ADD COLUMN IF NOT EXISTS "watchlist" BOOLEAN NOT NULL DEFAULT true`);
     await run(`ALTER TABLE "WatchListItem" ADD COLUMN IF NOT EXISTS "watched" BOOLEAN NOT NULL DEFAULT false`);
     await run(`ALTER TABLE "WatchListItem" ADD COLUMN IF NOT EXISTS "attended" BOOLEAN NOT NULL DEFAULT false`);

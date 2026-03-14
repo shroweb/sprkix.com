@@ -14,17 +14,17 @@ export default async function WatchlistPage() {
   let watchListItems: any[] = [];
   try {
       watchListItems = await prisma.watchListItem.findMany({
-        where: { 
-            userId: user.id,
-            watchlist: true,
-        },
-        include: {
+        where: { userId: user.id },
+        select: {
+          id: true,
+          userId: true,
+          eventId: true,
+          createdAt: true,
           event: {
-            include: {
-              reviews: {
-                where: { userId: user.id },
-                take: 1,
-              },
+            select: {
+              id: true, title: true, slug: true, date: true, promotion: true,
+              posterUrl: true, type: true,
+              reviews: { where: { userId: user.id }, take: 1, select: { id: true } },
             },
           },
         },
@@ -101,11 +101,11 @@ export default async function WatchlistPage() {
               </div>
 
               <div className="bg-black/50 p-4 border-t border-white/5 mt-auto">
-                {item.watched ? (
+                {item.event.reviews?.length > 0 ? (
                   <div className="flex items-center justify-between text-sm px-2">
                     <div className="flex items-center gap-2 font-black italic text-muted-foreground">
                       <Eye className="w-4 h-4 text-emerald-400" />
-                      <span className="text-emerald-400">Watched</span>
+                      <span className="text-emerald-400">Reviewed</span>
                     </div>
                   </div>
                 ) : (

@@ -5,7 +5,11 @@ import { CheckCircle, XCircle, AlertCircle, ExternalLink } from "lucide-react";
 export default async function AuditPage() {
   const events = await prisma.event.findMany({
     orderBy: { date: "desc" },
-    include: { _count: { select: { matches: true, reviews: true } } },
+    select: {
+      id: true, title: true, slug: true, date: true, promotion: true,
+      posterUrl: true, description: true, venue: true,
+      _count: { select: { matches: true, reviews: true } },
+    },
   });
 
   const issues = events.map((e) => ({

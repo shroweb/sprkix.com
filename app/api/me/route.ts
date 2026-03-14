@@ -18,6 +18,10 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: userId as string },
+      select: {
+        id: true, name: true, email: true, slug: true, avatarUrl: true,
+        isAdmin: true, isVerified: true, favoritePromotion: true, createdAt: true,
+      },
     });
 
     if (!user) {

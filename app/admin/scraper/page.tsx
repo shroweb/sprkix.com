@@ -11,7 +11,8 @@ export default async function ScraperPage() {
             ]
         },
         orderBy: { date: 'desc' },
-        take: 50
+        take: 50,
+        select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, description: true, tmdbId: true },
     });
 
     return (

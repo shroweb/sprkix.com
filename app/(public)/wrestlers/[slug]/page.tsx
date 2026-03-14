@@ -20,7 +20,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
         include: {
           match: {
             include: {
-              event: true,
+              event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
               participants: { include: { wrestler: true } },
               ratings: { select: { rating: true } },
             },

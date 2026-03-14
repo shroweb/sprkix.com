@@ -18,6 +18,11 @@ export default async function UserProfilePage({
 }) {
   const { slug } = await params;
 
+  const safeEventSelect = {
+    id: true, title: true, slug: true, date: true, promotion: true,
+    venue: true, posterUrl: true, description: true, type: true, createdAt: true,
+  };
+
   const [profileUser, currentUser] = await Promise.all([
     prisma.user.findFirst({
       where: {
@@ -26,26 +31,24 @@ export default async function UserProfilePage({
           { id: slug }
         ]
       },
-      include: {
+      select: {
+        id: true, name: true, email: true, slug: true, avatarUrl: true,
+        isAdmin: true, isVerified: true, favoritePromotion: true, createdAt: true,
         reviews: {
           orderBy: { createdAt: "desc" },
-          include: { event: true },
+          include: { event: { select: safeEventSelect } },
         },
         favoriteMatches: {
           include: {
             match: {
               include: {
-                event: true,
-                participants: {
-                  include: { wrestler: true }
-                }
-              }
-            }
-          }
+                event: { select: safeEventSelect },
+                participants: { include: { wrestler: true } },
+              },
+            },
+          },
         },
         predictions: {
-          // Fetch predictions on matches that have a declared winner (isCorrect may be null if
-          // results were saved without going through the resolution endpoint)
           where: {
             predictedWinnerId: { not: null },
             match: { participants: { some: { isWinner: true } } },
@@ -61,11 +64,10 @@ export default async function UserProfilePage({
             },
           },
         },
-        profileThemeEvent: true,
         MatchRating: {
           include: {
-            match: { select: { eventId: true } }
-          }
+            match: { select: { eventId: true } },
+          },
         },
       },
     }),
@@ -108,7 +110,7 @@ export default async function UserProfilePage({
 
   const eventsRated = await prisma.event.findMany({
     where: { id: { in: Object.keys(eventRatingCounts) } },
-    include: { _count: { select: { matches: true } } }
+    select: { id: true, _count: { select: { matches: true } } },
   });
 
   const cardsCompleted = eventsRated.filter((e: any) => 

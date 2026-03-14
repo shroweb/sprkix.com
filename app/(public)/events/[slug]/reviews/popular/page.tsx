@@ -24,6 +24,7 @@ export default async function PopularReviewsPage(props: {
 
   const event = await prisma.event.findUnique({
     where: { slug },
+    select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true },
   });
 
   if (!event) return notFound();

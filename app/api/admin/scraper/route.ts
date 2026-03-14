@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Missing eventId" }, { status: 400 });
     }
 
-    const event = await prisma.event.findUnique({ where: { id: eventId } });
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { id: true, title: true, slug: true, promotion: true, posterUrl: true, description: true, tmdbId: true },
+    });
     if (!event) {
         return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }

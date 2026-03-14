@@ -8,6 +8,10 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.findUnique({
     where: { email: email.trim().toLowerCase() },
+    select: {
+      id: true, name: true, email: true, slug: true, password: true,
+      avatarUrl: true, isAdmin: true, isVerified: true, favoritePromotion: true, createdAt: true,
+    },
   });
 
   if (!user) {

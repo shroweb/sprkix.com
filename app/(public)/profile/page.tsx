@@ -65,7 +65,7 @@ export default async function ProfilePage() {
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       include: {
-        event: true,
+        event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
         Reply: {
           include: { user: { select: { id: true, name: true, slug: true } } },
           orderBy: { createdAt: "asc" },
@@ -90,7 +90,7 @@ export default async function ProfilePage() {
       include: {
         match: {
           include: {
-            event: true,
+            event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
             participants: { include: { wrestler: true } }
           }
         }
@@ -105,10 +105,8 @@ export default async function ProfilePage() {
             id: true,
             userId: true,
             eventId: true,
-            watched: true,
-            attended: true,
             createdAt: true,
-            event: true
+            event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
           },
           orderBy: { createdAt: "desc" },
         });
@@ -144,7 +142,7 @@ export default async function ProfilePage() {
   });
   const eventsForCards = await prisma.event.findMany({
     where: { id: { in: Object.keys(cardEventCounts) } },
-    include: { _count: { select: { matches: true } } },
+    select: { id: true, _count: { select: { matches: true } } },
   });
   const cardsCompleted = eventsForCards.filter(
     (e: any) => e._count.matches > 0 && cardEventCounts[e.id] >= e._count.matches,

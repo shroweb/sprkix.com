@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
 
 export default async function PromotionsPage() {
   const events = await prisma.event.findMany({
-    include: {
+    select: {
+      id: true, title: true, slug: true, date: true, promotion: true,
+      venue: true, posterUrl: true, description: true, type: true,
+      createdAt: true,
       reviews: { select: { rating: true } },
     },
     orderBy: { date: "desc" },

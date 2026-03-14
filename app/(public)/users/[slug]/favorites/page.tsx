@@ -23,12 +23,12 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
     include: {
       match: {
         include: {
-          event: true,
-          participants: { include: { wrestler: true } }
-        }
-      }
+          event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
+          participants: { include: { wrestler: true } },
+        },
+      },
     },
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
   });
 
   return (

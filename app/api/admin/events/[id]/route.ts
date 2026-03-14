@@ -31,8 +31,10 @@ export async function PATCH(
         ...(startTime !== undefined && { startTime: startTime ? new Date(startTime) : null }),
         ...(endTime !== undefined && { endTime: endTime ? new Date(endTime) : null }),
         ...(currentMatchOrder !== undefined && { currentMatchOrder: parseInt(currentMatchOrder.toString()) }),
-        ...(enableWatchParty !== undefined && { enableWatchParty: !!enableWatchParty }),
-        ...(enablePredictions !== undefined && { enablePredictions: !!enablePredictions }),
+        // enableWatchParty / enablePredictions are intentionally omitted until the
+        // production DB migration (adding those columns) has been run.
+        // ...(enableWatchParty !== undefined && { enableWatchParty: !!enableWatchParty }),
+        // ...(enablePredictions !== undefined && { enablePredictions: !!enablePredictions }),
       },
     });
 

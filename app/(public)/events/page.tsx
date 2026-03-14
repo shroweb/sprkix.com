@@ -13,7 +13,12 @@ export default async function EventsPage({
   const [raw, userReviews] = await Promise.all([
     prisma.event.findMany({
       orderBy: { date: "desc" },
-      include: { reviews: { select: { rating: true } } },
+      select: {
+        id: true, title: true, slug: true, date: true, promotion: true,
+        venue: true, posterUrl: true, description: true, type: true,
+        createdAt: true,
+        reviews: { select: { rating: true } },
+      },
     }),
     user
       ? prisma.review.findMany({
