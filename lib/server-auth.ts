@@ -32,8 +32,9 @@ export async function getUserFromServerCookie() {
               favoritePromotion: true,
               createdAt: true,
               password: true,
-              // predictionScore / predictionCount / profileThemeEventId excluded
-              // until the DB migration adding those columns has been run on production.
+              predictionScore: true,
+              predictionCount: true,
+              profileThemeEventId: true,
             }
         })
 

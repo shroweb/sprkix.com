@@ -110,6 +110,8 @@ export default async function EventPage({
     startTime: true,
     endTime: true,
     currentMatchOrder: true,
+    enablePredictions: true,
+    enableWatchParty: true,
     createdAt: true,
   };
 
