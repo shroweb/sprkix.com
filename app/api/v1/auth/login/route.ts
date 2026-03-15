@@ -1,8 +1,14 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { prisma } from "@lib/prisma";
 import { signToken } from "@lib/v1/auth";
-import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
+import { err, preflight, withErrorHandling } from "@lib/v1/response";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type",
+};
 
 export const OPTIONS = () => preflight();
 
@@ -37,5 +43,5 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   const token = signToken(user.id);
   const { password: _pw, ...safeUser } = user;
 
-  return ok({ token, user: safeUser });
+  return NextResponse.json({ success: true, token, user: safeUser }, { headers: CORS_HEADERS });
 });
