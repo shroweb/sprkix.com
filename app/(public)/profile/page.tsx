@@ -264,7 +264,7 @@ export default async function ProfilePage() {
          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full relative z-20 flex flex-col justify-end pb-8 sm:pb-16">
             <Link
               href="/"
-              className="absolute top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
+              className="absolute top-20 sm:top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
             >
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Home
