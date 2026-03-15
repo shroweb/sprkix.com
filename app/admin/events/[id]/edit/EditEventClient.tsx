@@ -554,7 +554,11 @@ export default function EditEventClient({
                   <Sparkles className="w-3.5 h-3.5 text-primary" /> Auto-Enrich
                 </p>
                 <div className="flex gap-2 flex-wrap">
-                  {(["wikipedia", "aew"] as const).map((src) => (
+                  {([
+                    { src: "auto", label: event.profightdbUrl?.includes("cagematch") ? "Cagematch" : "ProfightDB", show: !!event.profightdbUrl },
+                    { src: "wikipedia", label: "Wikipedia", show: true },
+                    { src: "aew", label: "AEW", show: true },
+                  ].filter((b) => b.show) as { src: string; label: string; show: boolean }[]).map(({ src, label }) => (
                     <button key={src} type="button" disabled={enriching}
                       onClick={async () => {
                         setEnriching(true); setEnrichPreview(null);
@@ -565,14 +569,14 @@ export default function EditEventClient({
                             body: JSON.stringify({ source: src, url: src === "aew" ? details.aewUrl : undefined, preview: true }),
                           });
                           const data = await res.json();
-                          if (data.enrichment) setEnrichPreview({ ...data.enrichment, _source: src });
+                          if (data.enrichment) setEnrichPreview({ ...data.enrichment, _source: data.resolvedSource || src });
                           else setMessage({ type: "error", text: data.error || "No data found" });
                         } catch { setMessage({ type: "error", text: "Enrichment failed" }); }
                         finally { setEnriching(false); }
                       }}
                       className="px-3 py-1.5 bg-slate-100 hover:bg-primary/10 text-xs font-black uppercase rounded-xl transition-colors disabled:opacity-50 flex items-center gap-1.5">
                       {enriching ? <RefreshCcw className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
-                      {src === "wikipedia" ? "Wikipedia" : "AEW"}
+                      {label}
                     </button>
                   ))}
                 </div>
