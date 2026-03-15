@@ -16,6 +16,7 @@ import {
   Rss,
   HelpCircle,
   Mail,
+  List,
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
@@ -124,6 +125,12 @@ export default function Header({
             className="text-sm font-semibold hover:text-primary transition-colors"
           >
             Wrestlers
+          </Link>
+          <Link
+            href="/lists"
+            className="text-sm font-semibold hover:text-primary transition-colors"
+          >
+            Lists
           </Link>
           <div className="relative group">
             <button
@@ -278,6 +285,9 @@ export default function Header({
             </Link>
             <Link href="/wrestlers" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
               Wrestlers
+            </Link>
+            <Link href="/lists" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
+              Lists
             </Link>
             <div className="space-y-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
