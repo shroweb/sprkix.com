@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Mail,
   List,
+  BarChart2,
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
@@ -177,6 +178,13 @@ export default function Header({
                 How it Works
               </Link>
               <Link
+                href="/polls"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                <BarChart2 className="w-4 h-4 text-muted-foreground" />
+                Polls
+              </Link>
+              <Link
                 href="/contact"
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
               >
@@ -307,6 +315,9 @@ export default function Header({
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
                 More
               </span>
+              <Link href="/polls" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
+                <BarChart2 className="w-5 h-5" /> Polls
+              </Link>
               <Link href="/faq" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 <HelpCircle className="w-5 h-5" /> How it Works
               </Link>
