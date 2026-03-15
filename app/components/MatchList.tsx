@@ -286,8 +286,8 @@ export default function MatchList({
                   </div>
 
                     {!compact && (
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="bg-secondary/30 p-4 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
+                      <div className="flex flex-col items-center gap-3 shrink-0">
+                        <div className="bg-secondary/30 px-4 py-3 rounded-2xl flex flex-col items-center justify-center min-w-[130px]">
                           <div className="text-[10px] font-black text-muted-foreground uppercase mb-2 tracking-widest">
                             Rate Match
                           </div>
@@ -302,25 +302,25 @@ export default function MatchList({
                         </div>
 
                         {user && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(match.id);
-                            }}
-                            disabled={isFavoriting[match.id]}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
-                              favorites[match.id]
-                                ? "bg-red-500/10 border-red-500/30 text-red-500"
-                                : "bg-secondary/30 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30"
-                            }`}
-                          >
-                            <Heart className={`w-4 h-4 ${favorites[match.id] ? "fill-current" : ""}`} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">
-                              {favorites[match.id] ? "Favourited" : "Favourite"}
-                            </span>
-                          </button>
+                          <div className="flex gap-2 w-full">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(match.id);
+                              }}
+                              disabled={isFavoriting[match.id]}
+                              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                                favorites[match.id]
+                                  ? "bg-red-500/10 border-red-500/30 text-red-500"
+                                  : "bg-secondary/30 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30"
+                              }`}
+                            >
+                              <Heart className={`w-3.5 h-3.5 ${favorites[match.id] ? "fill-current" : ""}`} />
+                              {favorites[match.id] ? "Saved" : "Fave"}
+                            </button>
+                            <AddToListButton matchId={match.id} isLoggedIn={!!user} minimal />
+                          </div>
                         )}
-                        <AddToListButton matchId={match.id} isLoggedIn={!!user} minimal />
                       </div>
                     )}
                 </div>
