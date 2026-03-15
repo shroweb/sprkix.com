@@ -73,8 +73,7 @@ export async function GET(req: NextRequest) {
             style={{
               position: "absolute",
               right: "60px",
-              top: "50%",
-              transform: "translateY(-50%)",
+              top: "125px",
               width: "280px",
               height: "380px",
               borderRadius: "16px",
@@ -95,8 +94,7 @@ export async function GET(req: NextRequest) {
           style={{
             position: "absolute",
             left: "60px",
-            top: "50%",
-            transform: "translateY(-50%)",
+            top: "90px",
             display: "flex",
             flexDirection: "column",
             gap: "16px",
