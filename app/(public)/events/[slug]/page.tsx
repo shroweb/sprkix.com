@@ -570,7 +570,7 @@ export default async function EventPage({
           </div>
 
           {/* Right Column: Content */}
-          <div className="space-y-12 pb-12">
+          <div className="space-y-12">
             <div className="relative">
               <div className="hidden sm:block absolute top-0 left-0 w-1 h-full bg-primary/20 rounded-full"></div>
               <p className="sm:pl-6 text-lg sm:text-xl text-foreground font-medium italic leading-relaxed max-w-3xl">
@@ -627,7 +627,10 @@ export default async function EventPage({
               </div>
             )}
 
-            {/* ── Event Tabs ───────────────────────────────────────────────── */}
+          </div>
+        </div>
+
+        <div className="mt-10 pb-12">
             {(() => {
               // ── Card tab content ─────────────────────────────────────────
               const cardContent = processedMatches.length > 0 ? (
@@ -900,6 +903,7 @@ export default async function EventPage({
                           totalVotes={totalVotes}
                           userVoteOptionId={userVoteOptionId}
                           isLoggedIn={!!user}
+                          endsAt={poll.endsAt ?? null}
                         />
                       );
                     })}
@@ -923,7 +927,6 @@ export default async function EventPage({
                 />
               );
             })()}
-          </div>
         </div>
 
         {/* You Might Also Like */}

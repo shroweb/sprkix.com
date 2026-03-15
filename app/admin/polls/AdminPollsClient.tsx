@@ -39,6 +39,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
   const [options, setOptions] = useState(["", ""]);
   const [isActive, setIsActive] = useState(false);
   const [eventId, setEventId] = useState<string>("");
+  const [endsAt, setEndsAt] = useState<string>("");
   const [showForm, setShowForm] = useState(false);
 
   async function createPoll() {
@@ -57,6 +58,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
           options: cleanOptions,
           isActive,
           eventId: eventId || null,
+          endsAt: endsAt || null,
         }),
       });
       const data = await res.json();
@@ -78,6 +80,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
       setOptions(["", ""]);
       setIsActive(false);
       setEventId("");
+      setEndsAt("");
       setShowForm(false);
     } catch (err: any) {
       setError(err.message);
@@ -262,6 +265,18 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
                 + Add Option
               </button>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+              Close Date <span className="font-medium normal-case">(optional — leave blank to keep open)</span>
+            </label>
+            <input
+              type="datetime-local"
+              value={endsAt}
+              onChange={(e) => setEndsAt(e.target.value)}
+              className="w-full border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary/40"
+            />
           </div>
 
           {!eventId && (

@@ -30,11 +30,12 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { question, options, isActive, eventId } = body as {
+  const { question, options, isActive, eventId, endsAt } = body as {
     question: string;
     options: string[];
     isActive: boolean;
     eventId?: string | null;
+    endsAt?: string | null;
   };
 
   if (!question || !options || options.length < 2) {
@@ -54,6 +55,7 @@ export async function POST(req: Request) {
       question,
       isActive: !!isActive,
       eventId: eventId || null,
+      endsAt: endsAt ? new Date(endsAt) : null,
       options: {
         create: options.map((text, i) => ({ text, order: i })),
       },

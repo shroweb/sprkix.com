@@ -374,6 +374,22 @@ export default async function Home() {
           </section>
         )}
 
+        {/* ── Community Poll ── */}
+        {activePoll && (
+          <section>
+            <HomePoll
+              poll={activePoll}
+              totalVotes={activePoll.options.reduce(
+                (sum: number, o: any) => sum + o._count.votes,
+                0
+              )}
+              userVoteOptionId={activePoll.votes?.[0]?.optionId ?? null}
+              isLoggedIn={!!user}
+              endsAt={activePoll.endsAt ?? null}
+            />
+          </section>
+        )}
+
         {/* ── Hall of Fame ── */}
         {hallOfFame.length > 0 && (
           <section>
@@ -672,20 +688,6 @@ export default async function Home() {
           </section>
         )}
 
-        {/* ── Community Poll ── */}
-        {activePoll && (
-          <section>
-            <HomePoll
-              poll={activePoll}
-              totalVotes={activePoll.options.reduce(
-                (sum: number, o: any) => sum + o._count.votes,
-                0
-              )}
-              userVoteOptionId={activePoll.votes?.[0]?.optionId ?? null}
-              isLoggedIn={!!user}
-            />
-          </section>
-        )}
 
       </main>
     </div>

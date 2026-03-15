@@ -25,16 +25,30 @@ export async function POST(
     return NextResponse.json({ error: "Poll not found" }, { status: 404 });
   }
 
-  // Upsert vote — @@unique([pollId, userId]) prevents double voting
-  try {
+  // Check existing vote
+  const existingVote = await prisma.pollVote.findUnique({
+    where: { pollId_userId: { pollId, userId: user.id } },
+    select: { optionId: true },
+  });
+
+  if (existingVote) {
+    if (existingVote.optionId === optionId) {
+      // Same option — toggle off (unvote)
+      await prisma.pollVote.delete({
+        where: { pollId_userId: { pollId, userId: user.id } },
+      });
+    } else {
+      // Different option — switch vote
+      await prisma.pollVote.update({
+        where: { pollId_userId: { pollId, userId: user.id } },
+        data: { optionId },
+      });
+    }
+  } else {
+    // No existing vote — create new
     await prisma.pollVote.create({
       data: { pollId, optionId, userId: user.id },
     });
-  } catch (err: any) {
-    // Unique constraint violation — user already voted; return current state
-    if (err.code !== "P2002") {
-      throw err;
-    }
   }
 
   // Fetch updated vote counts
@@ -48,7 +62,7 @@ export async function POST(
     votes[opt.id] = opt._count.votes;
   }
 
-  const userVote = await prisma.pollVote.findUnique({
+  const userVoteRecord = await prisma.pollVote.findUnique({
     where: { pollId_userId: { pollId, userId: user.id } },
     select: { optionId: true },
   });
@@ -56,6 +70,6 @@ export async function POST(
   return NextResponse.json({
     success: true,
     votes,
-    userVote: userVote?.optionId ?? null,
+    userVote: userVoteRecord?.optionId ?? null,
   });
 }

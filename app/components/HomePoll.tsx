@@ -19,6 +19,7 @@ type Props = {
   totalVotes: number;
   userVoteOptionId: string | null;
   isLoggedIn: boolean;
+  endsAt?: string | null;
 };
 
 export default function HomePoll({
@@ -26,6 +27,7 @@ export default function HomePoll({
   totalVotes: initialTotal,
   userVoteOptionId: initialVote,
   isLoggedIn,
+  endsAt,
 }: Props) {
   const [votes, setVotes] = useState<Record<string, number>>(
     Object.fromEntries(poll.options.map((o) => [o.id, o._count.votes]))
@@ -34,11 +36,15 @@ export default function HomePoll({
   const [total, setTotal] = useState(initialTotal);
   const [loading, setLoading] = useState(false);
   const [animating, setAnimating] = useState(false);
+  const [copied, setCopied] = useState(false);
 
+  const isClosed = endsAt ? new Date(endsAt) < new Date() : false;
   const hasVoted = !!userVote;
+  // Show results view when voted OR when poll is closed
+  const showResults = hasVoted || isClosed;
 
   async function handleVote(optionId: string) {
-    if (!isLoggedIn || hasVoted || loading) return;
+    if (!isLoggedIn || loading || isClosed) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/poll/${poll.id}/vote`, {
@@ -65,37 +71,76 @@ export default function HomePoll({
     }
   }
 
+  async function handleShare() {
+    const maxVotes = Math.max(...Object.values(votes));
+    const lines = poll.options.map((o) => {
+      const pct = total > 0 ? Math.round((votes[o.id] / total) * 100) : 0;
+      const isWinner = votes[o.id] === maxVotes && maxVotes > 0;
+      return `${isWinner ? "✅" : "  "} ${o.text}: ${pct}%`;
+    });
+    const text = `📊 ${poll.question}\n${lines.join("\n")}\n👉 Vote at sprkix.com`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+    }
+  }
+
+  const closedOrEnding = endsAt ? (
+    isClosed ? (
+      <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[10px] font-black uppercase tracking-widest text-red-500">
+        Closed
+      </div>
+    ) : (
+      <div className="px-3 py-1.5 bg-muted border border-border rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+        Closes {new Date(endsAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+      </div>
+    )
+  ) : null;
+
+  const optionCount = poll.options.length;
+
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-6 max-w-2xl mx-auto">
+    <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-6">
       {/* Header pill */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full animate-pulse">
           <span className="text-primary text-xs">⚡</span>
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
             Community Poll
           </span>
         </span>
+        {closedOrEnding}
       </div>
 
       {/* Question */}
-      <h2 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tight leading-tight">
+      <h2 className="text-3xl sm:text-4xl font-black italic uppercase tracking-tight leading-tight">
         {poll.question}
       </h2>
 
       {/* Options */}
-      <div className="space-y-3">
+      <div className={`grid gap-3 ${optionCount >= 4 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
         {poll.options.map((option) => {
           const voteCount = votes[option.id] ?? 0;
           const pct = total > 0 ? Math.round((voteCount / total) * 100) : 0;
           const isWinner =
-            hasVoted &&
+            showResults &&
             voteCount === Math.max(...Object.values(votes));
           const isUserChoice = userVote === option.id;
 
-          if (hasVoted) {
+          if (showResults) {
             // Results view
             return (
-              <div key={option.id} className="space-y-1.5">
+              <button
+                key={option.id}
+                onClick={() => handleVote(option.id)}
+                disabled={loading || isClosed}
+                className={`w-full space-y-1.5 text-left rounded-2xl p-3 transition-all ${
+                  !isClosed ? "hover:bg-primary/5 cursor-pointer" : "cursor-default"
+                } disabled:cursor-not-allowed`}
+              >
                 <div className="flex items-center justify-between gap-2">
                   <span
                     className={`text-xs font-black uppercase tracking-wide ${
@@ -125,7 +170,7 @@ export default function HomePoll({
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-              </div>
+              </button>
             );
           }
 
@@ -155,19 +200,31 @@ export default function HomePoll({
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider pt-1 border-t border-border">
+      <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider pt-1 border-t border-border flex-wrap gap-2">
         <span>{total.toLocaleString()} {total === 1 ? "vote" : "votes"}</span>
-        {!isLoggedIn && (
-          <Link
-            href="/login"
-            className="text-primary font-black hover:underline transition-colors"
-          >
-            Sign in to vote
-          </Link>
-        )}
-        {hasVoted && (
-          <span className="text-primary/70">Thanks for voting!</span>
-        )}
+        <div className="flex items-center gap-3">
+          {!isLoggedIn && !isClosed && (
+            <Link
+              href="/login"
+              className="text-primary font-black hover:underline transition-colors"
+            >
+              Sign in to vote
+            </Link>
+          )}
+          {hasVoted && !isClosed && (
+            <span className="text-muted-foreground/60 italic normal-case font-medium text-[9px]">
+              Click an option to change your vote
+            </span>
+          )}
+          {hasVoted && (
+            <button
+              onClick={handleShare}
+              className="px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-primary font-black hover:bg-primary/20 transition-colors normal-case"
+            >
+              {copied ? "Copied!" : "Share Results"}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

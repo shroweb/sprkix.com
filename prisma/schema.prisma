@@ -284,6 +284,7 @@ model Poll {
   isActive  Boolean      @default(false)
   eventId   String?
   event     Event?       @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  endsAt    DateTime?
   createdAt DateTime     @default(now())
   options   PollOption[]
   votes     PollVote[]
