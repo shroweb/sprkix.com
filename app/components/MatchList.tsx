@@ -11,6 +11,7 @@ function secsToMmss(secs: number | null | undefined): string {
 }
 import Link from "next/link";
 import StarRating from "./StarRating";
+import AddToListButton from "./AddToListButton";
 import {
   Eye,
   EyeOff,
@@ -319,6 +320,7 @@ export default function MatchList({
                             </span>
                           </button>
                         )}
+                        <AddToListButton matchId={match.id} isLoggedIn={!!user} minimal />
                       </div>
                     )}
                 </div>

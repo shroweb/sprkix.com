@@ -16,20 +16,19 @@ export async function POST(
   if (!list || list.userId !== user.id)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { eventId, note } = await req.json();
+  const { eventId, matchId, note } = await req.json();
   try {
     const item = await prisma.listItem.create({
-      data: { listId, eventId, note: note || null },
+      data: { listId, eventId: eventId || null, matchId: matchId || null, note: note || null },
       include: {
-        event: {
-          select: { id: true, title: true, posterUrl: true, slug: true },
-        },
+        event: { select: { id: true, title: true, posterUrl: true, slug: true } },
+        match: { select: { id: true, title: true, event: { select: { posterUrl: true, title: true, slug: true } } } },
       },
     });
     return NextResponse.json(item, { status: 201 });
   } catch {
     return NextResponse.json(
-      { error: "Event already in this list" },
+      { error: "Item already in this list" },
       { status: 409 },
     );
   }
@@ -83,9 +82,14 @@ export async function DELETE(
 
   const { searchParams } = new URL(req.url);
   const eventId = searchParams.get("eventId");
-  if (!eventId)
-    return NextResponse.json({ error: "eventId required" }, { status: 400 });
+  const matchId = searchParams.get("matchId");
+  if (!eventId && !matchId)
+    return NextResponse.json({ error: "eventId or matchId required" }, { status: 400 });
 
-  await prisma.listItem.deleteMany({ where: { listId, eventId } });
+  if (matchId) {
+    await prisma.listItem.deleteMany({ where: { listId, matchId } });
+  } else if (eventId) {
+    await prisma.listItem.deleteMany({ where: { listId, eventId } });
+  }
   return NextResponse.json({ success: true });
 }

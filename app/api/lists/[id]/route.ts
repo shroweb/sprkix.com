@@ -23,6 +23,12 @@ export async function GET(
               date: true,
             },
           },
+          match: {
+            include: {
+              participants: { include: { wrestler: { select: { id: true, name: true, imageUrl: true } } } },
+              event: { select: { id: true, title: true, slug: true, promotion: true, date: true, posterUrl: true } },
+            },
+          },
         },
         orderBy: { order: "asc" },
       },
@@ -54,10 +60,15 @@ export async function PATCH(
   if (!list || list.userId !== user.id)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { title, description, isPublic } = await req.json();
+  const { title, description, isPublic, listType } = await req.json();
   const updated = await prisma.list.update({
     where: { id },
-    data: { title, description, isPublic },
+    data: {
+      title,
+      description,
+      isPublic,
+      ...(listType !== undefined ? { listType: listType === "matches" ? "matches" : "events" } : {}),
+    },
   });
   return NextResponse.json(updated);
 }

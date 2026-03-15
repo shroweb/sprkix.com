@@ -13,9 +13,8 @@ export async function GET() {
     include: {
       items: {
         include: {
-          event: {
-            select: { id: true, title: true, posterUrl: true, slug: true },
-          },
+          event: { select: { id: true, title: true, posterUrl: true, slug: true } },
+          match: { select: { id: true, title: true, event: { select: { posterUrl: true, title: true, slug: true } }, participants: { include: { wrestler: { select: { name: true } } } } } },
         },
       },
     },
@@ -30,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { title, description, isPublic } = await req.json();
+  const { title, description, isPublic, listType } = await req.json();
   if (!title?.trim())
     return NextResponse.json({ error: "Title required" }, { status: 400 });
 
@@ -39,6 +38,7 @@ export async function POST(req: NextRequest) {
       title: title.trim(),
       description: description?.trim() || null,
       isPublic: isPublic ?? true,
+      listType: listType === "matches" ? "matches" : "events",
       userId: user.id,
     },
   });

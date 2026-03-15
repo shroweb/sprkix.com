@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ListPlus, RefreshCcw, Globe, Lock } from "lucide-react";
+import { ListPlus, RefreshCcw, Globe, Lock, Calendar, Swords } from "lucide-react";
 
 export default function CreateListPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  const [listType, setListType] = useState<"events" | "matches">("events");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,7 +21,7 @@ export default function CreateListPage() {
       const res = await fetch("/api/lists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, isPublic }),
+        body: JSON.stringify({ title, description, isPublic, listType }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -86,6 +87,28 @@ export default function CreateListPage() {
             rows={3}
             className="w-full bg-background border-2 border-white/10 p-3 rounded-xl outline-none focus:border-primary/50 transition-all text-sm font-medium resize-none"
           />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            List Type
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setListType("events")}
+              className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-sm font-bold ${listType === "events" ? "border-primary bg-primary/10 text-primary" : "border-white/10 text-muted-foreground hover:border-white/20"}`}
+            >
+              <Calendar className="w-4 h-4" /> Events
+            </button>
+            <button
+              type="button"
+              onClick={() => setListType("matches")}
+              className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-sm font-bold ${listType === "matches" ? "border-primary bg-primary/10 text-primary" : "border-white/10 text-muted-foreground hover:border-white/20"}`}
+            >
+              <Swords className="w-4 h-4" /> Matches
+            </button>
+          </div>
         </div>
 
         <div className="space-y-2">

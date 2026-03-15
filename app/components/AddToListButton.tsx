@@ -5,14 +5,16 @@ import { createPortal } from "react-dom";
 import { ListPlus, Check, RefreshCcw, Plus, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-type ListOption = { id: string; title: string; items: { eventId: string }[] };
+type ListOption = { id: string; title: string; items: { eventId: string | null; matchId: string | null }[] };
 
 export default function AddToListButton({
   eventId,
+  matchId,
   isLoggedIn,
   minimal = false,
 }: {
-  eventId: string;
+  eventId?: string;
+  matchId?: string;
   isLoggedIn: boolean;
   minimal?: boolean;
 }) {
@@ -72,13 +74,10 @@ export default function AddToListButton({
       await fetch(`/api/lists/${listId}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventId }),
+        body: JSON.stringify(matchId ? { matchId } : { eventId }),
       });
-      const res = await fetch("/api/lists");
-      setLists(Array.isArray(await res.json()) ? await res.json() : lists);
     } catch { /* noop */ } finally {
       setAdding(null);
-      // refresh
       const res = await fetch("/api/lists");
       setLists(await res.json());
     }
@@ -87,7 +86,8 @@ export default function AddToListButton({
   const handleRemove = async (listId: string) => {
     setAdding(listId);
     try {
-      await fetch(`/api/lists/${listId}/items?eventId=${eventId}`, { method: "DELETE" });
+      const param = matchId ? `matchId=${matchId}` : `eventId=${eventId}`;
+      await fetch(`/api/lists/${listId}/items?${param}`, { method: "DELETE" });
     } catch { /* noop */ } finally {
       setAdding(null);
       const res = await fetch("/api/lists");
@@ -127,7 +127,9 @@ export default function AddToListButton({
       ) : (
         <div className="p-2 space-y-1">
           {lists.map((list) => {
-            const inList = list.items.some((i) => i.eventId === eventId);
+            const inList = matchId
+              ? list.items.some((i) => i.matchId === matchId)
+              : list.items.some((i) => i.eventId === eventId);
             return (
               <button
                 key={list.id}

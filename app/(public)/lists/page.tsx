@@ -17,6 +17,7 @@ export default async function ListsDiscoveryPage() {
         items: {
           include: {
             event: { select: { posterUrl: true, title: true } },
+            match: { select: { title: true, event: { select: { posterUrl: true, title: true } } } },
           },
           orderBy: { order: "asc" },
           take: 3,
@@ -33,6 +34,7 @@ export default async function ListsDiscoveryPage() {
             items: {
               include: {
                 event: { select: { posterUrl: true, title: true } },
+                match: { select: { title: true, event: { select: { posterUrl: true, title: true } } } },
               },
               orderBy: { order: "asc" },
               take: 3,
@@ -88,20 +90,24 @@ export default async function ListsDiscoveryPage() {
                 <Link href={`/lists/${list.id}`} className="block">
                   <div className="relative flex h-28 overflow-hidden">
                     {list.items.length > 0 ? (
-                      list.items.map((item: any, i: number) => (
-                        <div
-                          key={i}
-                          className="relative flex-1 overflow-hidden"
-                          style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
-                        >
-                          <Image
-                            src={item.event.posterUrl || "/placeholder.png"}
-                            alt={item.event.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                      ))
+                      list.items.map((item: any, i: number) => {
+                        const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+                        const altText = item.event?.title || item.match?.title || "";
+                        return (
+                          <div
+                            key={i}
+                            className="relative flex-1 overflow-hidden"
+                            style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
+                          >
+                            <Image
+                              src={posterUrl}
+                              alt={altText}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          </div>
+                        );
+                      })
                     ) : (
                       <div className="flex-1 bg-secondary flex items-center justify-center">
                         <List className="w-8 h-8 text-muted-foreground/20" />
@@ -133,7 +139,7 @@ export default async function ListsDiscoveryPage() {
                         </>
                       )}
                       <span className="mx-1">·</span>
-                      <span>{list._count.items} events</span>
+                      <span>{list._count.items} {list.listType === "matches" ? "matches" : "events"}</span>
                     </div>
                   </div>
                   <Link
@@ -189,20 +195,24 @@ export default async function ListsDiscoveryPage() {
                 {/* Poster strip */}
                 <div className="relative flex h-28 overflow-hidden">
                   {list.items.length > 0 ? (
-                    list.items.map((item: any, i: number) => (
-                      <div
-                        key={i}
-                        className="relative flex-1 overflow-hidden"
-                        style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
-                      >
-                        <Image
-                          src={item.event.posterUrl || "/placeholder.png"}
-                          alt={item.event.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    ))
+                    list.items.map((item: any, i: number) => {
+                      const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+                      const altText = item.event?.title || item.match?.title || "";
+                      return (
+                        <div
+                          key={i}
+                          className="relative flex-1 overflow-hidden"
+                          style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
+                        >
+                          <Image
+                            src={posterUrl}
+                            alt={altText}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      );
+                    })
                   ) : (
                     <div className="flex-1 bg-secondary flex items-center justify-center">
                       <List className="w-8 h-8 text-muted-foreground/20" />
@@ -238,7 +248,7 @@ export default async function ListsDiscoveryPage() {
                       {list.user.name}
                     </span>
                     <span className="text-[10px] text-muted-foreground/40 ml-auto shrink-0">
-                      {list._count.items} events
+                      {list._count.items} {list.listType === "matches" ? "matches" : "events"}
                     </span>
                   </div>
                 </div>

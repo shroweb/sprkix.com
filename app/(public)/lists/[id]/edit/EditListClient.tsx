@@ -17,7 +17,8 @@ import {
 
 type ListItem = {
   id: string;
-  eventId: string;
+  eventId: string | null;
+  matchId: string | null;
   note: string | null;
   order: number;
   event: {
@@ -27,7 +28,20 @@ type ListItem = {
     slug: string;
     promotion: string;
     date: string;
-  };
+  } | null;
+  match: {
+    id: string;
+    title: string;
+    event: {
+      id: string;
+      title: string;
+      posterUrl: string | null;
+      slug: string;
+      promotion: string;
+      date: string;
+    };
+    participants: { wrestler: { name: string } }[];
+  } | null;
 };
 
 type List = {
@@ -35,6 +49,7 @@ type List = {
   title: string;
   description: string | null;
   isPublic: boolean;
+  listType: string;
   items: ListItem[];
 };
 
@@ -47,6 +62,8 @@ export default function EditListClient({ list }: { list: List }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const isMatchList = list.listType === "matches";
 
   const updateNote = async (itemId: string, note: string) => {
     setItems((prev) =>
@@ -81,11 +98,13 @@ export default function EditListClient({ list }: { list: List }) {
     ]);
   };
 
-  const removeItem = async (itemId: string, eventId: string) => {
+  const removeItem = async (itemId: string, eventId: string | null, matchId: string | null) => {
     setItems((prev) => prev.filter((it) => it.id !== itemId));
-    await fetch(`/api/lists/${list.id}/items?eventId=${eventId}`, {
-      method: "DELETE",
-    });
+    if (matchId) {
+      await fetch(`/api/lists/${list.id}/items?matchId=${matchId}`, { method: "DELETE" });
+    } else if (eventId) {
+      await fetch(`/api/lists/${list.id}/items?eventId=${eventId}`, { method: "DELETE" });
+    }
   };
 
   const handleSave = async () => {
@@ -202,81 +221,100 @@ export default function EditListClient({ list }: { list: List }) {
       {/* Items */}
       <div className="space-y-4">
         <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          Events ({items.length})
+          Items ({items.length})
         </h2>
 
         {items.length === 0 ? (
           <div className="bg-card/30 border border-dashed border-border rounded-2xl p-12 text-center">
             <p className="text-muted-foreground font-bold italic">
-              No events on this list yet.
+              No {isMatchList ? "matches" : "events"} on this list yet.
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Add events from any event page.
+              Add {isMatchList ? "matches" : "events"} from any event page.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            {items.map((item, idx) => (
-              <div
-                key={item.id}
-                className="flex items-start gap-4 bg-card border border-border rounded-2xl p-4 group"
-              >
-                {/* Poster */}
-                <div className="relative w-10 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
-                  <Image
-                    src={item.event.posterUrl || "/placeholder.png"}
-                    alt={item.event.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+            {items.map((item, idx) => {
+              const isMatch = !!item.match;
+              const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+              const mainTitle = isMatch
+                ? item.match!.title
+                : (item.event?.title.replace(/–\s*\d{4}.*$/, "").trim() ?? "");
+              const subtitle = isMatch
+                ? (() => {
+                    const teams: Record<number, string[]> = {};
+                    (item.match!.participants || []).forEach((p: any, pi: number) => {
+                      const t = (p as any).team ?? 1;
+                      if (!teams[t]) teams[t] = [];
+                      teams[t].push(p.wrestler.name);
+                    });
+                    return Object.values(teams).map((t) => t.join(" & ")).join(" vs ");
+                  })()
+                : `${item.event?.promotion} · ${item.event ? new Date(item.event.date).getFullYear() : ""}`;
 
-                {/* Content */}
-                <div className="flex-1 min-w-0 space-y-2">
-                  <div>
-                    <p className="font-black text-sm italic uppercase tracking-tight leading-tight truncate">
-                      {item.event.title.replace(/–\s*\d{4}.*$/, "").trim()}
-                    </p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase">
-                      {item.event.promotion} · {new Date(item.event.date).getFullYear()}
-                    </p>
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-start gap-4 bg-card border border-border rounded-2xl p-4 group"
+                >
+                  {/* Poster */}
+                  <div className="relative w-10 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
+                    <Image
+                      src={posterUrl}
+                      alt={mainTitle}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                  <input
-                    defaultValue={item.note ?? ""}
-                    onBlur={(e) => updateNote(item.id, e.target.value)}
-                    placeholder="Add a note..."
-                    className="w-full bg-secondary border border-border rounded-xl px-3 py-2 text-xs font-medium text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors"
-                  />
-                </div>
 
-                {/* Actions */}
-                <div className="flex flex-col gap-1 shrink-0">
-                  <button
-                    onClick={() => moveItem(idx, "up")}
-                    disabled={idx === 0}
-                    className="p-1.5 rounded-lg hover:bg-muted transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
-                    title="Move up"
-                  >
-                    <ChevronUp className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => moveItem(idx, "down")}
-                    disabled={idx === items.length - 1}
-                    className="p-1.5 rounded-lg hover:bg-muted transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
-                    title="Move down"
-                  >
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => removeItem(item.id, item.eventId)}
-                    className="p-1.5 rounded-lg hover:bg-red-500/10 hover:text-red-400 text-muted-foreground transition-colors"
-                    title="Remove from list"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div>
+                      <p className="font-black text-sm italic uppercase tracking-tight leading-tight truncate">
+                        {mainTitle}
+                      </p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase truncate">
+                        {subtitle}
+                      </p>
+                    </div>
+                    <input
+                      defaultValue={item.note ?? ""}
+                      onBlur={(e) => updateNote(item.id, e.target.value)}
+                      placeholder="Add a note..."
+                      className="w-full bg-secondary border border-border rounded-xl px-3 py-2 text-xs font-medium text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors"
+                    />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <button
+                      onClick={() => moveItem(idx, "up")}
+                      disabled={idx === 0}
+                      className="p-1.5 rounded-lg hover:bg-muted transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                      title="Move up"
+                    >
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => moveItem(idx, "down")}
+                      disabled={idx === items.length - 1}
+                      className="p-1.5 rounded-lg hover:bg-muted transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                      title="Move down"
+                    >
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => removeItem(item.id, item.eventId, item.matchId)}
+                      className="p-1.5 rounded-lg hover:bg-red-500/10 hover:text-red-400 text-muted-foreground transition-colors"
+                      title="Remove from list"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
