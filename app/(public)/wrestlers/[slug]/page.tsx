@@ -22,7 +22,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
         include: {
           match: {
             include: {
-              event: { select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
+              event: { select: { id: true, title: true, slug: true, date: true, startTime: true, promotion: true, posterUrl: true, type: true, createdAt: true } },
               participants: { include: { wrestler: true } },
               ratings: { select: { rating: true } },
             },
@@ -36,10 +36,17 @@ export default async function WrestlerPage({ params }: { params: any }) {
   if (!wrestler) return notFound();
 
   const now = new Date();
-  // Only count matches from events that have already happened
-  const pastMatches = wrestler.matches.filter(
-    (mp) => new Date(mp.match.event.date) <= now,
-  );
+  // Only count matches from events that have already happened.
+  // Prefer startTime (actual show time) over date (which may be set to the
+  // broadcast date while startTime is the next day).
+  const pastMatches = wrestler.matches.filter((mp) => {
+    const event = mp.match.event;
+    if (event.startTime) return new Date(event.startTime) < now;
+    // No startTime: treat the event as still upcoming until end of day
+    const endOfDay = new Date(event.date);
+    endOfDay.setHours(23, 59, 59, 999);
+    return endOfDay < now;
+  });
   const totalMatches = pastMatches.length;
   const wins = pastMatches.filter((mp) => mp.isWinner).length;
   const losses = totalMatches - wins;
