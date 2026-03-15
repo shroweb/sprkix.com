@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Poison Rana API Docs (Local HTML)</title>
+  <style>
+    :root{
+      --bg:#070812;
+      --card:#0d1020;
+      --border:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.55);
+      --primary:#fbbf24;
+      --shadow: 0 30px 80px rgba(0,0,0,.55);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 600px at 30% 0%, rgba(251,191,36,.18), transparent 55%),
+                  radial-gradient(900px 600px at 90% 15%, rgba(56,189,248,.12), transparent 55%),
+                  linear-gradient(180deg, #050611, var(--bg));
+      color:var(--text);
+      font-family:var(--sans);
+    }
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:48px 18px 80px}
+    .top{
+      display:flex;gap:18px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+    h1{margin:0;font-size:40px;letter-spacing:-.03em;text-transform:uppercase;font-weight:900;font-style:italic}
+    .sub{margin:8px 0 0;color:var(--muted);max-width:70ch}
+    .bar{
+      margin:24px 0 34px;
+      padding:14px 16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    }
+    .bar strong{color:var(--primary)}
+    .bar code{font-family:var(--mono);font-size:12px;color:rgba(251,191,36,.9)}
+    .nav{
+      display:flex;gap:8px;flex-wrap:wrap;
+    }
+    .navlink{
+      text-decoration:none;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      font-size:10px;
+      opacity:.9;
+    }
+    .navlink:hover{opacity:1;border-color:rgba(251,191,36,.35)}
+    .section{margin-top:42px}
+    .secthead{
+      padding:18px 18px 14px;
+      border:1px solid var(--border);
+      border-radius:22px;
+      background:rgba(13,16,32,.65);
+      box-shadow: var(--shadow);
+    }
+    .secthead h2{margin:0;font-size:18px;text-transform:uppercase;font-weight:900;font-style:italic;letter-spacing:-.02em}
+    .muted{color:var(--muted)}
+    .ep{
+      margin-top:14px;
+      border:1px solid var(--border);
+      border-radius:22px;
+      background:rgba(13,16,32,.72);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+    }
+    .ephead{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    .epdesc{color:var(--muted);font-weight:650}
+    .eppath{padding:12px 16px 2px}
+    .path{font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.9)}
+    .returns{padding:0 16px 14px;color:var(--muted)}
+    .returns code{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.86)}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:6px 10px;border-radius:999px;
+      font-family:var(--mono);
+      font-size:12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+    }
+    .pill.auth{font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+    .pill.get{color:#60a5fa;border-color:rgba(96,165,250,.25)}
+    .pill.post{color:#34d399;border-color:rgba(52,211,153,.25)}
+    .pill.patch{color:#fbbf24;border-color:rgba(251,191,36,.25)}
+    .pill.delete{color:#fb7185;border-color:rgba(251,113,133,.25)}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;padding:0 16px 16px}
+    .codegrid{padding-top:0}
+    @media (min-width: 860px){
+      .grid{grid-template-columns:1fr 1fr}
+    }
+    .params{
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      background:rgba(255,255,255,.02);
+      padding:12px 12px;
+    }
+    .params h4{margin:0 0 10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+    .param{padding:10px 10px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.05)}
+    .param + .param{margin-top:8px}
+    .param code{font-family:var(--mono);font-weight:900}
+    .pdesc{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.35}
+    pre{margin:0;overflow:auto;padding:12px;background:rgba(0,0,0,.28);border-radius:14px;border:1px solid rgba(255,255,255,.06)}
+    pre code{font-family:var(--mono);font-size:12px;line-height:1.4;color:rgba(255,255,255,.88)}
+    .codewrap{border:1px solid rgba(255,255,255,.06);border-radius:18px;background:rgba(255,255,255,.02);padding:12px}
+    .codetitle{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:10px}
+    .footer{margin-top:48px;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>API Docs</h1>
+        <p class="sub">Standalone HTML export of the Poison Rana REST API docs. Default base URL uses the current site origin.</p>
+      </div>
+      <div class="nav"><a class="navlink" href="#authentication">Authentication</a><a class="navlink" href="#events">Events</a><a class="navlink" href="#rankings">Rankings</a><a class="navlink" href="#promotions">Promotions</a><a class="navlink" href="#wrestlers">Wrestlers</a><a class="navlink" href="#search">Search</a><a class="navlink" href="#me">My Profile</a><a class="navlink" href="#interactions">Interactions</a></div>
+    </div>
+    <div class="bar">
+      <div><strong>Base URL:</strong> <code id="base"></code></div>
+      <div class="muted">Tip: add <code>?baseUrl=https://poisonrana.com/api/v1</code> to override.</div>
+    </div>
+    <div id="content"><section class="section" id="authentication">
+  <div class="secthead">
+    <h2>Authentication</h2>
+    <p class="muted">All authenticated endpoints require a Bearer token in the Authorization header. Obtain a token via login, register, or social OAuth — tokens are valid for 7 days.</p>
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span>
+    <span class="epdesc">Authenticate with email and password. Returns a Bearer token and user object. Also sets an httpOnly cookie for web browser sessions.</span>
+  </div>
+  <div class="eppath"><code class="path">/auth/login</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ success, token, user }</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>email</code><span class="muted">string (required)</span><div class="pdesc">User&#39;s email address</div></div><div class="param"><code>password</code><span class="muted">string (required)</span><div class="pdesc">User&#39;s password</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    <div class="codewrap"><div class="codetitle">Example Request</div><pre><code>{
+  &quot;email&quot;: &quot;fan@example.com&quot;,
+  &quot;password&quot;: &quot;supersecret&quot;
+}</code></pre></div>
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;success&quot;: true,
+  &quot;token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
+  &quot;user&quot;: {
+    &quot;id&quot;: &quot;clx123&quot;,
+    &quot;name&quot;: &quot;TombstonePiledriver&quot;,
+    &quot;email&quot;: &quot;fan@example.com&quot;,
+    &quot;slug&quot;: &quot;tombstone-piledriver-a1b2&quot;,
+    &quot;avatarUrl&quot;: null,
+    &quot;isAdmin&quot;: false
+  }
+}</code></pre></div>
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span>
+    <span class="epdesc">Create a new account. Returns a Bearer token and the created user. Username is auto-assigned from a bank of wrestling move names — the user can change it after signup.</span>
+  </div>
+  <div class="eppath"><code class="path">/auth/register</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ success, token, user }</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>name</code><span class="muted">string (required)</span><div class="pdesc">Display name (must be unique, case-insensitive)</div></div><div class="param"><code>email</code><span class="muted">string (required)</span><div class="pdesc">Email address</div></div><div class="param"><code>password</code><span class="muted">string (required)</span><div class="pdesc">Password</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;success&quot;: true,
+  &quot;token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
+  &quot;user&quot;: {
+    &quot;id&quot;: &quot;clx124&quot;,
+    &quot;name&quot;: &quot;SwantonBomb&quot;,
+    &quot;email&quot;: &quot;new@example.com&quot;,
+    &quot;slug&quot;: &quot;swanton-bomb-z9y8&quot;
+  }
+}</code></pre></div>
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Initiate Google OAuth. For the mobile app, pass ?platform=app — after Google authenticates the user, the callback will redirect to the poisonrana:// deep link instead of the web homepage.</span>
+  </div>
+  <div class="eppath"><code class="path">/auth/google?platform=app</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>302 redirect → Google sign-in → poisonrana://auth?token=... (app) or / (web)</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>platform</code><span class="muted">string</span><div class="pdesc">&quot;app&quot; to receive token via deep link (poisonrana://auth?token=...). Omit for web flow.</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Initiate Facebook OAuth. Same platform=app deep-link behaviour as Google.</span>
+  </div>
+  <div class="eppath"><code class="path">/auth/facebook?platform=app</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>302 redirect → Facebook sign-in → poisonrana://auth?token=... (app) or / (web)</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>platform</code><span class="muted">string</span><div class="pdesc">&quot;app&quot; to receive token via deep link. Omit for web flow.</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Returns the currently authenticated user.</span>
+  </div>
+  <div class="eppath"><code class="path">/auth/me</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ user }</code></div>
+  <div class="grid">
+    
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article>
+</section><section class="section" id="events">
+  <div class="secthead">
+    <h2>Events</h2>
+    <p class="muted">Browse, search and retrieve professional wrestling events.</p>
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">List all events with optional filtering, search and pagination.</span>
+  </div>
+  <div class="eppath"><code class="path">/events</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Event[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>page</code><span class="muted">number</span><div class="pdesc">Page number (default: 1)</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Results per page, max 50 (default: 20)</div></div><div class="param"><code>q</code><span class="muted">string</span><div class="pdesc">Search by event title</div></div><div class="param"><code>promotion</code><span class="muted">string</span><div class="pdesc">Filter by promotion (e.g. WWE, AEW)</div></div><div class="param"><code>type</code><span class="muted">string</span><div class="pdesc">Filter by event type (e.g. PPV, TV)</div></div><div class="param"><code>sort</code><span class="muted">string</span><div class="pdesc">Sort order: date_desc (default) | date_asc</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;clx456&quot;,
+      &quot;title&quot;: &quot;WrestleMania 40&quot;,
+      &quot;slug&quot;: &quot;wrestlemania-40&quot;,
+      &quot;date&quot;: &quot;2024-04-06T00:00:00.000Z&quot;,
+      &quot;promotion&quot;: &quot;WWE&quot;,
+      &quot;venue&quot;: &quot;Lincoln Financial Field&quot;,
+      &quot;posterUrl&quot;: &quot;https://...&quot;,
+      &quot;type&quot;: &quot;PPV&quot;,
+      &quot;reviewCount&quot;: 312,
+      &quot;matchCount&quot;: 10,
+      &quot;averageRating&quot;: 4.21
+    }
+  ],
+  &quot;error&quot;: null,
+  &quot;meta&quot;: {
+    &quot;page&quot;: 1,
+    &quot;limit&quot;: 20,
+    &quot;total&quot;: 1842
+  }
+}</code></pre></div>
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Get a single event by slug, including all matches and participants.</span>
+  </div>
+  <div class="eppath"><code class="path">/events/:slug</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Event with matches[]</code></div>
+  <div class="grid">
+    
+    
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;clx456&quot;,
+    &quot;title&quot;: &quot;WrestleMania 40&quot;,
+    &quot;slug&quot;: &quot;wrestlemania-40&quot;,
+    &quot;date&quot;: &quot;2024-04-06T00:00:00.000Z&quot;,
+    &quot;promotion&quot;: &quot;WWE&quot;,
+    &quot;venue&quot;: &quot;Lincoln Financial Field&quot;,
+    &quot;posterUrl&quot;: &quot;https://...&quot;,
+    &quot;description&quot;: &quot;...&quot;,
+    &quot;type&quot;: &quot;PPV&quot;,
+    &quot;startTime&quot;: null,
+    &quot;endTime&quot;: null,
+    &quot;enableWatchParty&quot;: true,
+    &quot;enablePredictions&quot;: true,
+    &quot;reviewCount&quot;: 312,
+    &quot;matchCount&quot;: 10,
+    &quot;averageRating&quot;: 4.21,
+    &quot;matches&quot;: [
+      {
+        &quot;id&quot;: &quot;clxm1&quot;,
+        &quot;title&quot;: &quot;Cody Rhodes vs Roman Reigns&quot;,
+        &quot;type&quot;: &quot;Singles&quot;,
+        &quot;duration&quot;: 4230,
+        &quot;rating&quot;: 4.78,
+        &quot;order&quot;: 10,
+        &quot;participants&quot;: [
+          {
+            &quot;id&quot;: &quot;p1&quot;,
+            &quot;team&quot;: 1,
+            &quot;isWinner&quot;: true,
+            &quot;wrestler&quot;: {
+              &quot;id&quot;: &quot;w1&quot;,
+              &quot;name&quot;: &quot;Cody Rhodes&quot;,
+              &quot;slug&quot;: &quot;cody-rhodes&quot;,
+              &quot;imageUrl&quot;: &quot;https://...&quot;
+            }
+          },
+          {
+            &quot;id&quot;: &quot;p2&quot;,
+            &quot;team&quot;: 2,
+            &quot;isWinner&quot;: false,
+            &quot;wrestler&quot;: {
+              &quot;id&quot;: &quot;w2&quot;,
+              &quot;name&quot;: &quot;Roman Reigns&quot;,
+              &quot;slug&quot;: &quot;roman-reigns&quot;,
+              &quot;imageUrl&quot;: &quot;https://...&quot;
+            }
+          }
+        ]
+      }
+    ]
+  },
+  &quot;error&quot;: null
+}</code></pre></div>
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Get paginated reviews for an event, including replies.</span>
+  </div>
+  <div class="eppath"><code class="path">/events/:slug/reviews</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Review[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>page</code><span class="muted">number</span><div class="pdesc">Page number (default: 1)</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Results per page, max 50 (default: 20)</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Submit or update your review for an event. Submitting again updates your existing review.</span>
+  </div>
+  <div class="eppath"><code class="path">/events/:slug/reviews</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Review</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>rating</code><span class="muted">number (required)</span><div class="pdesc">Star rating from 0.5 to 5 (half-stars supported)</div></div><div class="param"><code>comment</code><span class="muted">string</span><div class="pdesc">Optional written review</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article>
+</section><section class="section" id="rankings">
+  <div class="secthead">
+    <h2>Rankings</h2>
+    <p class="muted">Ranked lists using the Poison Rana Bayesian weighted rating formula: (v/(v+m)) × R + (m/(v+m)) × C — where v = review count, m = minimum review threshold, R = event average, C = global average.</p>
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Top events ranked by Bayesian weighted rating.</span>
+  </div>
+  <div class="eppath"><code class="path">/rankings/events</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>RankedEvent[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>promotion</code><span class="muted">string</span><div class="pdesc">Filter to a specific promotion</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Max results, up to 100 (default: 50)</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;clx789&quot;,
+      &quot;title&quot;: &quot;WrestleKingdom 17&quot;,
+      &quot;slug&quot;: &quot;wrestlekingdom-17&quot;,
+      &quot;date&quot;: &quot;2023-01-04T00:00:00.000Z&quot;,
+      &quot;promotion&quot;: &quot;NJPW&quot;,
+      &quot;posterUrl&quot;: &quot;https://...&quot;,
+      &quot;reviewCount&quot;: 88,
+      &quot;averageRating&quot;: 4.71,
+      &quot;bayesianScore&quot;: 4.643
+    }
+  ],
+  &quot;error&quot;: null,
+  &quot;meta&quot;: {
+    &quot;total&quot;: 50
+  }
+}</code></pre></div>
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Top individual matches ranked by community match rating.</span>
+  </div>
+  <div class="eppath"><code class="path">/rankings/matches</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>RankedMatch[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>promotion</code><span class="muted">string</span><div class="pdesc">Filter to a specific promotion</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Max results, up to 100 (default: 50)</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article>
+</section><section class="section" id="promotions">
+  <div class="secthead">
+    <h2>Promotions</h2>
+    
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">List all promotions with their aliases and event counts.</span>
+  </div>
+  <div class="eppath"><code class="path">/promotions</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Promotion[]</code></div>
+  <div class="grid">
+    
+    
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;prom1&quot;,
+      &quot;shortName&quot;: &quot;AEW&quot;,
+      &quot;fullName&quot;: &quot;All Elite Wrestling&quot;,
+      &quot;logoUrl&quot;: &quot;https://...&quot;,
+      &quot;aliases&quot;: [
+        {
+          &quot;id&quot;: &quot;a1&quot;,
+          &quot;fullName&quot;: &quot;All Elite Wrestling&quot;
+        }
+      ],
+      &quot;eventCount&quot;: 284
+    }
+  ],
+  &quot;error&quot;: null
+}</code></pre></div>
+  </div>
+</article>
+</section><section class="section" id="wrestlers">
+  <div class="secthead">
+    <h2>Wrestlers</h2>
+    
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">List all wrestlers with optional name search and pagination.</span>
+  </div>
+  <div class="eppath"><code class="path">/wrestlers</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Wrestler[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>page</code><span class="muted">number</span><div class="pdesc">Page number (default: 1)</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Results per page, max 100 (default: 40)</div></div><div class="param"><code>q</code><span class="muted">string</span><div class="pdesc">Search by name</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Get a wrestler&#39;s profile and their last 50 match appearances.</span>
+  </div>
+  <div class="eppath"><code class="path">/wrestlers/:slug</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Wrestler with matches[]</code></div>
+  <div class="grid">
+    
+    
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;w1&quot;,
+    &quot;name&quot;: &quot;Cody Rhodes&quot;,
+    &quot;slug&quot;: &quot;cody-rhodes&quot;,
+    &quot;imageUrl&quot;: &quot;https://...&quot;,
+    &quot;bio&quot;: &quot;The American Nightmare.&quot;,
+    &quot;matchCount&quot;: 143,
+    &quot;matches&quot;: [
+      {
+        &quot;id&quot;: &quot;p1&quot;,
+        &quot;team&quot;: 1,
+        &quot;isWinner&quot;: true,
+        &quot;match&quot;: {
+          &quot;id&quot;: &quot;clxm1&quot;,
+          &quot;title&quot;: &quot;Cody Rhodes vs Roman Reigns&quot;,
+          &quot;type&quot;: &quot;Singles&quot;,
+          &quot;rating&quot;: 4.78,
+          &quot;duration&quot;: 4230,
+          &quot;event&quot;: {
+            &quot;id&quot;: &quot;clx456&quot;,
+            &quot;title&quot;: &quot;WrestleMania 40&quot;,
+            &quot;slug&quot;: &quot;wrestlemania-40&quot;,
+            &quot;date&quot;: &quot;2024-04-06T00:00:00.000Z&quot;,
+            &quot;promotion&quot;: &quot;WWE&quot;
+          }
+        }
+      }
+    ]
+  },
+  &quot;error&quot;: null
+}</code></pre></div>
+  </div>
+</article>
+</section><section class="section" id="search">
+  <div class="secthead">
+    <h2>Search</h2>
+    
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Search across events, wrestlers and users simultaneously. Minimum 2 characters.</span>
+  </div>
+  <div class="eppath"><code class="path">/search</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ events[], wrestlers[], users[] }</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>q</code><span class="muted">string (required)</span><div class="pdesc">Search query (min 2 chars)</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    <div class="codewrap"><div class="codetitle">Example Response</div><pre><code>{
+  &quot;data&quot;: {
+    &quot;events&quot;: [
+      {
+        &quot;id&quot;: &quot;clx456&quot;,
+        &quot;title&quot;: &quot;WrestleMania 40&quot;,
+        &quot;slug&quot;: &quot;wrestlemania-40&quot;,
+        &quot;date&quot;: &quot;2024-04-06T00:00:00.000Z&quot;,
+        &quot;promotion&quot;: &quot;WWE&quot;
+      }
+    ],
+    &quot;wrestlers&quot;: [
+      {
+        &quot;id&quot;: &quot;w1&quot;,
+        &quot;name&quot;: &quot;Cody Rhodes&quot;,
+        &quot;slug&quot;: &quot;cody-rhodes&quot;,
+        &quot;imageUrl&quot;: &quot;https://...&quot;
+      }
+    ],
+    &quot;users&quot;: [
+      {
+        &quot;id&quot;: &quot;u1&quot;,
+        &quot;name&quot;: &quot;WrestleFan99&quot;,
+        &quot;slug&quot;: &quot;wrestlefan99&quot;,
+        &quot;avatarUrl&quot;: null
+      }
+    ]
+  },
+  &quot;error&quot;: null
+}</code></pre></div>
+  </div>
+</article>
+</section><section class="section" id="me">
+  <div class="secthead">
+    <h2>My Profile</h2>
+    <p class="muted">Endpoints for the authenticated user&#39;s own data.</p>
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Get the authenticated user&#39;s profile with activity counts.</span>
+  </div>
+  <div class="eppath"><code class="path">/me</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>User with counts</code></div>
+  <div class="grid">
+    
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill patch">PATCH</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Update the authenticated user&#39;s profile.</span>
+  </div>
+  <div class="eppath"><code class="path">/me</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Updated user</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>name</code><span class="muted">string</span><div class="pdesc">Display name</div></div><div class="param"><code>avatarUrl</code><span class="muted">string</span><div class="pdesc">Avatar image URL (null to remove)</div></div><div class="param"><code>favoritePromotion</code><span class="muted">string</span><div class="pdesc">Favourite promotion short name</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Get the authenticated user&#39;s watchlist with pagination.</span>
+  </div>
+  <div class="eppath"><code class="path">/me/watchlist</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>WatchlistItem[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>page</code><span class="muted">number</span><div class="pdesc">Page number (default: 1)</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Results per page, max 50 (default: 20)</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Add an event to the watchlist.</span>
+  </div>
+  <div class="eppath"><code class="path">/me/watchlist</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>WatchlistItem</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>eventId</code><span class="muted">string (required)</span><div class="pdesc">Event ID to add</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill delete">DELETE</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Remove an event from the watchlist.</span>
+  </div>
+  <div class="eppath"><code class="path">/me/watchlist</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ removed: true }</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>eventId</code><span class="muted">string (required)</span><div class="pdesc">Event ID to remove</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Get a paginated activity feed of reviews from users you follow.</span>
+  </div>
+  <div class="eppath"><code class="path">/me/feed</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Review[]</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>page</code><span class="muted">number</span><div class="pdesc">Page number (default: 1)</div></div><div class="param"><code>limit</code><span class="muted">number</span><div class="pdesc">Results per page, max 50 (default: 20)</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article>
+</section><section class="section" id="interactions">
+  <div class="secthead">
+    <h2>Interactions</h2>
+    <p class="muted">Submit ratings, predictions, and follow other users.</p>
+  </div>
+  <article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Submit or update a star rating for a match.</span>
+  </div>
+  <div class="eppath"><code class="path">/matches/:id/rate</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ average, ratingCount }</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>rating</code><span class="muted">number (required)</span><div class="pdesc">Rating from 0.25 to 5</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Submit a prediction for a match. Set predictedWinnerId to null to clear your pick. Locked once the event starts or a winner is marked.</span>
+  </div>
+  <div class="eppath"><code class="path">/predictions</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>Prediction | { deleted: true }</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>matchId</code><span class="muted">string (required)</span><div class="pdesc">Match ID</div></div><div class="param"><code>predictedWinnerId</code><span class="muted">string | null (required)</span><div class="pdesc">Participant wrestler ID, or null to clear</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill get">GET</span>
+    <span class="epdesc">Get community prediction stats for a match.</span>
+  </div>
+  <div class="eppath"><code class="path">/predictions</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ stats: [{ winnerId, count, percentage }], total }</code></div>
+  <div class="grid">
+    <div class="params"><h4>Query</h4><div class="param"><code>matchId</code><span class="muted">string (required)</span><div class="pdesc">Match ID</div></div></div>
+    
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article><article class="ep">
+  <div class="ephead">
+    <span class="pill post">POST</span><span class="pill auth">Auth</span>
+    <span class="epdesc">Toggle follow/unfollow a user. Returns the new follow state.</span>
+  </div>
+  <div class="eppath"><code class="path">/follow</code></div>
+  <div class="returns"><span class="muted">Returns:</span> <code>{ followed: boolean }</code></div>
+  <div class="grid">
+    
+    <div class="params"><h4>Body</h4><div class="param"><code>targetUserId</code><span class="muted">string (required)</span><div class="pdesc">User ID to follow or unfollow</div></div></div>
+  </div>
+  <div class="grid codegrid">
+    
+    
+  </div>
+</article>
+</section></div>
+    <div class="footer">Generated from <code>app/(public)/api-docs/page.tsx</code></div>
+  </div>
+  <script>
+    const sp = new URLSearchParams(location.search);
+    const baseUrl = (sp.get("baseUrl") || sp.get("base") || (location.origin + "/api/v1")).replace(/\/+$/, "");
+    document.getElementById("base").textContent = baseUrl;
+  </script>
+</body>
+</html>
