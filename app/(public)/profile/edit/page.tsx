@@ -21,7 +21,6 @@ export default function EditProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [favoritePromotion, setFavoritePromotion] = useState("");
   const [profileThemeEventId, setProfileThemeEventId] = useState("");
-  const [themeSlug, setThemeSlug] = useState("");
   const [promotions, setPromotions] = useState<any[]>([]);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -36,9 +35,6 @@ export default function EditProfilePage() {
           setSlug(data.user.slug || "");
           setFavoritePromotion(data.user.favoritePromotion || "");
           setProfileThemeEventId(data.user.profileThemeEventId || "");
-          if (data.user.profileThemeEvent) {
-             setThemeSlug(data.user.profileThemeEvent.slug);
-          }
         } else {
           setError("Could not load your profile. Please refresh and try again.");
         }
@@ -239,41 +235,27 @@ export default function EditProfilePage() {
 
           <div className="space-y-2 pt-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-              Profile Theme (Event Slug)
+              Profile Theme
             </label>
-            <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={themeSlug}
-                  onChange={(e) => setThemeSlug(e.target.value)}
-                  placeholder="e.g. wrestlemania-40"
-                  className="flex-1 bg-black/20 border border-border rounded-xl p-4 font-bold text-sm outline-none focus:border-primary/50 transition-all text-foreground"
-                />
-                <button
-                    type="button"
-                    onClick={async () => {
-                        if (!themeSlug) return;
-                        const res = await fetch(`/api/search/event-by-slug?slug=${themeSlug}`);
-                        const data = await res.json();
-                        if (data.id) {
-                            setProfileThemeEventId(data.id);
-                            setError("");
-                        } else {
-                            setError("Event not found. Make sure the slug is correct.");
-                        }
-                    }}
-                    className="px-4 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
-                >
-                    Apply
-                </button>
-            </div>
-            <p className="text-[10px] text-muted-foreground font-medium">
-              Personalise your profile with an event's poster as your theme.
-            </p>
-            {profileThemeEventId && (
-                <p className="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" /> Theme applied! Save to confirm.
+            {profileThemeEventId ? (
+              <div className="flex items-center justify-between gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
+                <p className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5" /> Theme is active
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setProfileThemeEventId("")}
+                  className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="bg-black/20 border border-border rounded-xl px-4 py-3">
+                <p className="text-xs text-muted-foreground font-medium">
+                  No theme set. Visit an event page and tap the <span className="text-foreground font-bold">palette icon</span> to set it as your profile theme.
+                </p>
+              </div>
             )}
           </div>
 
