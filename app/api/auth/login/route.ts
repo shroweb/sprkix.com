@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (!user.password) {
     return NextResponse.json(
       { error: "This account uses social login. Please sign in with Google or Facebook." },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -36,14 +36,27 @@ export async function POST(req: NextRequest) {
     { expiresIn: "7d" },
   );
 
-  const response = NextResponse.redirect(new URL("/", req.url));
+  const response = NextResponse.json({
+    success: true,
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      slug: user.slug,
+      avatarUrl: user.avatarUrl,
+      isAdmin: user.isAdmin,
+    },
+  });
 
+  // Set cookie for web browser sessions
   response.cookies.set({
     name: "token",
     value: token,
     path: "/",
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 7,
+    sameSite: "lax",
   });
 
   return response;

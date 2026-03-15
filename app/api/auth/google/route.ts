@@ -16,7 +16,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/login?error=config", siteUrl));
   }
 
+  const { searchParams } = new URL(req.url);
+  const platform = searchParams.get("platform") || "web"; // "app" for mobile deep-link flow
+
   const redirectUri = `${siteUrl}/api/auth/google/callback`;
+
+  // Encode platform in state so the callback knows where to redirect
+  const state = Buffer.from(JSON.stringify({ platform })).toString("base64url");
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID,
@@ -25,6 +31,7 @@ export async function GET(req: NextRequest) {
     scope: "openid email profile",
     access_type: "offline",
     prompt: "select_account",
+    state,
   });
 
   return NextResponse.redirect(

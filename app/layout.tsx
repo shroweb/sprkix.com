@@ -1,6 +1,8 @@
 import "./globals.css";
 
 import { prisma } from "@lib/prisma";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export async function generateMetadata() {
   let siteName = "Poison Rana";
@@ -41,6 +43,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-gradient-to-b from-[#0d1020] to-black text-white min-h-screen">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

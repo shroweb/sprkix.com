@@ -47,10 +47,10 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
 
-    if (res.redirected) {
-      window.location.assign(res.url);
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = "/";
     } else {
-      const data = await res.json();
       setError(data.error || "Login failed");
     }
   };

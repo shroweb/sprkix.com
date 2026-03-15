@@ -47,26 +47,24 @@ const sections: Section[] = [
     id: "authentication",
     title: "Authentication",
     description:
-      "All authenticated endpoints require a Bearer token in the Authorization header. Obtain a token via login or register — tokens are valid for 30 days.",
+      "All authenticated endpoints require a Bearer token in the Authorization header. Obtain a token via login, register, or social OAuth — tokens are valid for 7 days.",
     endpoints: [
       {
         method: "POST",
         path: "/auth/login",
-        description: "Authenticate with email and password. Returns a Bearer token and user object.",
+        description: "Authenticate with email and password. Returns a Bearer token and user object. Also sets an httpOnly cookie for web browser sessions.",
         body: [
           { name: "email", type: "string", required: true, description: "User's email address" },
           { name: "password", type: "string", required: true, description: "User's password" },
         ],
-        returns: "{ token, user }",
+        returns: "{ success, token, user }",
         example: {
           request: JSON.stringify({ email: "fan@example.com", password: "supersecret" }, null, 2),
           response: JSON.stringify(
             {
-              data: {
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                user: { id: "clx123", name: "John Cena Fan", email: "fan@example.com", slug: "john-cena-fan", avatarUrl: null, isAdmin: false },
-              },
-              error: null,
+              success: true,
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              user: { id: "clx123", name: "TombstonePiledriver", email: "fan@example.com", slug: "tombstone-piledriver-a1b2", avatarUrl: null, isAdmin: false },
             },
             null,
             2
@@ -76,13 +74,42 @@ const sections: Section[] = [
       {
         method: "POST",
         path: "/auth/register",
-        description: "Create a new account. Returns a Bearer token and the created user.",
+        description: "Create a new account. Returns a Bearer token and the created user. Username is auto-assigned from a bank of wrestling move names — the user can change it after signup.",
         body: [
-          { name: "name", type: "string", required: true, description: "Display name" },
+          { name: "name", type: "string", required: true, description: "Display name (must be unique, case-insensitive)" },
           { name: "email", type: "string", required: true, description: "Email address" },
-          { name: "password", type: "string", required: true, description: "Password (min 8 chars)" },
+          { name: "password", type: "string", required: true, description: "Password" },
         ],
-        returns: "{ token, user }",
+        returns: "{ success, token, user }",
+        example: {
+          response: JSON.stringify(
+            {
+              success: true,
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              user: { id: "clx124", name: "SwantonBomb", email: "new@example.com", slug: "swanton-bomb-z9y8" },
+            },
+            null,
+            2
+          ),
+        },
+      },
+      {
+        method: "GET",
+        path: "/auth/google?platform=app",
+        description: "Initiate Google OAuth. For the mobile app, pass ?platform=app — after Google authenticates the user, the callback will redirect to the poisonrana:// deep link instead of the web homepage.",
+        query: [
+          { name: "platform", type: "string", description: '"app" to receive token via deep link (poisonrana://auth?token=...). Omit for web flow.' },
+        ],
+        returns: "302 redirect → Google sign-in → poisonrana://auth?token=... (app) or / (web)",
+      },
+      {
+        method: "GET",
+        path: "/auth/facebook?platform=app",
+        description: "Initiate Facebook OAuth. Same platform=app deep-link behaviour as Google.",
+        query: [
+          { name: "platform", type: "string", description: '"app" to receive token via deep link. Omit for web flow.' },
+        ],
+        returns: "302 redirect → Facebook sign-in → poisonrana://auth?token=... (app) or / (web)",
       },
       {
         method: "GET",
@@ -712,7 +739,7 @@ export default function ApiDocsPage() {
                 <code className="font-mono text-xs bg-white/5 px-1.5 py-0.5 rounded">error</code> contains a message string. HTTP status codes are used correctly (200, 201, 400, 401, 403, 404, 409, 500).
               </p>
               <p>
-                <strong className="text-foreground">CORS:</strong> All <code className="font-mono text-xs text-primary">/api/v1</code> endpoints include CORS headers and respond to preflight OPTIONS requests, making them safe to call from browsers and native apps.
+                <strong className="text-foreground">CORS:</strong> All <code className="font-mono text-xs text-primary">/api/*</code> endpoints include CORS headers (<code className="font-mono text-xs bg-white/5 px-1.5 py-0.5 rounded">Access-Control-Allow-Origin: *</code>) and respond to preflight OPTIONS requests — safe to call from React Native, browsers, or any HTTP client.
               </p>
             </div>
 
@@ -767,11 +794,13 @@ curl "${BASE_URL}/me" \\
   body: JSON.stringify({ email: "you@example.com", password: "yourpassword" }),
 });
 
-const { data, error } = await res.json();
-if (error) throw new Error(error);
+const { success, token, user, error } = await res.json();
+if (!success) throw new Error(error);
 
-const token = data.token; // store this securely
-const user  = data.user;`}
+// In React Native / Expo — store the token securely:
+// await SecureStore.setItemAsync("token", token);
+
+const currentUser = user; // { id, name, email, slug, avatarUrl, isAdmin }`}
                 />
               </div>
             </div>
@@ -791,8 +820,8 @@ const user  = data.user;`}
   headers: { "Authorization": \`Bearer \${token}\` },
 });
 
-const { data } = await res.json();
-console.log(data.name); // "John Cena Fan"`}
+const { user } = await res.json();
+console.log(user.name); // "TombstonePiledriver"`}
                 />
               </div>
             </div>
@@ -849,8 +878,8 @@ const api = {
 
 // ── Usage ──────────────────────────────────────────────
 // Login
-const { data } = await api.post("/auth/login", { email, password });
-api.token = data.token; // store token globally
+const { token, user } = await api.post("/auth/login", { email, password });
+api.token = token; // store token globally (use SecureStore in React Native)
 
 // Public endpoints — no token needed
 const { data: events }   = await api.get("/rankings/events", { limit: 10 });
@@ -867,7 +896,7 @@ await api.post("/matches/clxm1/rate", { rating: 4.5 });`}
             </div>
 
             {/* Token storage note */}
-            <div className="pl-7">
+            <div className="pl-7 space-y-3">
               <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 space-y-1">
                 <p className="text-xs font-black uppercase tracking-widest text-yellow-400">Token Storage</p>
                 <p className="text-xs text-muted-foreground font-medium leading-relaxed">
@@ -877,8 +906,35 @@ await api.post("/matches/clxm1/rate", { rating: 4.5 });`}
                   In a <strong className="text-foreground">browser app</strong>, store it in{" "}
                   <code className="font-mono text-primary">localStorage</code> (acceptable) or a{" "}
                   <code className="font-mono text-primary">httpOnly</code> cookie (more secure).{" "}
-                  Never embed credentials in source code.
+                  Tokens expire after <strong className="text-foreground">7 days</strong> — re-authenticate when you receive a 401.
                 </p>
+              </div>
+
+              <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 space-y-2">
+                <p className="text-xs font-black uppercase tracking-widest text-blue-400">Social Login (Google / Facebook) — Mobile</p>
+                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                  Open <code className="font-mono text-primary">/api/auth/google?platform=app</code> (or{" "}
+                  <code className="font-mono text-primary">/api/auth/facebook?platform=app</code>) in an in-app browser (e.g.{" "}
+                  <code className="font-mono text-primary">expo-web-browser</code>). After the user authenticates,
+                  the server redirects to the deep link{" "}
+                  <code className="font-mono text-primary">poisonrana://auth?token=...</code>. Register this scheme
+                  in your app manifest and handle it with{" "}
+                  <code className="font-mono text-primary">expo-linking</code> to extract and store the token.
+                </p>
+                <CodeBlock
+                  code={`import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+
+const result = await WebBrowser.openAuthSessionAsync(
+  "https://poisonrana.com/api/auth/google?platform=app",
+  "poisonrana://auth"  // redirect back to app
+);
+
+if (result.type === "success") {
+  const { token } = Linking.parse(result.url).queryParams;
+  await SecureStore.setItemAsync("token", token);
+}`}
+                />
               </div>
             </div>
           </div>
