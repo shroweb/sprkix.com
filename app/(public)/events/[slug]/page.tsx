@@ -627,10 +627,7 @@ export default async function EventPage({
               </div>
             )}
 
-          </div>
-        </div>
-
-        <div className="mt-10 pb-12">
+          <div className="mt-10">
             {(() => {
               // ── Card tab content ─────────────────────────────────────────
               const cardContent = processedMatches.length > 0 ? (
@@ -927,6 +924,8 @@ export default async function EventPage({
                 />
               );
             })()}
+          </div>
+        </div>
         </div>
 
         {/* You Might Also Like */}
