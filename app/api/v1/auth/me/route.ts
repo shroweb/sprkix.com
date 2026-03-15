@@ -6,5 +6,5 @@ export const OPTIONS = () => preflight();
 
 export const GET = withErrorHandling(async (req: NextRequest) => {
   const user = await requireAuth(req);
-  return ok({ user });
+  return ok(user);
 });
