@@ -35,16 +35,21 @@ export default async function WrestlerPage({ params }: { params: any }) {
 
   if (!wrestler) return notFound();
 
-  const totalMatches = wrestler.matches.length;
-  const wins = wrestler.matches.filter((mp) => mp.isWinner).length;
+  const now = new Date();
+  // Only count matches from events that have already happened
+  const pastMatches = wrestler.matches.filter(
+    (mp) => new Date(mp.match.event.date) <= now,
+  );
+  const totalMatches = pastMatches.length;
+  const wins = pastMatches.filter((mp) => mp.isWinner).length;
   const losses = totalMatches - wins;
   const winRate =
     totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 0;
-  const uniqueEvents = new Set(wrestler.matches.map((mp) => mp.match.event.id))
+  const uniqueEvents = new Set(pastMatches.map((mp) => mp.match.event.id))
     .size;
 
-  // Compute average match rating this wrestler has appeared in
-  const ratedMatches = wrestler.matches
+  // Compute average match rating this wrestler has appeared in (past only)
+  const ratedMatches = pastMatches
     .map((mp) => {
       const ratings = mp.match.ratings;
       if (!ratings.length) return null;
