@@ -16,25 +16,37 @@ export default async function PublicLayout({
   let bannerEnabled = false;
   let bannerText = "";
   let bannerLink = "";
+  let primaryColor = "";
+  let primaryHoverColor = "";
   try {
-    const [logoRow, sizeRow, bannerEnabledRow, bannerTextRow, bannerLinkRow] =
+    const [logoRow, sizeRow, bannerEnabledRow, bannerTextRow, bannerLinkRow, primaryRow, hoverRow] =
       await Promise.all([
       (prisma as any).siteConfig.findUnique({ where: { key: "SITE_LOGO" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "LOGO_SIZE" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_ENABLED" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_TEXT" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_LINK" } }),
+      (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_COLOR" } }),
+      (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_HOVER_COLOR" } }),
     ]);
     siteLogo = logoRow?.value || "";
     logoSize = sizeRow?.value || "md";
     bannerEnabled = (bannerEnabledRow?.value || "").toLowerCase() === "true";
     bannerText = bannerTextRow?.value || "";
     bannerLink = bannerLinkRow?.value || "";
+    primaryColor = primaryRow?.value || "";
+    primaryHoverColor = hoverRow?.value || "";
   } catch {}
+
+  const cssVars = [
+    primaryColor ? `--primary: ${primaryColor};` : "",
+    primaryHoverColor ? `--primary-hover: ${primaryHoverColor};` : "",
+  ].filter(Boolean).join(" ");
 
   return (
     <>
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+      {cssVars && <style>{`:root { ${cssVars} }`}</style>}
       <Header
         user={user}
         siteLogo={siteLogo}

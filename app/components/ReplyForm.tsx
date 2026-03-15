@@ -47,7 +47,7 @@ export default function ReplyForm({
       <button
         disabled={loading}
         type="submit"
-        className="w-full h-14 bg-primary hover:bg-teal-400 text-black rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+        className="w-full h-14 bg-primary hover:bg-[var(--primary-hover)] text-black rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
       >
         {loading ? "Posting..." : isUpcoming ? "Post Comment" : "Post Reply"}
       </button>

@@ -403,7 +403,7 @@ export default function HomePoll({
             <button
               onClick={handleDownload}
               disabled={isGenerating}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-black font-black uppercase italic tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:bg-teal-400 hover:shadow-teal-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-black font-black uppercase italic tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/20] hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
             >
               {isGenerating ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Generating...</>

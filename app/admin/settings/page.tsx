@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Megaphone,
   Link as LinkIcon,
+  Palette,
 } from "lucide-react";
 
 type MessageState = { type: "success" | "error"; text: string } | null;
@@ -37,6 +38,8 @@ export default function AdminSettings() {
     BANNER_ENABLED: "false",
     SITE_TAGLINE: "",
     SITE_DESCRIPTION: "",
+    PRIMARY_COLOR: "",
+    PRIMARY_HOVER_COLOR: "",
   });
   const logoInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +63,8 @@ export default function AdminSettings() {
           BANNER_ENABLED: configs.BANNER_ENABLED || "false",
           SITE_TAGLINE: configs.SITE_TAGLINE || "Discover. Rate. Share.",
           SITE_DESCRIPTION: configs.SITE_DESCRIPTION || "The authoritative community archive for professional wrestling.",
+          PRIMARY_COLOR: configs.PRIMARY_COLOR || "",
+          PRIMARY_HOVER_COLOR: configs.PRIMARY_HOVER_COLOR || "",
         });
         setEvents(data.events || []);
         setLoading(false);
@@ -455,6 +460,89 @@ export default function AdminSettings() {
                 <p className="text-[10px] text-muted-foreground italic">
                   The primary description for search engines and social sharing.
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Brand Colours */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <Palette className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Brand Colours
+              </h2>
+            </div>
+            <div className="p-8 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Primary CTA Colour */}
+                <div className="space-y-3">
+                  <label className={labelClass}>
+                    <Palette className="w-3.5 h-3.5" /> CTA / Primary Colour
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={settings.PRIMARY_COLOR || "#fbbf24"}
+                      onChange={(e) => setSettings((s) => ({ ...s, PRIMARY_COLOR: e.target.value }))}
+                      className="w-12 h-12 rounded-xl border-2 border-slate-100 cursor-pointer p-1 bg-white"
+                    />
+                    <input
+                      type="text"
+                      value={settings.PRIMARY_COLOR}
+                      onChange={(e) => setSettings((s) => ({ ...s, PRIMARY_COLOR: e.target.value }))}
+                      className={`${inputClass} flex-1 font-mono text-sm`}
+                      placeholder="#fbbf24 (amber — default)"
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic">
+                    Applies to buttons, active tabs, badges, and accents.
+                  </p>
+                </div>
+                {/* Hover Colour */}
+                <div className="space-y-3">
+                  <label className={labelClass}>
+                    <Palette className="w-3.5 h-3.5" /> Button Hover Colour
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={settings.PRIMARY_HOVER_COLOR || "#2dd4bf"}
+                      onChange={(e) => setSettings((s) => ({ ...s, PRIMARY_HOVER_COLOR: e.target.value }))}
+                      className="w-12 h-12 rounded-xl border-2 border-slate-100 cursor-pointer p-1 bg-white"
+                    />
+                    <input
+                      type="text"
+                      value={settings.PRIMARY_HOVER_COLOR}
+                      onChange={(e) => setSettings((s) => ({ ...s, PRIMARY_HOVER_COLOR: e.target.value }))}
+                      className={`${inputClass} flex-1 font-mono text-sm`}
+                      placeholder="#2dd4bf (teal — default)"
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic">
+                    The colour buttons transition to on hover.
+                  </p>
+                </div>
+              </div>
+              {/* Live Preview */}
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <p className={labelClass}><Palette className="w-3.5 h-3.5" /> Preview</p>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <button
+                    type="button"
+                    style={{ backgroundColor: settings.PRIMARY_COLOR || "#fbbf24" }}
+                    className="px-6 py-2.5 rounded-xl text-black text-xs font-black uppercase italic tracking-widest transition-all"
+                  >
+                    Default State
+                  </button>
+                  <button
+                    type="button"
+                    style={{ backgroundColor: settings.PRIMARY_HOVER_COLOR || "#2dd4bf" }}
+                    className="px-6 py-2.5 rounded-xl text-black text-xs font-black uppercase italic tracking-widest transition-all"
+                  >
+                    Hover State
+                  </button>
+                  <p className="text-[10px] text-muted-foreground italic">Leave blank to use defaults.</p>
+                </div>
               </div>
             </div>
           </div>

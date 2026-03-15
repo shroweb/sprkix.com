@@ -144,7 +144,7 @@ export default function ShareReviewModal({
         <button
           onClick={handleDownload}
           disabled={isGenerating}
-          className="w-full bg-primary hover:bg-teal-400 text-black py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
+          className="w-full bg-primary hover:bg-[var(--primary-hover)] text-black py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
         >
           {isGenerating ? (
             <Loader2 className="w-5 h-5 animate-spin" />

@@ -76,6 +76,8 @@ export async function POST(req: Request) {
     BANNER_ENABLED,
     SITE_TAGLINE,
     SITE_DESCRIPTION,
+    PRIMARY_COLOR,
+    PRIMARY_HOVER_COLOR,
   } = body;
 
   const updates = [
@@ -90,6 +92,8 @@ export async function POST(req: Request) {
     { key: "BANNER_ENABLED", value: BANNER_ENABLED },
     { key: "SITE_TAGLINE", value: SITE_TAGLINE },
     { key: "SITE_DESCRIPTION", value: SITE_DESCRIPTION },
+    { key: "PRIMARY_COLOR", value: PRIMARY_COLOR },
+    { key: "PRIMARY_HOVER_COLOR", value: PRIMARY_HOVER_COLOR },
   ];
 
   try {

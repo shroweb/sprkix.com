@@ -77,7 +77,7 @@ export default function Header({
             href={bannerLink?.trim() || "#"}
             target={bannerLink?.trim()?.startsWith("http") ? "_blank" : undefined}
             rel={bannerLink?.trim()?.startsWith("http") ? "noopener noreferrer" : undefined}
-            className="mx-auto max-w-7xl block rounded-2xl bg-primary text-black px-5 py-3 text-center text-xs sm:text-sm font-black uppercase tracking-wider hover:bg-teal-400 transition-colors"
+            className="mx-auto max-w-7xl block rounded-2xl bg-primary text-black px-5 py-3 text-center text-xs sm:text-sm font-black uppercase tracking-wider hover:bg-[var(--primary-hover)] transition-colors"
             onClick={(e) => {
               if (!bannerLink?.trim()) e.preventDefault();
             }}

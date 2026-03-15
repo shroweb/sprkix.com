@@ -266,7 +266,7 @@ export default function FAQPage() {
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <Link
             href="/register"
-            className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl shadow-xl shadow-primary/30 hover:bg-teal-400 hover:shadow-teal-400/30 hover:scale-105 active:scale-95 transition-all"
+            className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl shadow-xl shadow-primary/30 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/30] hover:scale-105 active:scale-95 transition-all"
           >
             Create Free Account
           </Link>

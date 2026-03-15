@@ -241,7 +241,7 @@ export default async function Home() {
             <div className="flex flex-wrap gap-4 pt-4 items-center">
               <Link
                 href="/events"
-                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-teal-400 hover:shadow-teal-400/40 hover:scale-105 active:scale-95 transition-all"
+                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/40] hover:scale-105 active:scale-95 transition-all"
               >
                 Explore Archives <ArrowRight className="w-4 h-4" />
               </Link>
@@ -249,7 +249,7 @@ export default async function Home() {
               <RandomRingButton
                 eventSlugs={eventSlugs}
                 label="Random Event"
-                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-teal-400 hover:shadow-teal-400/40 hover:scale-105 active:scale-95 transition-all shrink-0"
+                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/40] hover:scale-105 active:scale-95 transition-all shrink-0"
               />
 
               {!user && (
