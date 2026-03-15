@@ -22,6 +22,7 @@ import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
 import { getRank } from "@lib/ranks";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
+import UsernameSetupModal from "@components/UsernameSetupModal";
 
 export const dynamic = "force-dynamic";
 
@@ -244,6 +245,9 @@ export default async function ProfilePage() {
   return (
     <div className="pb-20 relative px-2 sm:px-4 lg:px-6">
       <ProfileThemeWrapper posterUrl={themePoster} />
+      {(currentUser as any)?.needsUsernameSetup && (
+        <UsernameSetupModal username={currentUser?.name || "Wrestler"} />
+      )}
 
       {/* Hero Section / Cover Image */}
       <div className="relative min-h-[320px] md:h-[500px] w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[4rem] border border-white/5 shadow-2xl">

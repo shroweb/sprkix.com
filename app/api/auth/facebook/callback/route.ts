@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import jwt from "jsonwebtoken";
+import { randomWrestlingName } from "@lib/wrestling-names";
 
 function makeSlug(name: string): string {
   const base = name
@@ -70,8 +71,10 @@ export async function GET(req: NextRequest) {
     }
 
     const email = profile.email.toLowerCase();
-    const name: string = profile.name || email.split("@")[0];
     const facebookId: string = profile.id;
+
+    // Generate a random wrestling-move username — user can change it after signup
+    const name: string = randomWrestlingName();
     const avatarUrl: string | null = profile.picture?.data?.url || null;
 
     // Find existing user by facebookId first, then fall back to email (account linking)
@@ -99,6 +102,7 @@ export async function GET(req: NextRequest) {
           slug,
           password: null,
           isVerified: true,
+          needsUsernameSetup: true,
         },
         select: { id: true, email: true, name: true, facebookId: true },
       });

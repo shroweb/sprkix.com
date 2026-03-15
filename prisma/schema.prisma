@@ -23,6 +23,7 @@ model User {
   favoritePromotion String?
   predictionScore Int @default(0)  // count of correct predictions (resolved)
   predictionCount Int @default(0)  // count of all resolved predictions
+  needsUsernameSetup Boolean @default(false)
   profileThemeEventId String?
   profileThemeEvent   Event?   @relation("ProfileTheme", fields: [profileThemeEventId], references: [id])
   createdAt DateTime @default(now())
