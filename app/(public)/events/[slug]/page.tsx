@@ -68,13 +68,23 @@ export async function generateMetadata({
     : `Ratings, reviews and match results for ${cleanTitle} (${year}) by ${event.promotion}.`;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.poisonrana.com";
-  // Only use poster if it's a real https URL (not base64 or relative)
+
+  // Only pass poster to OG endpoint if it's a real hosted URL (not base64)
   const rawPoster = event.posterUrl || "";
-  const ogImage = rawPoster.startsWith("http")
+  const hostedPoster = rawPoster.startsWith("http")
     ? rawPoster
-    : rawPoster.startsWith("/") && !rawPoster.startsWith("/9j") // not base64
+    : rawPoster.startsWith("/") && !rawPoster.startsWith("/9j")
     ? `${siteUrl}${rawPoster}`
-    : null;
+    : "";
+
+  // Always use the dynamic OG image endpoint — works even if poster is base64
+  const ogParams = new URLSearchParams({
+    title: cleanTitle,
+    promotion: event.promotion,
+    year: String(year),
+    ...(hostedPoster ? { poster: hostedPoster } : {}),
+  });
+  const ogImageUrl = `${siteUrl}/api/og?${ogParams.toString()}`;
 
   return {
     title: `${cleanTitle} (${year}) – ${event.promotion} | Poison Rana`,
@@ -82,14 +92,14 @@ export async function generateMetadata({
     openGraph: {
       title: `${cleanTitle} – ${event.promotion}`,
       description: desc,
-      images: ogImage ? [{ url: ogImage, width: 800, height: 450 }] : [],
+      images: [{ url: ogImageUrl, width: 1200, height: 630 }],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: `${cleanTitle} – ${event.promotion}`,
       description: desc,
-      images: ogImage ? [ogImage] : [],
+      images: [ogImageUrl],
     },
   };
 }
