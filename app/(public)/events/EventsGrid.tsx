@@ -283,7 +283,7 @@ export default function EventsGrid({
                     }
                     if (isUpcoming) {
                       return (
-                        <span className="px-2 py-1 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                        <span className="px-2 py-1 bg-green-500 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
                           Upcoming
                         </span>
                       );

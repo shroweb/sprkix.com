@@ -21,6 +21,11 @@ export default function AdminEventsPage() {
     date: "",
     promotion: "",
     venue: "",
+    city: "",
+    attendance: "",
+    network: "",
+    wikiUrl: "",
+    aewUrl: "",
     posterUrl: "",
     description: "",
     type: "tv",
@@ -187,6 +192,11 @@ export default function AdminEventsPage() {
         date: "",
         promotion: "",
         venue: "",
+        city: "",
+        attendance: "",
+        network: "",
+        wikiUrl: "",
+        aewUrl: "",
         posterUrl: "",
         description: "",
         type: "tv",
@@ -393,16 +403,66 @@ export default function AdminEventsPage() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
-                  Venue
-                </label>
-                <input
-                  className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  placeholder="e.g. Madison Square Garden"
-                  value={form.venue}
-                  onChange={(e) => update("venue", e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Venue</label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    placeholder="e.g. Madison Square Garden"
+                    value={form.venue}
+                    onChange={(e) => update("venue", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">City</label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    placeholder="e.g. New York, NY"
+                    value={(form as any).city}
+                    onChange={(e) => update("city", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Attendance</label>
+                  <input
+                    type="number"
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    placeholder="e.g. 18432"
+                    value={(form as any).attendance}
+                    onChange={(e) => update("attendance", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Network</label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    placeholder="e.g. TBS, PPV, WWE Network"
+                    value={(form as any).network}
+                    onChange={(e) => update("network", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Wikipedia URL</label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    placeholder="https://en.wikipedia.org/wiki/..."
+                    value={(form as any).wikiUrl}
+                    onChange={(e) => update("wikiUrl", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">AEW URL</label>
+                  <input
+                    className="w-full bg-secondary border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    placeholder="https://www.allelitewrestling.com/aew-event/..."
+                    value={(form as any).aewUrl}
+                    onChange={(e) => update("aewUrl", e.target.value)}
+                  />
+                </div>
               </div>
               {/* Enable toggles */}
               <div className="grid grid-cols-2 gap-3">

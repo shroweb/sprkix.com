@@ -82,6 +82,11 @@ model Event {
   date          DateTime
   promotion     String
   venue         String?
+  city          String?
+  attendance    Int?
+  network       String?
+  wikiUrl       String?
+  aewUrl        String?
   posterUrl     String?
   description   String?
   type          String?

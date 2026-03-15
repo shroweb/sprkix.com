@@ -14,7 +14,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await req.json();
-  const { title, slug, date, promotion, venue, posterUrl, description, type, startTime, endTime, currentMatchOrder, enableWatchParty, enablePredictions } = body;
+  const { title, slug, date, promotion, venue, city, attendance, network, wikiUrl, aewUrl, posterUrl, description, type, startTime, endTime, currentMatchOrder, enableWatchParty, enablePredictions } = body;
 
   try {
     const updated = await prisma.event.update({
@@ -25,6 +25,11 @@ export async function PATCH(
         ...(date !== undefined && { date: new Date(date) }),
         ...(promotion !== undefined && { promotion }),
         ...(venue !== undefined && { venue }),
+        ...(city !== undefined && { city }),
+        ...(attendance !== undefined && { attendance: attendance ? parseInt(attendance.toString()) : null }),
+        ...(network !== undefined && { network }),
+        ...(wikiUrl !== undefined && { wikiUrl }),
+        ...(aewUrl !== undefined && { aewUrl }),
         ...(posterUrl !== undefined && { posterUrl }),
         ...(description !== undefined && { description }),
         ...(type !== undefined && { type }),

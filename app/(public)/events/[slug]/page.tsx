@@ -13,7 +13,7 @@ import ShareReviewButton from "@components/ShareReviewButton";
 import ReviewUpvote from "@components/ReviewUpvote";
 import AttendButton from "@components/AttendButton";
 import SetThemeButton from "@components/SetThemeButton";
-import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity } from "lucide-react";
+import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users } from "lucide-react";
 import PredictionCard from "@components/PredictionCard";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
@@ -103,6 +103,10 @@ export default async function EventPage({
     date: true,
     promotion: true,
     venue: true,
+    city: true,
+    attendance: true,
+    network: true,
+    wikiUrl: true,
     posterUrl: true,
     description: true,
     type: true,
@@ -378,23 +382,35 @@ export default async function EventPage({
                     })}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  {event.venue ? (
-                    <>
-                      <MapPin className="w-4 h-4 text-primary" />
-                      <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
-                        {event.venue}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="w-4 h-4 text-primary" />
-                      <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
-                        Archive Record
-                      </span>
-                    </>
-                  )}
-                </div>
+                {(event.venue || event.city) && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
+                      {[event.venue, event.city].filter(Boolean).join(" · ")}
+                    </span>
+                  </div>
+                )}
+                {event.network && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-lg">
+                      {event.network}
+                    </span>
+                  </div>
+                )}
+                {event.attendance && (
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
+                      {event.attendance.toLocaleString()} in attendance
+                    </span>
+                  </div>
+                )}
+                {!event.venue && !event.city && (
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Archive Record</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

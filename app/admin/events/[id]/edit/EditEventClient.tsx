@@ -78,10 +78,14 @@ export default function EditEventClient({
     date: event.date ? new Date(event.date).toISOString().split("T")[0] : "",
     promotion: event.promotion || "",
     venue: event.venue || "",
+    city: event.city || "",
+    attendance: event.attendance ? String(event.attendance) : "",
+    network: event.network || "",
+    wikiUrl: event.wikiUrl || "",
+    aewUrl: event.aewUrl || "",
     posterUrl: event.posterUrl || "",
     description: event.description || "",
     type: event.type || "ppv",
-    // Format as local datetime-local string (YYYY-MM-DDTHH:mm) in the browser's timezone
     startTime: event.startTime ? toLocalDatetimeInput(new Date(event.startTime)) : "",
     endTime: event.endTime ? toLocalDatetimeInput(new Date(event.endTime)) : "",
     enableWatchParty: event.enableWatchParty !== false,
@@ -90,6 +94,8 @@ export default function EditEventClient({
   const [savingDetails, setSavingDetails] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showMediaPicker, setShowMediaPicker] = useState(false);
+  const [enriching, setEnriching] = useState(false);
+  const [enrichPreview, setEnrichPreview] = useState<Record<string, any> | null>(null);
 
   // New Match State
   // Inline match editing state
@@ -502,22 +508,119 @@ export default function EditEventClient({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                    Venue
-                  </label>
-                  <input
-                    value={details.venue}
-                    onChange={(e) =>
-                      setDetails((d) => ({ ...d, venue: e.target.value }))
-                    }
-                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm"
-                  />
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Venue</label>
+                  <input value={details.venue} onChange={(e) => setDetails((d) => ({ ...d, venue: e.target.value }))}
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm" />
+                </div>
+              </div>
+              {/* Enrichment fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">City</label>
+                  <input value={details.city} onChange={(e) => setDetails((d) => ({ ...d, city: e.target.value }))}
+                    placeholder="e.g. New York, NY"
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Attendance</label>
+                  <input type="number" value={details.attendance} onChange={(e) => setDetails((d) => ({ ...d, attendance: e.target.value }))}
+                    placeholder="e.g. 18432"
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Network</label>
+                  <input value={details.network} onChange={(e) => setDetails((d) => ({ ...d, network: e.target.value }))}
+                    placeholder="e.g. TBS, PPV, WWE Network"
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">AEW URL</label>
+                  <input value={details.aewUrl} onChange={(e) => setDetails((d) => ({ ...d, aewUrl: e.target.value }))}
+                    placeholder="https://www.allelitewrestling.com/aew-event/..."
+                    className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Type
-                </label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Wikipedia URL</label>
+                <input value={details.wikiUrl} onChange={(e) => setDetails((d) => ({ ...d, wikiUrl: e.target.value }))}
+                  placeholder="https://en.wikipedia.org/wiki/..."
+                  className="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl outline-none focus:border-primary/50 focus:bg-white transition-all font-bold text-sm" />
+              </div>
+              {/* Auto-enrich buttons */}
+              <div className="rounded-2xl border-2 border-dashed border-slate-200 p-4 space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" /> Auto-Enrich
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {(["wikipedia", "aew"] as const).map((src) => (
+                    <button key={src} type="button" disabled={enriching}
+                      onClick={async () => {
+                        setEnriching(true); setEnrichPreview(null);
+                        try {
+                          const res = await fetch(`/api/admin/events/${event.id}/enrich`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ source: src, url: src === "aew" ? details.aewUrl : undefined, preview: true }),
+                          });
+                          const data = await res.json();
+                          if (data.enrichment) setEnrichPreview({ ...data.enrichment, _source: src });
+                          else setMessage({ type: "error", text: data.error || "No data found" });
+                        } catch { setMessage({ type: "error", text: "Enrichment failed" }); }
+                        finally { setEnriching(false); }
+                      }}
+                      className="px-3 py-1.5 bg-slate-100 hover:bg-primary/10 text-xs font-black uppercase rounded-xl transition-colors disabled:opacity-50 flex items-center gap-1.5">
+                      {enriching ? <RefreshCcw className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
+                      {src === "wikipedia" ? "Wikipedia" : "AEW"}
+                    </button>
+                  ))}
+                </div>
+                {enrichPreview && (
+                  <div className="bg-slate-50 rounded-xl p-3 space-y-2 text-xs">
+                    <p className="font-black uppercase tracking-wider text-muted-foreground">Preview — fields to apply:</p>
+                    {Object.entries(enrichPreview).filter(([k]) => k !== "_source" && enrichPreview[k]).map(([k, v]) => (
+                      <div key={k} className="flex gap-2">
+                        <span className="font-bold text-muted-foreground w-24 shrink-0">{k}</span>
+                        <span className="truncate">{String(v)}</span>
+                      </div>
+                    ))}
+                    <button type="button"
+                      onClick={async () => {
+                        setEnriching(true);
+                        try {
+                          const res = await fetch(`/api/admin/events/${event.id}/enrich`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ source: enrichPreview._source, url: enrichPreview._source === "aew" ? details.aewUrl : undefined }),
+                          });
+                          const data = await res.json();
+                          if (data.applied) {
+                            setDetails((d) => ({
+                              ...d,
+                              ...(data.applied.venue && { venue: data.applied.venue }),
+                              ...(data.applied.city && { city: data.applied.city }),
+                              ...(data.applied.attendance && { attendance: String(data.applied.attendance) }),
+                              ...(data.applied.network && { network: data.applied.network }),
+                              ...(data.applied.description && { description: data.applied.description }),
+                              ...(data.applied.posterUrl && { posterUrl: data.applied.posterUrl }),
+                              ...(data.applied.wikiUrl && { wikiUrl: data.applied.wikiUrl }),
+                              ...(data.applied.aewUrl && { aewUrl: data.applied.aewUrl }),
+                            }));
+                            setMessage({ type: "success", text: `Applied ${Object.keys(data.applied).length} fields from ${enrichPreview._source}` });
+                            setEnrichPreview(null);
+                          }
+                        } catch { setMessage({ type: "error", text: "Apply failed" }); }
+                        finally { setEnriching(false); }
+                      }}
+                      className="w-full py-2 bg-primary text-black font-black text-xs uppercase rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                      <CheckCircle className="w-3.5 h-3.5" /> Apply These Fields
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Type</label>
                 <select
                   value={details.type}
                   onChange={(e) =>
