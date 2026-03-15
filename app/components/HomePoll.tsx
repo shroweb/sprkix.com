@@ -107,7 +107,7 @@ export default function HomePoll({
     if (!dataUrl) return;
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], `poll-${poll.id}.png`, { type: "image/png" });
-    const shareText = `"${poll.question}" — vote on sprkix.com`;
+    const shareText = `"${poll.question}" — vote on poisonrana.com`;
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file], title: "Community Poll", text: shareText });
     } else {
@@ -119,8 +119,8 @@ export default function HomePoll({
   };
 
   const openUrl = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
-  const shareText = `"${poll.question}" — vote on sprkix.com`;
-  const shareUrl = "https://sprkix.com";
+  const shareText = `"${poll.question}" — vote on poisonrana.com`;
+  const shareUrl = "https://poisonrana.com";
 
   const socialButtons = [
     {
@@ -393,7 +393,7 @@ export default function HomePoll({
                     {total.toLocaleString()} {total === 1 ? "vote" : "votes"}
                   </span>
                   <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(251,191,36,0.6)", fontStyle: "italic" }}>
-                    sprkix.com
+                    poisonrana.com
                   </span>
                 </div>
               </div>
