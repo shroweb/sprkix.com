@@ -72,20 +72,129 @@ export default function HomePoll({
   }
 
   async function handleShare() {
-    const maxVotes = Math.max(...Object.values(votes));
-    const lines = poll.options.map((o) => {
-      const pct = total > 0 ? Math.round((votes[o.id] / total) * 100) : 0;
-      const isWinner = votes[o.id] === maxVotes && maxVotes > 0;
-      return `${isWinner ? "✅" : "  "} ${o.text}: ${pct}%`;
-    });
-    const text = `📊 ${poll.question}\n${lines.join("\n")}\n👉 Vote at sprkix.com`;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // fallback
+    const W = 1200, H = 630;
+    const canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d")!;
+
+    // ── Background ──────────────────────────────────────────────────
+    ctx.fillStyle = "#0d0d14";
+    ctx.fillRect(0, 0, W, H);
+
+    // subtle top-left glow
+    const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 600);
+    glow.addColorStop(0, "rgba(251,191,36,0.12)");
+    glow.addColorStop(1, "transparent");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // ── Border ───────────────────────────────────────────────────────
+    ctx.strokeStyle = "rgba(251,191,36,0.25)";
+    ctx.lineWidth = 2;
+    roundRect(ctx, 12, 12, W - 24, H - 24, 24);
+    ctx.stroke();
+
+    // ── "COMMUNITY POLL" pill ────────────────────────────────────────
+    ctx.fillStyle = "rgba(251,191,36,0.12)";
+    roundRect(ctx, 56, 52, 210, 34, 17);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(251,191,36,0.4)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, 56, 52, 210, 34, 17);
+    ctx.stroke();
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "bold 12px system-ui, sans-serif";
+    ctx.letterSpacing = "2px";
+    ctx.fillText("⚡  COMMUNITY POLL", 78, 74);
+    ctx.letterSpacing = "0px";
+
+    // ── Question ─────────────────────────────────────────────────────
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 44px system-ui, sans-serif";
+    const question = poll.question.toUpperCase();
+    const words = question.split(" ");
+    let line = "", lines: string[] = [];
+    for (const word of words) {
+      const test = line ? line + " " + word : word;
+      if (ctx.measureText(test).width > W - 120) { lines.push(line); line = word; }
+      else line = test;
     }
+    if (line) lines.push(line);
+    lines.slice(0, 3).forEach((l, i) => ctx.fillText(l, 56, 140 + i * 56));
+
+    // ── Results bars ─────────────────────────────────────────────────
+    const maxVotes = Math.max(...Object.values(votes), 1);
+    const barTop = lines.length > 1 ? 260 : 220;
+    const barH = 44;
+    const barGap = 64;
+    const barMaxW = W - 112;
+
+    poll.options.forEach((opt, i) => {
+      const voteCount = votes[opt.id] ?? 0;
+      const pct = total > 0 ? Math.round((voteCount / total) * 100) : 0;
+      const isWinner = voteCount === maxVotes && maxVotes > 0;
+      const isUserChoice = userVote === opt.id;
+      const y = barTop + i * barGap;
+
+      // bar track
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      roundRect(ctx, 56, y, barMaxW, barH, 10);
+      ctx.fill();
+
+      // bar fill
+      const fillW = Math.max((pct / 100) * barMaxW, pct > 0 ? 24 : 0);
+      const barColor = isUserChoice ? "#fbbf24" : isWinner ? "rgba(251,191,36,0.55)" : "rgba(255,255,255,0.18)";
+      ctx.fillStyle = barColor;
+      roundRect(ctx, 56, y, fillW, barH, 10);
+      ctx.fill();
+
+      // label
+      ctx.fillStyle = isUserChoice ? "#fbbf24" : "#ffffff";
+      ctx.font = `bold 14px system-ui, sans-serif`;
+      ctx.fillText(opt.text.toUpperCase() + (isUserChoice ? "  ✓" : ""), 70, y + 28);
+
+      // pct
+      ctx.fillStyle = isUserChoice ? "#fbbf24" : "rgba(255,255,255,0.55)";
+      ctx.font = "bold 14px system-ui, sans-serif";
+      const pctLabel = `${pct}%`;
+      const pctW = ctx.measureText(pctLabel).width;
+      ctx.fillText(pctLabel, 56 + barMaxW - pctW - 14, y + 28);
+    });
+
+    // ── Footer ───────────────────────────────────────────────────────
+    ctx.fillStyle = "rgba(255,255,255,0.25)";
+    ctx.fillRect(56, H - 72, W - 112, 1);
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.font = "14px system-ui, sans-serif";
+    ctx.fillText(`${total.toLocaleString()} ${total === 1 ? "vote" : "votes"}`, 56, H - 42);
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "bold 14px system-ui, sans-serif";
+    const brand = "sprkix.com";
+    const brandW = ctx.measureText(brand).width;
+    ctx.fillText(brand, W - 56 - brandW, H - 42);
+
+    // ── Download ─────────────────────────────────────────────────────
+    const a = document.createElement("a");
+    a.download = `poll-${poll.id}.png`;
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
   }
 
   const closedOrEnding = endsAt ? (
@@ -219,9 +328,9 @@ export default function HomePoll({
           {hasVoted && (
             <button
               onClick={handleShare}
-              className="px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-primary font-black hover:bg-primary/20 transition-colors normal-case"
+              className="px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-primary font-black hover:bg-primary/20 transition-colors normal-case flex items-center gap-1.5"
             >
-              {copied ? "Copied!" : "Share Results"}
+              {copied ? "✓ Saved!" : "⬇ Share Card"}
             </button>
           )}
         </div>
