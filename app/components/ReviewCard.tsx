@@ -78,8 +78,8 @@ export default function ReviewCard({
                 </div>
               </div>
               {/* User Info & Rating */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-wrap flex-grow text-xs leading-snug">
-                <div className="flex items-baseline gap-2 mb-0.5">
+              <div className="flex flex-col gap-1 flex-grow text-xs leading-snug">
+                <div className="flex items-baseline gap-2">
                   <span className="font-black text-primary uppercase">
                     {reply.user.name}
                   </span>
