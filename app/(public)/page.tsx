@@ -385,7 +385,7 @@ export default async function Home() {
               )}
               userVoteOptionId={activePoll.votes?.[0]?.optionId ?? null}
               isLoggedIn={!!user}
-              endsAt={activePoll.endsAt ?? null}
+              endsAt={activePoll.endsAt ? (activePoll.endsAt as Date).toISOString() : null}
             />
           </section>
         )}

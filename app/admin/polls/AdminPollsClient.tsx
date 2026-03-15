@@ -58,7 +58,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
           options: cleanOptions,
           isActive,
           eventId: eventId || null,
-          endsAt: endsAt || null,
+          endsAt: endsAt ? new Date(endsAt).toISOString() : null,
         }),
       });
       const data = await res.json();

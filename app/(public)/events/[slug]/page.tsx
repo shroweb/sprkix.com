@@ -900,7 +900,7 @@ export default async function EventPage({
                           totalVotes={totalVotes}
                           userVoteOptionId={userVoteOptionId}
                           isLoggedIn={!!user}
-                          endsAt={poll.endsAt ?? null}
+                          endsAt={poll.endsAt ? (poll.endsAt as Date).toISOString() : null}
                         />
                       );
                     })}
