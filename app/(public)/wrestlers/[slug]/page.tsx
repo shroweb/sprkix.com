@@ -240,9 +240,9 @@ export default async function WrestlerPage({ params }: { params: any }) {
           </span>
         </div>
 
-        {wrestler.matches.length > 0 ? (
+        {pastMatches.length > 0 ? (
           <div className="space-y-3">
-            {wrestler.matches.map((mp) => {
+            {pastMatches.map((mp) => {
               const matchAvgRating = mp.match.ratings.length
                 ? parseFloat(
                     (
