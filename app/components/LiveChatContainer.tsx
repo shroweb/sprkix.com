@@ -281,7 +281,7 @@ export default function LiveChatContainer({
             <button
               type="submit"
               disabled={!inputText.trim() || isSubmitting}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-primary text-black rounded-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-primary text-black rounded-xl hover:bg-teal-400 hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Send className="w-3.5 h-3.5" />
             </button>
@@ -289,7 +289,7 @@ export default function LiveChatContainer({
         ) : (
           <Link
             href="/login"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all group"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest hover:bg-teal-400 hover:text-black hover:border-teal-400 transition-all group"
           >
             <LogIn className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             Login to join the watch party

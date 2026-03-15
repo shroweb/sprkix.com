@@ -60,7 +60,7 @@ export default function FollowButton({
           ? hovered
             ? "bg-red-500/10 border border-red-400/30 text-red-500"
             : "bg-card border border-primary/30 text-primary"
-          : "bg-primary text-black hover:opacity-90"
+          : "bg-primary text-black hover:bg-teal-400"
       } disabled:opacity-50 ${className ?? ""}`}
     >
       {loading ? (
