@@ -5,6 +5,7 @@ import Link from "next/link";
 import { X, Users, Loader2 } from "lucide-react";
 import FollowButton from "./FollowButton";
 import { createPortal } from "react-dom";
+import UserAvatar from "./UserAvatar";
 
 type ConnectionUser = {
   id: string;
@@ -145,9 +146,7 @@ export default function FollowListModal({
                             onClick={() => setOpen(false)}
                             className="flex min-w-0 flex-1 items-center gap-3 hover:text-primary transition-colors group"
                           >
-                            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-black text-black shrink-0">
-                              {u.name?.charAt(0).toUpperCase() ?? "U"}
-                            </div>
+                            <UserAvatar name={u.name} avatarUrl={(u as any).avatarUrl} size="lg" />
                             <span className="font-black text-sm italic group-hover:text-primary transition-colors truncate">
                               {u.name ?? "Unknown"}
                             </span>

@@ -22,6 +22,7 @@ import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
 import { getRank } from "@lib/ranks";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
+import UserAvatar from "@components/UserAvatar";
 import UsernameSetupModal from "@components/UsernameSetupModal";
 
 export const dynamic = "force-dynamic";
@@ -277,19 +278,12 @@ export default async function ProfilePage() {
             <div className="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-10">
                {/* Avatar Area */}
                <div className="relative group/avatar">
-                 <div
-                   className="w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full bg-primary flex items-center justify-center text-4xl sm:text-6xl md:text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-4 sm:border-8 border-background overflow-hidden"
-                   style={{ 
-                     backgroundColor: 'var(--profile-theme-color, var(--primary))',
-                     boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
-                   }}
-                 >
-                   {user.avatarUrl ? (
-                     <Image src={user.avatarUrl} fill className="object-cover" alt={user.name || "Avatar"} />
-                   ) : (
-                     user.name ? user.name.charAt(0).toUpperCase() : "U"
-                   )}
-                 </div>
+                 <UserAvatar
+                   name={user.name}
+                   avatarUrl={user.avatarUrl}
+                   size="2xl"
+                   className="shadow-2xl relative z-10"
+                 />
                 </div>
 
                {/* User Info */}

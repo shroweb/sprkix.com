@@ -91,17 +91,24 @@ export async function GET(req: NextRequest) {
         await prisma.user.update({ where: { id: user.id }, data: { googleId } });
       }
     } else {
-      // New user — create account
-      let slug = makeSlug(name);
+      // New user — find a unique wrestling name
+      let uniqueName = name;
+      let counter = 2;
+      while (await prisma.user.findFirst({ where: { name: { equals: uniqueName, mode: "insensitive" } } })) {
+        uniqueName = `${name}-${counter++}`;
+      }
+      const finalName = uniqueName;
+
+      let slug = makeSlug(finalName);
       // Ensure slug uniqueness
       while (await prisma.user.findUnique({ where: { slug } })) {
-        slug = makeSlug(name);
+        slug = makeSlug(finalName);
       }
 
       user = await prisma.user.create({
         data: {
           email,
-          name,
+          name: finalName,
           googleId,
           avatarUrl,
           slug,

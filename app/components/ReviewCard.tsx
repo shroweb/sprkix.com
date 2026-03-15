@@ -4,6 +4,7 @@ import { Review, Reply, User } from "@prisma/client";
 import ReplyForm from "../components/ReplyForm";
 import Link from "next/link";
 import ShareReviewButton from "./ShareReviewButton";
+import UserAvatar from "./UserAvatar";
 
 type FullReview = Review & {
   user: User;
@@ -33,9 +34,7 @@ export default function ReviewCard({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Link href={`/users/${review.user.slug || review.user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black text-white hover:bg-primary hover:text-black transition-colors">
-              {review.user.name ? review.user.name.charAt(0).toUpperCase() : "A"}
-            </div>
+            <UserAvatar name={review.user.name} avatarUrl={(review.user as any).avatarUrl} size="md" />
             <span className="text-sm font-black italic">{review.user.name || "Anonymous"}</span>
           </Link>
         </div>
@@ -73,9 +72,7 @@ export default function ReviewCard({
               className="w-full flex items-start gap-3 p-3 bg-secondary/50 rounded-xl italic"
             >
               <div className="flex-shrink-0">
-                <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-black text-black">
-                  {reply.user.name?.charAt(0).toUpperCase()}
-                </div>
+                <UserAvatar name={reply.user.name} avatarUrl={(reply.user as any).avatarUrl} size="sm" />
               </div>
               {/* User Info & Rating */}
               <div className="flex flex-col gap-1 flex-grow text-xs leading-snug">

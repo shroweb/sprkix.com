@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
+import UserAvatar from "./UserAvatar";
 
 const logoSizeMap: Record<string, string> = {
   sm: "h-8",
@@ -218,9 +219,7 @@ export default function Header({
                 </Link>
               )}
               <div className="flex items-center gap-3 bg-secondary p-1 pr-4 rounded-full border border-border hover:bg-muted transition-colors cursor-pointer group relative">
-                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
+                <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size="md" />
                 <span className="text-sm font-bold truncate max-w-[100px]">
                   {user.name}
                 </span>

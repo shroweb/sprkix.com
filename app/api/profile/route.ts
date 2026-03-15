@@ -18,6 +18,15 @@ export async function PATCH(req: Request) {
     );
   }
 
+  if (name !== undefined && name.trim()) {
+    const nameTaken = await prisma.user.findFirst({
+      where: { name: { equals: name.trim(), mode: "insensitive" }, id: { not: user.id } },
+    });
+    if (nameTaken) {
+      return NextResponse.json({ error: "That username is already taken. Please choose another." }, { status: 400 });
+    }
+  }
+
   if (slug !== undefined) {
     const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
     if (!cleanSlug) {
@@ -59,3 +68,4 @@ export async function PATCH(req: Request) {
     avatarUrl: updated.avatarUrl,
   });
 }
+

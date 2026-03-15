@@ -18,6 +18,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User already exists with this email" }, { status: 400 });
     }
 
+    const nameTaken = await prisma.user.findFirst({
+      where: { name: { equals: name.trim(), mode: "insensitive" } },
+    });
+    if (nameTaken) {
+      return NextResponse.json({ error: "That username is already taken. Please choose another." }, { status: 400 });
+    }
+
     const hashed = await bcrypt.hash(password, 10);
     const slug =
       name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-") +
@@ -60,3 +67,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Registration failed" }, { status: 500 });
   }
 }
+
