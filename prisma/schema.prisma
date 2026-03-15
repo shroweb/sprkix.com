@@ -15,7 +15,9 @@ model User {
   isAdmin   Boolean  @default(false)
   isVerified Boolean @default(false)
   isSuspended Boolean @default(false)
-  password  String
+  password   String?
+  googleId   String?  @unique
+  facebookId String?  @unique
   slug      String   @unique
   avatarUrl String?
   favoritePromotion String?

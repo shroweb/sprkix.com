@@ -16,6 +16,7 @@ import {
   Megaphone,
   Link as LinkIcon,
   Palette,
+  LogIn,
 } from "lucide-react";
 
 type MessageState = { type: "success" | "error"; text: string } | null;
@@ -40,6 +41,7 @@ export default function AdminSettings() {
     SITE_DESCRIPTION: "",
     PRIMARY_COLOR: "",
     PRIMARY_HOVER_COLOR: "",
+    SOCIAL_LOGIN_ENABLED: "false",
   });
   const logoInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -65,6 +67,7 @@ export default function AdminSettings() {
           SITE_DESCRIPTION: configs.SITE_DESCRIPTION || "The authoritative community archive for professional wrestling.",
           PRIMARY_COLOR: configs.PRIMARY_COLOR || "",
           PRIMARY_HOVER_COLOR: configs.PRIMARY_HOVER_COLOR || "",
+          SOCIAL_LOGIN_ENABLED: configs.SOCIAL_LOGIN_ENABLED || "false",
         });
         setEvents(data.events || []);
         setLoading(false);
@@ -543,6 +546,58 @@ export default function AdminSettings() {
                   </button>
                   <p className="text-[10px] text-muted-foreground italic">Leave blank to use defaults.</p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Login */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <LogIn className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Social Login
+              </h2>
+              <div className="ml-auto">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSettings((s) => ({
+                      ...s,
+                      SOCIAL_LOGIN_ENABLED:
+                        s.SOCIAL_LOGIN_ENABLED === "true" ? "false" : "true",
+                    }))
+                  }
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.SOCIAL_LOGIN_ENABLED === "true" ? "bg-primary" : "bg-slate-200"}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow ${settings.SOCIAL_LOGIN_ENABLED === "true" ? "translate-x-6" : "translate-x-1"}`}
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="p-8 space-y-4">
+              {settings.SOCIAL_LOGIN_ENABLED !== "true" ? (
+                <div className="bg-slate-50 rounded-2xl p-4 text-xs text-muted-foreground italic font-medium">
+                  Social login is disabled. Toggle on to show Google and Facebook sign-in buttons on the login page.
+                </div>
+              ) : (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-xs text-emerald-700 font-medium space-y-1">
+                  <p className="font-black">Social login is enabled.</p>
+                  <p>Google and Facebook buttons will appear on the login page if their keys are set in environment variables.</p>
+                </div>
+              )}
+              <div className="space-y-2 pt-1">
+                <p className={labelClass}><LogIn className="w-3.5 h-3.5" /> Required Environment Variables</p>
+                <div className="bg-slate-900 rounded-2xl p-4 font-mono text-xs space-y-1 text-slate-300">
+                  <p><span className="text-yellow-400">GOOGLE_CLIENT_ID</span>=your-google-client-id</p>
+                  <p><span className="text-yellow-400">GOOGLE_CLIENT_SECRET</span>=your-google-client-secret</p>
+                  <p><span className="text-blue-400">FACEBOOK_APP_ID</span>=your-facebook-app-id</p>
+                  <p><span className="text-blue-400">FACEBOOK_APP_SECRET</span>=your-facebook-app-secret</p>
+                </div>
+                <p className="text-[10px] text-muted-foreground italic">
+                  Set these in your Vercel project environment variables. Redirect URIs: <br />
+                  <span className="font-mono">/api/auth/google/callback</span> &nbsp;·&nbsp; <span className="font-mono">/api/auth/facebook/callback</span>
+                </p>
               </div>
             </div>
           </div>

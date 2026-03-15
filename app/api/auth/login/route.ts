@@ -18,6 +18,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
+  if (!user.password) {
+    return NextResponse.json(
+      { error: "This account uses social login. Please sign in with Google or Facebook." },
+      { status: 401 }
+    );
+  }
+
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });

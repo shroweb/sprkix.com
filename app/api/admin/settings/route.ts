@@ -78,6 +78,7 @@ export async function POST(req: Request) {
     SITE_DESCRIPTION,
     PRIMARY_COLOR,
     PRIMARY_HOVER_COLOR,
+    SOCIAL_LOGIN_ENABLED,
   } = body;
 
   const updates = [
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
     { key: "SITE_DESCRIPTION", value: SITE_DESCRIPTION },
     { key: "PRIMARY_COLOR", value: PRIMARY_COLOR },
     { key: "PRIMARY_HOVER_COLOR", value: PRIMARY_HOVER_COLOR },
+    { key: "SOCIAL_LOGIN_ENABLED", value: SOCIAL_LOGIN_ENABLED },
   ];
 
   try {

@@ -171,7 +171,7 @@ export default function AddToListButton({
         title="Add to list"
         className={
           minimal
-            ? "px-3 py-2 bg-secondary/30 hover:bg-secondary/60 text-muted-foreground hover:text-primary border border-border rounded-xl flex items-center justify-center transition-all active:scale-95"
+            ? "w-12 h-12 bg-secondary/30 hover:bg-secondary/60 text-muted-foreground hover:text-primary border border-border rounded-xl flex items-center justify-center transition-all active:scale-95"
             : "flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border rounded-xl text-xs font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
         }
       >
