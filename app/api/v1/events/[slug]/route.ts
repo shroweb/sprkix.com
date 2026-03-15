@@ -8,7 +8,7 @@ export const GET = withErrorHandling(async (
   _req: NextRequest,
   ctx: any
 ) => {
-  const { slug } = ctx.params;
+  const { slug } = await ctx.params;
 
   const event = await prisma.event.findUnique({
     where: { slug },

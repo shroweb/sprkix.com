@@ -7,7 +7,7 @@ export const OPTIONS = () => preflight();
 
 export const POST = withErrorHandling(async (req: NextRequest, ctx: any) => {
   const user = await requireAuth(req);
-  const { id: matchId } = ctx.params;
+  const { id: matchId } = await ctx.params;
   const body = await req.json().catch(() => ({}));
   const { rating } = body;
 

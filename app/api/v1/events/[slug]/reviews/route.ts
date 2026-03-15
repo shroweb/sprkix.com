@@ -8,7 +8,7 @@ export const OPTIONS = () => preflight();
 const PAGE_SIZE = 20;
 
 export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
-  const { slug } = ctx.params;
+  const { slug } = await ctx.params;
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, Number(searchParams.get("page") || 1));
   const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit") || PAGE_SIZE)));
@@ -52,7 +52,7 @@ export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
 
 export const POST = withErrorHandling(async (req: NextRequest, ctx: any) => {
   const user = await requireAuth(req);
-  const { slug } = ctx.params;
+  const { slug } = await ctx.params;
   const body = await req.json().catch(() => ({}));
   const { rating, comment } = body;
 

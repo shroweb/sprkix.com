@@ -5,7 +5,7 @@ import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
 export const OPTIONS = () => preflight();
 
 export const GET = withErrorHandling(async (_req: NextRequest, ctx: any) => {
-  const { slug } = ctx.params;
+  const { slug } = await ctx.params;
 
   const wrestler = await prisma.wrestler.findUnique({
     where: { slug },
