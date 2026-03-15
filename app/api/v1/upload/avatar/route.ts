@@ -19,7 +19,6 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   const ext = file.name.split(".").pop() ?? "jpg";
   const blob = await put(`avatars/${user.id}.${ext}`, file, {
     access: "public",
-    allowOverwrite: true,
   });
 
   // Persist URL to user record
