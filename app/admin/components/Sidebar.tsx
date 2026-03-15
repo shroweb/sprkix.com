@@ -16,6 +16,7 @@ import {
   Search,
   Activity,
   Download,
+  BarChart2,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -63,6 +64,7 @@ export default function Sidebar() {
               { href: "/admin/users", label: "User Manager", icon: Users },
               { href: "/admin/reviews", label: "Review Browser", icon: LogOut }, // Using LogOut as placeholder for Reviews icon if Star is missing
               { href: "/admin/import", label: "Import Queue", icon: Download },
+              { href: "/admin/polls", label: "Polls", icon: BarChart2 },
             ].map((link) => {
               const Icon = link.icon === LogOut ? Star : link.icon;
               const isActive = pathname === link.href || (link.href !== "/admin" && pathname?.startsWith(link.href));

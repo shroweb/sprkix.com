@@ -3,6 +3,7 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import Link from "next/link";
 import Image from "next/image";
 import { Globe, Lock, Plus, List } from "lucide-react";
+import ListsGrid from "./ListsGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export default async function ListsDiscoveryPage() {
         _count: { select: { items: true } },
       },
       orderBy: { createdAt: "desc" },
-      take: 24,
+      take: 100,
     }),
     user
       ? prisma.list.findMany({
@@ -155,108 +156,12 @@ export default async function ListsDiscoveryPage() {
         </section>
       )}
 
-      {/* Public lists */}
-      <section className="space-y-6">
-        {user && myLists.length > 0 && (
-          <div className="flex items-center gap-6">
-            <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-xl">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-foreground">
-                Public Lists
-              </h2>
-            </div>
-            <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
-          </div>
-        )}
-
-        {publicLists.length === 0 ? (
-          <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-            <List className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-bold italic">
-              No public lists yet. Be the first!
-            </p>
-            {user ? (
-              <Link href="/lists/create" className="btn-primary inline-block mt-4 text-sm">
-                Create a List
-              </Link>
-            ) : (
-              <Link href="/login" className="btn-primary inline-block mt-4 text-sm">
-                Sign in to create
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {publicLists.map((list: any) => (
-              <Link
-                key={list.id}
-                href={`/lists/${list.id}`}
-                className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/20 transition-all"
-              >
-                {/* Poster strip */}
-                <div className="relative flex h-28 overflow-hidden">
-                  {list.items.length > 0 ? (
-                    list.items.map((item: any, i: number) => {
-                      const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
-                      const altText = item.event?.title || item.match?.title || "";
-                      return (
-                        <div
-                          key={i}
-                          className="relative flex-1 overflow-hidden"
-                          style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
-                        >
-                          <Image
-                            src={posterUrl}
-                            alt={altText}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="flex-1 bg-secondary flex items-center justify-center">
-                      <List className="w-8 h-8 text-muted-foreground/20" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent pointer-events-none" />
-                </div>
-
-                {/* Card body */}
-                <div className="p-4 space-y-3">
-                  <h3 className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                    {list.title}
-                  </h3>
-
-                  {/* Owner */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-primary/20 overflow-hidden shrink-0 flex items-center justify-center">
-                      {list.user.avatarUrl ? (
-                        <Image
-                          src={list.user.avatarUrl}
-                          alt={list.user.name || ""}
-                          width={20}
-                          height={20}
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <span className="text-[8px] font-black text-primary">
-                          {list.user.name?.charAt(0).toUpperCase() ?? "U"}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] font-bold text-muted-foreground truncate">
-                      {list.user.name}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground/40 ml-auto shrink-0">
-                      {list._count.items} {list.listType === "matches" ? "matches" : "events"}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      {/* Public lists with filters */}
+      <ListsGrid
+        publicLists={publicLists as any}
+        isLoggedIn={!!user}
+        userHasMyLists={!!(user && myLists.length > 0)}
+      />
 
       {!user && (
         <div className="text-center py-6">

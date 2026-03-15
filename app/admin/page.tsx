@@ -7,6 +7,7 @@ import {
   MessageSquare,
   TrendingUp,
   ArrowUpRight,
+  BarChart2,
 } from "lucide-react";
 
 export default async function AdminHome() {
@@ -145,6 +146,16 @@ export default async function AdminHome() {
                 className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
               >
                 <span className="font-medium text-sm">Site Settings</span>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+              </Link>
+              <Link
+                href="/admin/polls"
+                className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
+              >
+                <div className="flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+                  <span className="font-medium text-sm">Community Polls</span>
+                </div>
                 <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
               </Link>
             </div>

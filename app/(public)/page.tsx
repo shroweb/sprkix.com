@@ -18,11 +18,13 @@ import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import HeroReviewCycler from "@components/HeroReviewCycler";
 import FeaturedEventCycler from "@components/FeaturedEventCycler";
+import HomePoll from "@components/HomePoll";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const user = await getUserFromServerCookie();
+  const userId = user?.id;
 
   const eventSelect = {
     id: true,
@@ -42,7 +44,7 @@ export default async function Home() {
     createdAt: true,
   };
 
-  let results: any[] = [[], 0, 0, [], [], [], []];
+  let results: any[] = [[], 0, 0, [], [], [], [], null];
   try {
     results = await Promise.all([
       prisma.event.findMany({
@@ -69,6 +71,16 @@ export default async function Home() {
           event: { select: { ...eventSelect } },
         },
       }),
+      prisma.poll.findFirst({
+        where: { isActive: true },
+        include: {
+          options: {
+            orderBy: { order: "asc" },
+            include: { _count: { select: { votes: true } } },
+          },
+          votes: userId ? { where: { userId }, select: { optionId: true } } : false,
+        },
+      }),
     ]);
   } catch (err) {
     console.error("Home page fetch error:", err);
@@ -82,6 +94,7 @@ export default async function Home() {
     allEventsForRank,
     configs,
     topMatches,
+    activePoll,
   ] = results;
 
   const configMap = configs.reduce(
@@ -656,6 +669,21 @@ export default async function Home() {
                 );
               })}
             </div>
+          </section>
+        )}
+
+        {/* ── Community Poll ── */}
+        {activePoll && (
+          <section>
+            <HomePoll
+              poll={activePoll}
+              totalVotes={activePoll.options.reduce(
+                (sum: number, o: any) => sum + o._count.votes,
+                0
+              )}
+              userVoteOptionId={activePoll.votes?.[0]?.optionId ?? null}
+              isLoggedIn={!!user}
+            />
           </section>
         )}
 

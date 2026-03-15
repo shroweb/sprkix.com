@@ -39,6 +39,7 @@ model User {
   lists         List[]
   notifications Notification[]
   favoriteMatches FavoriteMatch[]
+  pollVotes     PollVote[]
 }
 
 model FavoriteMatch {
@@ -274,6 +275,37 @@ model ListItem {
 
   @@unique([listId, eventId])
   @@unique([listId, matchId])
+}
+
+model Poll {
+  id        String       @id @default(cuid())
+  question  String
+  isActive  Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  options   PollOption[]
+  votes     PollVote[]
+}
+
+model PollOption {
+  id     String     @id @default(cuid())
+  pollId String
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  text   String
+  order  Int        @default(0)
+  votes  PollVote[]
+}
+
+model PollVote {
+  id       String     @id @default(cuid())
+  pollId   String
+  poll     Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  optionId String
+  option   PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@unique([pollId, userId])
 }
 
 model Prediction {
