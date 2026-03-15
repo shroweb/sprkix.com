@@ -327,17 +327,14 @@ export default function HomePoll({
 
               <div className="relative z-10 flex flex-col h-full px-8 py-8">
                 {/* Header */}
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.25em", color: "rgba(251,191,36,0.7)" }}>
-                      sprkix.com
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span style={{ fontSize: 12, color: "#fbbf24" }}>⚡</span>
-                      <h2 style={{ fontSize: 13, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.2em", color: "white" }}>
-                        Community Poll
-                      </h2>
-                    </div>
+                <div className="flex justify-between items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/img/logo.png" alt="Sprkix" style={{ height: 40, width: "auto", objectFit: "contain" }} />
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ fontSize: 12, color: "#fbbf24" }}>⚡</span>
+                    <span style={{ fontSize: 11, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(251,191,36,0.85)" }}>
+                      Community Poll
+                    </span>
                   </div>
                 </div>
 

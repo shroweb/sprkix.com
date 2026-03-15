@@ -151,6 +151,8 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
     setOptions(updated);
   }
 
+  const activePolls = polls.filter((p) => p.isActive);
+  const archivedPolls = polls.filter((p) => !p.isActive);
   const eventPolls = polls.filter((p) => p.eventId);
   const homePolls = polls.filter((p) => !p.eventId);
   const selectedEvent = eventId ? events.find((e) => e.id === eventId) : null;
@@ -301,40 +303,45 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
         </div>
       )}
 
-      {/* Event Polls */}
-      {eventPolls.length > 0 && (
+      {polls.length === 0 && (
+        <div className="bg-white border border-dashed border-border rounded-2xl p-16 text-center">
+          <BarChart2 className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
+          <p className="text-muted-foreground font-medium text-sm">
+            No polls yet. Create one to get started.
+          </p>
+        </div>
+      )}
+
+      {/* Active Polls */}
+      {activePolls.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <Calendar className="w-4 h-4 text-primary" />
-            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Event Polls ({eventPolls.length})</h2>
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+            </span>
+            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Active ({activePolls.length})</h2>
           </div>
-          {eventPolls.map((poll) => (
+          {activePolls.map((poll) => (
             <PollCard key={poll.id} poll={poll} onToggle={toggleActive} onDelete={deletePoll} loading={loading} />
           ))}
         </div>
       )}
 
-      {/* Homepage Polls */}
-      <div className="space-y-4">
-        {eventPolls.length > 0 && (
-          <div className="flex items-center gap-3">
-            <Globe className="w-4 h-4 text-primary" />
-            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Homepage Polls ({homePolls.length})</h2>
+      {/* Archived Polls */}
+      {archivedPolls.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 pt-2">
+            <div className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
+            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Archived ({archivedPolls.length})</h2>
           </div>
-        )}
-        {homePolls.length === 0 && eventPolls.length === 0 ? (
-          <div className="bg-white border border-dashed border-border rounded-2xl p-16 text-center">
-            <BarChart2 className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-medium text-sm">
-              No polls yet. Create one to get started.
-            </p>
+          <div className="opacity-70 space-y-4">
+            {archivedPolls.map((poll) => (
+              <PollCard key={poll.id} poll={poll} onToggle={toggleActive} onDelete={deletePoll} loading={loading} />
+            ))}
           </div>
-        ) : homePolls.length === 0 ? null : (
-          homePolls.map((poll) => (
-            <PollCard key={poll.id} poll={poll} onToggle={toggleActive} onDelete={deletePoll} loading={loading} />
-          ))
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
