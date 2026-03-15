@@ -67,20 +67,29 @@ export async function generateMetadata({
     ? event.description.slice(0, 155)
     : `Ratings, reviews and match results for ${cleanTitle} (${year}) by ${event.promotion}.`;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.poisonrana.com";
+  // Only use poster if it's a real https URL (not base64 or relative)
+  const rawPoster = event.posterUrl || "";
+  const ogImage = rawPoster.startsWith("http")
+    ? rawPoster
+    : rawPoster.startsWith("/") && !rawPoster.startsWith("/9j") // not base64
+    ? `${siteUrl}${rawPoster}`
+    : null;
+
   return {
     title: `${cleanTitle} (${year}) – ${event.promotion} | Poison Rana`,
     description: desc,
     openGraph: {
       title: `${cleanTitle} – ${event.promotion}`,
       description: desc,
-      images: event.posterUrl ? [{ url: event.posterUrl }] : [],
+      images: ogImage ? [{ url: ogImage, width: 800, height: 450 }] : [],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title: `${cleanTitle} – ${event.promotion}`,
       description: desc,
-      images: event.posterUrl ? [event.posterUrl] : [],
+      images: ogImage ? [ogImage] : [],
     },
   };
 }
