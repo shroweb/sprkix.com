@@ -124,6 +124,14 @@ export default async function ProfilePage() {
         return await prisma.list.findMany({
           where: { userId: user.id },
           include: {
+            items: {
+              include: {
+                event: { select: { posterUrl: true, title: true } },
+                match: { select: { title: true, event: { select: { posterUrl: true, title: true } } } },
+              },
+              orderBy: { order: "asc" },
+              take: 3,
+            },
             _count: { select: { items: true } },
           },
           orderBy: { createdAt: "desc" },
@@ -581,45 +589,53 @@ export default async function ProfilePage() {
             {userLists.map((list: any) => (
               <div
                 key={list.id}
-                className="bg-card/40 border border-white/5 hover:border-primary/20 rounded-2xl p-5 transition-all group space-y-3"
+                className="bg-card border border-white/5 hover:border-primary/20 rounded-2xl overflow-hidden transition-all group"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <Link
-                    href={`/lists/${list.id}`}
-                    className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight"
-                  >
-                    {list.title}
-                  </Link>
-                  <div className="flex items-center gap-1 shrink-0">
-                    {list.isPublic ? (
-                      <Globe className="w-3 h-3 text-muted-foreground" />
+                {/* Cover photo strip */}
+                <Link href={`/lists/${list.id}`} className="block">
+                  <div className="relative flex h-28 overflow-hidden">
+                    {list.items.length > 0 ? (
+                      list.items.map((item: any, i: number) => {
+                        const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+                        const alt = item.event?.title || item.match?.title || "";
+                        return (
+                          <div
+                            key={i}
+                            className="relative flex-1 overflow-hidden"
+                            style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
+                          >
+                            <Image src={posterUrl} alt={alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        );
+                      })
                     ) : (
-                      <Lock className="w-3 h-3 text-muted-foreground" />
+                      <div className="flex-1 bg-secondary flex items-center justify-center">
+                        <List className="w-8 h-8 text-muted-foreground/20" />
+                      </div>
                     )}
-                    <span
-                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        list.isPublic
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-secondary text-muted-foreground"
-                      }`}
-                    >
-                      {list.isPublic ? "Public" : "Private"}
-                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent pointer-events-none" />
                   </div>
-                </div>
-                <p className="text-[10px] font-bold text-muted-foreground">
-                  {list._count.items} event{list._count.items !== 1 ? "s" : ""}
-                </p>
-                <div className="flex items-center gap-2 pt-1">
-                  <Link
-                    href={`/lists/${list.id}`}
-                    className="flex-1 text-center px-3 py-2 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
-                  >
-                    View
-                  </Link>
+                </Link>
+
+                {/* Card body */}
+                <div className="p-4 flex items-start justify-between gap-2">
+                  <div className="space-y-1 min-w-0">
+                    <Link
+                      href={`/lists/${list.id}`}
+                      className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight block"
+                    >
+                      {list.title}
+                    </Link>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
+                      {list.isPublic ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                      <span>{list.isPublic ? "Public" : "Private"}</span>
+                      <span className="mx-1">·</span>
+                      <span>{list._count.items} {list.listType === "matches" ? "matches" : "events"}</span>
+                    </div>
+                  </div>
                   <Link
                     href={`/lists/${list.id}/edit`}
-                    className="flex-1 text-center px-3 py-2 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+                    className="shrink-0 px-3 py-1.5 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
                   >
                     Edit
                   </Link>
