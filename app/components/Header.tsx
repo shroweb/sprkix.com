@@ -21,7 +21,29 @@ import {
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
-import UserAvatar from "./UserAvatar";
+
+const HEADER_GRADIENTS = [
+  ["#7c3aed", "#4f46e5"],
+  ["#db2777", "#9d174d"],
+  ["#ea580c", "#b45309"],
+  ["#059669", "#0d9488"],
+  ["#0284c7", "#1d4ed8"],
+  ["#c026d3", "#7e22ce"],
+  ["#65a30d", "#047857"],
+  ["#0891b2", "#1e40af"],
+  ["#dc2626", "#9f1239"],
+  ["#7c3aed", "#be185d"],
+  ["#d97706", "#dc2626"],
+  ["#0284c7", "#059669"],
+];
+
+function getHeaderGradient(seed: string): [string, string] {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return HEADER_GRADIENTS[Math.abs(hash) % HEADER_GRADIENTS.length] as [string, string];
+}
 
 const logoSizeMap: Record<string, string> = {
   sm: "h-8",
@@ -219,7 +241,20 @@ export default function Header({
                 </Link>
               )}
               <div className="flex items-center gap-3 bg-secondary p-1 pr-4 rounded-full border border-border hover:bg-muted transition-colors cursor-pointer group relative">
-                <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size="md" />
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name || "Avatar"}
+                    className="w-8 h-8 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div
+                    className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-black text-white shadow-sm"
+                    style={{ background: `linear-gradient(135deg, ${getHeaderGradient(user.name || "user")[0]}, ${getHeaderGradient(user.name || "user")[1]})` }}
+                  >
+                    {(user.name || "U").charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <span className="text-sm font-bold truncate max-w-[100px]">
                   {user.name}
                 </span>

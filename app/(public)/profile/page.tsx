@@ -279,8 +279,8 @@ export default async function ProfilePage() {
                {/* Avatar Area */}
                <div className="relative group/avatar">
                  <UserAvatar
-                   name={user.name}
-                   avatarUrl={user.avatarUrl}
+                   name={currentUser?.name || user.name}
+                   avatarUrl={(currentUser as any)?.avatarUrl || user.avatarUrl}
                    size="2xl"
                    className="shadow-2xl relative z-10"
                  />
@@ -290,7 +290,7 @@ export default async function ProfilePage() {
                <div className="flex-1 space-y-6 pb-6">
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     <h1 className="text-3xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter flex items-center gap-2 sm:gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                      {user.name}
+                      {currentUser?.name || user.name}
                       {(currentUser as any)?.isVerified && (
                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 text-blue-400 fill-blue-400/10 shrink-0" />
                       )}
