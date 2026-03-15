@@ -30,6 +30,13 @@ export default async function ListsDiscoveryPage() {
       ? prisma.list.findMany({
           where: { userId: user.id },
           include: {
+            items: {
+              include: {
+                event: { select: { posterUrl: true, title: true } },
+              },
+              orderBy: { order: "asc" },
+              take: 3,
+            },
             _count: { select: { items: true } },
           },
           orderBy: { createdAt: "desc" },
@@ -75,9 +82,37 @@ export default async function ListsDiscoveryPage() {
             {myLists.map((list: any) => (
               <div
                 key={list.id}
-                className="bg-card border border-border rounded-2xl p-5 space-y-4 hover:border-primary/20 transition-colors group"
+                className="bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/20 transition-all group"
               >
-                <div className="flex items-start justify-between gap-2">
+                {/* Poster strip */}
+                <Link href={`/lists/${list.id}`} className="block">
+                  <div className="relative flex h-28 overflow-hidden">
+                    {list.items.length > 0 ? (
+                      list.items.map((item: any, i: number) => (
+                        <div
+                          key={i}
+                          className="relative flex-1 overflow-hidden"
+                          style={{ flexBasis: `${100 / Math.min(list.items.length, 3)}%` }}
+                        >
+                          <Image
+                            src={item.event.posterUrl || "/placeholder.png"}
+                            alt={item.event.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex-1 bg-secondary flex items-center justify-center">
+                        <List className="w-8 h-8 text-muted-foreground/20" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent pointer-events-none" />
+                  </div>
+                </Link>
+
+                {/* Card body */}
+                <div className="p-4 flex items-start justify-between gap-2">
                   <div className="space-y-1 min-w-0">
                     <Link
                       href={`/lists/${list.id}`}
