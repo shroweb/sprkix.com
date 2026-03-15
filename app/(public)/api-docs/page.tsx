@@ -39,8 +39,7 @@ type Section = {
 };
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
-
-const BASE_URL = "https://poisonrana.com/api/v1";
+// BASE_URL is set inside the page so we can override it for local dev.
 
 const sections: Section[] = [
   {
@@ -652,7 +651,18 @@ function EndpointCard({ ep }: { ep: Endpoint }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ApiDocsPage() {
+export default function ApiDocsPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  const sp = searchParams ?? ({} as Record<string, string | string[] | undefined>);
+  const rawBase =
+    (typeof sp.baseUrl === "string" && sp.baseUrl) ||
+    (typeof sp.base === "string" && sp.base) ||
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    "https://poisonrana.com/api/v1";
+  const BASE_URL = rawBase.replace(/\/+$/, "");
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
       {/* Header */}
