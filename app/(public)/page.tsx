@@ -315,7 +315,7 @@ export default async function Home() {
                 const sTime = event.startTime ? new Date(event.startTime) : new Date(event.date);
                 const eTime = event.endTime ? new Date(event.endTime) : event.startTime ? new Date(sTime.getTime() + 4 * 60 * 60 * 1000) : null;
                 const isLive = !!event.startTime && now >= sTime && (eTime === null || now <= eTime);
-                const isUpcoming = !isLive && now < new Date(event.date);
+                const isUpcoming = !isLive && now < sTime;
                 return (
                   <Link key={event.id} href={`/events/${event.slug}`} className="group relative">
                     <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-4 border border-white/5">
@@ -336,7 +336,7 @@ export default async function Home() {
                           </span>
                         )}
                         {isUpcoming && !isLive && (
-                          <span className="px-2 py-1 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                          <span className="px-2 py-1 bg-green-500 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
                             Upcoming
                           </span>
                         )}
@@ -564,7 +564,7 @@ export default async function Home() {
                         const sTime = event.startTime ? new Date(event.startTime) : new Date(event.date);
                         const eTime = event.endTime ? new Date(event.endTime) : event.startTime ? new Date(sTime.getTime() + 4 * 60 * 60 * 1000) : null;
                         const isLive = !!event.startTime && now >= sTime && (eTime === null || now <= eTime);
-                        const isUpcoming = !isLive && now < new Date(event.date);
+                        const isUpcoming = !isLive && now < sTime;
                         if (isLive) return (
                           <span className="px-2 py-1 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
                             <Activity className="w-2.5 h-2.5" /> Live

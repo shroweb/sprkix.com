@@ -16,7 +16,7 @@ export default async function EventsPage({
       select: {
         id: true, title: true, slug: true, date: true, promotion: true,
         venue: true, posterUrl: true, description: true, type: true,
-        createdAt: true,
+        startTime: true, endTime: true, createdAt: true,
         reviews: { select: { rating: true } },
       },
     }),
