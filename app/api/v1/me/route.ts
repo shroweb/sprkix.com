@@ -45,6 +45,12 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
   });
 });
 
+export const DELETE = withErrorHandling(async (req: NextRequest) => {
+  const user = await requireAuth(req);
+  await prisma.user.delete({ where: { id: user.id } });
+  return ok({ deleted: true });
+});
+
 export const PATCH = withErrorHandling(async (req: NextRequest) => {
   const user = await requireAuth(req);
   const body = await req.json().catch(() => ({}));
