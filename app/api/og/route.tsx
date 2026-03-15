@@ -8,10 +8,10 @@ export async function GET(req: NextRequest) {
   const title = searchParams.get("title") || "Poison Rana";
   const promotion = searchParams.get("promotion") || "";
   const year = searchParams.get("year") || "";
-  const poster = searchParams.get("poster") || ""; // must be absolute https URL
+  const poster = searchParams.get("poster") || "";
 
-  // Only pass poster to img if it's a real https URL (not base64)
   const useImage = poster.startsWith("https://") || poster.startsWith("http://");
+  const pill = [promotion, year].filter(Boolean).join(" · ");
 
   return new ImageResponse(
     (
@@ -20,100 +20,79 @@ export async function GET(req: NextRequest) {
           width: "1200px",
           height: "630px",
           display: "flex",
-          background: "#0a0b10",
+          backgroundColor: "#0a0b10",
           position: "relative",
-          overflow: "hidden",
-          fontFamily: "sans-serif",
         }}
       >
-        {/* Poster image as blurred background */}
-        {useImage && (
-          <img
-            src={poster}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              opacity: 0.25,
-              filter: "blur(12px)",
-            }}
-          />
-        )}
-
-        {/* Dark gradient overlay */}
+        {/* Amber radial glow bottom-right */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(135deg, rgba(10,11,16,0.97) 0%, rgba(10,11,16,0.75) 60%, rgba(251,191,36,0.08) 100%)",
+            bottom: "0px",
+            right: "0px",
+            width: "500px",
+            height: "500px",
+            background: "radial-gradient(circle at 80% 80%, rgba(251,191,36,0.18) 0%, transparent 65%)",
             display: "flex",
           }}
         />
 
-        {/* Amber glow bottom-right */}
+        {/* Top accent line */}
         <div
           style={{
             position: "absolute",
-            bottom: "-80px",
-            right: "-80px",
-            width: "400px",
-            height: "400px",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)",
+            top: "0px",
+            left: "0px",
+            right: "0px",
+            height: "4px",
+            backgroundColor: "#fbbf24",
             display: "flex",
           }}
         />
 
-        {/* Left: poster image */}
+        {/* Poster panel */}
         {useImage && (
           <div
             style={{
               position: "absolute",
               right: "60px",
-              top: "125px",
+              top: "80px",
               width: "280px",
-              height: "380px",
-              borderRadius: "16px",
+              height: "400px",
+              borderRadius: "12px",
               overflow: "hidden",
-              boxShadow: "0 0 60px rgba(251,191,36,0.2), 0 32px 64px rgba(0,0,0,0.6)",
               display: "flex",
+              border: "1px solid rgba(251,191,36,0.25)",
             }}
           >
             <img
               src={poster}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              width={280}
+              height={400}
+              style={{ objectFit: "cover" }}
             />
           </div>
         )}
 
-        {/* Content */}
+        {/* Text content */}
         <div
           style={{
             position: "absolute",
             left: "60px",
-            top: "90px",
+            top: "80px",
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
-            maxWidth: useImage ? "720px" : "1080px",
+            gap: "20px",
+            maxWidth: useImage ? "780px" : "1080px",
           }}
         >
-          {/* Site badge */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
+          {/* Site wordmark */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div
               style={{
                 width: "4px",
-                height: "28px",
-                background: "#fbbf24",
+                height: "32px",
+                backgroundColor: "#fbbf24",
                 borderRadius: "2px",
                 display: "flex",
               }}
@@ -121,9 +100,9 @@ export async function GET(req: NextRequest) {
             <span
               style={{
                 color: "#fbbf24",
-                fontSize: "16px",
+                fontSize: "14px",
                 fontWeight: 900,
-                letterSpacing: "0.2em",
+                letterSpacing: "0.25em",
                 textTransform: "uppercase",
               }}
             >
@@ -131,37 +110,37 @@ export async function GET(req: NextRequest) {
             </span>
           </div>
 
-          {/* Promotion + year pill */}
-          {(promotion || year) && (
+          {/* Promotion · Year pill */}
+          {pill ? (
             <div
               style={{
-                display: "inline-flex",
-                background: "rgba(251,191,36,0.1)",
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "rgba(251,191,36,0.1)",
                 border: "1px solid rgba(251,191,36,0.3)",
                 borderRadius: "999px",
-                padding: "6px 18px",
+                padding: "8px 20px",
                 color: "#fbbf24",
-                fontSize: "15px",
+                fontSize: "14px",
                 fontWeight: 800,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 width: "fit-content",
               }}
             >
-              {[promotion, year].filter(Boolean).join(" · ")}
+              {pill}
             </div>
-          )}
+          ) : null}
 
           {/* Event title */}
           <div
             style={{
               color: "#ffffff",
-              fontSize: title.length > 30 ? "52px" : "64px",
+              fontSize: title.length > 28 ? "56px" : "72px",
               fontWeight: 900,
-              lineHeight: 1.05,
+              lineHeight: 1.0,
               letterSpacing: "-0.02em",
               textTransform: "uppercase",
-              fontStyle: "italic",
             }}
           >
             {title}
@@ -170,21 +149,31 @@ export async function GET(req: NextRequest) {
           {/* Tagline */}
           <div
             style={{
-              color: "rgba(248,250,252,0.45)",
+              color: "rgba(148,163,184,0.8)",
               fontSize: "18px",
               fontWeight: 600,
-              fontStyle: "italic",
-              letterSpacing: "0.04em",
+              letterSpacing: "0.05em",
+              marginTop: "8px",
             }}
           >
             Rate · Review · Discuss at poisonrana.com
           </div>
         </div>
+
+        {/* Bottom divider */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "48px",
+            left: "60px",
+            right: "60px",
+            height: "1px",
+            backgroundColor: "rgba(255,255,255,0.06)",
+            display: "flex",
+          }}
+        />
       </div>
     ),
-    {
-      width: 1200,
-      height: 630,
-    }
+    { width: 1200, height: 630 }
   );
 }
