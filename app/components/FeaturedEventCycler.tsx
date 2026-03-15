@@ -27,10 +27,21 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
           : 0;
         const now = new Date();
         const eventDate = new Date(event.date);
-        const eventDay = eventDate.toDateString();
-        const todayDay = now.toDateString();
-        const isLive = eventDay === todayDay;
-        const isUpcoming = !isLive && eventDate > now;
+        // Use startTime/endTime for precise live window; fall back to same-day heuristic only if no startTime
+        let isLive = false;
+        if (event.startTime) {
+          const sTime = new Date(event.startTime);
+          const eTime = event.endTime
+            ? new Date(event.endTime)
+            : new Date(sTime.getTime() + 4 * 60 * 60 * 1000);
+          isLive = now >= sTime && now <= eTime;
+        } else {
+          // No start time set — show Live only if event date is today AND past 6pm local
+          const eventDay = eventDate.toDateString();
+          const todayDay = now.toDateString();
+          isLive = eventDay === todayDay && now.getHours() >= 18;
+        }
+        const isUpcoming = !isLive && (event.startTime ? new Date(event.startTime) > now : eventDate > now);
 
         return (
           <div
@@ -75,12 +86,14 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
                       </span>
                     </div>
                   )}
-                  <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10">
-                    <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                    <span className="text-sm font-black text-white">
-                      {rating.toFixed(2)}
-                    </span>
-                  </div>
+                  {!isUpcoming && event.reviews.length > 0 && (
+                    <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10">
+                      <Star className="w-3.5 h-3.5 text-primary fill-current" />
+                      <span className="text-sm font-black text-white">
+                        {rating.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-7 space-y-3">
