@@ -13,7 +13,7 @@ import ShareReviewButton from "@components/ShareReviewButton";
 import ReviewUpvote from "@components/ReviewUpvote";
 import AttendButton from "@components/AttendButton";
 import SetThemeButton from "@components/SetThemeButton";
-import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users } from "lucide-react";
+import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users, Tv } from "lucide-react";
 import PredictionCard from "@components/PredictionCard";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
@@ -392,7 +392,8 @@ export default async function EventPage({
                 )}
                 {event.network && (
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-lg">
+                    <Tv className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                       {event.network}
                     </span>
                   </div>
@@ -401,7 +402,7 @@ export default async function EventPage({
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
-                      {event.attendance.toLocaleString()} in attendance
+                      {event.attendance.toLocaleString()} Attendance
                     </span>
                   </div>
                 )}
