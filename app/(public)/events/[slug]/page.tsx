@@ -15,6 +15,7 @@ import AttendButton from "@components/AttendButton";
 import SetThemeButton from "@components/SetThemeButton";
 import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users, Tv } from "lucide-react";
 import PredictionCard from "@components/PredictionCard";
+import HomePoll from "@components/HomePoll";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
 import EventTabs, { type EventTab } from "@components/EventTabs";
@@ -292,6 +293,19 @@ export default async function EventPage({
 
   const watchCount = await prisma.watchListItem.count({
     where: { eventId: event.id },
+  });
+
+  // Event polls
+  const eventPolls = await prisma.poll.findMany({
+    where: { eventId: event.id },
+    include: {
+      options: {
+        orderBy: { order: "asc" },
+        include: { _count: { select: { votes: true } } },
+      },
+      votes: userId ? { where: { userId }, select: { optionId: true, pollId: true } } : false,
+    },
+    orderBy: { createdAt: "asc" },
   });
 
   // Ranking — uses per-request cache to avoid duplicate full-table scans
@@ -865,6 +879,35 @@ export default async function EventPage({
                 tabs.push({ id: "review", label: "Reviews", badge: event.reviews.length });
               }
 
+              // ── Poll tab (show when event has polls) ─────────────────────
+              let pollContent: React.ReactNode = undefined;
+              if (eventPolls.length > 0) {
+                pollContent = (
+                  <div className="space-y-8">
+                    {eventPolls.map((poll: any) => {
+                      const totalVotes = poll.options.reduce(
+                        (sum: number, o: any) => sum + o._count.votes,
+                        0,
+                      );
+                      const userVoteOptionId =
+                        poll.votes && poll.votes.length > 0
+                          ? poll.votes[0].optionId
+                          : null;
+                      return (
+                        <HomePoll
+                          key={poll.id}
+                          poll={poll}
+                          totalVotes={totalVotes}
+                          userVoteOptionId={userVoteOptionId}
+                          isLoggedIn={!!user}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+                tabs.push({ id: "poll", label: "Poll", badge: eventPolls.length > 1 ? eventPolls.length : undefined });
+              }
+
               // Default to Watch Party tab when event is live
               const defaultTab = isLive ? "watchParty" : "card";
 
@@ -876,6 +919,7 @@ export default async function EventPage({
                   predictions={predictionsContent}
                   watchParty={watchPartyContent}
                   review={reviewContent}
+                  poll={pollContent}
                 />
               );
             })()}

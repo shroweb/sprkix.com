@@ -15,6 +15,7 @@ export async function GET() {
         orderBy: { order: "asc" },
         include: { _count: { select: { votes: true } } },
       },
+      event: { select: { id: true, title: true, slug: true } },
       _count: { select: { votes: true } },
     },
   });
@@ -29,10 +30,11 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { question, options, isActive } = body as {
+  const { question, options, isActive, eventId } = body as {
     question: string;
     options: string[];
     isActive: boolean;
+    eventId?: string | null;
   };
 
   if (!question || !options || options.length < 2) {
@@ -42,15 +44,16 @@ export async function POST(req: Request) {
     );
   }
 
-  // If activating this poll, deactivate all others first
-  if (isActive) {
-    await prisma.poll.updateMany({ data: { isActive: false } });
+  // If activating this poll (homepage), deactivate all non-event polls first
+  if (isActive && !eventId) {
+    await prisma.poll.updateMany({ where: { eventId: null }, data: { isActive: false } });
   }
 
   const poll = await prisma.poll.create({
     data: {
       question,
       isActive: !!isActive,
+      eventId: eventId || null,
       options: {
         create: options.map((text, i) => ({ text, order: i })),
       },

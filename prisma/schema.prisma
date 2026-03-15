@@ -105,6 +105,7 @@ model Event {
   listItems     ListItem[]
   themedUsers   User[] @relation("ProfileTheme")
   liveComments  LiveComment[]
+  polls         Poll[]
 }
 
 model Match {
@@ -281,6 +282,8 @@ model Poll {
   id        String       @id @default(cuid())
   question  String
   isActive  Boolean      @default(false)
+  eventId   String?
+  event     Event?       @relation(fields: [eventId], references: [id], onDelete: SetNull)
   createdAt DateTime     @default(now())
   options   PollOption[]
   votes     PollVote[]

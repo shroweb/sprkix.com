@@ -13,16 +13,21 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await req.json();
-  const { question, options, isActive } = body as {
+  const { question, options, isActive, eventId } = body as {
     question?: string;
     options?: string[];
     isActive?: boolean;
+    eventId?: string | null;
   };
 
-  // If activating this poll, deactivate all others first
-  if (isActive === true) {
+  // Fetch current poll to know if it's event-scoped
+  const current = await prisma.poll.findUnique({ where: { id }, select: { eventId: true } });
+  const resolvedEventId = eventId !== undefined ? (eventId || null) : current?.eventId ?? null;
+
+  // If activating a homepage poll (no eventId), deactivate other homepage polls
+  if (isActive === true && !resolvedEventId) {
     await prisma.poll.updateMany({
-      where: { id: { not: id } },
+      where: { id: { not: id }, eventId: null },
       data: { isActive: false },
     });
   }
@@ -30,6 +35,7 @@ export async function PATCH(
   const updateData: any = {};
   if (question !== undefined) updateData.question = question;
   if (isActive !== undefined) updateData.isActive = isActive;
+  if (eventId !== undefined) updateData.eventId = eventId || null;
 
   // If options are provided, delete existing and recreate
   if (options && options.length >= 2) {
