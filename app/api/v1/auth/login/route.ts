@@ -30,12 +30,14 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
       isVerified: true,
       favoritePromotion: true,
       createdAt: true,
+      predictionScore: true,
+      predictionCount: true,
       password: true,
     },
   });
 
   if (!user) return err("Invalid email or password", 401);
-  if (!user.password) return err("This account uses social login. Please sign in with Google or Facebook.", 401);
+  if (!user.password) return err("This account uses social login. Please sign in with Google.", 401);
 
   const valid = await bcrypt.compare(String(password), user.password);
   if (!valid) return err("Invalid email or password", 401);

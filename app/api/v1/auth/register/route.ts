@@ -48,6 +48,8 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
       isVerified: true,
       favoritePromotion: true,
       createdAt: true,
+      predictionScore: true,
+      predictionCount: true,
     },
   });
 
