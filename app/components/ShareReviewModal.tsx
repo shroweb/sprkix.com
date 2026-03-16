@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { X, Download, Share2, Loader2, Star } from "lucide-react";
+import { X, Download, Loader2, Star } from "lucide-react";
 import Image from "next/image";
 import { toPng } from "html-to-image";
 
@@ -26,7 +26,15 @@ export default function ShareReviewModal({
   event,
 }: ShareReviewModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [siteLogo, setSiteLogo] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/v1/config")
+      .then(r => r.json())
+      .then(d => { if (d.logoUrl) setSiteLogo(d.logoUrl); })
+      .catch(() => {});
+  }, []);
 
   if (!isOpen) return null;
 
@@ -94,23 +102,27 @@ export default function ShareReviewModal({
           {/* Content Wrapper */}
           <div className="absolute inset-0 p-10 flex flex-col justify-between items-center text-center">
             {/* Top: Logo */}
-            <div className="w-24 h-24 relative mt-4">
-                <Image 
-                    src="/img/logo.png" 
-                    alt="Poison Rana" 
-                    fill 
-                    className="object-contain filter brightness-0 invert" 
+            <div className="mt-2 h-14 flex items-center justify-center">
+              {siteLogo ? (
+                <img
+                  src={siteLogo}
+                  alt="Poison Rana"
+                  className="h-full w-auto object-contain"
+                  crossOrigin="anonymous"
                 />
+              ) : (
+                <span className="text-lg font-black tracking-tighter text-white">Poison Rana</span>
+              )}
             </div>
 
             {/* Middle: Review & Rating */}
             <div className="flex-1 flex flex-col justify-center items-center gap-8 w-full">
                 {/* Stars */}
-                <div className="flex gap-2 bg-black/20 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/10">
+                <div className="flex gap-2 bg-black/20 backdrop-blur-md px-5 py-3 rounded-3xl border border-white/10">
                     {[1, 2, 3, 4, 5].map((s) => (
-                        <Star 
-                            key={s} 
-                            className={`w-10 h-10 ${review.rating >= s ? "text-primary fill-current" : "text-white/20"}`}
+                        <Star
+                            key={s}
+                            className={`w-7 h-7 ${review.rating >= s ? "text-primary fill-current" : "text-white/20"}`}
                         />
                     ))}
                 </div>
@@ -118,8 +130,8 @@ export default function ShareReviewModal({
                 {/* Comment */}
                 {review.comment && (
                     <div className="px-2">
-                        <p className="text-3xl font-black italic uppercase leading-[1.1] text-white drop-shadow-2xl">
-                            "{review.comment}"
+                        <p className="text-lg font-black italic uppercase leading-snug text-white drop-shadow-2xl">
+                            &ldquo;{review.comment}&rdquo;
                         </p>
                     </div>
                 )}
@@ -130,7 +142,7 @@ export default function ShareReviewModal({
                 <div className="inline-flex px-4 py-1.5 bg-primary text-black text-[10px] font-black uppercase rounded-lg shadow-xl shadow-primary/20">
                     {event.promotion}
                 </div>
-                <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white leading-tight">
+                <h3 className="text-base font-black italic uppercase tracking-tighter text-white leading-tight">
                     {event.title}
                 </h3>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary pt-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Award } from "lucide-react";
 import { RANKS, RANK_WEIGHTS, calcRankScore, getRank } from "@lib/ranks";
 
@@ -12,6 +12,9 @@ interface RankBadgeProps {
 
 export default function RankBadge({ ratings, reviews, predictions }: RankBadgeProps) {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+
   const score = calcRankScore(ratings, reviews, predictions);
   const rank = getRank(score);
   const nextRank = RANKS[RANKS.indexOf(rank) + 1] ?? null;
@@ -19,10 +22,27 @@ export default function RankBadge({ ratings, reviews, predictions }: RankBadgePr
     ? Math.min(100, Math.round(((score - rank.min) / (nextRank.min - rank.min)) * 100))
     : 100;
 
+  function handleOpen() {
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 8, left: r.left });
+    }
+    setOpen(v => !v);
+  }
+
+  // Close on scroll
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [open]);
+
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen(v => !v)}
+        ref={btnRef}
+        onClick={handleOpen}
         className={`flex items-center gap-2 bg-background/80 backdrop-blur-md border border-white/10 rounded-full px-3 py-1 shadow-lg hover:scale-105 transition-transform ${rank.color}`}
       >
         <Award className="w-3 h-3" />
@@ -31,10 +51,11 @@ export default function RankBadge({ ratings, reviews, predictions }: RankBadgePr
 
       {open && (
         <>
-          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute top-full mt-2 left-0 z-40 w-72 bg-card border border-white/10 rounded-2xl p-4 shadow-2xl space-y-3">
-            <div className="absolute -top-1.5 left-6 w-3 h-3 bg-card border-l border-t border-white/10 rotate-45" />
-
+          <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
+          <div
+            className="fixed z-[9999] w-72 bg-card border border-white/10 rounded-2xl p-4 shadow-2xl space-y-3"
+            style={{ top: pos.top, left: pos.left }}
+          >
             {/* Rank name + flavour */}
             <div className="space-y-0.5">
               <p className={`text-sm font-black italic uppercase tracking-widest ${rank.color}`}>{rank.name}</p>
