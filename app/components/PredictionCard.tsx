@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, CheckCircle, Users, Lock, Zap } from "lucide-react";
+import { Trophy, CheckCircle, XCircle, Users, Lock, Zap } from "lucide-react";
 
 function WrestlerAvatar({
   wrestler,
