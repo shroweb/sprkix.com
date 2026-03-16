@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Award } from "lucide-react";
 import { RANKS, RANK_WEIGHTS, calcRankScore, getRank } from "@lib/ranks";
 
@@ -49,7 +50,7 @@ export default function RankBadge({ ratings, reviews, predictions }: RankBadgePr
         <span className="text-[10px] font-black italic uppercase tracking-widest whitespace-nowrap">{rank.name}</span>
       </button>
 
-      {open && (
+      {open && createPortal(
         <>
           <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
           <div
@@ -107,7 +108,8 @@ export default function RankBadge({ ratings, reviews, predictions }: RankBadgePr
               </p>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );
