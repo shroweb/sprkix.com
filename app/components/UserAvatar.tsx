@@ -50,7 +50,7 @@ export default function UserAvatar({
 
   return (
     <div
-      className={`${container} rounded-full overflow-hidden shrink-0 flex items-center justify-center font-black shadow-sm ${border} ${className}`}
+      className={`${container} relative rounded-full overflow-hidden shrink-0 flex items-center justify-center font-black shadow-sm ${border} ${className}`}
       style={!avatarUrl ? { background: `linear-gradient(135deg, ${from}, ${to})` } : undefined}
     >
       {avatarUrl ? (

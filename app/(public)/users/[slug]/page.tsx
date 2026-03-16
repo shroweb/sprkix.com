@@ -11,6 +11,7 @@ import { getRank } from "@lib/ranks";
 import FollowListModal from "@components/FollowListModal";
 import VisualRating from "@components/VisualRating";
 import UserAvatar from "@components/UserAvatar";
+import PredictionsList from "@components/PredictionsList";
 
 export default async function UserProfilePage({
   params,
@@ -55,7 +56,6 @@ export default async function UserProfilePage({
             match: { participants: { some: { isWinner: true } } },
           },
           orderBy: { updatedAt: "desc" },
-          take: 10,
           include: {
             match: {
               include: {
@@ -387,70 +387,9 @@ export default async function UserProfilePage({
               </div>
             </div>
 
-            {(profileUser as any).predictions?.length > 0 ? (
-              <div className="grid grid-cols-1 gap-3">
-                {(profileUser as any).predictions.map((pred: any) => {
-                  // Compute isCorrect on-the-fly if not stored
-                  const winnerIds = new Set(
-                    pred.match.participants
-                      .filter((p: any) => p.isWinner)
-                      .map((p: any) => p.wrestler.id),
-                  );
-                  const isCorrect =
-                    pred.isCorrect !== null
-                      ? pred.isCorrect
-                      : pred.predictedWinnerId
-                      ? winnerIds.has(pred.predictedWinnerId)
-                      : false;
-
-                  const names = pred.match.participants
-                    .map((p: any) => p.wrestler.name)
-                    .join(" vs ");
-                  const predictedWrestler = pred.match.participants.find(
-                    (p: any) => p.wrestler.id === pred.predictedWinnerId
-                  )?.wrestler;
-                  return (
-                    <Link
-                      key={pred.id}
-                      href={`/events/${pred.match.event.slug}`}
-                      className={`flex gap-5 items-center rounded-[2rem] p-5 border transition-all group ${
-                        isCorrect
-                          ? "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40"
-                          : "bg-red-500/5 border-red-500/15 hover:border-red-500/30"
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
-                        isCorrect ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
-                      }`}>
-                        {isCorrect ? (
-                          <CheckCircle className="w-5 h-5" />
-                        ) : (
-                          <span className="text-lg font-black">✗</span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-black uppercase tracking-widest text-white/30 mb-0.5">
-                          {pred.match.event.promotion} · {new Date(pred.match.event.date).getFullYear()}
-                        </p>
-                        <p className="text-sm font-black italic uppercase tracking-tight text-white/80 group-hover:text-white transition-colors truncate">
-                          {names}
-                        </p>
-                        {predictedWrestler && (
-                          <p className="text-[11px] font-bold text-muted-foreground mt-0.5">
-                            Picked: <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>{predictedWrestler.name}</span>
-                          </p>
-                        )}
-                      </div>
-                      <div className={`text-[10px] font-black uppercase tracking-widest shrink-0 ${
-                        isCorrect ? "text-emerald-400" : "text-red-400/70"
-                      }`}>
-                        {isCorrect ? "Correct ✓" : "Wrong"}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : null}
+            {(profileUser as any).predictions?.length > 0 && (
+              <PredictionsList predictions={(profileUser as any).predictions} />
+            )}
           </section>
         )}
 

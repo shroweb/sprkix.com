@@ -252,15 +252,13 @@ export default async function ProfilePage() {
 
       {/* Hero Section */}
       <div className="relative w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[3rem] border border-white/5 shadow-2xl">
-         {/* Cover Photo */}
-         {themePoster ? (
-           <div className="absolute inset-0">
-             <Image src={themePoster} fill className="object-cover saturate-[0.7] brightness-[0.4] scale-105 blur-[3px]" alt="" />
-           </div>
-         ) : (
-           <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-background" />
-         )}
-         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+         {/* Gradient background — colour tinted by theme via CSS var */}
+         <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-background" />
+         <div
+           className="absolute inset-0 opacity-20"
+           style={{ background: `radial-gradient(circle at 20% 50%, var(--profile-theme-color, transparent) 0%, transparent 60%)` }}
+         />
+         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
             <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group mb-8">
