@@ -18,6 +18,7 @@ import {
   Mail,
   List,
   BarChart2,
+  Send,
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
@@ -208,7 +209,14 @@ export default function Header({
                 Polls
               </Link>
               <Link
-                href="/contact"
+              <Link
+                href="/submit-event"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                <Send className="w-4 h-4 text-muted-foreground" />
+                Submit Event
+              </Link>
+                              href="/contact"
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
               >
                 <Mail className="w-4 h-4 text-muted-foreground" />
@@ -357,6 +365,9 @@ export default function Header({
               </Link>
               <Link href="/contact" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 <Mail className="w-5 h-5" /> Contact
+              </Link>
+              <Link href="/submit-event" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
+                <Send className="w-5 h-5" /> Submit Event
               </Link>
             </div>
             <hr className="border-border" />

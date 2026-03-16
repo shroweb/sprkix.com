@@ -41,8 +41,9 @@ model User {
   ReviewVote    ReviewVote[]
   lists         List[]
   notifications Notification[]
-  favoriteMatches FavoriteMatch[]
-  pollVotes     PollVote[]
+  favoriteMatches   FavoriteMatch[]
+  pollVotes         PollVote[]
+  eventSubmissions  EventSubmission[]
 }
 
 model FavoriteMatch {
@@ -328,6 +329,33 @@ model Prediction {
   match             Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
 
   @@unique([userId, matchId])
+}
+
+model EventSubmission {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Core event fields
+  title           String
+  date            DateTime
+  promotion       String
+  venue           String?
+  city            String?
+  attendance      Int?
+  network         String?
+  posterUrl       String?
+  description     String?
+  type            String?
+  sourceUrl       String   // e.g. Cagematch / Wikipedia link for verification
+
+  // Moderation
+  status          String   @default("pending") // pending | approved | rejected
+  rejectionReason String?
+  approvedEventId String?  // set after approval
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model LiveComment {

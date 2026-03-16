@@ -17,6 +17,7 @@ import {
   Activity,
   Download,
   BarChart2,
+  Send,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -62,7 +63,8 @@ export default function Sidebar() {
               { href: "/admin/wrestlers", label: "Wrestlers", icon: Users },
               { href: "/admin/promotions", label: "Promotions", icon: Tag },
               { href: "/admin/users", label: "User Manager", icon: Users },
-              { href: "/admin/reviews", label: "Review Browser", icon: LogOut }, // Using LogOut as placeholder for Reviews icon if Star is missing
+              { href: "/admin/reviews", label: "Review Browser", icon: LogOut },
+              { href: "/admin/submissions", label: "Event Submissions", icon: Send },
               { href: "/admin/import", label: "Import Queue", icon: Download },
               { href: "/admin/polls", label: "Polls", icon: BarChart2 },
             ].map((link) => {
