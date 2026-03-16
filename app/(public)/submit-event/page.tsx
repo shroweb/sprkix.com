@@ -29,9 +29,15 @@ export default function SubmitEventPage() {
     attendance: "", network: "", posterUrl: "", description: "",
     type: "", sourceUrl: "",
   });
+  const [customPromotion, setCustomPromotion] = useState("");
 
   function set(key: string, value: string) {
     setForm(f => ({ ...f, [key]: value }));
+  }
+
+  // Resolved promotion — if "Other" selected, use the custom text
+  function resolvedPromotion() {
+    return form.promotion === "Other" ? customPromotion : form.promotion;
   }
 
   async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -69,7 +75,7 @@ export default function SubmitEventPage() {
       const res = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, promotion: resolvedPromotion() }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -98,7 +104,7 @@ export default function SubmitEventPage() {
         </div>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => { setSuccess(false); setForm({ title: "", date: "", promotion: "", venue: "", city: "", attendance: "", network: "", posterUrl: "", description: "", type: "", sourceUrl: "" }); }}
+            onClick={() => { setSuccess(false); setCustomPromotion(""); setForm({ title: "", date: "", promotion: "", venue: "", city: "", attendance: "", network: "", posterUrl: "", description: "", type: "", sourceUrl: "" }); }}
             className="px-6 py-2.5 bg-card border border-border rounded-xl text-sm font-black hover:border-primary/30 transition-all"
           >
             Submit Another
@@ -201,8 +207,8 @@ export default function SubmitEventPage() {
             </label>
             <input
               required
-              value={form.promotion === "Other" ? "" : form.promotion}
-              onChange={e => set("promotion", e.target.value)}
+              value={customPromotion}
+              onChange={e => setCustomPromotion(e.target.value)}
               placeholder="Enter promotion name"
               className="w-full bg-background border-2 border-white/10 p-3 rounded-xl outline-none focus:border-primary/50 transition-all font-bold text-sm"
             />

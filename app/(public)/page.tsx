@@ -13,6 +13,7 @@ import {
   Zap,
   Flame,
   Activity,
+  Send,
 } from "lucide-react";
 import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
@@ -688,6 +689,38 @@ export default async function Home() {
           </section>
         )}
 
+
+        {/* ── Submit Event CTA ── */}
+        <section>
+          <div className="relative rounded-[2.5rem] overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/10 via-card/60 to-card/30 p-10 md:p-16 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            {/* Glow */}
+            <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10 flex-1 space-y-4 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
+                <Send className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Community</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-none">
+                Know an event<br />we&apos;re missing?
+              </h2>
+              <p className="text-muted-foreground font-medium italic max-w-md">
+                Help grow the archive. Submit an event with a Cagematch or ProFightDB link and we&apos;ll import the full match card automatically. Approved submissions earn you <span className="text-foreground font-bold">5 rank points</span>.
+              </p>
+            </div>
+
+            <div className="relative z-10 shrink-0 flex flex-col items-center gap-3">
+              <Link
+                href="/submit-event"
+                className="h-14 px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all"
+              >
+                Submit an Event <ArrowRight className="w-4 h-4" />
+              </Link>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Free account required</p>
+            </div>
+          </div>
+        </section>
 
       </main>
     </div>
