@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, CheckCircle, XCircle, Users, Lock, Zap } from "lucide-react";
+import { Trophy, CheckCircle, Users, Lock, Zap } from "lucide-react";
 
 function WrestlerAvatar({
   wrestler,
@@ -152,29 +152,21 @@ export default function PredictionCard({
           {actualWinners.length > 0 && (
             <div className="space-y-2">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Trophy className="w-3 h-3 text-yellow-400" /> Result
+                {userPredictionIsCorrect ? <CheckCircle className="w-3 h-3 text-emerald-400" /> : <Trophy className="w-3 h-3 text-yellow-400" />} Result
               </p>
               <div className="flex flex-wrap gap-2">
                 {actualWinners.map((w: any) => (
-                  <div key={w.id} className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 px-3 py-2 rounded-xl">
+                  <div key={w.id} className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${userPredictionIsCorrect ? "bg-emerald-500/10 border-emerald-500/30" : "bg-yellow-400/10 border-yellow-400/20"}`}>
                     <WrestlerAvatar wrestler={w} size="sm" />
-                    <span className="text-sm font-black italic uppercase tracking-tight text-yellow-400">{w.name}</span>
-                    <Trophy className="w-3 h-3 text-yellow-400 fill-yellow-400/40" />
+                    <span className={`text-sm font-black italic uppercase tracking-tight ${userPredictionIsCorrect ? "text-emerald-400" : "text-yellow-400"}`}>{w.name}</span>
+                    {userPredictionIsCorrect
+                      ? <CheckCircle className="w-3 h-3 text-emerald-400" />
+                      : <Trophy className="w-3 h-3 text-yellow-400 fill-yellow-400/40" />}
                   </div>
                 ))}
               </div>
             </div>
           )}
-
-          {predictedWrestler && (!hasResolved || userPredictionIsCorrect) ? (
-            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 ${!hasResolved ? "border-border bg-secondary/20" : "border-emerald-500/40 bg-emerald-500/10"}`}>
-              <WrestlerAvatar wrestler={predictedWrestler} size="sm" />
-              <span className={`text-sm font-black italic uppercase tracking-tight ${!hasResolved ? "text-foreground" : "text-emerald-400"}`}>{predictedWrestler.name}</span>
-              {hasResolved && <span className="ml-auto"><CheckCircle className="w-4 h-4 text-emerald-400" /></span>}
-            </div>
-          ) : !predictedWrestler ? (
-            <p className="text-[11px] italic text-muted-foreground/60 font-medium">You didn't make a prediction for this match.</p>
-          ) : null}
         </div>
       </div>
     );
