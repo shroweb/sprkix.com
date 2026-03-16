@@ -42,6 +42,9 @@ export default function AdminSettings() {
     PRIMARY_COLOR: "",
     PRIMARY_HOVER_COLOR: "",
     SOCIAL_LOGIN_ENABLED: "false",
+    SOCIAL_X: "",
+    SOCIAL_FACEBOOK: "",
+    SOCIAL_INSTAGRAM: "",
   });
   const logoInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -68,6 +71,9 @@ export default function AdminSettings() {
           PRIMARY_COLOR: configs.PRIMARY_COLOR || "",
           PRIMARY_HOVER_COLOR: configs.PRIMARY_HOVER_COLOR || "",
           SOCIAL_LOGIN_ENABLED: configs.SOCIAL_LOGIN_ENABLED || "false",
+          SOCIAL_X: configs.SOCIAL_X || "",
+          SOCIAL_FACEBOOK: configs.SOCIAL_FACEBOOK || "",
+          SOCIAL_INSTAGRAM: configs.SOCIAL_INSTAGRAM || "",
         });
         setEvents(data.events || []);
         setLoading(false);
@@ -546,6 +552,57 @@ export default function AdminSettings() {
                   </button>
                   <p className="text-[10px] text-muted-foreground italic">Leave blank to use defaults.</p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <LinkIcon className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Social Links
+              </h2>
+            </div>
+            <div className="p-8 space-y-5">
+              <p className="text-[10px] text-muted-foreground italic">
+                Links appear as icon buttons in the site footer. Leave blank to hide.
+              </p>
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <span className="font-black">𝕏</span> X (Twitter) URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.SOCIAL_X}
+                  onChange={(e) => setSettings((s) => ({ ...s, SOCIAL_X: e.target.value }))}
+                  className={`${inputClass} font-mono text-xs`}
+                  placeholder="https://x.com/yourhandle"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <span className="font-black">f</span> Facebook URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.SOCIAL_FACEBOOK}
+                  onChange={(e) => setSettings((s) => ({ ...s, SOCIAL_FACEBOOK: e.target.value }))}
+                  className={`${inputClass} font-mono text-xs`}
+                  placeholder="https://facebook.com/yourpage"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <span className="font-black">◎</span> Instagram URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.SOCIAL_INSTAGRAM}
+                  onChange={(e) => setSettings((s) => ({ ...s, SOCIAL_INSTAGRAM: e.target.value }))}
+                  className={`${inputClass} font-mono text-xs`}
+                  placeholder="https://instagram.com/yourhandle"
+                />
               </div>
             </div>
           </div>

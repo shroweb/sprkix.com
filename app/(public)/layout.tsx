@@ -1,4 +1,5 @@
 import Header from "@components/Header";
+import Footer from "@components/Footer";
 import GoogleAnalytics from "@components/GoogleAnalytics";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { prisma } from "@lib/prisma";
@@ -18,8 +19,11 @@ export default async function PublicLayout({
   let bannerLink = "";
   let primaryColor = "";
   let primaryHoverColor = "";
+  let socialX = "";
+  let socialFacebook = "";
+  let socialInstagram = "";
   try {
-    const [logoRow, sizeRow, bannerEnabledRow, bannerTextRow, bannerLinkRow, primaryRow, hoverRow] =
+    const [logoRow, sizeRow, bannerEnabledRow, bannerTextRow, bannerLinkRow, primaryRow, hoverRow, xRow, fbRow, igRow] =
       await Promise.all([
       (prisma as any).siteConfig.findUnique({ where: { key: "SITE_LOGO" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "LOGO_SIZE" } }),
@@ -28,6 +32,9 @@ export default async function PublicLayout({
       (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_LINK" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_COLOR" } }),
       (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_HOVER_COLOR" } }),
+      (prisma as any).siteConfig.findUnique({ where: { key: "SOCIAL_X" } }),
+      (prisma as any).siteConfig.findUnique({ where: { key: "SOCIAL_FACEBOOK" } }),
+      (prisma as any).siteConfig.findUnique({ where: { key: "SOCIAL_INSTAGRAM" } }),
     ]);
     siteLogo = logoRow?.value || "";
     logoSize = sizeRow?.value || "md";
@@ -36,6 +43,9 @@ export default async function PublicLayout({
     bannerLink = bannerLinkRow?.value || "";
     primaryColor = primaryRow?.value || "";
     primaryHoverColor = hoverRow?.value || "";
+    socialX = xRow?.value || "";
+    socialFacebook = fbRow?.value || "";
+    socialInstagram = igRow?.value || "";
   } catch {}
 
   const cssVars = [
@@ -62,22 +72,12 @@ export default async function PublicLayout({
       >
         {children}
       </main>
-      <footer className="mt-16 border-t border-white/5 text-center py-10 px-4 max-w-7xl mx-auto space-y-4">
-        <p className="text-[10px] sm:text-xs text-muted-foreground/60 uppercase tracking-widest font-black italic">
-          © {new Date().getFullYear()} Poison Rana · The definitive wrestling archive
-        </p>
-        <p className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest">
-          Developed by{" "}
-          <a
-            href="https://shroweb.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline hover:text-primary/80 transition-all"
-          >
-            Shro Web
-          </a>
-        </p>
-      </footer>
+      <Footer
+        siteLogo={siteLogo}
+        socialX={socialX}
+        socialFacebook={socialFacebook}
+        socialInstagram={socialInstagram}
+      />
     </>
   );
 }

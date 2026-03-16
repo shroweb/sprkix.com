@@ -14,6 +14,8 @@ import {
   Flame,
   Activity,
   Send,
+  List,
+  Users,
 } from "lucide-react";
 import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
@@ -474,6 +476,49 @@ export default async function Home() {
           </section>
         )}
 
+        {/* ── Lists CTA ── */}
+        <section>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {/* Lists */}
+            <Link
+              href="/lists"
+              className="group relative rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/25 bg-card/30 hover:bg-card/60 p-8 flex items-center gap-6 transition-all"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10 w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <List className="w-5 h-5 text-primary" />
+              </div>
+              <div className="relative z-10 flex-1 min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Community Lists</p>
+                <h3 className="font-black italic uppercase tracking-tight text-base leading-tight group-hover:text-primary transition-colors">
+                  Build your own<br />top lists
+                </h3>
+                <p className="text-xs text-muted-foreground/60 mt-1.5 font-medium">Curate events and matches into shareable ranked collections.</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
+            </Link>
+
+            {/* Watchlist */}
+            <Link
+              href={user ? "/watchlist" : "/register"}
+              className="group relative rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/25 bg-card/30 hover:bg-card/60 p-8 flex items-center gap-6 transition-all"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10 w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <Trophy className="w-5 h-5 text-blue-400" />
+              </div>
+              <div className="relative z-10 flex-1 min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400 mb-1">Your Watchlist</p>
+                <h3 className="font-black italic uppercase tracking-tight text-base leading-tight group-hover:text-blue-400 transition-colors">
+                  Track what you've<br />watched
+                </h3>
+                <p className="text-xs text-muted-foreground/60 mt-1.5 font-medium">Mark events as watched, attended, or on your list.</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-blue-400 group-hover:translate-x-1 transition-all shrink-0" />
+            </Link>
+          </div>
+        </section>
+
         {/* ── Trending This Week ── */}
         {trendingSorted.length > 0 && (
           <section>
@@ -689,6 +734,41 @@ export default async function Home() {
           </section>
         )}
 
+
+        {/* ── Community CTA ── */}
+        <section>
+          <div className="relative rounded-[2rem] overflow-hidden border border-white/5 bg-card/20 p-8 md:p-10">
+            <div className="absolute inset-0 bg-[radial-gradient(600px_400px_at_80%_50%,rgba(59,130,246,0.06)_0%,transparent_70%)]" />
+            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">The Community</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter leading-none">
+                  See who's leading<br className="hidden sm:block" /> the archive
+                </h3>
+                <p className="text-sm text-muted-foreground/60 font-medium">
+                  Rank up by rating, reviewing, and predicting. Every action counts.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3 shrink-0">
+                <Link
+                  href="/leaderboard"
+                  className="h-11 px-6 bg-primary text-black text-xs font-black uppercase italic tracking-widest flex items-center gap-2 rounded-xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                >
+                  <Trophy className="w-3.5 h-3.5" /> Leaderboard
+                </Link>
+                <Link
+                  href="/feed"
+                  className="h-11 px-6 bg-card/60 border border-white/10 text-sm font-black uppercase italic tracking-widest flex items-center gap-2 rounded-xl hover:border-primary/30 hover:bg-card transition-all"
+                >
+                  <Activity className="w-3.5 h-3.5" /> Activity Feed
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── Submit Event CTA ── */}
         <section>
