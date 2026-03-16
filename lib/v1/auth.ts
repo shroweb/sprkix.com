@@ -12,6 +12,8 @@ export type V1User = {
   isVerified: boolean;
   favoritePromotion: string | null;
   createdAt: Date;
+  predictionScore: number;
+  predictionCount: number;
 };
 
 /**
@@ -41,6 +43,8 @@ export async function getUserFromBearer(req: NextRequest): Promise<V1User | null
         isVerified: true,
         favoritePromotion: true,
         createdAt: true,
+        predictionScore: true,
+        predictionCount: true,
       },
     });
 
