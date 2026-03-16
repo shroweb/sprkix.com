@@ -38,8 +38,16 @@ export async function POST(req: NextRequest) {
   if (exists) return NextResponse.json({ error: "Email or username already in use" }, { status: 400 });
 
   const hashed = await bcrypt.hash(password, 10);
+  // Generate unique slug from name
+  const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  let slug = baseSlug;
+  let counter = 2;
+  while (await prisma.user.findUnique({ where: { slug } })) {
+    slug = `${baseSlug}-${counter++}`;
+  }
+
   const user = await prisma.user.create({
-    data: { name, email, password: hashed, isAdmin: !!isAdmin },
+    data: { name, email, password: hashed, isAdmin: !!isAdmin, slug },
     select: { id: true, name: true, email: true, isAdmin: true, isSuspended: true, createdAt: true,
       _count: { select: { reviews: true, MatchRating: true, followers: true } } },
   });
