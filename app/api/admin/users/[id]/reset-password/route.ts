@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 function generateTempPassword() {
   const words = ["Slam", "Drop", "Kick", "Pile", "Lock", "Hold", "Flip", "Dive"];
