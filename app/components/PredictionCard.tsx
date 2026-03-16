@@ -166,15 +166,15 @@ export default function PredictionCard({
             </div>
           )}
 
-          {predictedWrestler ? (
-            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 ${!hasResolved ? "border-border bg-secondary/20" : userPredictionIsCorrect ? "border-emerald-500/40 bg-emerald-500/10" : "border-red-500/40 bg-red-500/10"}`}>
+          {predictedWrestler && (!hasResolved || userPredictionIsCorrect) ? (
+            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 ${!hasResolved ? "border-border bg-secondary/20" : "border-emerald-500/40 bg-emerald-500/10"}`}>
               <WrestlerAvatar wrestler={predictedWrestler} size="sm" />
-              <span className={`text-sm font-black italic uppercase tracking-tight ${!hasResolved ? "text-foreground" : userPredictionIsCorrect ? "text-emerald-400" : "text-red-400"}`}>{predictedWrestler.name}</span>
-              {hasResolved && <span className="ml-auto">{userPredictionIsCorrect ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-red-400" />}</span>}
+              <span className={`text-sm font-black italic uppercase tracking-tight ${!hasResolved ? "text-foreground" : "text-emerald-400"}`}>{predictedWrestler.name}</span>
+              {hasResolved && <span className="ml-auto"><CheckCircle className="w-4 h-4 text-emerald-400" /></span>}
             </div>
-          ) : (
+          ) : !predictedWrestler ? (
             <p className="text-[11px] italic text-muted-foreground/60 font-medium">You didn't make a prediction for this match.</p>
-          )}
+          ) : null}
         </div>
       </div>
     );
