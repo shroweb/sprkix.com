@@ -209,14 +209,14 @@ export default function Header({
                 Polls
               </Link>
               <Link
-              <Link
                 href="/submit-event"
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
               >
                 <Send className="w-4 h-4 text-muted-foreground" />
                 Submit Event
               </Link>
-                              href="/contact"
+              <Link
+                href="/contact"
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
               >
                 <Mail className="w-4 h-4 text-muted-foreground" />
