@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { ListPlus, Check, RefreshCcw, Plus, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-type ListOption = { id: string; title: string; items: { eventId: string | null; matchId: string | null }[] };
+type ListOption = { id: string; title: string; listType: string; items: { eventId: string | null; matchId: string | null }[] };
 
 export default function AddToListButton({
   eventId,
@@ -97,6 +97,10 @@ export default function AddToListButton({
 
   if (!isLoggedIn) return null;
 
+  const targetType = matchId ? "matches" : "events";
+  const compatibleLists = lists.filter((l) => l.listType === targetType);
+  const createUrl = `/lists/create?type=${targetType}`;
+
   const dropdown = open ? (
     <div
       ref={dropRef}
@@ -105,7 +109,7 @@ export default function AddToListButton({
     >
       <div className="p-3 border-b border-border">
         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          Your Lists
+          Your {targetType === "matches" ? "Match" : "Event"} Lists
         </p>
       </div>
 
@@ -113,20 +117,22 @@ export default function AddToListButton({
         <div className="flex items-center justify-center p-6">
           <RefreshCcw className="w-4 h-4 animate-spin text-muted-foreground" />
         </div>
-      ) : lists.length === 0 ? (
+      ) : compatibleLists.length === 0 ? (
         <div className="p-4 text-center space-y-3">
-          <p className="text-xs text-muted-foreground font-medium italic">No lists yet.</p>
+          <p className="text-xs text-muted-foreground font-medium italic">
+            No {targetType} lists yet.
+          </p>
           <Link
-            href="/lists/create"
+            href={createUrl}
             onClick={() => setOpen(false)}
             className="inline-flex items-center gap-1.5 text-xs font-black text-primary hover:underline"
           >
-            <Plus className="w-3 h-3" /> Create your first list
+            <Plus className="w-3 h-3" /> Create a {targetType === "matches" ? "match" : "event"} list
           </Link>
         </div>
       ) : (
         <div className="p-2 space-y-1">
-          {lists.map((list) => {
+          {compatibleLists.map((list) => {
             const inList = matchId
               ? list.items.some((i) => i.matchId === matchId)
               : list.items.some((i) => i.eventId === eventId);
@@ -150,11 +156,11 @@ export default function AddToListButton({
           })}
           <div className="pt-1 border-t border-border">
             <Link
-              href="/lists/create"
+              href={createUrl}
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-3 py-2 text-xs font-black text-primary hover:bg-primary/5 rounded-xl transition-colors"
             >
-              <Plus className="w-3.5 h-3.5" /> New List
+              <Plus className="w-3.5 h-3.5" /> New {targetType === "matches" ? "Match" : "Event"} List
               <ChevronRight className="w-3 h-3 ml-auto" />
             </Link>
           </div>

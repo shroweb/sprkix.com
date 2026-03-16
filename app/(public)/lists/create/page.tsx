@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ListPlus, RefreshCcw, Globe, Lock, Calendar, Swords } from "lucide-react";
 
 export default function CreateListPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const defaultType = searchParams.get("type") === "matches" ? "matches" : "events";
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
-  const [listType, setListType] = useState<"events" | "matches">("events");
+  const [listType, setListType] = useState<"events" | "matches">(defaultType);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
