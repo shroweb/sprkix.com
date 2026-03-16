@@ -9,14 +9,15 @@ interface RankBadgeProps {
   ratings: number;
   reviews: number;
   predictions: number;
+  submissions?: number;
 }
 
-export default function RankBadge({ ratings, reviews, predictions }: RankBadgeProps) {
+export default function RankBadge({ ratings, reviews, predictions, submissions = 0 }: RankBadgeProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const score = calcRankScore(ratings, reviews, predictions);
+  const score = calcRankScore(ratings, reviews, predictions, submissions);
   const rank = getRank(score);
   const nextRank = RANKS[RANKS.indexOf(rank) + 1] ?? null;
   const progress = nextRank
@@ -99,12 +100,18 @@ export default function RankBadge({ ratings, reviews, predictions }: RankBadgePr
                 <span className="text-muted-foreground">Predictions made</span>
                 <span className="font-bold text-foreground">{predictions} × {RANK_WEIGHTS.prediction} = <span className="text-primary">{predictions * RANK_WEIGHTS.prediction} pts</span></span>
               </div>
+              {submissions > 0 && (
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-muted-foreground">Events submitted</span>
+                  <span className="font-bold text-foreground">{submissions} × {RANK_WEIGHTS.submission} = <span className="text-primary">{submissions * RANK_WEIGHTS.submission} pts</span></span>
+                </div>
+              )}
             </div>
 
             {/* How it works note */}
             <div className="border-t border-white/5 pt-2">
               <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
-                Rate matches, write reviews, and make predictions to earn points and climb the ranks.
+                Rate matches, write reviews, make predictions, and submit events to earn points and climb the ranks.
               </p>
             </div>
           </div>

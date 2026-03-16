@@ -102,6 +102,7 @@ model Event {
   currentMatchOrder Int? @default(1)
   enableWatchParty  Boolean  @default(true)
   enablePredictions Boolean  @default(true)
+  submittedByUserId String?  // set when event was approved from a user submission
   createdAt     DateTime        @default(now())
   matches       Match[]
   reviews       Review[]

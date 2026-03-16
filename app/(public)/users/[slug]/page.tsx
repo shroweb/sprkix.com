@@ -162,6 +162,11 @@ export default async function UserProfilePage({
   const predictionAccuracy =
     predictionCount > 0 ? Math.round((predictionScore / predictionCount) * 100) : null;
 
+  // Approved event submissions count (for rank score)
+  const approvedSubmissionsCount = await prisma.eventSubmission.count({
+    where: { userId: profileUser.id, status: "approved" },
+  });
+
   // Calculate member since
   const memberSince = new Date(profileUser.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -208,7 +213,7 @@ export default async function UserProfilePage({
                  </div>
 
                  <div className="flex flex-wrap items-center gap-3">
-                   <RankBadge ratings={profileUser.MatchRating?.length || 0} reviews={profileUser.reviews.length} predictions={predictionCount} />
+                   <RankBadge ratings={profileUser.MatchRating?.length || 0} reviews={profileUser.reviews.length} predictions={predictionCount} submissions={approvedSubmissionsCount} />
                    {isOwnProfile ? (
                      <Link
                        href="/profile"

@@ -161,6 +161,11 @@ export default async function ProfilePage() {
   const matchRatingsCount = matchRatings.length;
   const curr = currentUser as any;
 
+  // Approved event submissions count (for rank score)
+  const approvedSubmissionsCount = await prisma.eventSubmission.count({
+    where: { userId: user.id, status: "approved" },
+  });
+
   // Cards completed — events where user has rated every match
   const userMatchRatingsForCards = await prisma.matchRating.findMany({
     where: { userId: user.id },
@@ -287,7 +292,7 @@ export default async function ProfilePage() {
                  </div>
 
                  <div className="flex flex-wrap items-center gap-3">
-                   <RankBadge ratings={matchRatings.length} reviews={reviews.length} predictions={predictionCount} />
+                   <RankBadge ratings={matchRatings.length} reviews={reviews.length} predictions={predictionCount} submissions={approvedSubmissionsCount} />
                    <Link
                      href="/profile/edit"
                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-all"

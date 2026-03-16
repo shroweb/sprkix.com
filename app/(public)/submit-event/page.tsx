@@ -1,17 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Send, RefreshCcw, CheckCircle, AlertCircle, Link2, Calendar, MapPin, Tv, Users, Image, FileText, Tag } from "lucide-react";
+import { Send, RefreshCcw, CheckCircle, AlertCircle, Link2, Calendar, MapPin, Tv, Users, Image, FileText, Tag, Upload } from "lucide-react";
 
 const PROMOTIONS = ["AEW", "WWE", "NJPW", "ROH", "TNA", "GCW", "PWG", "MLW", "STARDOM", "Other"];
 const EVENT_TYPES = ["PPV", "TV Special", "Weekly TV", "House Show", "Tournament", "Other"];
+
+function isValidSourceUrl(url: string) {
+  try {
+    const u = new URL(url);
+    return u.hostname.includes("cagematch.net") || u.hostname.includes("profightdb.com");
+  } catch {
+    return false;
+  }
+}
 
 export default function SubmitEventPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     title: "", date: "", promotion: "", venue: "", city: "",
@@ -23,8 +34,35 @@ export default function SubmitEventPage() {
     setForm(f => ({ ...f, [key]: value }));
   }
 
+  async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload/poster", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        set("posterUrl", data.url);
+      } else {
+        setError(data.error || "Upload failed");
+      }
+    } catch {
+      setError("Upload failed — please try again");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!isValidSourceUrl(form.sourceUrl)) {
+      setError("Source URL must be from cagematch.net or profightdb.com");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -95,9 +133,10 @@ export default function SubmitEventPage() {
         <div className="text-sm text-muted-foreground space-y-1">
           <p className="font-bold text-foreground">Submission guidelines</p>
           <ul className="space-y-0.5 text-xs">
-            <li>• Provide a source link (Cagematch, Wikipedia, etc.) so we can verify the event</li>
+            <li>• Provide a Cagematch or ProFightDB link — we'll use it to verify the event and automatically import the match card</li>
             <li>• Check the site first to avoid duplicates</li>
             <li>• You can have up to 3 pending submissions at once</li>
+            <li>• Approved submissions earn you <span className="font-bold text-foreground">5 rank points</span></li>
           </ul>
         </div>
       </div>
@@ -242,18 +281,42 @@ export default function SubmitEventPage() {
           </div>
         </div>
 
-        {/* Poster URL */}
+        {/* Poster Image */}
         <div className="space-y-1.5">
           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-            <Image className="w-3 h-3" /> Poster Image URL
+            <Image className="w-3 h-3" /> Poster Image
           </label>
-          <input
-            type="url"
-            value={form.posterUrl}
-            onChange={e => set("posterUrl", e.target.value)}
-            placeholder="https://..."
-            className="w-full bg-background border-2 border-white/10 p-3 rounded-xl outline-none focus:border-primary/50 transition-all text-sm font-mono"
-          />
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={form.posterUrl}
+              onChange={e => set("posterUrl", e.target.value)}
+              placeholder="https://... or upload a file"
+              className="flex-1 bg-background border-2 border-white/10 p-3 rounded-xl outline-none focus:border-primary/50 transition-all text-sm font-mono"
+            />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/10 transition-all disabled:opacity-50 whitespace-nowrap"
+            >
+              {uploading ? <RefreshCcw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+              {uploading ? "Uploading..." : "Upload"}
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePosterUpload}
+            />
+          </div>
+          {form.posterUrl && form.posterUrl.startsWith("http") && (
+            <div className="mt-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={form.posterUrl} alt="Poster preview" className="h-24 rounded-lg object-contain bg-black/20" />
+            </div>
+          )}
         </div>
 
         {/* Description */}
@@ -270,27 +333,31 @@ export default function SubmitEventPage() {
           />
         </div>
 
-        {/* Source URL — required */}
+        {/* Source URL — Cagematch / ProFightDB only */}
         <div className="space-y-1.5">
           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-            <Link2 className="w-3 h-3" /> Source URL * <span className="text-muted-foreground/50 normal-case font-normal">(Cagematch, Wikipedia, etc.)</span>
+            <Link2 className="w-3 h-3" /> Source URL *
           </label>
           <input
             required
             type="url"
             value={form.sourceUrl}
             onChange={e => set("sourceUrl", e.target.value)}
-            placeholder="https://www.cagematch.net/..."
-            className="w-full bg-background border-2 border-white/10 p-3 rounded-xl outline-none focus:border-primary/50 transition-all text-sm font-mono"
+            placeholder="https://www.cagematch.net/... or https://www.profightdb.com/..."
+            className={`w-full bg-background border-2 p-3 rounded-xl outline-none focus:border-primary/50 transition-all text-sm font-mono ${form.sourceUrl && !isValidSourceUrl(form.sourceUrl) ? "border-red-500/50" : "border-white/10"}`}
           />
-          <p className="text-[10px] text-muted-foreground/60">
-            Required so we can verify the event details before approving.
-          </p>
+          {form.sourceUrl && !isValidSourceUrl(form.sourceUrl) ? (
+            <p className="text-[10px] text-red-400">Must be a cagematch.net or profightdb.com URL</p>
+          ) : (
+            <p className="text-[10px] text-muted-foreground/60">
+              Cagematch or ProFightDB only — we'll use this to verify and auto-import the match card.
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || uploading}
           className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-sm font-black disabled:opacity-50"
         >
           {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

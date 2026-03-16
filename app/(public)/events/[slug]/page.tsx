@@ -13,7 +13,7 @@ import ShareReviewButton from "@components/ShareReviewButton";
 import ReviewUpvote from "@components/ReviewUpvote";
 import AttendButton from "@components/AttendButton";
 import SetThemeButton from "@components/SetThemeButton";
-import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users, Tv } from "lucide-react";
+import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users, Tv, Send } from "lucide-react";
 import PredictionCard from "@components/PredictionCard";
 import HomePoll from "@components/HomePoll";
 import LiveChatContainer from "@components/LiveChatContainer";
@@ -137,6 +137,7 @@ export default async function EventPage({
     currentMatchOrder: true,
     enablePredictions: true,
     enableWatchParty: true,
+    submittedByUserId: true,
     createdAt: true,
   };
 
@@ -201,6 +202,15 @@ export default async function EventPage({
   }
 
   if (!event) return notFound();
+
+  // If this event was user-submitted, fetch the submitter's name/slug for the badge
+  let submittedByUser: { name: string | null; slug: string } | null = null;
+  if (event.submittedByUserId) {
+    submittedByUser = await prisma.user.findUnique({
+      where: { id: event.submittedByUserId },
+      select: { name: true, slug: true },
+    });
+  }
 
   const processedMatches = event.matches.map((match: any) => {
     const userRating =
@@ -446,6 +456,17 @@ export default async function EventPage({
                   </div>
                 )}
               </div>
+              {submittedByUser && (
+                <div className="flex items-center gap-2 mt-1">
+                  <Link
+                    href={`/users/${submittedByUser.slug}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/5 border border-primary/20 rounded-full text-[10px] font-bold text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <Send className="w-3 h-3" />
+                    Submitted by {submittedByUser.name || submittedByUser.slug}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

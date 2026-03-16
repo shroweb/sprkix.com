@@ -12,15 +12,17 @@ export const RANKS = [
 ];
 
 // Each activity type is worth different points:
-//   Match rating  = 1 pt  (quick action)
-//   Review        = 3 pts (written effort)
-//   Prediction    = 1 pt  (community engagement)
-export const RANK_WEIGHTS = { rating: 1, review: 3, prediction: 1 };
+//   Match rating        = 1 pt  (quick action)
+//   Review              = 3 pts (written effort)
+//   Prediction          = 1 pt  (community engagement)
+//   Approved submission = 5 pts (contributing to the database)
+export const RANK_WEIGHTS = { rating: 1, review: 3, prediction: 1, submission: 5 };
 
-export function calcRankScore(ratings: number, reviews: number, predictions: number) {
+export function calcRankScore(ratings: number, reviews: number, predictions: number, submissions = 0) {
   return ratings * RANK_WEIGHTS.rating
     + reviews * RANK_WEIGHTS.review
-    + predictions * RANK_WEIGHTS.prediction;
+    + predictions * RANK_WEIGHTS.prediction
+    + submissions * RANK_WEIGHTS.submission;
 }
 
 export function getRank(score: number) {
