@@ -32,7 +32,7 @@ export default function ShareReviewModal({
   useEffect(() => {
     fetch("/api/v1/config")
       .then(r => r.json())
-      .then(d => { if (d.logoUrl) setSiteLogo(d.logoUrl); })
+      .then(d => { if (d.data?.logoUrl) setSiteLogo(d.data.logoUrl); })
       .catch(() => {});
   }, []);
 
