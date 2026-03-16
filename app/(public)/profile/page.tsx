@@ -213,7 +213,7 @@ export default async function ProfilePage() {
     ? (
         reviews.reduce((sum: number, r: any) => sum + (r.rating || 0), 0) /
         reviews.length
-      ).toFixed(1)
+      ).toFixed(2)
     : null;
 
   const promoCount: Record<string, number> = {};

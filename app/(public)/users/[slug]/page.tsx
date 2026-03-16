@@ -36,6 +36,7 @@ export default async function UserProfilePage({
       select: {
         id: true, name: true, email: true, slug: true, avatarUrl: true,
         isAdmin: true, isVerified: true, favoritePromotion: true, createdAt: true,
+        profileThemeEvent: { select: { posterUrl: true } },
         reviews: {
           orderBy: { createdAt: "desc" },
           include: { event: { select: safeEventSelect } },
@@ -98,6 +99,16 @@ export default async function UserProfilePage({
         profileUser.reviews.length
       ).toFixed(2)
     : null;
+
+  // Fav promotion — use stored value or calculate from most-reviewed promotion
+  const promoCount: Record<string, number> = {};
+  for (const r of profileUser.reviews) {
+    const p = (r as any).event?.promotion;
+    if (p) promoCount[p] = (promoCount[p] ?? 0) + 1;
+  }
+  const calculatedFavPromo =
+    Object.entries(promoCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  const favPromotion = (profileUser as any).favoritePromotion || calculatedFavPromo || null;
 
   const isOwnProfile = currentUser?.id === profileUser.id;
   
@@ -163,12 +174,16 @@ export default async function UserProfilePage({
 
   return (
     <div className="pb-20 relative px-2 sm:px-4 lg:px-6">
-      <ProfileThemeWrapper posterUrl={undefined} />
+      <ProfileThemeWrapper posterUrl={(profileUser as any).profileThemeEvent?.posterUrl} />
 
       {/* Hero Section */}
       <div className="relative w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[3rem] border border-white/5 shadow-2xl">
          <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-background" />
-         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+         <div
+           className="absolute inset-0 opacity-20"
+           style={{ background: `radial-gradient(circle at 20% 50%, var(--profile-theme-color, transparent) 0%, transparent 60%)` }}
+         />
+         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
             <Link href="/events" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group mb-8">
@@ -264,7 +279,7 @@ export default async function UserProfilePage({
             </div>
             <div className="min-w-0">
               <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
-              <p className="text-xs sm:text-sm font-black italic truncate">{(profileUser as any).favoritePromotion ?? "—"}</p>
+              <p className="text-xs sm:text-sm font-black italic truncate">{favPromotion ?? "—"}</p>
             </div>
           </div>
           <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6 group">
