@@ -104,7 +104,7 @@ export default async function ListPage({
       ) : (
         <div className="space-y-3">
           {list.items.map((item, idx) => {
-            if (isMatchList && item.match) {
+            if (item.match) {
               const match = item.match;
               const participantNames = (match.participants || [])
                 .map((p: any) => p.wrestler.name);
@@ -165,8 +165,9 @@ export default async function ListPage({
               );
             }
 
-            // Event item
-            const event = item.event!;
+            // Event item — guard against deleted/orphaned events
+            const event = item.event;
+            if (!event) return null;
             const ratings = event.reviews.map((r: any) => r.rating);
             const avg = ratings.length
               ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length).toFixed(1)
