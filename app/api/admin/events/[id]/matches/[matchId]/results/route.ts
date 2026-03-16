@@ -86,19 +86,34 @@ export async function PATCH(
         }),
       );
 
-      // Fire notifications for correct predictors
-      if (correctUserIds.length > 0 && match?.event) {
+      // Fire notifications for all predictors
+      if (match?.event) {
         const eventSlug = match.event.slug;
         const matchTitle = match.title;
-        await prisma.notification.createMany({
-          data: correctUserIds.map((userId) => ({
+        const wrongUserIds = matchPredictions
+          .filter((p) => !correctUserIds.includes(p.userId) && p.predictedWinnerId)
+          .map((p) => p.userId);
+
+        const notificationData = [
+          ...correctUserIds.map((userId) => ({
             userId,
             type: "prediction_correct",
             message: "You called it! 🎯",
             detail: matchTitle,
             link: `/events/${eventSlug}`,
           })),
-        });
+          ...wrongUserIds.map((userId) => ({
+            userId,
+            type: "prediction_wrong",
+            message: "Wrong pick this time",
+            detail: matchTitle,
+            link: `/events/${eventSlug}`,
+          })),
+        ];
+
+        if (notificationData.length > 0) {
+          await prisma.notification.createMany({ data: notificationData });
+        }
       }
     }
   }

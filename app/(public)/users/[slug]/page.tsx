@@ -7,7 +7,6 @@ import { Star, Users, UserCheck, ChevronLeft, Heart, CheckCircle, Trophy, Activi
 import FollowButton from "@components/FollowButton";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
 import RankBadge from "@components/RankBadge";
-import { getRank } from "@lib/ranks";
 import FollowListModal from "@components/FollowListModal";
 import VisualRating from "@components/VisualRating";
 import UserAvatar from "@components/UserAvatar";
@@ -169,8 +168,6 @@ export default async function UserProfilePage({
     year: "numeric",
   });
 
-  const totalActivity = profileUser.reviews.length + (profileUser.MatchRating?.length || 0);
-  const userRank = getRank(totalActivity);
 
   return (
     <div className="pb-20 relative px-2 sm:px-4 lg:px-6">
@@ -211,9 +208,7 @@ export default async function UserProfilePage({
                  </div>
 
                  <div className="flex flex-wrap items-center gap-3">
-                   <span className={`text-[11px] font-black italic uppercase tracking-widest px-3 py-1 rounded-full border border-current/20 bg-current/5 ${userRank.color}`}>
-                     {userRank.name}
-                   </span>
+                   <RankBadge ratings={profileUser.MatchRating?.length || 0} reviews={profileUser.reviews.length} predictions={predictionCount} />
                    {isOwnProfile ? (
                      <Link
                        href="/profile"

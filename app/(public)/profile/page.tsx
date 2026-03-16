@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import ProfileReviews from "@components/ProfileReviews";
 import FollowListModal from "@components/FollowListModal";
-import { getRank } from "@lib/ranks";
+import { calcRankScore } from "@lib/ranks";
+import RankBadge from "@components/RankBadge";
 import ProfileThemeWrapper from "@components/ProfileThemeWrapper";
 import UserAvatar from "@components/UserAvatar";
 import UsernameSetupModal from "@components/UsernameSetupModal";
@@ -286,9 +287,7 @@ export default async function ProfilePage() {
                  </div>
 
                  <div className="flex flex-wrap items-center gap-3">
-                   <span className={`text-[11px] font-black italic uppercase tracking-widest px-3 py-1 rounded-full border border-current/20 bg-current/5 ${getRank(reviews.length + matchRatings.length).color}`}>
-                     {getRank(reviews.length + matchRatings.length).name}
-                   </span>
+                   <RankBadge ratings={matchRatings.length} reviews={reviews.length} predictions={predictionCount} />
                    <Link
                      href="/profile/edit"
                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-all"
