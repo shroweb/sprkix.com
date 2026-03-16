@@ -10,6 +10,7 @@ import RankBadge from "@components/RankBadge";
 import { getRank } from "@lib/ranks";
 import FollowListModal from "@components/FollowListModal";
 import VisualRating from "@components/VisualRating";
+import UserAvatar from "@components/UserAvatar";
 
 export default async function UserProfilePage({
   params,
@@ -164,118 +165,90 @@ export default async function UserProfilePage({
     <div className="pb-20 relative px-2 sm:px-4 lg:px-6">
       <ProfileThemeWrapper posterUrl={undefined} />
 
-      {/* Hero Section / Cover Image */}
-      <div className="relative min-h-[320px] md:h-[500px] w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[4rem] border border-white/5 shadow-2xl">
-         {/* Cover Photo — re-enable once profileThemeEventId DB column is migrated */}
-         {/* Gradient Overlay */}
-         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
-         
-         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full relative z-20 flex flex-col justify-end pb-8 sm:pb-16">
-            <Link
-              href="/events"
-              className="absolute top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
-            >
-              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back to Events
+      {/* Hero Section */}
+      <div className="relative w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[3rem] border border-white/5 shadow-2xl">
+         <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-background" />
+         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+
+         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
+            <Link href="/events" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group mb-8">
+              <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Events
             </Link>
 
-            <div className="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-10">
-               {/* Avatar Area */}
-                <div className="relative group/avatar">
-                  <div
-                    className="w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full bg-primary flex items-center justify-center text-4xl sm:text-6xl md:text-8xl font-black text-black shrink-0 shadow-2xl relative z-10 border-4 sm:border-8 border-background overflow-hidden"
-                    style={{ 
-                      backgroundColor: 'var(--profile-theme-color, var(--primary))',
-                      boxShadow: '0 25px 60px -12px rgba(var(--profile-theme-color-rgb), 0.6)'
-                    }}
-                  >
-                    {profileUser.avatarUrl ? (
-                      <Image src={profileUser.avatarUrl} fill className="object-cover" alt={profileUser.name || "Avatar"} />
-                    ) : (
-                      profileUser.name ? profileUser.name.charAt(0).toUpperCase() : "U"
-                    )}
-                  </div>
-                </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8">
+               {/* Avatar */}
+               <UserAvatar
+                 name={profileUser.name || "User"}
+                 avatarUrl={profileUser.avatarUrl}
+                 size="2xl"
+                 className="shadow-2xl shrink-0"
+               />
 
-                {/* User Info */}
-                <div className="flex-1 space-y-6 pb-6">
-                   <div className="flex flex-col md:flex-row md:items-center gap-4">
-                     <h1 className="text-3xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter flex items-center gap-2 sm:gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                       {profileUser.name}
-                       {(profileUser as any).isVerified && (
-                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 text-blue-400 fill-blue-400/10 shrink-0" />
-                       )}
-                     </h1>
+               {/* Name + meta */}
+               <div className="flex-1 min-w-0 space-y-3">
+                 <div className="flex flex-wrap items-center gap-3">
+                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic uppercase tracking-tight text-white leading-none">
+                     {profileUser.name}
+                   </h1>
+                   {(profileUser as any).isVerified && (
+                     <CheckCircle className="w-5 h-5 text-blue-400 fill-blue-400/20 shrink-0" />
+                   )}
+                 </div>
+
+                 <div className="flex flex-wrap items-center gap-3">
+                   <span className={`text-[11px] font-black italic uppercase tracking-widest px-3 py-1 rounded-full border border-current/20 bg-current/5 ${userRank.color}`}>
+                     {userRank.name}
+                   </span>
+                   {isOwnProfile ? (
+                     <Link
+                       href="/profile"
+                       className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-all"
+                     >
+                       Edit My Profile
+                     </Link>
+                   ) : currentUser ? (
+                     <FollowButton targetUserId={profileUser.id} initialIsFollowing={!!isFollowing} />
+                   ) : (
+                     <Link
+                       href="/login"
+                       className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary text-black rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all"
+                     >
+                       Login to Follow
+                     </Link>
+                   )}
+                 </div>
+               </div>
+
+               {/* Stats panel */}
+               <div className="flex gap-6 sm:gap-8 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-8 w-full sm:w-auto shrink-0">
+                 <div className="space-y-0.5">
+                   <span className="text-2xl sm:text-3xl font-black italic text-primary block leading-none">{avgRating || "—"}</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Avg Rating</span>
+                 </div>
+                 <div className="space-y-0.5">
+                   <span className="text-2xl sm:text-3xl font-black italic text-white block leading-none">{profileUser.reviews.length}</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Reviews</span>
+                 </div>
+                 <div className="space-y-0.5">
+                   <span className="text-2xl sm:text-3xl font-black italic text-sky-400 block leading-none">{cardsCompleted}</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Cards Done</span>
+                 </div>
+                 {predictionAccuracy !== null && (
+                   <div className="space-y-0.5">
+                     <span className="text-2xl sm:text-3xl font-black italic text-emerald-400 block leading-none">{predictionAccuracy}%</span>
+                     <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Predictions</span>
                    </div>
-                  <div className="flex flex-wrap items-center gap-8">
-                    <p className={`font-black italic text-base sm:text-2xl tracking-tight uppercase ${userRank.color}`}>
-                       {userRank.name}
-                    </p>
-                    <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
-                    
-                    {isOwnProfile ? (
-                      <Link
-                        href="/profile"
-                        className="inline-flex items-center gap-2 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all backdrop-blur-xl"
-                      >
-                         Edit My Profile
-                      </Link>
-                    ) : currentUser ? (
-                      <div className="scale-110 origin-left">
-                        <FollowButton
-                          targetUserId={profileUser.id}
-                          initialIsFollowing={!!isFollowing}
-                        />
-                      </div>
-                    ) : (
-                      <Link
-                        href="/login"
-                        className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-black rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-white transition-all"
-                      >
-                        Login to Follow
-                      </Link>
-                    )}
-                  </div>
-
-               {/* Stats Summary Panel */}
-               <div className="hidden lg:flex gap-12 pb-6 border-l border-white/10 pl-12 h-fit mb-4">
-                 <div className="space-y-1">
-                    <span className="text-4xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
-                      {avgRating || "—"}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Mean Rating</span>
-                 </div>
-                 <div className="space-y-1">
-                    <span className="text-4xl font-black italic text-white block leading-none">
-                      {profileUser.reviews.length}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Reviews</span>
-                 </div>
-                  <div className="space-y-1">
-                     <span className="text-4xl font-black italic text-sky-400 block leading-none">
-                       {cardsCompleted}
-                     </span>
-                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Cards Completed</span>
-                  </div>
-                  {predictionAccuracy !== null && (
-                    <div className="space-y-1">
-                      <span className="text-4xl font-black italic text-emerald-400 block leading-none">
-                        {predictionAccuracy}%
-                      </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Prediction Acc.</span>
-                    </div>
-                  )}
-                </div>
-             </div>
-          </div>
-       </div>
-    </div>
+                 )}
+               </div>
+            </div>
+         </div>
+      </div>
 
       {/* Main Content Area */}
-      <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-6 space-y-20 mt-12">
+      <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-6 space-y-20 mt-6">
 
         {/* Quick Info Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 -mt-20 relative z-30">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 relative z-30">
           <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />

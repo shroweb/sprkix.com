@@ -250,95 +250,76 @@ export default async function ProfilePage() {
         <UsernameSetupModal username={currentUser?.name || "Wrestler"} />
       )}
 
-      {/* Hero Section / Cover Image */}
-      <div className="relative min-h-[320px] md:h-[500px] w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[4rem] border border-white/5 shadow-2xl">
+      {/* Hero Section */}
+      <div className="relative w-full mt-8 overflow-hidden rounded-[2rem] sm:rounded-[3rem] border border-white/5 shadow-2xl">
          {/* Cover Photo */}
-         {themePoster && (
-           <div className="absolute inset-0 -z-10">
-             <Image 
-               src={themePoster} 
-               fill 
-               className="object-cover saturate-[0.8] brightness-[0.5] scale-110 blur-[2px]" 
-               alt="" 
-             />
+         {themePoster ? (
+           <div className="absolute inset-0">
+             <Image src={themePoster} fill className="object-cover saturate-[0.7] brightness-[0.4] scale-105 blur-[3px]" alt="" />
            </div>
+         ) : (
+           <div className="absolute inset-0 bg-gradient-to-br from-card via-background to-background" />
          )}
-         {/* Gradient Overlay for Title Readability */}
-         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
-         
-         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full relative z-20 flex flex-col justify-end pb-8 sm:pb-16">
-            <Link
-              href="/"
-              className="absolute top-20 sm:top-12 left-6 inline-flex items-center gap-2 text-sm font-bold text-white/50 hover:text-white transition-colors group"
-            >
-              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back to Home
+         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+
+         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
+            <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group mb-8">
+              <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Home
             </Link>
 
-            <div className="flex flex-col md:flex-row items-start md:items-end gap-6 md:gap-10">
-               {/* Avatar Area */}
-               <div className="relative group/avatar">
-                 <UserAvatar
-                   name={currentUser?.name || user.name}
-                   avatarUrl={(currentUser as any)?.avatarUrl || user.avatarUrl}
-                   size="2xl"
-                   className="shadow-2xl relative z-10"
-                 />
-                </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8">
+               {/* Avatar */}
+               <UserAvatar
+                 name={currentUser?.name || user.name}
+                 avatarUrl={(currentUser as any)?.avatarUrl || user.avatarUrl}
+                 size="2xl"
+                 className="shadow-2xl shrink-0"
+               />
 
-               {/* User Info */}
-               <div className="flex-1 space-y-6 pb-6">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <h1 className="text-3xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter flex items-center gap-2 sm:gap-4 text-white drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                      {currentUser?.name || user.name}
-                      {(currentUser as any)?.isVerified && (
-                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 text-blue-400 fill-blue-400/10 shrink-0" />
-                      )}
-                    </h1>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-8">
-                    <div className="space-y-1">
-                      <p className="text-white/30 font-black uppercase tracking-[0.2em] text-[10px]">Rank</p>
-                      <p className={`font-black italic text-base sm:text-2xl tracking-tight uppercase ${getRank(reviews.length + matchRatings.length).color}`}>
-                        {getRank(reviews.length + matchRatings.length).name}
-                      </p>
-                    </div>
-                    <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
-                    <Link
-                      href="/profile/edit"
-                      className="inline-flex items-center gap-2 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white hover:text-primary transition-all backdrop-blur-xl"
-                    >
-                      <Pencil className="w-4 h-4" /> Edit Profile
-                    </Link>
-                  </div>
+               {/* Name + meta */}
+               <div className="flex-1 min-w-0 space-y-3">
+                 <div className="flex flex-wrap items-center gap-3">
+                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic uppercase tracking-tight text-white leading-none">
+                     {currentUser?.name || user.name}
+                   </h1>
+                   {(currentUser as any)?.isVerified && (
+                     <CheckCircle className="w-5 h-5 text-blue-400 fill-blue-400/20 shrink-0" />
+                   )}
+                 </div>
+
+                 <div className="flex flex-wrap items-center gap-3">
+                   <span className={`text-[11px] font-black italic uppercase tracking-widest px-3 py-1 rounded-full border border-current/20 bg-current/5 ${getRank(reviews.length + matchRatings.length).color}`}>
+                     {getRank(reviews.length + matchRatings.length).name}
+                   </span>
+                   <Link
+                     href="/profile/edit"
+                     className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-all"
+                   >
+                     <Pencil className="w-3 h-3" /> Edit Profile
+                   </Link>
+                 </div>
                </div>
 
-               {/* Stats Summary Panel */}
-               <div className="hidden lg:flex gap-12 pb-6 border-l border-white/10 pl-12 h-fit mb-4">
-                 <div className="space-y-1">
-                    <span className="text-4xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
-                      {avgRating || "—"}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Mean Rating</span>
+               {/* Stats panel */}
+               <div className="flex gap-6 sm:gap-8 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-8 w-full sm:w-auto shrink-0">
+                 <div className="space-y-0.5">
+                   <span className="text-2xl sm:text-3xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
+                     {avgRating || "—"}
+                   </span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Avg Rating</span>
                  </div>
-                 <div className="space-y-1">
-                    <span className="text-4xl font-black italic text-white block leading-none">
-                      {reviews.length}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Reviews</span>
+                 <div className="space-y-0.5">
+                   <span className="text-2xl sm:text-3xl font-black italic text-white block leading-none">{reviews.length}</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Reviews</span>
                  </div>
-                 <div className="space-y-1">
-                    <span className="text-4xl font-black italic text-sky-400 block leading-none">
-                      {cardsCompleted}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Cards Completed</span>
+                 <div className="space-y-0.5">
+                   <span className="text-2xl sm:text-3xl font-black italic text-sky-400 block leading-none">{cardsCompleted}</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Cards Done</span>
                  </div>
                  {predictionAccuracy !== null && (
-                   <div className="space-y-1">
-                     <span className="text-4xl font-black italic text-emerald-400 block leading-none">
-                       {predictionAccuracy}%
-                     </span>
-                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Prediction Acc.</span>
+                   <div className="space-y-0.5">
+                     <span className="text-2xl sm:text-3xl font-black italic text-emerald-400 block leading-none">{predictionAccuracy}%</span>
+                     <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Predictions</span>
                    </div>
                  )}
                </div>
