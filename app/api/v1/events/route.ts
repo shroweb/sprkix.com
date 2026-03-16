@@ -15,10 +15,14 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
   const q = searchParams.get("q");
   const sort = searchParams.get("sort") || "date_desc"; // date_desc | date_asc | rating_desc
 
+  const upcoming = searchParams.get("upcoming"); // "true" | "false" | null
+
   const where: any = {};
   if (promotion) where.promotion = { equals: promotion, mode: "insensitive" };
   if (type) where.type = { equals: type, mode: "insensitive" };
   if (q) where.title = { contains: q, mode: "insensitive" };
+  if (upcoming === "true") where.date = { gte: new Date() };
+  else if (upcoming === "false") where.date = { lt: new Date() };
 
   const orderBy: any =
     sort === "date_asc"
