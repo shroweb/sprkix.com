@@ -42,6 +42,7 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
     const entry = eventMap.get(ev.id)!;
     const hasResults = r.match.participants.some((p) => p.isWinner);
     if (hasResults) {
+      if (!r.predictedWinnerId) continue; // cleared pick shouldn't count toward score
       entry.total++;
       const winnerIds = r.match.participants.filter((p) => p.isWinner).map((p) => p.wrestler.id);
       if (winnerIds.includes(r.predictedWinnerId)) entry.correct++;
