@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@lib/prisma";
-import { ok, preflight, withErrorHandling } from "@lib/v1/response";
+import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
 
 export const OPTIONS = () => preflight();
 
@@ -47,9 +47,7 @@ export const GET = withErrorHandling(async (_req: NextRequest, ctx: any) => {
     },
   });
 
-  if (!user) {
-    return Response.json({ data: null, error: "Not found" }, { status: 404 });
-  }
+  if (!user) return err("User not found", 404);
 
   return ok({
     id: user.id,
