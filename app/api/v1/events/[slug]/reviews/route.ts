@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@lib/prisma";
-import { requireAuth } from "@lib/v1/auth";
+import { requireAuth, getUserFromBearer } from "@lib/v1/auth";
 import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
 
 export const OPTIONS = () => preflight();
@@ -12,6 +12,8 @@ export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, Number(searchParams.get("page") || 1));
   const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit") || PAGE_SIZE)));
+
+  const currentUser = await getUserFromBearer(req);
 
   const event = await prisma.event.findUnique({
     where: { slug },
@@ -34,6 +36,10 @@ export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
         user: {
           select: { id: true, name: true, slug: true, avatarUrl: true },
         },
+        _count: { select: { votes: true } },
+        ...(currentUser
+          ? { votes: { where: { userId: currentUser.id }, select: { id: true } } }
+          : {}),
         Reply: {
           select: {
             id: true,
@@ -47,7 +53,18 @@ export const GET = withErrorHandling(async (req: NextRequest, ctx: any) => {
     }),
   ]);
 
-  return ok(reviews, { page, limit, total });
+  const shaped = reviews.map((r: any) => ({
+    id: r.id,
+    rating: r.rating,
+    comment: r.comment,
+    createdAt: r.createdAt,
+    user: r.user,
+    likeCount: r._count.votes,
+    likedByMe: currentUser ? (r.votes?.length ?? 0) > 0 : false,
+    Reply: r.Reply,
+  }));
+
+  return ok(shaped, { page, limit, total });
 });
 
 export const POST = withErrorHandling(async (req: NextRequest, ctx: any) => {
