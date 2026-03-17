@@ -7,8 +7,9 @@ export const OPTIONS = () => preflight();
 export const GET = withErrorHandling(async (_req: NextRequest, ctx: any) => {
   const { slug } = await ctx.params;
 
-  const user = await prisma.user.findUnique({
-    where: { slug },
+  // Support lookup by slug or by ID (old notifications may link by ID)
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ slug }, { id: slug }] },
     select: {
       id: true,
       name: true,

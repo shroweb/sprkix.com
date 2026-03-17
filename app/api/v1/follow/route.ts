@@ -13,7 +13,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   if (!targetUserId) return err("targetUserId is required");
   if (targetUserId === user.id) return err("You cannot follow yourself");
 
-  const target = await prisma.user.findUnique({ where: { id: targetUserId }, select: { id: true } });
+  const target = await prisma.user.findUnique({ where: { id: targetUserId }, select: { id: true, slug: true } });
   if (!target) return err("User not found", 404);
 
   const existing = await prisma.follow.findFirst({
@@ -26,6 +26,14 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
     return ok({ followed: false });
   } else {
     await prisma.follow.create({ data: { followerId: user.id, followingId: targetUserId } });
+    await prisma.notification.create({
+      data: {
+        userId: targetUserId,
+        type: "follow",
+        message: `${user.name ?? "Someone"} started following you`,
+        link: `/users/${user.slug}`,
+      },
+    });
     return ok({ followed: true });
   }
 });
