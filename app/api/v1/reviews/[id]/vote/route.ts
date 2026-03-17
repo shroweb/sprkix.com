@@ -21,6 +21,26 @@ export const POST = withErrorHandling(async (req: NextRequest, ctx: any) => {
     await prisma.reviewVote.create({
       data: { userId: user.id, reviewId: id },
     });
+
+    // Notify the review author (skip if liking own review)
+    const review = await prisma.review.findUnique({
+      where: { id },
+      select: {
+        userId: true,
+        event: { select: { title: true, slug: true } },
+      },
+    });
+    if (review && review.userId !== user.id) {
+      await prisma.notification.create({
+        data: {
+          userId: review.userId,
+          type: "review_like",
+          message: `${user.name ?? "Someone"} liked your review of ${review.event.title}`,
+          detail: review.event.title,
+          link: `/events/${review.event.slug}`,
+        },
+      });
+    }
   }
 
   const likeCount = await prisma.reviewVote.count({ where: { reviewId: id } });
