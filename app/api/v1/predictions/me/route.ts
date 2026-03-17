@@ -21,22 +21,32 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
     return ok(predictions);
   }
 
-  // No eventId — return distinct events the user has predicted on
+  // No eventId — return distinct events with per-event score
   const rows = await prisma.prediction.findMany({
     where: { userId: user.id },
-    select: { match: { select: { event: { select: { id: true, slug: true } } } } },
-    distinct: ["matchId"],
+    select: {
+      predictedWinnerId: true,
+      match: {
+        select: {
+          event: { select: { id: true, slug: true } },
+          participants: { select: { isWinner: true, wrestler: { select: { id: true } } } },
+        },
+      },
+    },
   });
 
-  const seen = new Set<string>();
-  const events: { eventId: string; slug: string }[] = [];
+  const eventMap = new Map<string, { eventId: string; slug: string; correct: number; total: number }>();
   for (const r of rows) {
     const ev = r.match.event;
-    if (!seen.has(ev.id)) {
-      seen.add(ev.id);
-      events.push({ eventId: ev.id, slug: ev.slug });
+    if (!eventMap.has(ev.id)) eventMap.set(ev.id, { eventId: ev.id, slug: ev.slug, correct: 0, total: 0 });
+    const entry = eventMap.get(ev.id)!;
+    const hasResults = r.match.participants.some((p) => p.isWinner);
+    if (hasResults) {
+      entry.total++;
+      const winnerIds = r.match.participants.filter((p) => p.isWinner).map((p) => p.wrestler.id);
+      if (winnerIds.includes(r.predictedWinnerId)) entry.correct++;
     }
   }
 
-  return ok(events);
+  return ok(Array.from(eventMap.values()));
 });
