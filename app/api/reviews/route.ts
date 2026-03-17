@@ -27,29 +27,5 @@ export async function POST(req: Request) {
     }),
   ]);
 
-  // Notify watchlist holders (excluding the reviewer)
-  if (event) {
-    try {
-      const watchers = await prisma.watchListItem.findMany({
-        where: { eventId, userId: { not: userId } },
-        select: { userId: true },
-      });
-      if (watchers.length > 0) {
-        const eventTitle = event.title.replace(/–\s\d{4}.*$/, "").trim();
-        await (prisma as any).notification.createMany({
-          data: watchers.map((w: any) => ({
-            userId: w.userId,
-            type: "review",
-            message: `New review posted for ${eventTitle}`,
-            link: `/events/${event.slug}/reviews/popular?reviewId=${review.id}#review-${review.id}`,
-          })),
-          skipDuplicates: true,
-        });
-      }
-    } catch (err) {
-      console.error("Watchlist notification error:", err);
-    }
-  }
-
   return NextResponse.json(review);
 }
