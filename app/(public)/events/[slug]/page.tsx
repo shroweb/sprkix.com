@@ -627,7 +627,7 @@ export default async function EventPage({
                     {processedMatches.length}
                   </span>
                   <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                    Matches Card
+                    Matches on this Card
                   </span>
                 </div>
                 {!isUpcoming && (
