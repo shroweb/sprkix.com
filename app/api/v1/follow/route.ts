@@ -31,7 +31,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
         userId: targetUserId,
         type: "follow",
         message: `${user.name ?? "Someone"} started following you`,
-        link: `/users/${user.slug}`,
+        link: user.slug ? `/users/${user.slug}` : undefined,
       },
     });
     return ok({ followed: true });
