@@ -14,41 +14,117 @@ export async function sendWelcomeEmail(email: string, name: string) {
   }
 
   try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
+    const logoUrl = `${siteUrl}/img/logo.png`;
+
     const { data, error } = await resend.emails.send({
-      from: 'Poison Rana <onboarding@resend.dev>',
+      from: 'Poison Rana <welcome@poisonrana.com>',
       to: email,
-      subject: 'Welcome to Poison Rana!',
+      subject: 'Welcome to the Poison Rana Community!',
       html: `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
           <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Welcome to Poison Rana</title>
             <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-              .container { max-width: 600px; margin: 20px auto; background: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-              .header { text-align: center; margin-bottom: 30px; }
-              .logo { font-size: 28px; font-weight: bold; color: #e11d48; text-decoration: none; }
-              .content { margin-bottom: 30px; }
-              .button-container { text-align: center; }
-              .button { background-color: #000000; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; }
-              .footer { text-align: center; font-size: 12px; color: #666; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
+              body { 
+                background-color: #0a0a0a; 
+                margin: 0; 
+                padding: 0; 
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+                color: #ffffff; 
+              }
+              .wrapper { 
+                background-color: #0a0a0a; 
+                width: 100%; 
+                padding: 40px 0; 
+              }
+              .container { 
+                max-width: 600px; 
+                margin: 0 auto; 
+                background: #141414; 
+                border-radius: 12px; 
+                overflow: hidden; 
+                border: 1px solid #222;
+              }
+              .header { 
+                padding: 40px 20px; 
+                text-align: center; 
+                background: #1a1a1a;
+                border-bottom: 1px solid #333;
+              }
+              .logo { 
+                max-width: 180px; 
+                height: auto; 
+              }
+              .content { 
+                padding: 40px; 
+                line-height: 1.6; 
+              }
+              h1 { 
+                font-size: 24px; 
+                margin-top: 0; 
+                color: #ffffff; 
+                font-weight: 800;
+                letter-spacing: -0.025em;
+              }
+              p { 
+                font-size: 16px; 
+                color: #a1a1aa; 
+                margin-bottom: 24px; 
+              }
+              .button-container { 
+                margin-top: 32px; 
+                text-align: center; 
+              }
+              .button { 
+                background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); 
+                color: #ffffff !important; 
+                padding: 16px 32px; 
+                text-decoration: none; 
+                border-radius: 8px; 
+                font-weight: 700; 
+                display: inline-block; 
+                font-size: 16px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+              }
+              .footer { 
+                padding: 30px; 
+                text-align: center; 
+                font-size: 13px; 
+                color: #52525b; 
+                background: #0f0f0f;
+              }
+              .social-links {
+                margin-bottom: 15px;
+              }
+              .social-links a {
+                color: #52525b;
+                text-decoration: none;
+                margin: 0 10px;
+              }
             </style>
           </head>
           <body>
-            <div class="container">
-              <div class="header">
-                <div class="logo">Poison Rana</div>
-              </div>
-              <div class="content">
-                <h1>Welcome, ${name}!</h1>
-                <p>We're thrilled to have you join the Poison Rana community. Whether you're here for the reviews, the ratings, or just to keep track of your favorite matches, you're in the right place.</p>
-                <p>Get started by exploring what's new in the world of wrestling today.</p>
-              </div>
-              <div class="button-container">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/" class="button">Visit Poison Rana</a>
-              </div>
-              <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} Poison Rana. All rights reserved.</p>
-                <p>If you didn't create an account, please ignore this email.</p>
+            <div class="wrapper">
+              <div class="container">
+                <div class="header">
+                  <img src="${logoUrl}" alt="Poison Rana" class="logo">
+                </div>
+                <div class="content">
+                  <h1>Welcome to the family, ${name}!</h1>
+                  <p>We're thrilled to have you join the Poison Rana community. You now have full access to our wrestling reviews, interactive match ratings, and your personal watchlist.</p>
+                  <p>Our goal is to create the ultimate destination for wrestling fans like you. Ready to dive into the latest events?</p>
+                  <div class="button-container">
+                    <a href="${siteUrl}" class="button">Explore Poison Rana</a>
+                  </div>
+                </div>
+                <div class="footer">
+                  <p>&copy; ${new Date().getFullYear()} Poison Rana. Built for the community.</p>
+                  <p>Don't want these emails? Check your <a href="${siteUrl}/profile" style="color: #71717a;">profile settings</a>.</p>
+                </div>
               </div>
             </div>
           </body>
