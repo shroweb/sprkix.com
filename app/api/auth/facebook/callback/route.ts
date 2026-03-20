@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Send welcome email
-      sendWelcomeEmail(user.email, user.name || "");
+      await sendWelcomeEmail(user.email, user.name || "");
     }
 
     return buildAuthResponse(user.id, user.email, user.name, siteUrl, platform);

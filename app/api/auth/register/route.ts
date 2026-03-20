@@ -36,8 +36,8 @@ export async function POST(req: Request) {
       data: { name: name.trim(), email: trimmedEmail, password: hashed, slug },
     });
 
-    // Send welcome email (async, don't await to avoid delaying the response)
-    sendWelcomeEmail(user.email, user.name || "");
+    // Send welcome email
+    await sendWelcomeEmail(user.email, user.name || "");
 
     // Automatically log in the user
     const token = jwt.sign(
