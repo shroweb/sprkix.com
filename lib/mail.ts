@@ -34,12 +34,12 @@ export async function sendWelcomeEmail(email: string, name: string) {
       console.error("Failed to fetch site branding for email:", dbErr);
     }
 
-    // Format logo URL (handle data strings, absolute, and relative paths)
-    const finalLogoUrl = siteLogo?.startsWith('data:image') 
-      ? siteLogo 
-      : siteLogo?.startsWith('http') 
-        ? siteLogo 
-        : `${siteUrl}${siteLogo}`;
+    // Determine if we should use an image or text logo
+    // IMPORTANT: Base64 data strings (data:image) are blocked by Gmail and bloat the email size,
+    // causing Gmail to "clip" the entire message. We fall back to styled text for these.
+    const isBase64 = siteLogo?.startsWith('data:image');
+    const useImageLogo = siteLogo && !isBase64;
+    const finalLogoUrl = siteLogo?.startsWith('http') ? siteLogo : `${siteUrl}${siteLogo}`;
 
     const { data, error } = await resend.emails.send({
       from: 'Poison Rana <welcome@poisonrana.com>',
@@ -137,7 +137,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
             <div class="wrapper">
               <div class="container">
                 <div class="header">
-                  ${siteLogo ? 
+                  ${useImageLogo ? 
                     `<img src="${finalLogoUrl}" alt="Poison Rana" class="logo-img">` : 
                     `<div class="logo-text">Poison Rana</div>`
                   }
