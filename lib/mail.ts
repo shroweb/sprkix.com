@@ -34,8 +34,12 @@ export async function sendWelcomeEmail(email: string, name: string) {
       console.error("Failed to fetch site branding for email:", dbErr);
     }
 
-    // Format logo URL (handle both absolute and relative)
-    const finalLogoUrl = siteLogo?.startsWith('http') ? siteLogo : `${siteUrl}${siteLogo}`;
+    // Format logo URL (handle data strings, absolute, and relative paths)
+    const finalLogoUrl = siteLogo?.startsWith('data:image') 
+      ? siteLogo 
+      : siteLogo?.startsWith('http') 
+        ? siteLogo 
+        : `${siteUrl}${siteLogo}`;
 
     const { data, error } = await resend.emails.send({
       from: 'Poison Rana <welcome@poisonrana.com>',
