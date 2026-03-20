@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../lib/server-auth";
+import { sendReplyEmail } from "../../../lib/mail";
 
 export async function POST(req: Request) {
   const user = await getUserFromServerCookie();
@@ -33,6 +34,25 @@ export async function POST(req: Request) {
         link: `/events/${review.event.slug}/reviews/popular?reviewId=${reviewId}#review-${reviewId}`,
       },
     });
+
+    // Also send an email
+    try {
+      const owner = await prisma.user.findUnique({ where: { id: review.userId } });
+      if (owner && owner.emailNotifications !== false) {
+        const link = `/events/${review.event.slug}/reviews/popular?reviewId=${reviewId}#review-${reviewId}`;
+        const eventTitle = review.event.title.replace(/–\s\d{4}.*$/, "").trim();
+        await sendReplyEmail(
+          owner.email, 
+          owner.name ?? "Wrestling Fan", 
+          user.name ?? "Someone", 
+          eventTitle, 
+          comment, 
+          link
+        );
+      }
+    } catch (emailErr) {
+      console.error("Email failed for reply:", emailErr);
+    }
   }
 
   return NextResponse.json(reply);

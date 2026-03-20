@@ -3,6 +3,7 @@ import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { parseCagematchHtml, parseProfightDbHtml } from "@lib/cagematch";
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
+import { sendSubmissionApprovedEmail } from "@lib/mail";
 
 async function fetchWithFallback(url: string): Promise<string> {
   const headers = {
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   // Notify the submitter
-  await prisma.notification.create({
+  await (prisma as any).notification.create({
     data: {
       userId: submission.userId,
       type: "submission_approved",
@@ -77,6 +78,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       link: `/events/${event.slug}`,
     },
   });
+
+  // Also send an email
+  try {
+    const submitter = await prisma.user.findUnique({ where: { id: submission.userId }, select: { email: true, name: true } });
+    if (submitter) {
+      await sendSubmissionApprovedEmail(submitter.email, submitter.name ?? "Wrestling Fan", submission.title, event.slug);
+    }
+  } catch (emailErr) {
+    console.error("Email failed for approved submission:", emailErr);
+  }
 
   // Auto-import matches from the source URL (non-blocking — approval succeeds even if import fails)
   let matchesImported = 0;

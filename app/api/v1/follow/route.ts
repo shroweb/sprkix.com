@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { requireAuth } from "@lib/v1/auth";
 import { prisma } from "@lib/prisma";
 import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
+import { sendFollowEmail } from "@lib/mail";
 
 export const OPTIONS = () => preflight();
 
@@ -26,7 +27,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
     return ok({ followed: false });
   } else {
     await prisma.follow.create({ data: { followerId: user.id, followingId: targetUserId } });
-    await prisma.notification.create({
+    await (prisma as any).notification.create({
       data: {
         userId: targetUserId,
         type: "follow",
@@ -34,6 +35,22 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
         link: user.slug ? `/users/${user.slug}` : undefined,
       },
     });
+
+    // Also send an email
+    try {
+      const targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
+      if (targetUser && targetUser.emailNotifications !== false) {
+        await sendFollowEmail(
+          targetUser.email, 
+          targetUser.name ?? "Wrestling Fan", 
+          user.name ?? "Someone", 
+          user.slug || ""
+        );
+      }
+    } catch (emailErr) {
+      console.error("Email failed for follow:", emailErr);
+    }
+
     return ok({ followed: true });
   }
 });
