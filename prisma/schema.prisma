@@ -26,6 +26,7 @@ model User {
   needsUsernameSetup Boolean @default(false)
   profileThemeEventId String?
   profileThemeEvent   Event?   @relation("ProfileTheme", fields: [profileThemeEventId], references: [id])
+  emailNotifications Boolean @default(true)
   createdAt DateTime @default(now())
 
   // Relations

@@ -9,7 +9,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { name, avatarUrl, favoritePromotion, slug, profileThemeEventId, needsUsernameSetup } = body;
+  const { name, avatarUrl, favoritePromotion, slug, profileThemeEventId, needsUsernameSetup, emailNotifications } = body;
 
   if (name !== undefined && !name?.trim()) {
     return NextResponse.json(
@@ -54,6 +54,7 @@ export async function PATCH(req: Request) {
   if (needsUsernameSetup !== undefined) data.needsUsernameSetup = needsUsernameSetup;
   if (profileThemeEventId !== undefined)
     data.profileThemeEventId = profileThemeEventId;
+  if (emailNotifications !== undefined) data.emailNotifications = !!emailNotifications;
 
   const updated = await prisma.user.update({
     where: { id: user.id },

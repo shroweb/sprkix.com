@@ -22,6 +22,7 @@ export default function EditProfilePage() {
   const [favoritePromotion, setFavoritePromotion] = useState("");
   const [profileThemeEventId, setProfileThemeEventId] = useState("");
   const [promotions, setPromotions] = useState<any[]>([]);
+  const [emailNotifications, setEmailNotifications] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
@@ -35,6 +36,7 @@ export default function EditProfilePage() {
           setSlug(data.user.slug || "");
           setFavoritePromotion(data.user.favoritePromotion || "");
           setProfileThemeEventId(data.user.profileThemeEventId || "");
+          setEmailNotifications(data.user.emailNotifications ?? true);
         } else {
           setError("Could not load your profile. Please refresh and try again.");
         }
@@ -90,6 +92,7 @@ export default function EditProfilePage() {
           slug: slug.trim().toLowerCase(),
           favoritePromotion: favoritePromotion || null,
           profileThemeEventId: profileThemeEventId || null,
+          emailNotifications,
         }),
       });
       const data = await res.json();
@@ -257,6 +260,31 @@ export default function EditProfilePage() {
                 </p>
               </div>
             )}
+          </div>
+          
+          <div className="space-y-4 pt-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              Notifications
+            </label>
+            <div className="flex items-center justify-between gap-4 bg-black/20 border border-border rounded-xl px-4 py-4">
+              <div className="space-y-0.5">
+                <p className="text-sm font-bold">Email Notifications</p>
+                <p className="text-[10px] text-muted-foreground">Receive updates on events, news, and your activity.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEmailNotifications(!emailNotifications)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  emailNotifications ? "bg-primary" : "bg-zinc-700"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    emailNotifications ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
           </div>
 
           {error && (
