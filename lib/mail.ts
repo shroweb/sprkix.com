@@ -1,17 +1,14 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-/**
- * Sends a welcome email to a newly registered user.
- * @param email The recipient's email address
- * @param name The recipient's name/username
- */
 export async function sendWelcomeEmail(email: string, name: string) {
-  if (!process.env.RESEND_API_KEY) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
     console.warn("Skipping welcome email: RESEND_API_KEY is not set.");
     return;
   }
+
+  const resend = new Resend(apiKey);
 
   try {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
