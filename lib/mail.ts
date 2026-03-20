@@ -20,7 +20,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
 
     // Fetch branding from admin settings
-    let siteLogo = "/img/poisonrana-logo.png"; // Default to your newly uploaded logo
+    let siteLogo = "";
     let primaryColor = "#ffbd2e"; // Default brand yellow from your screenshot
     
     try {
@@ -36,10 +36,16 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
     // Determine if we should use an image or text logo
     // IMPORTANT: Base64 data strings (data:image) are blocked by Gmail and bloat the email size,
-    // causing Gmail to "clip" the entire message. We fall back to styled text for these.
+    // which causes Gmail to "clip" the entire message.
+    // We force it to use your actual logo file if the database has a Base64 string or is empty.
     const isBase64 = siteLogo?.startsWith('data:image');
-    const useImageLogo = siteLogo && !isBase64;
+    if (isBase64 || !siteLogo) {
+      siteLogo = "/img/poisonrana-logo.png";
+    }
+
+    // Now format the final URL (handles full URLs vs relative paths)
     const finalLogoUrl = siteLogo?.startsWith('http') ? siteLogo : `${siteUrl}${siteLogo}`;
+    const useImageLogo = true; // Always safe now that we've filtered out Base64
 
     const { data, error } = await resend.emails.send({
       from: 'Poison Rana <welcome@poisonrana.com>',
