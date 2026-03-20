@@ -27,11 +27,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Dynamic routes
-  const [events, wrestlers, users] = await Promise.all([
-    prisma.event.findMany({ select: { slug: true, createdAt: true } }),
-    prisma.wrestler.findMany({ select: { slug: true, createdAt: true } }),
-    prisma.user.findMany({ select: { slug: true, createdAt: true } }),
-  ])
+  let events: any[] = []
+  let wrestlers: any[] = []
+  let users: any[] = []
+
+  try {
+    const [fetchedEvents, fetchedWrestlers, fetchedUsers] = await Promise.all([
+      prisma.event.findMany({ select: { slug: true, createdAt: true } }),
+      prisma.wrestler.findMany({ select: { slug: true, createdAt: true } }),
+      prisma.user.findMany({ select: { slug: true, createdAt: true } }),
+    ])
+    events = fetchedEvents
+    wrestlers = fetchedWrestlers
+    users = fetchedUsers
+  } catch (error) {
+    console.error('Sitemap dynamic fetch error:', error)
+  }
 
   const eventRoutes = events.map((event) => ({
     url: `${baseUrl}/events/${event.slug}`,
