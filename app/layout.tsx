@@ -31,6 +31,9 @@ export async function generateMetadata() {
       default: `${siteName} | ${tagline}`,
     },
     description,
+    verification: {
+      google: "A_qTq_pCJoyzV7hqoJMfyNVDN5XpNWpU1-7z18pIeWM",
+    },
   };
 }
 
