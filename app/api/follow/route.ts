@@ -1,6 +1,7 @@
 import { prisma } from "../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../lib/server-auth";
 import { NextResponse } from "next/server";
+import { sendFollowEmail } from "../../../lib/mail";
 
 export async function POST(req: Request) {
   const { targetUserId } = await req.json();
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // Notify the followed user
+    // Notify the followed user in DB
     await (prisma as any).notification.create({
       data: {
         userId: targetUserId,
@@ -47,6 +48,24 @@ export async function POST(req: Request) {
         link: `/users/${currentUser.slug || currentUser.id}`,
       },
     });
+
+    // Also send an email
+    try {
+      const targetUser = await prisma.user.findUnique({ 
+        where: { id: targetUserId },
+        select: { email: true, name: true, emailNotifications: true }
+      });
+      if (targetUser && targetUser.emailNotifications !== false) {
+        await sendFollowEmail(
+          targetUser.email, 
+          targetUser.name ?? "Wrestling Fan", 
+          currentUser.name ?? "Someone", 
+          currentUser.slug || currentUser.id
+        );
+      }
+    } catch (emailErr) {
+      console.error("Email failed for follow:", emailErr);
+    }
 
     return NextResponse.json({ followed: true });
   }
