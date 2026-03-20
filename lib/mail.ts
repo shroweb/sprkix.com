@@ -20,7 +20,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
 
     // Fetch branding from admin settings
-    let siteLogo = "";
+    let siteLogo = "/img/poisonrana-logo.png"; // Default to your newly uploaded logo
     let primaryColor = "#ffbd2e"; // Default brand yellow from your screenshot
     
     try {
