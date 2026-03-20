@@ -1,5 +1,11 @@
 import { Resend } from 'resend';
+import { prisma } from './prisma';
 
+/**
+ * Sends a welcome email to a newly registered user.
+ * @param email The recipient's email address
+ * @param name The recipient's name/username
+ */
 export async function sendWelcomeEmail(email: string, name: string) {
   const apiKey = process.env.RESEND_API_KEY;
 
@@ -12,6 +18,24 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
   try {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
+
+    // Fetch branding from admin settings
+    let siteLogo = "";
+    let primaryColor = "#ffbd2e"; // Default brand yellow from your screenshot
+    
+    try {
+      const [logoRow, colorRow] = await Promise.all([
+        (prisma as any).siteConfig.findUnique({ where: { key: "SITE_LOGO" } }),
+        (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_COLOR" } }),
+      ]);
+      if (logoRow?.value) siteLogo = logoRow.value;
+      if (colorRow?.value) primaryColor = colorRow.value;
+    } catch (dbErr) {
+      console.error("Failed to fetch site branding for email:", dbErr);
+    }
+
+    // Format logo URL (handle both absolute and relative)
+    const finalLogoUrl = siteLogo?.startsWith('http') ? siteLogo : `${siteUrl}${siteLogo}`;
 
     const { data, error } = await resend.emails.send({
       from: 'Poison Rana <welcome@poisonrana.com>',
@@ -51,9 +75,17 @@ export async function sendWelcomeEmail(email: string, name: string) {
                 background: #1a1a1a;
                 border-bottom: 1px solid #333;
               }
-              .logo { 
-                max-width: 180px; 
+              .logo-img { 
+                max-width: 200px; 
                 height: auto; 
+              }
+              .logo-text {
+                font-size: 32px; 
+                font-weight: 900; 
+                letter-spacing: -2px; 
+                color: #ffffff; 
+                text-transform: uppercase; 
+                font-style: italic;
               }
               .content { 
                 padding: 40px; 
@@ -76,14 +108,16 @@ export async function sendWelcomeEmail(email: string, name: string) {
                 text-align: center; 
               }
               .button { 
-                background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); 
-                color: #ffffff !important; 
+                background-color: ${primaryColor}; 
+                color: #000000 !important; 
                 padding: 16px 32px; 
                 text-decoration: none; 
                 border-radius: 8px; 
-                font-weight: 700; 
+                font-weight: 800; 
                 display: inline-block; 
-                font-size: 16px;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.2);
               }
               .footer { 
@@ -93,35 +127,29 @@ export async function sendWelcomeEmail(email: string, name: string) {
                 color: #52525b; 
                 background: #0f0f0f;
               }
-              .social-links {
-                margin-bottom: 15px;
-              }
-              .social-links a {
-                color: #52525b;
-                text-decoration: none;
-                margin: 0 10px;
-              }
             </style>
           </head>
           <body>
             <div class="wrapper">
               <div class="container">
                 <div class="header">
-                  <div style="font-size: 32px; font-weight: 900; letter-spacing: -2px; color: #ffffff; text-transform: uppercase; font-style: italic;">
-                    Poison Rana
-                  </div>
+                  ${siteLogo ? 
+                    `<img src="${finalLogoUrl}" alt="Poison Rana" class="logo-img">` : 
+                    `<div class="logo-text">Poison Rana</div>`
+                  }
                 </div>
                 <div class="content">
                   <h1>Hey ${name},</h1>
                   <p>You're in. Welcome to PoisonRana — the place where wrestling fans actually get to say what they think.</p>
+                  <p>We've assigned you the temporary name <strong>${name}</strong>. Feel free to update it to something more your style in your profile.</p>
                   <p>Review shows. Rate matches. Predict what's coming next. Whether you think last night's main event was a five-star classic or a complete disaster, we want to hear it.</p>
                   <p>To get started, drop a rating on a recent event. Takes two minutes and instantly puts your opinion on the board.</p>
                   <div class="button-container">
-                    <a href="${siteUrl}/events" class="button">→ Rate an event</a>
+                    <a href="${siteUrl}/profile" class="button">→ Update your profile</a>
                   </div>
                   <p style="margin-top: 32px;">See you in there.</p>
                   <p style="margin-bottom: 0;">— The PoisonRana Team</p>
-                  <p style="margin-top: 4px; font-size: 14px;"><a href="${siteUrl}" style="color: #e11d48; text-decoration: none;">poisonrana.com</a></p>
+                  <p style="margin-top: 4px; font-size: 14px;"><a href="${siteUrl}" style="color: ${primaryColor}; text-decoration: none;">poisonrana.com</a></p>
                 </div>
                 <div class="footer">
                   <p>&copy; ${new Date().getFullYear()} Poison Rana. Built for the community.</p>
