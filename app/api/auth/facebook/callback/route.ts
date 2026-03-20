@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import jwt from "jsonwebtoken";
 import { randomWrestlingName } from "@lib/wrestling-names";
+import { sendWelcomeEmail } from "@lib/mail";
 
 function makeSlug(name: string): string {
   const base = name
@@ -141,6 +142,9 @@ export async function GET(req: NextRequest) {
         },
         select: { id: true, email: true, name: true, facebookId: true },
       });
+
+      // Send welcome email
+      sendWelcomeEmail(user.email, user.name || "");
     }
 
     return buildAuthResponse(user.id, user.email, user.name, siteUrl, platform);

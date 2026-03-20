@@ -2,6 +2,7 @@ import { prisma } from "../../../../lib/prisma";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { sendWelcomeEmail } from "../../../../lib/mail";
 
 export async function POST(req: Request) {
   try {
@@ -35,9 +36,12 @@ export async function POST(req: Request) {
       data: { name: name.trim(), email: trimmedEmail, password: hashed, slug },
     });
 
+    // Send welcome email (async, don't await to avoid delaying the response)
+    sendWelcomeEmail(user.email, user.name || "");
+
     // Automatically log in the user
     const token = jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      { userId: user.id, email: user.email, name: user.name || "" },
       process.env.JWT_SECRET!,
       { expiresIn: "7d" },
     );
