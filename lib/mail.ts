@@ -12,7 +12,6 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
   try {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
-    const logoUrl = `${siteUrl}/img/logo.png`;
 
     const { data, error } = await resend.emails.send({
       from: 'Poison Rana <welcome@poisonrana.com>',
@@ -108,15 +107,21 @@ export async function sendWelcomeEmail(email: string, name: string) {
             <div class="wrapper">
               <div class="container">
                 <div class="header">
-                  <img src="${logoUrl}" alt="Poison Rana" class="logo">
+                  <div style="font-size: 32px; font-weight: 900; letter-spacing: -2px; color: #ffffff; text-transform: uppercase; font-style: italic;">
+                    Poison Rana
+                  </div>
                 </div>
                 <div class="content">
-                  <h1>Welcome to the family, ${name}!</h1>
-                  <p>We're thrilled to have you join the Poison Rana community. You now have full access to our wrestling reviews, interactive match ratings, and your personal watchlist.</p>
-                  <p>Our goal is to create the ultimate destination for wrestling fans like you. Ready to dive into the latest events?</p>
+                  <h1>Hey ${name},</h1>
+                  <p>You're in. Welcome to PoisonRana — the place where wrestling fans actually get to say what they think.</p>
+                  <p>Review shows. Rate matches. Predict what's coming next. Whether you think last night's main event was a five-star classic or a complete disaster, we want to hear it.</p>
+                  <p>To get started, drop a rating on a recent event. Takes two minutes and instantly puts your opinion on the board.</p>
                   <div class="button-container">
-                    <a href="${siteUrl}" class="button">Explore Poison Rana</a>
+                    <a href="${siteUrl}/events" class="button">→ Rate an event</a>
                   </div>
+                  <p style="margin-top: 32px;">See you in there.</p>
+                  <p style="margin-bottom: 0;">— The PoisonRana Team</p>
+                  <p style="margin-top: 4px; font-size: 14px;"><a href="${siteUrl}" style="color: #e11d48; text-decoration: none;">poisonrana.com</a></p>
                 </div>
                 <div class="footer">
                   <p>&copy; ${new Date().getFullYear()} Poison Rana. Built for the community.</p>
