@@ -16,6 +16,7 @@ export default function PushTokensPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
+  const [testResult, setTestResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/push-tokens")
@@ -25,11 +26,14 @@ export default function PushTokensPage() {
 
   const testToken = async (token: string) => {
     setTesting(token);
-    await fetch("/api/admin/push-tokens", {
+    setTestResult(null);
+    const res = await fetch("/api/admin/push-tokens", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
     });
+    const json = await res.json();
+    setTestResult(JSON.stringify(json.data, null, 2));
     setTesting(null);
   };
 
@@ -46,6 +50,12 @@ export default function PushTokensPage() {
         <h1 className="text-2xl font-black tracking-tight uppercase italic">Push Tokens</h1>
         <p className="text-muted-foreground text-sm mt-1">{tokens.length} registered device{tokens.length !== 1 ? "s" : ""}</p>
       </div>
+
+      {testResult && (
+        <pre className="bg-slate-900 text-green-400 text-xs rounded-xl p-4 overflow-auto">
+          {testResult}
+        </pre>
+      )}
 
       <div className="bg-white rounded-2xl border border-border overflow-hidden">
         {loading ? (
