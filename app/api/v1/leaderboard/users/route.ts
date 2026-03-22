@@ -11,7 +11,7 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
   const currentUser = await getUserFromBearer(req);
 
   const users = await prisma.user.findMany({
-    where: { name: { not: null }, slug: { not: null } },
+    where: { isSuspended: false },
     select: {
       id: true,
       name: true,
