@@ -18,6 +18,7 @@ import {
   Download,
   BarChart2,
   Send,
+  Smartphone,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -67,6 +68,7 @@ export default function Sidebar() {
               { href: "/admin/submissions", label: "Event Submissions", icon: Send },
               { href: "/admin/import", label: "Import Queue", icon: Download },
               { href: "/admin/polls", label: "Polls", icon: BarChart2 },
+              { href: "/admin/push-tokens", label: "Push Tokens", icon: Smartphone },
             ].map((link) => {
               const Icon = link.icon === LogOut ? Star : link.icon;
               const isActive = pathname === link.href || (link.href !== "/admin" && pathname?.startsWith(link.href));
