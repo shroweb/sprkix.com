@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../../lib/server-auth";
-import { parseCagematchHtml, parseProfightDbHtml } from "../../../../../../lib/cagematch";
+import { parseCagematchHtml, parseProfightDbHtml, parseCagematchEventInfo } from "../../../../../../lib/cagematch";
 import { uniqueWrestlerSlug } from "../../../../../../lib/slug-utils";
 
 async function fetchWithFallback(url: string): Promise<string> {
@@ -115,8 +115,16 @@ export async function POST(
       });
     }
 
-    // Save the source URL back to the event
-    await prisma.event.update({ where: { id }, data: { profightdbUrl: url } });
+    // For Cagematch imports: pull attendance, venue, city, network from the event info box
+    const eventUpdate: Record<string, any> = { profightdbUrl: url }
+    if (!isProfightDb) {
+      const eventInfo = parseCagematchEventInfo(html)
+      if (eventInfo.attendance) eventUpdate.attendance = eventInfo.attendance
+      if (eventInfo.network)    eventUpdate.network    = eventInfo.network
+      if (eventInfo.city)       eventUpdate.city       = eventInfo.city
+      if (eventInfo.venue)      eventUpdate.venue      = eventInfo.venue
+    }
+    await prisma.event.update({ where: { id }, data: eventUpdate });
 
     // Return full match list with the expected stats shape
     const updatedMatches = await prisma.match.findMany({
