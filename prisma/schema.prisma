@@ -101,8 +101,8 @@ model Event {
   startTime     DateTime?
   endTime       DateTime?
   currentMatchOrder Int? @default(1)
-  enableWatchParty  Boolean  @default(true)
-  enablePredictions Boolean  @default(true)
+  enableWatchParty  Boolean  @default(false)
+  enablePredictions Boolean  @default(false)
   submittedByUserId String?  // set when event was approved from a user submission
   createdAt     DateTime        @default(now())
   matches       Match[]
