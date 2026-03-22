@@ -73,6 +73,31 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   return ok(item, undefined, 201);
 });
 
+export const PATCH = withErrorHandling(async (req: NextRequest) => {
+  const user = await requireAuth(req);
+  const body = await req.json().catch(() => ({}));
+  const { eventId, watched, attended } = body;
+
+  if (!eventId) return err("eventId is required");
+
+  const item = await prisma.watchListItem.findFirst({
+    where: { userId: user.id, eventId },
+    select: { id: true },
+  });
+  if (!item) return err("Item not found", 404);
+
+  const updated = await prisma.watchListItem.update({
+    where: { id: item.id },
+    data: {
+      ...(watched !== undefined ? { watched } : {}),
+      ...(attended !== undefined ? { attended } : {}),
+    },
+    select: { id: true, watched: true, attended: true, eventId: true },
+  });
+
+  return ok(updated);
+});
+
 export const DELETE = withErrorHandling(async (req: NextRequest) => {
   const user = await requireAuth(req);
   const { searchParams } = new URL(req.url);

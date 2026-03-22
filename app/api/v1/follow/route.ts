@@ -3,6 +3,7 @@ import { requireAuth } from "@lib/v1/auth";
 import { prisma } from "@lib/prisma";
 import { ok, err, preflight, withErrorHandling } from "@lib/v1/response";
 import { sendFollowEmail } from "@lib/mail";
+import { sendPushToUser } from "@lib/push";
 
 export const OPTIONS = () => preflight();
 
@@ -35,6 +36,13 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
         link: user.slug ? `/users/${user.slug}` : undefined,
       },
     });
+
+    // Send push notification
+    sendPushToUser(targetUserId, {
+      title: "New Follower",
+      body: `${user.name ?? "Someone"} started following you`,
+      data: { path: user.slug ? `/users/${user.slug}` : "" },
+    }).catch(() => {});
 
     // Also send an email
     try {
