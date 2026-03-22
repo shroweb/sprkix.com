@@ -7,6 +7,7 @@ import {
   parseCagematchDate,
 } from "@lib/cagematch";
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
+import { findEventOnTMDB } from "@lib/tmdb";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 min — importing can be slow
@@ -241,6 +242,20 @@ export async function GET(req: Request) {
 
       // Import match card
       const matchCount = await importMatchesIntoEvent(event.id, eventHtml);
+
+      // Try TMDB for poster (PPVs often have one; weekly TV usually won't)
+      if (!event.posterUrl) {
+        try {
+          const tmdb = await findEventOnTMDB(normalised);
+          if (tmdb?.posterUrl) {
+            await prisma.event.update({
+              where: { id: event.id },
+              data: { posterUrl: tmdb.posterUrl },
+            });
+          }
+        } catch { /* TMDB failing shouldn't block the import */ }
+      }
+
       console.log(`[cron] Created ${normalised} (${matchCount} matches)`);
       results.created++;
     } catch (err: any) {
