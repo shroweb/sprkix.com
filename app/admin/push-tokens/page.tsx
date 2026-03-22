@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Trash2, Smartphone } from "lucide-react";
+import { Loader2, Trash2, Smartphone, Send } from "lucide-react";
 
 type PushToken = {
   id: string;
@@ -15,12 +15,23 @@ export default function PushTokensPage() {
   const [tokens, setTokens] = useState<PushToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [testing, setTesting] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/push-tokens")
       .then((r) => r.json())
       .then((d) => { setTokens(d.tokens || []); setLoading(false); });
   }, []);
+
+  const testToken = async (token: string) => {
+    setTesting(token);
+    await fetch("/api/admin/push-tokens", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    setTesting(null);
+  };
 
   const deleteToken = async (token: string) => {
     setDeleting(token);
@@ -67,6 +78,14 @@ export default function PushTokensPage() {
                 <div className="hidden sm:block text-[11px] text-muted-foreground shrink-0 w-24 text-right">
                   {new Date(t.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}
                 </div>
+                <button
+                  onClick={() => testToken(t.token)}
+                  disabled={testing === t.token}
+                  className="p-2 hover:bg-yellow-50 hover:text-yellow-600 rounded-xl transition-colors text-muted-foreground disabled:opacity-50"
+                  title="Send test notification"
+                >
+                  {testing === t.token ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                </button>
                 <button
                   onClick={() => deleteToken(t.token)}
                   disabled={deleting === t.token}

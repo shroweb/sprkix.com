@@ -20,6 +20,24 @@ export async function GET() {
   return NextResponse.json({ tokens });
 }
 
+export async function POST(req: Request) {
+  const user = await getUserFromServerCookie();
+  if (!user?.isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const { token } = await req.json();
+  if (!token) return NextResponse.json({ error: "token required" }, { status: 400 });
+
+  const res = await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify([{ to: token, sound: "default", title: "Test notification", body: "Push notifications are working!" }]),
+  });
+  const data = await res.json();
+  return NextResponse.json({ sent: true, data });
+}
+
 export async function DELETE(req: Request) {
   const user = await getUserFromServerCookie();
   if (!user?.isAdmin) {
