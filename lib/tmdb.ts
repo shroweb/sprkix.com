@@ -67,42 +67,62 @@ export async function findEventOnTMDB(title: string) {
     if (!apiKey) {
         throw new Error('TMDB_API_KEY is not set in .env. Get a free key at https://www.themoviedb.org/settings/api');
     }
-    
-    // Clean the title: strip episode numbers (#828), date suffixes, and trailing metadata
-    const cleanTitle = title
-        .replace(/\s*#\d+\s*/g, ' ')          // Remove #828 style episode numbers
-        .replace(/–\s*\d{4}.*$/g, '')          // Remove – 2024 date suffixes
-        .replace(/\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*/g, ' ')  // Remove date patterns
+
+    // Build progressively simpler queries to maximise match rate:
+    //
+    // "AEW Collision #136 - Slam Dunk Sunday 2026"
+    //   1. "AEW Collision - Slam Dunk Sunday 2026"  (remove episode #)
+    //   2. "AEW Collision"                           (remove # AND subtitle — best for weekly TV)
+    //
+    // "WrestleMania 41"
+    //   1. "WrestleMania 41"                         (no episode # to strip, matches directly)
+    //
+    // "WWE Friday Night SmackDown #1387"
+    //   1. "WWE Friday Night SmackDown"              (remove episode #)
+
+    const queries = new Set<string>();
+
+    // Pass 1: strip episode number only
+    const withoutEpisodeNum = title
+        .replace(/\s*#\d+\s*/g, ' ')
+        .replace(/[–—]\s*\d{4}\s*$/g, '')         // trailing em-dash + year
+        .replace(/\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
-    
-    const query = encodeURIComponent(cleanTitle);
-    const movieUrl = `https://api.themoviedb.org/3/search/movie?query=${query}&api_key=${apiKey}`;
-    const tvUrl = `https://api.themoviedb.org/3/search/tv?query=${query}&api_key=${apiKey}`;
-    
-    const [movieRes, tvRes] = await Promise.all([fetch(movieUrl), fetch(tvUrl)]);
-    
-    if (!movieRes.ok || !tvRes.ok) {
-        throw new Error(`TMDB API error: ${movieRes.status} ${tvRes.status}`);
+    if (withoutEpisodeNum) queries.add(withoutEpisodeNum);
+
+    // Pass 2: strip episode number AND subtitle/episode title (everything after " - " or " – ")
+    const baseShowName = title
+        .replace(/\s*#\d+.*$/g, '')   // remove #N and everything after
+        .replace(/\s*[-–—].*$/g, '')  // remove " - subtitle" if no episode num
+        .trim();
+    if (baseShowName && baseShowName !== withoutEpisodeNum) queries.add(baseShowName);
+
+    for (const q of queries) {
+        const encoded = encodeURIComponent(q);
+        const [movieRes, tvRes] = await Promise.all([
+            fetch(`https://api.themoviedb.org/3/search/movie?query=${encoded}&api_key=${apiKey}`),
+            fetch(`https://api.themoviedb.org/3/search/tv?query=${encoded}&api_key=${apiKey}`),
+        ]);
+        if (!movieRes.ok || !tvRes.ok) continue;
+
+        const movieData = await movieRes.json();
+        const tvData = await tvRes.json();
+
+        const results = [
+            ...(movieData.results || []).map((r: any) => ({ ...r, tmdbType: 'movie' })),
+            ...(tvData.results || []).map((r: any) => ({ ...r, tmdbType: 'tv' })),
+        ];
+
+        if (results.length > 0) {
+            const best = results.sort((a: any, b: any) => b.popularity - a.popularity)[0];
+            return {
+                posterUrl: best.poster_path ? `https://image.tmdb.org/t/p/w780${best.poster_path}` : null,
+                description: best.overview || null,
+                matchedTitle: best.title || best.name,
+            };
+        }
     }
-    
-    const movieData = await movieRes.json();
-    const tvData = await tvRes.json();
-    
-    const results = [
-        ...(movieData.results || []).map((r: any) => ({ ...r, tmdbType: 'movie' })),
-        ...(tvData.results || []).map((r: any) => ({ ...r, tmdbType: 'tv' }))
-    ];
-    
-    if (results.length > 0) {
-        // Find best match (highest popularity)
-        const best = results.sort((a,b) => b.popularity - a.popularity)[0];
-        return {
-            posterUrl: best.poster_path ? `https://image.tmdb.org/t/p/w780${best.poster_path}` : null,
-            description: best.overview || null,
-            matchedTitle: best.title || best.name,
-        };
-    }
-    
+
     return null;
 }
