@@ -19,7 +19,7 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
       avatarUrl: true,
       favoritePromotion: true,
       predictionScore: true,
-      _count: { select: { reviews: true, matchRatings: true } },
+      _count: { select: { reviews: true, MatchRating: true } },
     },
   });
 
@@ -31,9 +31,9 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
       avatarUrl: u.avatarUrl,
       favoritePromotion: u.favoritePromotion,
       reviewCount: u._count.reviews,
-      ratingCount: u._count.matchRatings,
+      ratingCount: u._count.MatchRating,
       predictionScore: u.predictionScore,
-      score: u._count.reviews * 3 + u.predictionScore + u._count.matchRatings,
+      score: u._count.reviews * 3 + u.predictionScore + u._count.MatchRating,
       isMe: currentUser ? u.id === currentUser.id : false,
     }))
     .filter((u) => u.score > 0)
