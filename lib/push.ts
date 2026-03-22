@@ -10,7 +10,7 @@ interface PushPayload {
  * Send an Expo push notification to all of a user's registered devices.
  */
 export async function sendPushToUser(userId: string, payload: PushPayload) {
-  const tokens = await (prisma as any).pushToken.findMany({
+  const tokens = await prisma.pushToken.findMany({
     where: { userId },
     select: { token: true },
   });

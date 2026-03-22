@@ -13,7 +13,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   if (!token || typeof token !== "string") return err("token is required");
   if (!platform || !["ios", "android"].includes(platform)) return err("platform must be ios or android");
 
-  await (prisma as any).pushToken.upsert({
+  await prisma.pushToken.upsert({
     where: { token },
     update: { userId: user.id, platform },
     create: { token, userId: user.id, platform },
@@ -29,6 +29,6 @@ export const DELETE = withErrorHandling(async (req: NextRequest) => {
 
   if (!token) return err("token query param is required");
 
-  await (prisma as any).pushToken.deleteMany({ where: { userId: user.id, token } });
+  await prisma.pushToken.deleteMany({ where: { userId: user.id, token } });
   return ok({ removed: true });
 });
