@@ -177,10 +177,13 @@ export function parseProfightDbHtml(html: string): ParsedMatch[] {
         if (wrestlerLinks.length < 2) return
 
         const lowerText = text.toLowerCase()
-        const defeatIdx = lowerText.includes(' defeated ') ? lowerText.indexOf(' defeated ')
-            : lowerText.includes(' def. ') ? lowerText.indexOf(' def. ')
-            : lowerText.includes(' defeats ') ? lowerText.indexOf(' defeats ')
-            : -1
+        const defeatWord =
+            lowerText.includes(' defeated ') ? ' defeated '
+            : lowerText.includes(' defeats ') ? ' defeats '
+            : lowerText.includes(' defeat ') ? ' defeat '
+            : lowerText.includes(' def. ') ? ' def. '
+            : null
+        const defeatIdx = defeatWord !== null ? lowerText.indexOf(defeatWord) : -1
 
         const isFFA = /triple threat|three.?way|four.?way|five.?way|chamber|rumble|battle royal|scramble/i.test(text)
 
@@ -255,11 +258,13 @@ export async function parseCagematchHtml(html: string): Promise<ParsedMatch[]> {
 
             const isFreeForAll = /triple threat|three way|four way|five way|six way|chamber|rumble|battle royal|scramble|survival/i.test(rawMatchText)
             const lowerText = rawMatchText.toLowerCase()
-            const defeatIndex = lowerText.indexOf(' defeats ') !== -1
-                ? lowerText.indexOf(' defeats ')
-                : lowerText.indexOf(' def. ') !== -1
-                    ? lowerText.indexOf(' def. ')
-                    : -1
+            // " defeats " = singles, " defeat " = tag/trios (plural subject), " def. " = abbreviation
+            const defeatKeyword =
+                lowerText.includes(' defeats ') ? ' defeats '
+                : lowerText.includes(' defeat ') ? ' defeat '
+                : lowerText.includes(' def. ') ? ' def. '
+                : null
+            const defeatIndex = defeatKeyword !== null ? lowerText.indexOf(defeatKeyword) : -1
 
             $clean('a').each((_, a) => {
                 const href = $clean(a).attr('href') || ''

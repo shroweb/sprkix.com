@@ -97,20 +97,28 @@ export async function fetchCagematchEnrichment(url: string): Promise<EnrichmentR
     if (label && value) infoMap[label] = value;
   });
 
-  const venue = infoMap["arena"] || infoMap["location"] || infoMap["venue"];
-  if (venue) {
-    const parts = venue.split(",").map((s: string) => s.trim());
-    result.venue = parts[0];
-    if (parts.length > 1) result.city = parts.slice(1).join(", ");
-  }
+  // Cagematch separates arena and location into distinct rows
+  const venue = infoMap["arena"] || infoMap["venue"];
+  if (venue) result.venue = venue.split(",")[0].trim();
+
+  // "Location:" = "Fresno, California, USA" — city is the first segment
+  const location = infoMap["location"];
+  if (location) result.city = location.split(",")[0].trim();
 
   const att = infoMap["attendance"];
   if (att) {
-    const num = parseInt(att.replace(/[^0-9]/g, ""));
+    // Handle European thousands separator: "3.658" → 3658
+    const num = parseInt(att.replace(/[.,\s]/g, ""));
     if (!isNaN(num) && num > 0) result.attendance = num;
   }
 
-  const network = infoMap["broadcast"] || infoMap["network"] || infoMap["tv"];
+  // Cagematch label is "TV station/network" — check all variants
+  const network =
+    infoMap["tv station/network"] ||
+    infoMap["tv station / network"] ||
+    infoMap["broadcast"] ||
+    infoMap["network"] ||
+    infoMap["tv"];
   if (network) result.network = network;
 
   let posterUrl = "";
