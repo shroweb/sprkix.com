@@ -112,7 +112,7 @@ export default function RegisterPage() {
                 Join Poison Rana
               </h1>
               <p className="text-gray-400 text-sm">
-                The definitive wrestling archive
+                Rate. Review. Predict. Discuss.
               </p>
             </div>
 

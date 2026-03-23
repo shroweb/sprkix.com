@@ -80,7 +80,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
             </Link>
 
             <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-[220px]">
-              The definitive community archive for professional wrestling. Rate, review, and discover.
+              Rate shows. Write reviews. Make predictions. Discuss with fans. Everything wrestling in one place.
             </p>
 
             {/* Social icons */}

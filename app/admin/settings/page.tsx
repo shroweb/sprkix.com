@@ -58,7 +58,7 @@ export default function AdminSettings() {
           HERO_TITLE: configs.HERO_TITLE || "RATE. REVIEW. \nWRESTLING.",
           HERO_DESC:
             configs.HERO_DESC ||
-            "The definitive community archive for professional wrestling.",
+            "Rate shows. Write reviews. Make predictions. Discuss with fans. Everything wrestling in one place.",
           HERO_IMAGE: configs.HERO_IMAGE || "",
           FEATURED_EVENT_ID: configs.FEATURED_EVENT_ID || "",
           SITE_LOGO: configs.SITE_LOGO || "",
@@ -464,7 +464,7 @@ export default function AdminSettings() {
                   }
                   className={`${inputClass} font-medium leading-relaxed italic`}
                   rows={3}
-                  placeholder="The definitive community archive for professional wrestling..."
+                  placeholder="Rate shows. Write reviews. Make predictions. Discuss with fans..."
                 />
                 <p className="text-[10px] text-muted-foreground italic">
                   The primary description for search engines and social sharing.
