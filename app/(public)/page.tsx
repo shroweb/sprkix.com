@@ -25,23 +25,6 @@ import HomePoll from "@components/HomePoll";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Poison Rana — Community-Rated Wrestling",
-  description: "Rate shows. Write reviews. Make predictions. Discuss with fans. The fan-powered wrestling database.",
-  openGraph: {
-    title: "Poison Rana — Community-Rated Wrestling",
-    description: "Rate shows. Write reviews. Make predictions. Discuss with fans. The fan-powered wrestling database.",
-    url: "https://poisonrana.com",
-    siteName: "Poison Rana",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Poison Rana — Community-Rated Wrestling",
-    description: "Rate shows. Write reviews. Make predictions. Discuss with fans.",
-  },
-};
-
 export default async function Home() {
   const user = await getUserFromServerCookie();
   const userId = user?.id;
