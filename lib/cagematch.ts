@@ -138,7 +138,7 @@ export function parseCagematchEventList(html: string): CagematchListEntry[] {
         if (!date) return
 
         // Promotion: link with id=8 (logo img — get alt/title text)
-        const promotionLink = $row.find('a').filter((_: number, a: cheerio.Element) =>
+        const promotionLink = $row.find('a').filter((_: number, a: any) =>
             ($(a).attr('href') || '').includes('id=8')
         ).first()
         const promotion = promotionLink.text().trim() ||
