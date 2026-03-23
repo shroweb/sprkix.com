@@ -88,8 +88,8 @@ export default function EditEventClient({
     type: event.type || "ppv",
     startTime: event.startTime ? toLocalDatetimeInput(new Date(event.startTime)) : "",
     endTime: event.endTime ? toLocalDatetimeInput(new Date(event.endTime)) : "",
-    enableWatchParty: event.enableWatchParty !== false,
-    enablePredictions: event.enablePredictions !== false,
+    enableWatchParty: event.enableWatchParty === true,
+    enablePredictions: event.enablePredictions === true,
   });
   const [savingDetails, setSavingDetails] = useState(false);
   const [uploading, setUploading] = useState(false);

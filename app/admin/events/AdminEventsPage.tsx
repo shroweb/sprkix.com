@@ -32,8 +32,8 @@ export default function AdminEventsPage() {
     tmdbId: "",
     startTime: "",
     endTime: "",
-    enableWatchParty: true,
-    enablePredictions: true,
+    enableWatchParty: false,
+    enablePredictions: false,
   });
   const [message, setMessage] = useState("");
   const [events, setEvents] = useState<
@@ -203,8 +203,8 @@ export default function AdminEventsPage() {
         tmdbId: "",
         startTime: "",
         endTime: "",
-        enableWatchParty: true,
-        enablePredictions: true,
+        enableWatchParty: false,
+        enablePredictions: false,
       });
       setPosterFile(null);
       setIsAdding(false);

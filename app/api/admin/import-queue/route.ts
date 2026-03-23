@@ -47,10 +47,19 @@ const PROMOTION_MAP: Record<string, string> = {
   "stardom": "STARDOM",
 };
 
-function resolvePromotion(raw: string): string {
+function resolvePromotion(raw: string, titleFallback = ""): string {
   const lower = raw.toLowerCase();
   const mapped = PROMOTION_MAP[lower] ?? Object.entries(PROMOTION_MAP).find(([k]) => lower.includes(k))?.[1];
-  return mapped ?? (raw || "Unknown");
+  if (mapped) return mapped;
+  // Try extracting from event title (e.g. "AEW Collision #136" → "AEW")
+  const titleLower = titleFallback.toLowerCase();
+  const fromTitle = Object.entries(PROMOTION_MAP).find(([k]) => titleLower.startsWith(k) || titleLower.includes(k))?.[1];
+  if (fromTitle) return fromTitle;
+  // Check if title starts with a known short name directly
+  for (const short of Object.values(PROMOTION_MAP)) {
+    if (titleFallback.toUpperCase().startsWith(short + " ")) return short;
+  }
+  return raw || "Unknown";
 }
 
 // ── Match import ──────────────────────────────────────────────────────────────
@@ -112,7 +121,8 @@ export async function POST(req: NextRequest) {
 
     // Parse event metadata
     const info = parseCagematchEventInfo(html);
-    const promotionShort = resolvePromotion(info.promotion || "");
+    const title = info.title || absoluteUrl;
+    const promotionShort = resolvePromotion(info.promotion || "", title);
 
     // Auto-create promotion if needed
     if (promotionShort && promotionShort !== "Unknown") {
@@ -127,7 +137,6 @@ export async function POST(req: NextRequest) {
     let event = await prisma.event.findFirst({ where: { profightdbUrl: absoluteUrl } });
 
     if (!event) {
-      const title = info.title || absoluteUrl;
       const slug = await uniqueEventSlug(title);
 
       // Parse date from info (DD.MM.YYYY → Date)
