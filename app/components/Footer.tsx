@@ -183,9 +183,17 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
         {/* Bottom bar */}
         <div className="py-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
-            © {new Date().getFullYear()} Poison Rana · All rights reserved
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
+              © {new Date().getFullYear()} Poison Rana
+            </p>
+            <a href="/privacy" className="text-[10px] text-muted-foreground/30 hover:text-muted-foreground font-bold uppercase tracking-widest transition-colors">
+              Privacy
+            </a>
+            <a href="/terms" className="text-[10px] text-muted-foreground/30 hover:text-muted-foreground font-bold uppercase tracking-widest transition-colors">
+              Terms
+            </a>
+          </div>
           <p className="text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
             Developed by{" "}
             <a
