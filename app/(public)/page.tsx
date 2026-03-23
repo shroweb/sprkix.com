@@ -47,7 +47,7 @@ export default async function Home() {
     createdAt: true,
   };
 
-  let results: any[] = [[], 0, 0, 0, 0, [], [], [], [], null];
+  let results: any[] = [[], 0, 0, 0, 0, [], [], [], [], null, []];
   try {
     results = await Promise.all([
       prisma.event.findMany({
@@ -86,6 +86,10 @@ export default async function Home() {
           votes: userId ? { where: { userId }, select: { optionId: true } } : false,
         },
       }),
+      prisma.promotion.findMany({
+        orderBy: { shortName: "asc" },
+        select: { id: true, shortName: true, fullName: true, logoUrl: true },
+      }),
     ]);
   } catch (err) {
     console.error("Home page fetch error:", err);
@@ -102,6 +106,7 @@ export default async function Home() {
     configs,
     topMatches,
     activePoll,
+    promotions,
   ] = results;
 
   const configMap = configs.reduce(
@@ -642,6 +647,54 @@ export default async function Home() {
           </section>
         )}
 
+
+        {/* ── Explore by Promotion ── */}
+        {promotions.length > 0 && (
+          <section>
+            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="w-1 h-8 bg-primary rounded-full block" />
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                    Explore by Promotion
+                  </h2>
+                </div>
+                <p className="text-muted-foreground font-medium italic pl-4">
+                  Browse events by your favourite promotion.
+                </p>
+              </div>
+              <Link
+                href="/events"
+                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+              >
+                All Events{" "}
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {promotions.map((promo: any) => (
+                <Link
+                  key={promo.id}
+                  href={`/events?promotion=${promo.shortName}`}
+                  className="group flex items-center gap-2 px-5 py-3 rounded-full border border-white/10 bg-white/5 hover:bg-primary/10 hover:border-primary/40 transition-all"
+                >
+                  {promo.logoUrl && (
+                    <Image
+                      src={promo.logoUrl}
+                      alt={promo.shortName}
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
+                  )}
+                  <span className="text-sm font-black uppercase tracking-wider group-hover:text-primary transition-colors">
+                    {promo.shortName}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Top Matches ── */}
         {topMatches.length > 0 && (
