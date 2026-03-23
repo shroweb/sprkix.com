@@ -45,12 +45,30 @@ async function fetchHtml(url: string): Promise<string> {
     if (res.ok) return res.text();
   } catch { /* fall through to proxy */ }
 
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const proxyRes = await fetch(proxyUrl, { signal: AbortSignal.timeout(18000) });
-  if (!proxyRes.ok) throw new Error(`Proxy failed for ${url}`);
-  const data = await proxyRes.json();
-  if (!data.contents) throw new Error(`Proxy empty content for ${url}`);
-  return data.contents;
+  // Try multiple proxies in sequence
+  const proxies = [
+    async () => {
+      const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
+      if (!r.ok) throw new Error("allorigins failed");
+      const d = await r.json();
+      if (!d.contents) throw new Error("allorigins empty");
+      return d.contents as string;
+    },
+    async () => {
+      const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
+      if (!r.ok) throw new Error("codetabs failed");
+      return r.text();
+    },
+    async () => {
+      const r = await fetch(`https://thingproxy.freeboard.io/fetch/${url}`, { signal: AbortSignal.timeout(15000) });
+      if (!r.ok) throw new Error("thingproxy failed");
+      return r.text();
+    },
+  ];
+  for (const proxy of proxies) {
+    try { return await proxy(); } catch { /* try next */ }
+  }
+  throw new Error(`Proxy failed for ${url}`);
 }
 
 function slugifyTitle(title: string): string {
