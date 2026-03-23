@@ -57,6 +57,8 @@ export default async function Home() {
       }),
       prisma.event.count(),
       prisma.review.count(),
+      prisma.wrestler.count(),
+      prisma.promotion.count(),
       prisma.event.findMany({ select: { slug: true } }),
       prisma.event.findMany({
         select: {
@@ -93,6 +95,8 @@ export default async function Home() {
     events,
     eventCount,
     reviewCount,
+    wrestlerCount,
+    promotionCount,
     allEventSlugs,
     allEventsForRank,
     configs,
@@ -206,7 +210,7 @@ export default async function Home() {
             <div className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 border border-primary/20 rounded-full shadow-lg shadow-primary/5">
               <TrendingUp className="w-4 h-4 text-primary" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                The Ultimate Wrestling Database
+                Community-Rated Wrestling
               </span>
             </div>
 
@@ -237,7 +241,7 @@ export default async function Home() {
 
             <p className="text-lg text-muted-foreground max-w-lg leading-relaxed font-medium italic">
               {configMap["HERO_DESC"] ||
-                "The definitive community archive for professional wrestling. Documenting every legacy, one vote at a time."}
+                "Rate shows. Write reviews. Make predictions. Discuss with fans. Everything wrestling in one place."}
             </p>
 
             {/* CTA Buttons — uniform height, 2 primary only */}
@@ -277,12 +281,21 @@ export default async function Home() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-primary" />
+                <Users className="w-4 h-4 text-primary" />
                 <span className="text-lg font-black tracking-tighter">
-                  {reviewCount.toLocaleString()}
+                  {wrestlerCount.toLocaleString()}
                 </span>
                 <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                  Reviews
+                  Wrestlers
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-primary" />
+                <span className="text-lg font-black tracking-tighter">
+                  {promotionCount.toLocaleString()}
+                </span>
+                <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+                  Promotions
                 </span>
               </div>
             </div>
