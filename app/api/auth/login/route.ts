@@ -6,13 +6,19 @@ import jwt from "jsonwebtoken";
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
 
-  const user = await prisma.user.findUnique({
+  let user;
+  try {
+    user = await prisma.user.findUnique({
     where: { email: email.trim().toLowerCase() },
     select: {
       id: true, name: true, email: true, slug: true, password: true,
       avatarUrl: true, isAdmin: true, isVerified: true, favoritePromotion: true, createdAt: true,
     },
   });
+  } catch (err) {
+    console.error("Login DB error:", err);
+    return NextResponse.json({ error: "Database connection failed. Please try again." }, { status: 500 });
+  }
 
   if (!user) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
