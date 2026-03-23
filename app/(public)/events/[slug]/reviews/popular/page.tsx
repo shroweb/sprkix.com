@@ -118,7 +118,7 @@ export default async function PopularReviewsPage(props: {
       </Link>
       <div className="w-full flex gap-6 items-start mb-6">
         <img
-          src={event.posterUrl || "/placeholder.png"}
+          src={event.posterUrl || "/placeholder.svg"}
           alt={event.title}
           width={120}
           height={180}

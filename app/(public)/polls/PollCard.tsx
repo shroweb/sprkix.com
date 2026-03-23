@@ -108,7 +108,7 @@ export default function PollCard({
     if (!dataUrl) return;
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], `poll-${poll.id}.png`, { type: "image/png" });
-    const shareText = `"${poll.question}" — vote on poisonrana.com`;
+    const shareText = `"${poll.question}" — vote on poisonrana.app`;
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file], title: "Community Poll", text: shareText });
     } else {
@@ -120,8 +120,8 @@ export default function PollCard({
   };
 
   const openUrl = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
-  const shareText = `"${poll.question}" — vote on poisonrana.com`;
-  const shareUrl = "https://poisonrana.com";
+  const shareText = `"${poll.question}" — vote on poisonrana.app`;
+  const shareUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
 
   const socialButtons = [
     {

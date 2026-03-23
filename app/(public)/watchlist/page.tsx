@@ -77,7 +77,7 @@ export default async function WatchlistPage() {
                   className="w-24 aspect-[2/3] relative rounded-2xl overflow-hidden shadow-lg shrink-0 border border-white/5 hover:scale-105 transition-transform duration-300"
                 >
                   <Image
-                    src={item.event.posterUrl || "/placeholder.png"}
+                    src={item.event.posterUrl || "/placeholder.svg"}
                     alt={item.event.title}
                     fill
                     className="object-cover"

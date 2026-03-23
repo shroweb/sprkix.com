@@ -139,7 +139,7 @@ export default function ProfileReviews({
               <Link href={`/events/${review.event.slug}`} className="shrink-0">
                 <div className="relative w-14 aspect-[2/3] rounded-xl overflow-hidden border border-white/5">
                   <Image
-                    src={review.event.posterUrl || "/placeholder.png"}
+                    src={review.event.posterUrl || "/placeholder.svg"}
                     alt={review.event.title}
                     fill
                     className="object-cover"

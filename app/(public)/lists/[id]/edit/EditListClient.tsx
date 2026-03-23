@@ -237,7 +237,7 @@ export default function EditListClient({ list }: { list: List }) {
           <div className="space-y-3">
             {items.map((item, idx) => {
               const isMatch = !!item.match;
-              const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+              const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.svg";
               const mainTitle = isMatch
                 ? item.match!.title
                 : (item.event?.title.replace(/–\s*\d{4}.*$/, "").trim() ?? "");

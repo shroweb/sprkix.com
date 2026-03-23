@@ -25,6 +25,23 @@ import HomePoll from "@components/HomePoll";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Poison Rana — Community-Rated Wrestling",
+  description: "Rate shows. Write reviews. Make predictions. Discuss with fans. The fan-powered wrestling database.",
+  openGraph: {
+    title: "Poison Rana — Community-Rated Wrestling",
+    description: "Rate shows. Write reviews. Make predictions. Discuss with fans. The fan-powered wrestling database.",
+    url: "https://poisonrana.com",
+    siteName: "Poison Rana",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Poison Rana — Community-Rated Wrestling",
+    description: "Rate shows. Write reviews. Make predictions. Discuss with fans.",
+  },
+};
+
 export default async function Home() {
   const user = await getUserFromServerCookie();
   const userId = user?.id;
@@ -381,7 +398,7 @@ export default async function Home() {
                   <Link key={event.id} href={`/events/${event.slug}`} className="group relative">
                     <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-4 border border-white/5">
                       <Image
-                        src={event.posterUrl || "/placeholder.png"}
+                        src={event.posterUrl || "/placeholder.svg"}
                         alt={event.title}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -601,7 +618,7 @@ export default async function Home() {
                   >
                     <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl mb-4 border border-white/5">
                       <Image
-                        src={event.posterUrl || "/placeholder.png"}
+                        src={event.posterUrl || "/placeholder.svg"}
                         alt={event.title}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -669,7 +686,7 @@ export default async function Home() {
                 >
                   <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl mb-6 border border-white/5">
                     <Image
-                      src={event.posterUrl || "/placeholder.png"}
+                      src={event.posterUrl || "/placeholder.svg"}
                       alt={event.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-700"

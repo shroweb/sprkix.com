@@ -440,7 +440,7 @@ export default async function UserProfilePage({
                 >
                   <div className="relative w-16 aspect-[2/3] rounded-2xl overflow-hidden shrink-0 border border-white/5 shadow-xl">
                     <Image
-                      src={review.event.posterUrl || "/placeholder.png"}
+                      src={review.event.posterUrl || "/placeholder.svg"}
                       alt={review.event.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"

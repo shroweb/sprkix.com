@@ -11,7 +11,7 @@ interface EventPosterProps {
 
 export default function EventPoster({ src, alt, className = "" }: EventPosterProps) {
   const [errored, setErrored] = useState(false);
-  const imgSrc = !src || errored ? "/placeholder.png" : src;
+  const imgSrc = !src || errored ? "/placeholder.svg" : src;
 
   return (
     <Image

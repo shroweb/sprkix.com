@@ -249,7 +249,7 @@ export default function EventsGrid({
             >
               <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-4 border border-white/5">
                 <Image
-                  src={event.posterUrl || "/placeholder.png"}
+                  src={event.posterUrl || "/placeholder.svg"}
                   alt={event.title}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700"

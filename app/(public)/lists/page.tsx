@@ -92,7 +92,7 @@ export default async function ListsDiscoveryPage() {
                   <div className="relative flex h-28 overflow-hidden">
                     {list.items.length > 0 ? (
                       list.items.map((item: any, i: number) => {
-                        const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+                        const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.svg";
                         const altText = item.event?.title || item.match?.title || "";
                         return (
                           <div

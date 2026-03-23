@@ -128,7 +128,7 @@ export default async function ListPage({
                   </span>
                   <div className="relative w-12 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
                     <Image
-                      src={match.event.posterUrl || "/placeholder.png"}
+                      src={match.event.posterUrl || "/placeholder.svg"}
                       alt={match.title}
                       fill
                       className="object-cover"
@@ -183,7 +183,7 @@ export default async function ListPage({
                 </span>
                 <div className="relative w-12 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
                   <Image
-                    src={event.posterUrl || "/placeholder.png"}
+                    src={event.posterUrl || "/placeholder.svg"}
                     alt={event.title}
                     fill
                     className="object-cover"

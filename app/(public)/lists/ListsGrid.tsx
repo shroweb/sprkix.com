@@ -144,7 +144,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
                     const posterUrl =
                       item.event?.posterUrl ||
                       item.match?.event?.posterUrl ||
-                      "/placeholder.png";
+                      "/placeholder.svg";
                     const altText = item.event?.title || item.match?.title || "";
                     return (
                       <div

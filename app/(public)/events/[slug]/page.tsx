@@ -476,7 +476,7 @@ export default async function EventPage({
           <div className="space-y-6 lg:sticky lg:top-28">
             <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group max-w-[320px] mx-auto lg:mx-0">
               <Image
-                src={event.posterUrl || "/placeholder.png"}
+                src={event.posterUrl || "/placeholder.svg"}
                 alt={event.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -992,7 +992,7 @@ export default async function EventPage({
                   >
                     <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-3 border border-white/5">
                       <Image
-                        src={rel.posterUrl || "/placeholder.png"}
+                        src={rel.posterUrl || "/placeholder.svg"}
                         alt={rel.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"

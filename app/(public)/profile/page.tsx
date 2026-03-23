@@ -514,7 +514,7 @@ export default async function ProfilePage() {
               >
                 <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-3 border border-white/5">
                   <Image
-                    src={item.event.posterUrl || "/placeholder.png"}
+                    src={item.event.posterUrl || "/placeholder.svg"}
                     alt={item.event.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -583,7 +583,7 @@ export default async function ProfilePage() {
                   <div className="relative flex h-28 overflow-hidden">
                     {list.items.length > 0 ? (
                       list.items.map((item: any, i: number) => {
-                        const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.png";
+                        const posterUrl = item.event?.posterUrl || item.match?.event?.posterUrl || "/placeholder.svg";
                         const alt = item.event?.title || item.match?.title || "";
                         return (
                           <div

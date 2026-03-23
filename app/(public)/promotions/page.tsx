@@ -119,7 +119,7 @@ export default async function PromotionsPage() {
                   className={`relative rounded-xl overflow-hidden border border-white/5 flex-1 ${idx === 0 ? "flex-[2]" : ""}`}
                 >
                   <Image
-                    src={poster || "/placeholder.png"}
+                    src={poster || "/placeholder.svg"}
                     alt=""
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"

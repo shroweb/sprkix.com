@@ -98,7 +98,7 @@ export default async function RankingsPage() {
             >
               <div className="relative aspect-[2/3]">
                 <Image
-                  src={event.posterUrl || "/placeholder.png"}
+                  src={event.posterUrl || "/placeholder.svg"}
                   alt={event.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -172,7 +172,7 @@ export default async function RankingsPage() {
               {/* Poster */}
               <div className="relative w-12 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
                 <Image
-                  src={event.posterUrl || "/placeholder.png"}
+                  src={event.posterUrl || "/placeholder.svg"}
                   alt={event.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"

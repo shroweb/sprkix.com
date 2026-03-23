@@ -88,7 +88,7 @@ export default function ShareReviewModal({
           {/* Background Poster */}
           <div className="absolute inset-0">
             <Image
-              src={event.posterUrl || "/placeholder.png"}
+              src={event.posterUrl || "/placeholder.svg"}
               alt={event.title}
               fill
               className="object-cover opacity-60 scale-110 blur-[2px]"
