@@ -47,7 +47,7 @@ export default async function Home() {
     createdAt: true,
   };
 
-  let results: any[] = [[], 0, 0, 0, 0, [], [], [], [], null, []];
+  let results: any[] = [[], 0, 0, 0, 0, [], [], [], [], null];
   try {
     results = await Promise.all([
       prisma.event.findMany({
@@ -86,10 +86,6 @@ export default async function Home() {
           votes: userId ? { where: { userId }, select: { optionId: true } } : false,
         },
       }),
-      prisma.promotion.findMany({
-        orderBy: { shortName: "asc" },
-        select: { id: true, shortName: true, fullName: true, logoUrl: true },
-      }),
     ]);
   } catch (err) {
     console.error("Home page fetch error:", err);
@@ -106,7 +102,6 @@ export default async function Home() {
     configs,
     topMatches,
     activePoll,
-    promotions,
   ] = results;
 
   const configMap = configs.reduce(
@@ -186,6 +181,24 @@ export default async function Home() {
 
   // Featured events: Recent events if exist, else first in rank
   const featuredEvents = recentEvents.length > 0 ? recentEvents.slice(0, 5) : ranked.slice(0, 1);
+
+  // Promotion cards computed from all events
+  const promotionCardMap: Record<string, { name: string; eventCount: number; posters: (string|null)[]; latestDate: Date; avgRating: number|null; reviewCount: number }> = {};
+  for (const e of allEventsForRank) {
+    if (!promotionCardMap[e.promotion]) {
+      promotionCardMap[e.promotion] = { name: e.promotion, eventCount: 0, posters: [], latestDate: new Date(e.date), avgRating: null, reviewCount: 0 };
+    }
+    const p = promotionCardMap[e.promotion];
+    p.eventCount++;
+    p.reviewCount += e.reviews.length;
+    if (e.posterUrl && p.posters.length < 4) p.posters.push(e.posterUrl);
+    if (new Date(e.date) > p.latestDate) p.latestDate = new Date(e.date);
+  }
+  for (const p of Object.values(promotionCardMap)) {
+    const rats = allEventsForRank.filter((e: any) => e.promotion === p.name).flatMap((e: any) => e.reviews.map((r: any) => r.rating));
+    p.avgRating = rats.length ? parseFloat((rats.reduce((a: number, b: number) => a + b, 0) / rats.length).toFixed(2)) : null;
+  }
+  const promotionCards = Object.values(promotionCardMap).sort((a, b) => b.eventCount - a.eventCount);
 
   return (
     <div className="-mt-28 space-y-16 md:space-y-32 pb-20 md:pb-32">
@@ -649,7 +662,7 @@ export default async function Home() {
 
 
         {/* ── Explore by Promotion ── */}
-        {promotions.length > 0 && (
+        {promotionCards.length > 0 && (
           <section>
             <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
               <div className="space-y-2">
@@ -664,32 +677,69 @@ export default async function Home() {
                 </p>
               </div>
               <Link
-                href="/events"
+                href="/promotions"
                 className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
-                All Events{" "}
+                All Promotions{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {promotions.map((promo: any) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {promotionCards.map((promo) => (
                 <Link
-                  key={promo.id}
-                  href={`/events?promotion=${promo.shortName}`}
-                  className="group flex items-center gap-2 px-5 py-3 rounded-full border border-white/10 bg-white/5 hover:bg-primary/10 hover:border-primary/40 transition-all"
+                  key={promo.name}
+                  href={`/events?promotion=${encodeURIComponent(promo.name)}`}
+                  className="group bg-card/40 border border-white/5 rounded-[2rem] p-6 hover:border-primary/30 hover:bg-card/60 transition-all space-y-5"
                 >
-                  {promo.logoUrl && (
-                    <Image
-                      src={promo.logoUrl}
-                      alt={promo.shortName}
-                      width={24}
-                      height={24}
-                      className="object-contain"
-                    />
-                  )}
-                  <span className="text-sm font-black uppercase tracking-wider group-hover:text-primary transition-colors">
-                    {promo.shortName}
-                  </span>
+                  {/* Poster collage */}
+                  <div className="flex gap-2 h-28">
+                    {promo.posters.slice(0, 4).map((poster, idx) => (
+                      <div
+                        key={idx}
+                        className={`relative rounded-xl overflow-hidden border border-white/5 flex-1 ${idx === 0 ? "flex-[2]" : ""}`}
+                      >
+                        <Image
+                          src={poster || "/placeholder.svg"}
+                          alt=""
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    ))}
+                    {promo.posters.length === 0 && (
+                      <div className="flex-1 rounded-xl bg-secondary/50 flex items-center justify-center">
+                        <Trophy className="w-8 h-8 text-muted-foreground/20" />
+                      </div>
+                    )}
+                  </div>
+                  {/* Info */}
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-black italic uppercase tracking-tighter group-hover:text-primary transition-colors">
+                      {promo.name}
+                    </h3>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Calendar className="w-3.5 h-3.5 text-primary" />
+                        <span className="font-bold">{promo.eventCount}</span>
+                        <span className="font-medium">events</span>
+                      </div>
+                      {promo.avgRating !== null && (
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                          <Star className="w-3.5 h-3.5 text-primary fill-current" />
+                          <span className="font-black text-foreground">{promo.avgRating}</span>
+                          <span className="text-[10px] font-bold">({promo.reviewCount} reviews)</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                      Latest:{" "}
+                      {new Date(promo.latestDate).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                    </div>
+                  </div>
+                  <div className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-1.5 group-hover:gap-2 transition-all">
+                    View All Events
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </Link>
               ))}
             </div>
