@@ -50,17 +50,42 @@ async function fetchHtml(url) {
 function parseListing(html) {
   const $ = load(html);
   const events = [];
-  $(".TableContents tr").each((_, row) => {
-    const cells = $(row).find("td");
-    if (cells.length < 3) return;
-    const dateText = $(cells[0]).text().trim();
-    const promoText = $(cells[1]).text().trim();
-    const titleLink = $(cells[2]).find("a").first();
-    const title = titleLink.text().trim();
-    const href = titleLink.attr("href") || "";
-    if (!title || !href.includes("id=1")) return;
-    const url = href.startsWith("http") ? href : `https://www.cagematch.net/${href}`;
-    events.push({ date: dateText, promotion: promoText, title, url });
+  $("tr.TRow1, tr.TRow2").each((_, row) => {
+    const $row = $(row);
+    let eventHref = "", title = "";
+    const links = $row.find("a");
+    links.each((_, a) => {
+      const h = $(a).attr("href") || "";
+      if (h.includes("id=1") && h.includes("nr=") && !h.includes("page=")) {
+        eventHref = h;
+        title = $(a).text().trim();
+      }
+    });
+    if (!title || !eventHref) return;
+
+    const cells = $row.find("td");
+    let dateMatch = null;
+    for (let ci = 0; ci < Math.min(cells.length, 4); ci++) {
+      dateMatch = $(cells[ci]).text().trim().match(/\d{2}\.\d{2}\.\d{4}/);
+      if (dateMatch) break;
+    }
+    if (!dateMatch) return;
+
+    let promotion = "";
+    $row.find("a").each((_, a) => {
+      const h = $(a).attr("href") || "";
+      if (h.includes("id=8") && !promotion) {
+        // Text or img alt/title
+        promotion = $(a).text().trim() ||
+          $(a).find("img").attr("alt") ||
+          $(a).find("img").attr("title") || "";
+      }
+    });
+
+    const url = eventHref.startsWith("http")
+      ? eventHref
+      : `https://www.cagematch.net/${eventHref}`;
+    events.push({ date: dateMatch[0], promotion, title, url });
   });
   return events;
 }

@@ -127,16 +127,23 @@ export function parseCagematchEventList(html: string): CagematchListEntry[] {
             ? href
             : `https://www.cagematch.net/${href.startsWith('?') ? '' : ''}${href}`
 
-        // Date: first cell, format DD.MM.YYYY
+        // Date: scan first few cells, format DD.MM.YYYY
         const cells = $row.find('td')
-        const firstCellText = $(cells[0]).text().trim()
-        const dateMatch = firstCellText.match(/\d{2}\.\d{2}\.\d{4}/)
+        let dateMatch: RegExpMatchArray | null = null
+        for (let ci = 0; ci < Math.min(cells.length, 4); ci++) {
+            dateMatch = $(cells[ci]).text().trim().match(/\d{2}\.\d{2}\.\d{4}/)
+            if (dateMatch) break
+        }
         const date = dateMatch ? dateMatch[0] : ''
         if (!date) return
 
-        // Promotion: link with id=8 (Cagematch promotions)
-        const promotionLink = $row.find('a[href*="id=8"]').first()
-        const promotion = promotionLink.text().trim() || ''
+        // Promotion: link with id=8 (logo img — get alt/title text)
+        const promotionLink = $row.find('a').filter((_: number, a: cheerio.Element) =>
+            ($(a).attr('href') || '').includes('id=8')
+        ).first()
+        const promotion = promotionLink.text().trim() ||
+            promotionLink.find('img').attr('alt') ||
+            promotionLink.find('img').attr('title') || ''
 
         events.push({ title, date, promotion, cagematchUrl })
     })
