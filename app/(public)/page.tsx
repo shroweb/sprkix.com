@@ -770,6 +770,74 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* ── App Launch Banner ── */}
+        <section>
+          <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-gradient-to-br from-black via-zinc-900 to-black p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
+            {/* Phone icon */}
+            <div className="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-3xl">
+              📱
+            </div>
+            <div className="relative z-10 flex-1 space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Coming Soon</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter leading-none">
+                iOS &amp; Android App — April 27th
+              </h2>
+              <p className="text-muted-foreground font-medium text-sm max-w-lg">
+                Ratings, watchlist, predictions, push notifications and more — in your pocket. Sign up now to be notified on launch day.
+              </p>
+            </div>
+            <div className="relative z-10 shrink-0 flex flex-col items-center gap-2">
+              {!user && (
+                <Link
+                  href="/register"
+                  className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
+                >
+                  Notify Me <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Free · No credit card</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Founding Member CTA ── */}
+        {!user && (
+          <section>
+            <div className="relative rounded-[2.5rem] overflow-hidden border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-card/20 p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+              <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+
+              <div className="relative z-10 shrink-0 text-5xl">⚡</div>
+
+              <div className="relative z-10 flex-1 space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Limited Time</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
+                  Become a Founding Member
+                </h2>
+                <p className="text-muted-foreground font-medium text-sm max-w-lg">
+                  Sign up before <strong className="text-foreground">June 27th</strong> and earn the exclusive Founding Member badge — shown permanently on your profile. Be part of the crew that built this community from day one.
+                </p>
+              </div>
+
+              <div className="relative z-10 shrink-0 flex flex-col items-center gap-2">
+                <Link
+                  href="/register"
+                  className="h-14 px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all"
+                >
+                  Join Free <ArrowRight className="w-4 h-4" />
+                </Link>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Offer ends June 27th 2026</p>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ── Submit Event CTA ── */}
         <section>
           <div className="relative rounded-[2.5rem] overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/10 via-card/60 to-card/30 p-10 md:p-16 flex flex-col md:flex-row items-center gap-8 md:gap-12">

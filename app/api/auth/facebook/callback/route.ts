@@ -129,6 +129,7 @@ export async function GET(req: NextRequest) {
         slug = makeSlug(finalName);
       }
 
+      const isFoundingMember = new Date() <= new Date("2026-06-27T23:59:59Z");
       user = await prisma.user.create({
         data: {
           email,
@@ -139,6 +140,7 @@ export async function GET(req: NextRequest) {
           password: null,
           isVerified: true,
           needsUsernameSetup: true,
+          isFoundingMember,
         },
         select: { id: true, email: true, name: true, facebookId: true },
       });

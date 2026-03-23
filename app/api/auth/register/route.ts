@@ -32,8 +32,12 @@ export async function POST(req: Request) {
       "-" +
       Math.random().toString(36).substring(2, 6);
 
+    // Founding member — anyone who signs up before the app launch on April 27 2026
+    const FOUNDING_MEMBER_DEADLINE = new Date("2026-06-27T23:59:59Z");
+    const isFoundingMember = new Date() <= FOUNDING_MEMBER_DEADLINE;
+
     const user = await prisma.user.create({
-      data: { name: name.trim(), email: trimmedEmail, password: hashed, slug },
+      data: { name: name.trim(), email: trimmedEmail, password: hashed, slug, isFoundingMember },
     });
 
     // Send welcome email
