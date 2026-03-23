@@ -10,6 +10,7 @@ export default function UserAdminActions({
   userEmail,
   isAdmin,
   isSuspended,
+  isFoundingMember,
   onDeleted,
   onUpdated,
 }: {
