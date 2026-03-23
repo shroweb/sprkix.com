@@ -7,7 +7,7 @@
     "predev": "prisma generate",
     "postinstall": "prisma generate",
     "dev": "next dev --turbopack",
-    "prebuild": "prisma generate && prisma db push --accept-data-loss",
+    "prebuild": "prisma generate && (prisma db push --accept-data-loss || echo 'DB push skipped')",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
