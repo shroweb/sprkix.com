@@ -10,12 +10,18 @@ export async function PATCH(
   if (!user?.isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { isAdmin } = await req.json();
+  const { isAdmin, isFoundingMember, isVerified } = await req.json();
+
+  const data: Record<string, boolean> = {};
+  if (isAdmin !== undefined) data.isAdmin = !!isAdmin;
+  if (isFoundingMember !== undefined) data.isFoundingMember = !!isFoundingMember;
+  if (isVerified !== undefined) data.isVerified = !!isVerified;
 
   const updated = await prisma.user.update({
     where: { id },
-    data: { isAdmin: !!isAdmin },
+    data,
+    select: { isAdmin: true, isFoundingMember: true, isVerified: true },
   });
 
-  return NextResponse.json({ success: true, isAdmin: updated.isAdmin });
+  return NextResponse.json({ success: true, ...updated });
 }

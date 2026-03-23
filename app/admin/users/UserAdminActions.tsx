@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, ShieldOff, Ban, CheckCircle, Trash2, Loader2, KeyRound, ExternalLink, Pencil, X, Copy, Check } from "lucide-react";
+import { Shield, ShieldOff, Ban, CheckCircle, Trash2, Loader2, KeyRound, ExternalLink, Pencil, X, Copy, Check, Zap } from "lucide-react";
 
 export default function UserAdminActions({
   userId,
@@ -19,11 +19,14 @@ export default function UserAdminActions({
   userEmail: string;
   isAdmin: boolean;
   isSuspended: boolean;
+  isFoundingMember: boolean;
   onDeleted: () => void;
-  onUpdated: (data: { name?: string; email?: string; isAdmin?: boolean; isSuspended?: boolean }) => void;
+  onUpdated: (data: { name?: string; email?: string; isAdmin?: boolean; isSuspended?: boolean; isFoundingMember?: boolean }) => void;
 }) {
   const [admin, setAdmin] = useState(isAdmin);
   const [suspended, setSuspended] = useState(isSuspended);
+  const [foundingMember, setFoundingMember] = useState(isFoundingMember);
+  const [loadingFoundingMember, setLoadingFoundingMember] = useState(false);
   const [loadingAdmin, setLoadingAdmin] = useState(false);
   const [loadingSuspend, setLoadingSuspend] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
@@ -54,6 +57,18 @@ export default function UserAdminActions({
     const data = await patchUser({ isAdmin: !admin });
     if (data.success) { setAdmin(data.user.isAdmin); onUpdated({ isAdmin: data.user.isAdmin }); }
     setLoadingAdmin(false);
+  };
+
+  const toggleFoundingMember = async () => {
+    setLoadingFoundingMember(true);
+    const res = await fetch(`/api/admin/users/${userId}/role`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isFoundingMember: !foundingMember }),
+    });
+    const data = await res.json();
+    if (data.success) { setFoundingMember(data.isFoundingMember); onUpdated({ isFoundingMember: data.isFoundingMember }); }
+    setLoadingFoundingMember(false);
   };
 
   const toggleSuspend = async () => {
@@ -132,6 +147,16 @@ export default function UserAdminActions({
           className="p-2 rounded-lg hover:bg-blue-50 text-blue-400 transition-colors"
         >
           {loadingReset ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
+        </button>
+
+        {/* Toggle Founding Member */}
+        <button
+          onClick={toggleFoundingMember}
+          disabled={loadingFoundingMember}
+          title={foundingMember ? "Remove founding member" : "Grant founding member"}
+          className={`p-2 rounded-lg transition-colors ${foundingMember ? "bg-primary/10 text-primary hover:bg-primary/20" : "hover:bg-secondary text-muted-foreground"}`}
+        >
+          {loadingFoundingMember ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
         </button>
 
         {/* Toggle Admin */}

@@ -60,6 +60,7 @@ export default async function ProfilePage() {
           avatarUrl: true,
           isAdmin: true,
           isVerified: true,
+          isFoundingMember: true,
           favoritePromotion: true,
           createdAt: true
       }
@@ -288,6 +289,11 @@ export default async function ProfilePage() {
                    </h1>
                    {(currentUser as any)?.isVerified && (
                      <CheckCircle className="w-5 h-5 text-blue-400 fill-blue-400/20 shrink-0" />
+                   )}
+                   {(currentUser as any)?.isFoundingMember && (
+                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest shrink-0">
+                       ⚡ Founding Member
+                     </span>
                    )}
                  </div>
 

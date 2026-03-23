@@ -11,6 +11,7 @@ type User = {
   slug: string | null;
   isAdmin: boolean;
   isSuspended: boolean;
+  isFoundingMember: boolean;
   createdAt: string;
   _count: { reviews: number; MatchRating: number; followers: number };
 };
@@ -134,6 +135,7 @@ export default function UsersAdminPage() {
                   userEmail={u.email}
                   isAdmin={u.isAdmin}
                   isSuspended={u.isSuspended}
+                  isFoundingMember={u.isFoundingMember}
                   onDeleted={() => setUsers((prev) => prev.filter((x) => x.id !== u.id))}
                   onUpdated={(data) => setUsers(prev => prev.map(x => x.id === u.id ? { ...x, ...data } : x))}
                 />

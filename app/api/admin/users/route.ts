@@ -16,6 +16,7 @@ export async function GET() {
       slug: true,
       isAdmin: true,
       isSuspended: true,
+      isFoundingMember: true,
       createdAt: true,
       _count: { select: { reviews: true, MatchRating: true, followers: true } },
     },
