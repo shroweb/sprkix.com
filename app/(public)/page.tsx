@@ -153,10 +153,15 @@ export default async function Home() {
     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Trending = most recently reviewed events (activity in last 7 days)
-  const recentReviews = await prisma.review.findMany({
-    where: { createdAt: { gte: sevenDaysAgo } },
-    select: { eventId: true },
-  });
+  let recentReviews: { eventId: string }[] = [];
+  try {
+    recentReviews = await prisma.review.findMany({
+      where: { createdAt: { gte: sevenDaysAgo } },
+      select: { eventId: true },
+    });
+  } catch (err) {
+    console.error("Trending fetch error:", err);
+  }
   const trendingIds = Array.from(
     recentReviews.reduce((acc: Map<string, number>, r: any) => {
       acc.set(r.eventId, (acc.get(r.eventId) || 0) + 1);
