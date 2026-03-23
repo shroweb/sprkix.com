@@ -40,12 +40,25 @@ async function fetchHtml(url: string): Promise<string> {
     "Accept-Language": "en-US,en;q=0.5",
   };
 
+  // Try ScraperAPI first (handles anti-bot protection)
+  const scraperKey = process.env.SCRAPER_API_KEY;
+  if (scraperKey) {
+    try {
+      const r = await fetch(
+        `https://api.scraperapi.com/?api_key=${scraperKey}&url=${encodeURIComponent(url)}`,
+        { signal: AbortSignal.timeout(30000) }
+      );
+      if (r.ok) return r.text();
+    } catch { /* fall through */ }
+  }
+
+  // Fallback: direct fetch
   try {
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(12000) });
     if (res.ok) return res.text();
-  } catch { /* fall through to proxy */ }
+  } catch { /* fall through to proxies */ }
 
-  // Try multiple proxies in sequence
+  // Last resort proxies
   const proxies = [
     async () => {
       const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
@@ -57,11 +70,6 @@ async function fetchHtml(url: string): Promise<string> {
     async () => {
       const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
       if (!r.ok) throw new Error("codetabs failed");
-      return r.text();
-    },
-    async () => {
-      const r = await fetch(`https://thingproxy.freeboard.io/fetch/${url}`, { signal: AbortSignal.timeout(15000) });
-      if (!r.ok) throw new Error("thingproxy failed");
       return r.text();
     },
   ];
