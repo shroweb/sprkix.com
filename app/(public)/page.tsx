@@ -300,6 +300,38 @@ export default async function Home() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 md:space-y-40 relative z-10">
 
+        {/* ── App Launch Banner ── */}
+        <section>
+          <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-gradient-to-br from-black via-zinc-900 to-black p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
+            <div className="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-3xl">
+              📱
+            </div>
+            <div className="relative z-10 flex-1 space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Coming Soon</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter leading-none">
+                iOS &amp; Android App — April 27th
+              </h2>
+              <p className="text-muted-foreground font-medium text-sm max-w-lg">
+                Ratings, watchlist, predictions, push notifications and more — in your pocket. Sign up now to be notified on launch day.
+              </p>
+            </div>
+            {!user && (
+              <div className="relative z-10 shrink-0">
+                <Link
+                  href="/register"
+                  className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
+                >
+                  Notify Me <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* ── Latest Events ── */}
         {latestEvents.length > 0 && (
           <section>
@@ -766,40 +798,6 @@ export default async function Home() {
                   <Activity className="w-3.5 h-3.5" /> Activity Feed
                 </Link>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── App Launch Banner ── */}
-        <section>
-          <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-gradient-to-br from-black via-zinc-900 to-black p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
-            {/* Phone icon */}
-            <div className="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-3xl">
-              📱
-            </div>
-            <div className="relative z-10 flex-1 space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Coming Soon</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter leading-none">
-                iOS &amp; Android App — April 27th
-              </h2>
-              <p className="text-muted-foreground font-medium text-sm max-w-lg">
-                Ratings, watchlist, predictions, push notifications and more — in your pocket. Sign up now to be notified on launch day.
-              </p>
-            </div>
-            <div className="relative z-10 shrink-0 flex flex-col items-center gap-2">
-              {!user && (
-                <Link
-                  href="/register"
-                  className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
-                >
-                  Notify Me <ArrowRight className="w-4 h-4" />
-                </Link>
-              )}
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Free · No credit card</p>
             </div>
           </div>
         </section>
