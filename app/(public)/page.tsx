@@ -64,7 +64,7 @@ export default async function Home() {
     createdAt: true,
   };
 
-  let results: any[] = [[], 0, 0, [], [], [], [], null];
+  let results: any[] = [[], 0, 0, 0, 0, [], [], [], [], null];
   try {
     results = await Promise.all([
       prisma.event.findMany({
