@@ -20,7 +20,7 @@ export default function ContactPage() {
       {/* Contact cards */}
       <div className="grid sm:grid-cols-2 gap-4 mb-16">
         <a
-          href="mailto:hello@poisonrana.com"
+          href="mailto:poisonrana.app@gmail.com"
           className="group flex flex-col gap-4 bg-card/40 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl p-6 transition-all"
         >
           <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -31,7 +31,7 @@ export default function ContactPage() {
               Email
             </p>
             <p className="font-black italic uppercase text-lg group-hover:text-primary transition-colors">
-              hello@poisonrana.com
+              poisonrana.app@gmail.com
             </p>
             <p className="text-sm text-muted-foreground font-medium mt-1">
               For general enquiries, partnerships, or feedback.
@@ -40,7 +40,7 @@ export default function ContactPage() {
         </a>
 
         <a
-          href="https://twitter.com/poisonrana"
+          href="https://twitter.com/poisonrana_app"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex flex-col gap-4 bg-card/40 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl p-6 transition-all"
@@ -53,7 +53,7 @@ export default function ContactPage() {
               Twitter / X
             </p>
             <p className="font-black italic uppercase text-lg group-hover:text-primary transition-colors">
-              @poisonrana
+              @poisonrana_app
             </p>
             <p className="text-sm text-muted-foreground font-medium mt-1">
               DMs open. Tag us in your Grapped cards.
@@ -76,7 +76,7 @@ export default function ContactPage() {
           actually happened. Screenshots are always helpful.
         </p>
         <a
-          href="mailto:hello@poisonrana.com?subject=Bug%20Report"
+          href="mailto:poisonrana.app@gmail.com?subject=Bug%20Report"
           className="inline-flex items-center gap-2 text-sm font-black uppercase italic text-primary hover:opacity-80 transition-opacity"
         >
           <Mail className="w-4 h-4" />

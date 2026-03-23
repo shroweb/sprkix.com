@@ -116,10 +116,10 @@ export default function TermsPage() {
           <p className="text-muted-foreground leading-relaxed">
             Questions about these terms? Email{" "}
             <a
-              href="mailto:hello@poisonrana.com"
+              href="mailto:poisonrana.app@gmail.com"
               className="text-primary hover:underline font-medium"
             >
-              hello@poisonrana.com
+              poisonrana.app@gmail.com
             </a>
             .
           </p>

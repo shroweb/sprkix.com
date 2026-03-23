@@ -106,10 +106,10 @@ export default function PrivacyPage() {
             You have the right to access, correct, or delete your personal data at any time. To
             request deletion of your account and all associated data, email us at{" "}
             <a
-              href="mailto:hello@poisonrana.com"
+              href="mailto:poisonrana.app@gmail.com"
               className="text-primary hover:underline font-medium"
             >
-              hello@poisonrana.com
+              poisonrana.app@gmail.com
             </a>
             .
           </p>
@@ -131,10 +131,10 @@ export default function PrivacyPage() {
           <p className="text-muted-foreground leading-relaxed">
             For any privacy-related questions, contact us at{" "}
             <a
-              href="mailto:hello@poisonrana.com"
+              href="mailto:poisonrana.app@gmail.com"
               className="text-primary hover:underline font-medium"
             >
-              hello@poisonrana.com
+              poisonrana.app@gmail.com
             </a>
             .
           </p>
