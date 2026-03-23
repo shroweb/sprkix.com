@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../lib/server-auth";
+import { sendPushToUser } from "../../../../../lib/push";
 
 // POST /api/reviews/[id]/vote — toggle upvote
 export async function POST(
@@ -44,6 +45,11 @@ export async function POST(
             message: `Your review of ${eventTitle} hit ${count} ${count === 1 ? "upvote" : "upvotes"}`,
             link: `/events/${review.event.slug}`,
           },
+        });
+        await sendPushToUser(review.userId, {
+          title: "Your review is getting love 🔥",
+          body: `Your review of ${eventTitle} hit ${count} ${count === 1 ? "upvote" : "upvotes"}`,
+          data: { path: `/events/${review.event.slug}` },
         });
       }
     }

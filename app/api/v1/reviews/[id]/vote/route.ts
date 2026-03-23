@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@lib/prisma";
 import { requireAuth } from "@lib/v1/auth";
 import { ok, preflight, withErrorHandling } from "@lib/v1/response";
+import { sendPushToUser } from "@lib/push";
 
 export const OPTIONS = () => preflight();
 
@@ -39,6 +40,11 @@ export const POST = withErrorHandling(async (req: NextRequest, ctx: any) => {
           detail: review.event.title,
           link: `/events/${review.event.slug}`,
         },
+      });
+      await sendPushToUser(review.userId, {
+        title: `${user.name ?? "Someone"} liked your review`,
+        body: `Your review of ${review.event.title.replace(/–\s\d{4}.*$/, "").trim()} got a like`,
+        data: { path: `/events/${review.event.slug}` },
       });
     }
   }

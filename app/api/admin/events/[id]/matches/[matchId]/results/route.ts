@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../../../../lib/server-auth";
+import { sendPushToUser } from "../../../../../../../../lib/push";
 
 export async function PATCH(
   req: NextRequest,
@@ -113,6 +114,24 @@ export async function PATCH(
 
         if (notificationData.length > 0) {
           await prisma.notification.createMany({ data: notificationData });
+
+          // Push notifications
+          await Promise.all([
+            ...correctUserIds.map((userId) =>
+              sendPushToUser(userId, {
+                title: "You called it! 🎯",
+                body: matchTitle ? `Correct prediction: ${matchTitle}` : "Your prediction was correct!",
+                data: { path: `/events/${eventSlug}` },
+              })
+            ),
+            ...wrongUserIds.map((userId) =>
+              sendPushToUser(userId, {
+                title: "Wrong pick this time",
+                body: matchTitle ? `Prediction settled: ${matchTitle}` : "Your prediction was incorrect",
+                data: { path: `/events/${eventSlug}` },
+              })
+            ),
+          ]);
         }
       }
     }
