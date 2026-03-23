@@ -224,6 +224,15 @@ export async function GET(req: Request) {
     if (!isConfigured) continue;
     results.promotionMatched++;
 
+    // Auto-create promotion record if it doesn't exist yet
+    if (promoShort) {
+      await prisma.promotion.upsert({
+        where: { shortName: promoShort },
+        update: {},
+        create: { shortName: promoShort },
+      });
+    }
+
     // Check if we already have an event with this title on this date
     const eventDate = parseCagematchDate(entry.date);
     if (!eventDate) continue;
