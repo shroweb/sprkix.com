@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAdminUser } from "../../../../lib/server-auth";
+import { getUserFromRequest } from "../../../../lib/server-auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -7,8 +7,8 @@ export const maxDuration = 300;
 // Triggers the cron import for each date in a range.
 // GET /api/admin/bulk-import?from=2025-01-01&to=2025-03-23
 export async function GET(req: Request) {
-  const admin = await getAdminUser();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const user = await getUserFromRequest(req);
+  if (!user || !(user as any).isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const from = searchParams.get("from");
