@@ -33,6 +33,7 @@ export default function AdminSettings() {
     HERO_IMAGE: "",
     FEATURED_EVENT_ID: "",
     SITE_LOGO: "",
+    FAVICON: "",
     LOGO_SIZE: "md",
     BANNER_TEXT: "",
     BANNER_LINK: "",
@@ -47,6 +48,7 @@ export default function AdminSettings() {
     SOCIAL_INSTAGRAM: "",
   });
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -62,6 +64,7 @@ export default function AdminSettings() {
           HERO_IMAGE: configs.HERO_IMAGE || "",
           FEATURED_EVENT_ID: configs.FEATURED_EVENT_ID || "",
           SITE_LOGO: configs.SITE_LOGO || "",
+          FAVICON: configs.FAVICON || "",
           LOGO_SIZE: configs.LOGO_SIZE || "md",
           BANNER_TEXT: configs.BANNER_TEXT || "",
           BANNER_LINK: configs.BANNER_LINK || "",
@@ -110,7 +113,7 @@ export default function AdminSettings() {
 
   const handleUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "HERO_IMAGE" | "SITE_LOGO",
+    field: "HERO_IMAGE" | "SITE_LOGO" | "FAVICON",
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -260,6 +263,67 @@ export default function AdminSettings() {
                 <p className="text-[10px] text-muted-foreground italic">
                   Controls the height of the logo in the navigation bar.
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Favicon */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <Star className="w-4 h-4 text-primary" />
+              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+                Favicon
+              </h2>
+            </div>
+            <div className="p-8 space-y-5">
+              <div className="flex gap-6 items-start">
+                <div className="w-20 h-20 rounded-2xl border-2 border-slate-100 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center">
+                  {settings.FAVICON ? (
+                    <img
+                      src={settings.FAVICON}
+                      alt="Favicon"
+                      className="w-10 h-10 object-contain"
+                    />
+                  ) : (
+                    <Star className="w-6 h-6 text-primary fill-current" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-3">
+                  <label className={labelClass}>
+                    <ImageIcon className="w-3.5 h-3.5" /> Favicon Image
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.FAVICON}
+                    onChange={(e) =>
+                      setSettings((s) => ({ ...s, FAVICON: e.target.value }))
+                    }
+                    className={`${inputClass} font-mono text-xs`}
+                    placeholder="Upload or paste favicon URL..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => faviconInputRef.current?.click()}
+                    className="inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity"
+                  >
+                    {uploading === "FAVICON" ? (
+                      <RefreshCcw className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Upload className="w-3 h-3" />
+                    )}
+                    Upload Favicon
+                  </button>
+                  <input
+                    ref={faviconInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/png,image/x-icon,image/svg+xml,image/*"
+                    onChange={(e) => handleUpload(e, "FAVICON")}
+                  />
+                  <p className="text-[10px] text-muted-foreground italic">
+                    Best results: square 32x32 or 64x64 PNG, ICO, or SVG.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -8,10 +8,11 @@ export async function generateMetadata() {
   let siteName = "Poison Rana";
   let tagline = "Discover. Rate. Share Pro Wrestling Events.";
   let description = "The authoritative community archive for professional wrestling.";
+  let favicon = "/favicon.ico";
 
   try {
     const configs = await (prisma as any).siteConfig.findMany({
-      where: { key: { in: ["SITE_TAGLINE", "SITE_DESCRIPTION"] } },
+      where: { key: { in: ["SITE_TAGLINE", "SITE_DESCRIPTION", "FAVICON"] } },
     });
     
     const mapped = configs.reduce((acc: any, curr: any) => {
@@ -21,6 +22,7 @@ export async function generateMetadata() {
 
     if (mapped.SITE_TAGLINE) tagline = mapped.SITE_TAGLINE;
     if (mapped.SITE_DESCRIPTION) description = mapped.SITE_DESCRIPTION;
+    if (mapped.FAVICON) favicon = mapped.FAVICON;
   } catch (e) {
     console.error("Metadata fetch error:", e);
   }
@@ -31,6 +33,11 @@ export async function generateMetadata() {
       default: `${siteName} | ${tagline}`,
     },
     description,
+    icons: {
+      icon: favicon,
+      shortcut: favicon,
+      apple: favicon,
+    },
     verification: {
       google: "A_qTq_pCJoyzV7hqoJMfyNVDN5XpNWpU1-7z18pIeWM",
     },

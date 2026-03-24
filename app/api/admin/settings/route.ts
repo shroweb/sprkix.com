@@ -15,15 +15,18 @@ export async function GET() {
 
   // Fetch small config rows and large image fields separately to stay under
   // Prisma Accelerate's 5 MB response limit.
-  const [configs, logoRow, heroRow, events] = await Promise.all([
+  const [configs, logoRow, heroRow, faviconRow, events] = await Promise.all([
     (prisma as any).siteConfig.findMany({
-      where: { key: { notIn: ["SITE_LOGO", "HERO_IMAGE"] } },
+      where: { key: { notIn: ["SITE_LOGO", "HERO_IMAGE", "FAVICON"] } },
     }),
     (prisma as any).siteConfig
       .findUnique({ where: { key: "SITE_LOGO" }, select: { key: true, value: true } })
       .catch(() => null),
     (prisma as any).siteConfig
       .findUnique({ where: { key: "HERO_IMAGE" }, select: { key: true, value: true } })
+      .catch(() => null),
+    (prisma as any).siteConfig
+      .findUnique({ where: { key: "FAVICON" }, select: { key: true, value: true } })
       .catch(() => null),
     prisma.event.findMany({
       select: { id: true, title: true, promotion: true, date: true, slug: true },
@@ -37,6 +40,7 @@ export async function GET() {
   }, {} as Record<string, string>);
   if (logoRow) mapped["SITE_LOGO"] = logoRow.value;
   if (heroRow) mapped["HERO_IMAGE"] = heroRow.value;
+  if (faviconRow) mapped["FAVICON"] = faviconRow.value;
 
   return NextResponse.json({ configs: mapped, events });
 }
@@ -70,6 +74,7 @@ export async function POST(req: Request) {
     HERO_IMAGE,
     FEATURED_EVENT_ID,
     SITE_LOGO,
+    FAVICON,
     LOGO_SIZE,
     BANNER_TEXT,
     BANNER_LINK,
@@ -87,6 +92,7 @@ export async function POST(req: Request) {
     { key: "HERO_IMAGE", value: HERO_IMAGE },
     { key: "FEATURED_EVENT_ID", value: FEATURED_EVENT_ID },
     { key: "SITE_LOGO", value: SITE_LOGO },
+    { key: "FAVICON", value: FAVICON },
     { key: "LOGO_SIZE", value: LOGO_SIZE },
     { key: "BANNER_TEXT", value: BANNER_TEXT },
     { key: "BANNER_LINK", value: BANNER_LINK },
