@@ -1,0 +1,41 @@
+name: Import Shows
+
+on:
+  schedule:
+    # Runs at 06:00 UTC every day
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    # Allows manual trigger from GitHub UI
+    inputs:
+      date:
+        description: "Specific date to import (YYYY-MM-DD). Leave blank for yesterday."
+        required: false
+        default: ""
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Call import endpoint
+        run: |
+          DATE_PARAM=""
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            DATE_PARAM="?date=${{ github.event.inputs.date }}"
+          fi
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://poisonrana.com/api/cron/import-shows${DATE_PARAM}")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Import failed with status $HTTP_CODE"
+            exit 1
+          fi
