@@ -103,26 +103,88 @@ export function parseCagematchEventInfo(html: string): ParsedEventInfo {
 
 // ─── Cagematch event list parser ───────────────────────────────────────────
 
+/** Parse "23 March 2026" → Date (UTC) */
+function parseCaptionDate(text: string): Date | null {
+    const MONTHS: Record<string, number> = {
+        january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+        july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
+    }
+    const m = text.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/)
+    if (!m) return null
+    const month = MONTHS[m[2].toLowerCase()]
+    if (month === undefined) return null
+    return new Date(Date.UTC(parseInt(m[3]), month, parseInt(m[1])))
+}
+
+function extractRowEvent($: cheerio.CheerioAPI, row: any, dateDDMMYYYY: string): CagematchListEntry | null {
+    const $row = $(row)
+    const eventLink = $row.find('a[href*="id=1&nr="]').first()
+    if (!eventLink.length) return null
+    const title = eventLink.text().trim()
+    const href = eventLink.attr('href') || ''
+    if (!title || !href) return null
+    const cagematchUrl = href.startsWith('http')
+        ? href
+        : `https://www.cagematch.net/${href.startsWith('?') ? '' : ''}${href}`
+    const promotionLink = $row.find('a').filter((_: number, a: any) =>
+        ($(a).attr('href') || '').includes('id=8')
+    ).first()
+    const promotion = promotionLink.text().trim() ||
+        promotionLink.find('img').attr('alt') ||
+        promotionLink.find('img').attr('title') || ''
+    return { title, date: dateDDMMYYYY, promotion, cagematchUrl }
+}
+
+const ALL_TROW = 'tr.TRow1, tr.TRow2, tr.TRowTVShow, tr.TRowPremiumLiveEvent, tr.TRowOnlineStream, tr.TRowPayPayView'
+
+/**
+ * Parses the Cagematch homepage (https://www.cagematch.net/) which groups
+ * events by date under .Caption headings. Returns events for targetDateISO
+ * (YYYY-MM-DD) or all events if omitted.
+ */
+export function parseCagematchHomepage(html: string, targetDateISO?: string): CagematchListEntry[] {
+    const $ = cheerio.load(html)
+    const events: CagematchListEntry[] = []
+
+    $('.Caption').each((_, captionEl) => {
+        const dateObj = parseCaptionDate($(captionEl).text().trim())
+        if (!dateObj) return
+
+        const iso = dateObj.toISOString().slice(0, 10)
+        if (targetDateISO && iso !== targetDateISO) return
+
+        const dd   = String(dateObj.getUTCDate()).padStart(2, '0')
+        const mm   = String(dateObj.getUTCMonth() + 1).padStart(2, '0')
+        const yyyy = dateObj.getUTCFullYear()
+        const dateDDMMYYYY = `${dd}.${mm}.${yyyy}`
+
+        // Events are in the next .Table sibling
+        $(captionEl).nextAll('.Table').first().find(ALL_TROW).each((_, row) => {
+            const entry = extractRowEvent($, row, dateDDMMYYYY)
+            if (entry) events.push(entry)
+        })
+    })
+
+    return events
+}
+
 /**
  * Parses a Cagematch events listing page (e.g. ?id=1&view=list&dateFrom=…)
  * and returns a list of events with their URLs.
+ * NOTE: This only returns top-rated events — use parseCagematchHomepage for
+ * recent events including newly-added shows.
  */
 export function parseCagematchEventList(html: string): CagematchListEntry[] {
     const $ = cheerio.load(html)
     const events: CagematchListEntry[] = []
 
-    // Cagematch event list rows — class TRow1/TRow2 inside a TResults table
-    $('tr.TRow1, tr.TRow2').each((_, row) => {
+    $(ALL_TROW).each((_, row) => {
         const $row = $(row)
-
-        // Event link: ?id=1&nr=XXXXX
         const eventLink = $row.find('a[href*="id=1&nr="]').first()
         if (!eventLink.length) return
-
         const title = eventLink.text().trim()
         const href = eventLink.attr('href') || ''
         if (!title || !href) return
-
         const cagematchUrl = href.startsWith('http')
             ? href
             : `https://www.cagematch.net/${href.startsWith('?') ? '' : ''}${href}`
@@ -137,7 +199,6 @@ export function parseCagematchEventList(html: string): CagematchListEntry[] {
         const date = dateMatch ? dateMatch[0] : ''
         if (!date) return
 
-        // Promotion: link with id=8 (logo img — get alt/title text)
         const promotionLink = $row.find('a').filter((_: number, a: any) =>
             ($(a).attr('href') || '').includes('id=8')
         ).first()

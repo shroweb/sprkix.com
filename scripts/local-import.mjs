@@ -43,7 +43,47 @@ async function fetchHtml(url) {
   return res.text();
 }
 
-// ── Listing parser ────────────────────────────────────────────────────────────
+// ── Homepage parser (groups events by .Caption date sections) ─────────────────
+
+const MONTH_MAP = { january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11 };
+const ALL_TROW = 'tr.TRow1, tr.TRow2, tr.TRowTVShow, tr.TRowPremiumLiveEvent, tr.TRowOnlineStream, tr.TRowPayPayView';
+
+function parseCaptionDate(text) {
+  const m = text.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+  if (!m) return null;
+  const month = MONTH_MAP[m[2].toLowerCase()];
+  if (month === undefined) return null;
+  return new Date(Date.UTC(parseInt(m[3]), month, parseInt(m[1])));
+}
+
+function parseHomepage(html, targetDateISO) {
+  const $ = load(html);
+  const events = [];
+  $('.Caption').each((_, captionEl) => {
+    const dateObj = parseCaptionDate($(captionEl).text().trim());
+    if (!dateObj) return;
+    const iso = dateObj.toISOString().slice(0, 10);
+    if (targetDateISO && iso !== targetDateISO) return;
+    const dd   = String(dateObj.getUTCDate()).padStart(2, '0');
+    const mm   = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+    const yyyy = dateObj.getUTCFullYear();
+    const dateDDMMYYYY = `${dd}.${mm}.${yyyy}`;
+    $(captionEl).nextAll('.Table').first().find(ALL_TROW).each((_, row) => {
+      const $row = $(row);
+      const link = $row.find('a[href*="id=1&nr="]').first();
+      const title = link.text().trim();
+      const href = link.attr('href') || '';
+      if (!title || !href) return;
+      const url = href.startsWith('http') ? href : `https://www.cagematch.net/${href}`;
+      const promoLink = $row.find('a[href*="id=8"]').first();
+      const promotion = promoLink.text().trim() || promoLink.find('img').attr('alt') || '';
+      events.push({ date: dateDDMMYYYY, promotion, title, url });
+    });
+  });
+  return events;
+}
+
+// ── Listing parser (fallback — top-rated events only) ─────────────────────────
 
 function parseListing(html) {
   const $ = load(html);
@@ -309,11 +349,22 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function importDay(dateStr) {
   await sleep(8000);
-  const url = `https://www.cagematch.net/?id=1&view=list&dateFrom=${dateStr}&dateTo=${dateStr}`;
-  let html;
-  try { html = await fetchHtml(url); } catch (e) { console.log(`  ✗ listing fetch failed: ${e.message}`); return 0; }
 
-  const entries = parseListing(html);
+  // Try homepage first (groups by date, includes new shows before they're rated)
+  let entries = [];
+  try {
+    const homepageHtml = await fetchHtml('https://www.cagematch.net/');
+    entries = parseHomepage(homepageHtml, dateStr);
+  } catch (e) { /* fall through */ }
+
+  // Fall back to list view (top-rated only) if homepage didn't have this date
+  if (entries.length === 0) {
+    const url = `https://www.cagematch.net/?id=1&view=list&dateFrom=${dateStr}&dateTo=${dateStr}`;
+    try {
+      const html = await fetchHtml(url);
+      entries = parseListing(html);
+    } catch (e) { console.log(`  ✗ listing fetch failed: ${e.message}`); return 0; }
+  }
   let created = 0;
 
   for (const entry of entries) {

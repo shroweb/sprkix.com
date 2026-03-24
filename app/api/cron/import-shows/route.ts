@@ -4,6 +4,7 @@ import {
   parseCagematchHtml,
   parseCagematchEventInfo,
   parseCagematchEventList,
+  parseCagematchHomepage,
   parseCagematchDate,
 } from "@lib/cagematch";
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
@@ -181,20 +182,28 @@ export async function GET(req: Request) {
     ? configRow.value.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)
     : Object.keys(PROMOTION_MAP);
 
-  // Fetch the Cagematch events listing for the target date
-  const listUrl = `https://www.cagematch.net/?id=1&view=list&dateFrom=${dateStr}&dateTo=${dateStr}`;
-  let listHtml: string;
+  // Fetch the Cagematch homepage — it groups events by date under .Caption
+  // headings and includes newly-added shows that haven't been rated yet.
+  // Fall back to the list view if the homepage doesn't have the target date.
+  let entries: ReturnType<typeof parseCagematchEventList> = [];
   try {
-    listHtml = await fetchHtml(listUrl);
+    const homepageHtml = await fetchHtml("https://www.cagematch.net/");
+    entries = parseCagematchHomepage(homepageHtml, dateStr);
+
+    // If homepage didn't have events for this date (it only covers recent days),
+    // fall back to the top-rated list view
+    if (entries.length === 0) {
+      const listUrl = `https://www.cagematch.net/?id=1&view=list&dateFrom=${dateStr}&dateTo=${dateStr}`;
+      const listHtml = await fetchHtml(listUrl);
+      entries = parseCagematchEventList(listHtml);
+    }
   } catch (err: any) {
-    console.error("[cron] Failed to fetch Cagematch event list:", err.message);
+    console.error("[cron] Failed to fetch Cagematch listing:", err.message);
     return NextResponse.json(
       { error: `Could not fetch Cagematch listing: ${err.message}` },
       { status: 500 }
     );
   }
-
-  const entries = parseCagematchEventList(listHtml);
 
   const results = {
     date: dateStr,
