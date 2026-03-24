@@ -8,11 +8,11 @@ export async function generateMetadata() {
   let siteName = "Poison Rana";
   let tagline = "Discover. Rate. Share Pro Wrestling Events.";
   let description = "The authoritative community archive for professional wrestling.";
-  let favicon = "/favicon.ico";
+  let favicon = "/api/site/favicon";
 
   try {
     const configs = await (prisma as any).siteConfig.findMany({
-      where: { key: { in: ["SITE_TAGLINE", "SITE_DESCRIPTION", "FAVICON"] } },
+      where: { key: { in: ["SITE_TAGLINE", "SITE_DESCRIPTION"] } },
     });
     
     const mapped = configs.reduce((acc: any, curr: any) => {
@@ -22,7 +22,6 @@ export async function generateMetadata() {
 
     if (mapped.SITE_TAGLINE) tagline = mapped.SITE_TAGLINE;
     if (mapped.SITE_DESCRIPTION) description = mapped.SITE_DESCRIPTION;
-    if (mapped.FAVICON) favicon = mapped.FAVICON;
   } catch (e) {
     console.error("Metadata fetch error:", e);
   }
