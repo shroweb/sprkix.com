@@ -25,7 +25,7 @@ jobs:
             DATE_PARAM="?date=${{ github.event.inputs.date }}"
           fi
 
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
+          RESPONSE=$(curl -s -L -w "\n%{http_code}" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "https://poisonrana.com/api/cron/import-shows${DATE_PARAM}")
 
