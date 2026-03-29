@@ -68,6 +68,7 @@ export async function POST(req: Request) {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
 
     return response;
@@ -76,4 +77,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Registration failed" }, { status: 500 });
   }
 }
-
