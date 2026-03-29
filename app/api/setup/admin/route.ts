@@ -4,6 +4,15 @@ import bcrypt from "bcrypt";
 
 // One-time admin creation endpoint — only works when zero users exist in the DB
 export async function POST(req: Request) {
+  if (process.env.ADMIN_SETUP_ENABLED !== "true") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const setupSecret = process.env.ADMIN_SETUP_SECRET || process.env.CRON_SECRET;
+  if (!setupSecret) {
+    return NextResponse.json({ error: "Setup is not configured" }, { status: 503 });
+  }
+
   const userCount = await prisma.user.count();
   if (userCount > 0) {
     return NextResponse.json({ error: "Setup already complete" }, { status: 403 });
@@ -11,7 +20,11 @@ export async function POST(req: Request) {
 
   const { email, password, name, secret } = await req.json();
 
-  if (secret !== process.env.CRON_SECRET) {
+  if (!email || !password || !name) {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  if (secret !== setupSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -2,32 +2,25 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { prisma } from "../../../lib/prisma";
 import { NextResponse } from "next/server";
+import { SESSION_USER_SELECT } from "@lib/session-user";
 
 export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) {
-      console.log("No token found");
       return NextResponse.json({ user: null });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     const userId = decoded.userId;
-    console.log("Decoded userId:", userId);
 
     const user = await prisma.user.findUnique({
       where: { id: userId as string },
-      select: {
-        id: true, name: true, email: true, slug: true, avatarUrl: true,
-        isAdmin: true, isVerified: true, favoritePromotion: true, createdAt: true,
-      },
+      select: SESSION_USER_SELECT,
     });
 
-    if (!user) {
-      console.log("User not found");
-      return NextResponse.json({ user: null });
-    }
+    if (!user) return NextResponse.json({ user: null });
 
     return NextResponse.json({ user });
   } catch (error) {

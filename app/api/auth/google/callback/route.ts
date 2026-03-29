@@ -3,6 +3,7 @@ import { prisma } from "@lib/prisma";
 import jwt from "jsonwebtoken";
 import { randomWrestlingName } from "@lib/wrestling-names";
 import { sendWelcomeEmail } from "@lib/mail";
+import { consumeOAuthState } from "@lib/oauth-state";
 
 function makeSlug(name: string): string {
   const base = name
@@ -42,6 +43,7 @@ function buildAuthResponse(
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 7,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   });
   return response;
 }
@@ -52,20 +54,15 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get("code");
   const error = searchParams.get("error");
 
-  // Decode platform from state (passed through from the initiation route)
-  let platform = "web";
-  try {
-    const stateRaw = searchParams.get("state");
-    if (stateRaw) {
-      const stateJson = Buffer.from(stateRaw, "base64url").toString("utf-8");
-      platform = JSON.parse(stateJson).platform || "web";
-    }
-  } catch {
-    // Ignore malformed state — default to web
-  }
+  const state = await consumeOAuthState("google", searchParams.get("state"));
+  const platform = state.platform;
 
   if (error || !code) {
     return NextResponse.redirect(new URL("/login?error=oauth_cancelled", siteUrl));
+  }
+
+  if (!state.valid) {
+    return NextResponse.redirect(new URL("/login?error=oauth_state", siteUrl));
   }
 
   try {

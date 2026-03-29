@@ -4,7 +4,6 @@ import {
   Trophy,
   Bookmark,
   Users,
-  Zap,
   MessageSquare,
   TrendingUp,
   Search,
@@ -109,21 +108,6 @@ const sections = [
       {
         q: "How do I follow someone?",
         a: "Visit any user's profile page and click the Follow button. Their activity will start appearing in your Feed.",
-      },
-    ],
-  },
-  {
-    icon: Zap,
-    title: "Grapped",
-    color: "text-primary",
-    qa: [
-      {
-        q: "What is Grapped?",
-        a: "Grapped is your personal wrestling journey card — it showcases your top-rated events, total reviews, rank, and favourite promotion in a shareable format. Find it in your profile menu.",
-      },
-      {
-        q: "Can I share my Grapped card?",
-        a: "Yes — your Grapped card can be downloaded as an image and shared on social media to show off your wrestling knowledge.",
       },
     ],
   },

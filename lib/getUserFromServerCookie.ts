@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import { prisma } from './prisma'
+import { SESSION_USER_SELECT, type SessionUser } from './session-user'
 
 interface DecodedToken {
   userId?: string
@@ -23,22 +24,8 @@ export async function getUserFromServerCookie() {
         // before the production DB migration has been applied.
         return await prisma.user.findUnique({
           where: { id: userId },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            slug: true,
-            avatarUrl: true,
-            isVerified: true,
-            isAdmin: true,
-            favoritePromotion: true,
-            createdAt: true,
-            password: true,
-            predictionScore: true,
-            predictionCount: true,
-            profileThemeEventId: true,
-          },
-        })
+          select: SESSION_USER_SELECT,
+        }) as SessionUser | null
     } catch (err) {
         console.error('[getUserFromServerCookie] Error:', err)
         return null

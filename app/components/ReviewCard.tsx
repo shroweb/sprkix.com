@@ -1,14 +1,25 @@
 "use client";
 
-import { Review, Reply, User } from "@prisma/client";
+import { Review, Reply } from "@prisma/client";
 import ReplyForm from "../components/ReplyForm";
 import Link from "next/link";
 import ShareReviewButton from "./ShareReviewButton";
 import UserAvatar from "./UserAvatar";
 
+type ReviewUser = {
+  id: string;
+  slug: string;
+  name: string | null;
+  avatarUrl?: string | null;
+};
+
+type SessionLikeUser = {
+  id: string;
+};
+
 type FullReview = Review & {
-  user: User;
-  Reply: (Reply & { user: User })[];
+  user: ReviewUser;
+  Reply: (Reply & { user: ReviewUser })[];
 };
 
 export default function ReviewCard({
@@ -18,7 +29,7 @@ export default function ReviewCard({
   highlighted = false,
 }: {
   review: FullReview;
-  user?: User | null;
+  user?: SessionLikeUser | null;
   event?: { title: string; posterUrl: string | null; promotion: string };
   highlighted?: boolean;
 }) {

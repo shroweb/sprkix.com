@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
+import { createOAuthState } from "@lib/oauth-state";
 
 export async function GET(req: NextRequest) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.poisonrana.com";
@@ -21,18 +22,18 @@ export async function GET(req: NextRequest) {
 
   const redirectUri = `${siteUrl}/api/auth/facebook/callback`;
 
-  // Encode platform in state so the callback knows where to redirect
-  const state = Buffer.from(JSON.stringify({ platform })).toString("base64url");
-
   const params = new URLSearchParams({
     client_id: process.env.FACEBOOK_APP_ID,
     redirect_uri: redirectUri,
     scope: "email,public_profile",
     response_type: "code",
-    state,
   });
 
-  return NextResponse.redirect(
-    `https://www.facebook.com/v19.0/dialog/oauth?${params.toString()}`
+  const response = NextResponse.redirect("https://www.facebook.com/v19.0/dialog/oauth");
+  params.set("state", await createOAuthState("facebook", platform, response));
+  response.headers.set(
+    "Location",
+    `https://www.facebook.com/v19.0/dialog/oauth?${params.toString()}`,
   );
+  return response;
 }

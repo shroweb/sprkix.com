@@ -56,7 +56,7 @@ export default function ContactPage() {
               @poisonrana_app
             </p>
             <p className="text-sm text-muted-foreground font-medium mt-1">
-              DMs open. Tag us in your Grapped cards.
+              DMs open for feedback, bugs, and wrestling chat.
             </p>
           </div>
         </a>

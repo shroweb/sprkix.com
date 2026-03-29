@@ -22,6 +22,7 @@ import HomePoll from "@components/HomePoll";
 
 const getHomePageData = unstable_cache(
   async () => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const homeEventSelect = {
       id: true,
       title: true,
@@ -31,24 +32,29 @@ const getHomePageData = unstable_cache(
       posterUrl: true,
       startTime: true,
       endTime: true,
-      reviews: { select: { rating: true } },
     };
 
     const [
       eventCount,
       wrestlerCount,
       promotionCount,
-      allEventsForRank,
+      allEvents,
+      reviewAgg,
       configs,
       topMatches,
       activePoll,
-      recentReviews,
+      trendingAgg,
     ] = await Promise.all([
       prisma.event.count(),
       prisma.wrestler.count(),
       prisma.promotion.count(),
       prisma.event.findMany({
         select: homeEventSelect,
+      }),
+      prisma.review.groupBy({
+        by: ["eventId"],
+        _avg: { rating: true },
+        _count: { _all: true },
       }),
       prisma.siteConfig.findMany(),
       prisma.match.findMany({
@@ -75,11 +81,12 @@ const getHomePageData = unstable_cache(
           },
         },
       }),
-      prisma.review.findMany({
+      prisma.review.groupBy({
+        by: ["eventId"],
         where: {
-          createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+          createdAt: { gte: sevenDaysAgo },
         },
-        select: { eventId: true },
+        _count: { _all: true },
       }),
     ]);
 
@@ -87,14 +94,15 @@ const getHomePageData = unstable_cache(
       eventCount,
       wrestlerCount,
       promotionCount,
-      allEventsForRank,
+      allEvents,
+      reviewAgg,
       configs,
       topMatches,
       activePoll,
-      recentReviews,
+      trendingAgg,
     };
   },
-  ["home-page-shared-v2"],
+  ["home-page-shared-v3"],
   { revalidate: 300 },
 );
 
@@ -105,22 +113,24 @@ export default async function Home() {
   let eventCount = 0;
   let wrestlerCount = 0;
   let promotionCount = 0;
-  let allEventsForRank: any[] = [];
+  let allEvents: any[] = [];
+  let reviewAgg: any[] = [];
   let configs: { key: string; value: string }[] = [];
   let topMatches: any[] = [];
   let activePoll: any = null;
-  let recentReviews: { eventId: string }[] = [];
+  let trendingAgg: { eventId: string; _count: { _all: number } }[] = [];
 
   try {
     ({
       eventCount,
       wrestlerCount,
       promotionCount,
-      allEventsForRank,
+      allEvents,
+      reviewAgg,
       configs,
       topMatches,
       activePoll,
-      recentReviews,
+      trendingAgg,
     } = await getHomePageData());
   } catch (err) {
     console.error("Home page fetch error:", err);
@@ -152,23 +162,39 @@ export default async function Home() {
     {} as Record<string, string>,
   );
 
-  const eventSlugs = allEventsForRank.map((e: any) => e.slug);
   const heroImage = (configMap["HERO_IMAGE"] || "").trim();
+  const eventSlugs = allEvents.map((event: any) => event.slug);
+  const reviewAggMap = new Map(
+    reviewAgg.map((row: any) => [
+      row.eventId,
+      {
+        reviewCount: row._count._all,
+        avgRating: row._avg.rating ?? 0,
+      },
+    ]),
+  );
+  const allEventsForRank = allEvents.map((event: any) => ({
+    ...event,
+    ...(reviewAggMap.get(event.id) ?? { reviewCount: 0, avgRating: 0 }),
+  }));
 
   // Bayesian-weighted rankings for Hall of Fame
-  const allRatings = allEventsForRank.flatMap((e: any) =>
-    e.reviews.map((r: any) => r.rating),
+  const totalReviewCount = reviewAgg.reduce(
+    (sum: number, row: any) => sum + row._count._all,
+    0,
   );
-  const globalAvg = allRatings.length
-    ? allRatings.reduce((a: any, b: any) => a + b, 0) / allRatings.length
+  const globalAvg = totalReviewCount
+    ? reviewAgg.reduce(
+        (sum: number, row: any) => sum + (row._avg.rating ?? 0) * row._count._all,
+        0,
+      ) / totalReviewCount
     : 3;
   const minReviews = 1;
 
   const ranked = allEventsForRank
     .map((e: any) => {
-      const rats = e.reviews.map((r: any) => r.rating);
-      const v = rats.length;
-      const R = v ? rats.reduce((a: any, b: any) => a + b, 0) / v : 0;
+      const v = e.reviewCount ?? 0;
+      const R = e.avgRating ?? 0;
       const score =
         v > 0
           ? (v / (v + minReviews)) * R + (minReviews / (v + minReviews)) * globalAvg
@@ -193,15 +219,10 @@ export default async function Home() {
     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Trending = most recently reviewed events (activity in last 7 days)
-  const trendingIds = Array.from(
-    recentReviews.reduce((acc: Map<string, number>, r: any) => {
-      acc.set(r.eventId, (acc.get(r.eventId) || 0) + 1);
-      return acc;
-    }, new Map<string, number>()),
-  )
-    .sort((a: any, b: any) => b[1] - a[1])
+  const trendingIds = [...trendingAgg]
+    .sort((a: any, b: any) => b._count._all - a._count._all)
     .slice(0, 5)
-    .map(([id]: any) => id);
+    .map((row: any) => row.eventId);
 
    const trendingEvents = allEventsForRank.filter((e: any) => trendingIds.includes(e.id));
  
@@ -250,20 +271,20 @@ export default async function Home() {
   }
 
   // Promotion cards computed from all events
-  const promotionCardMap: Record<string, { name: string; eventCount: number; posters: (string|null)[]; latestDate: Date; avgRating: number|null; reviewCount: number }> = {};
+  const promotionCardMap: Record<string, { name: string; eventCount: number; posters: (string|null)[]; latestDate: Date; avgRating: number|null; reviewCount: number; totalRating: number }> = {};
   for (const e of allEventsForRank) {
     if (!promotionCardMap[e.promotion]) {
-      promotionCardMap[e.promotion] = { name: e.promotion, eventCount: 0, posters: [], latestDate: new Date(e.date), avgRating: null, reviewCount: 0 };
+      promotionCardMap[e.promotion] = { name: e.promotion, eventCount: 0, posters: [], latestDate: new Date(e.date), avgRating: null, reviewCount: 0, totalRating: 0 };
     }
     const p = promotionCardMap[e.promotion];
     p.eventCount++;
-    p.reviewCount += e.reviews.length;
+    p.reviewCount += e.reviewCount ?? 0;
+    p.totalRating += (e.avgRating ?? 0) * (e.reviewCount ?? 0);
     if (e.posterUrl && p.posters.length < 4) p.posters.push(e.posterUrl);
     if (new Date(e.date) > p.latestDate) p.latestDate = new Date(e.date);
   }
   for (const p of Object.values(promotionCardMap)) {
-    const rats = allEventsForRank.filter((e: any) => e.promotion === p.name).flatMap((e: any) => e.reviews.map((r: any) => r.rating));
-    p.avgRating = rats.length ? parseFloat((rats.reduce((a: number, b: number) => a + b, 0) / rats.length).toFixed(2)) : null;
+    p.avgRating = p.reviewCount ? parseFloat((p.totalRating / p.reviewCount).toFixed(2)) : null;
   }
   const promotionCards = Object.values(promotionCardMap).sort((a, b) => b.eventCount - a.eventCount);
 
@@ -459,9 +480,7 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {latestEvents.map((event: any) => {
-                const rating = event.reviews?.length
-                  ? event.reviews.reduce((a: any, r: any) => a + r.rating, 0) / event.reviews.length
-                  : 0;
+                const rating = event.avgRating ?? 0;
                 const now = new Date();
                 const sTime = event.startTime ? new Date(event.startTime) : new Date(event.date);
                 const eTime = event.endTime ? new Date(event.endTime) : event.startTime ? new Date(sTime.getTime() + 4 * 60 * 60 * 1000) : null;
@@ -679,10 +698,7 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8">
                {trendingSorted.map((event: any) => {
-                const rating = event.reviews.length
-                  ? event.reviews.reduce((a: any, r: any) => a + r.rating, 0) /
-                    event.reviews.length
-                  : 0;
+                const rating = event.avgRating ?? 0;
                 return (
                   <Link
                     key={event.id}

@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
   Bookmark,
   ChevronDown,
-  Zap,
   Rss,
   HelpCircle,
   Mail,
@@ -276,12 +275,6 @@ export default function Header({
                     <User className="w-4 h-4" /> Profile
                   </Link>
                   <Link
-                    href="/grapped"
-                    className="flex items-center gap-3 p-3 text-sm font-black text-primary hover:bg-muted rounded-xl transition-colors uppercase italic"
-                  >
-                    <Zap className="w-4 h-4" /> Grapped
-                  </Link>
-                  <Link
                     href="/watchlist"
                     className="flex items-center gap-3 p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors"
                   >
@@ -387,9 +380,6 @@ export default function Header({
                 )}
                 <Link href="/profile" className="text-lg font-bold" onClick={() => setMenuOpen(false)}>
                   My Profile
-                </Link>
-                <Link href="/grapped" className="text-lg font-black text-primary uppercase italic flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-                  <Zap className="w-5 h-5" /> Grapped
                 </Link>
                 <button
                   onClick={() => { setMenuOpen(false); logout(); }}
