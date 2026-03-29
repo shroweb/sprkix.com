@@ -9,6 +9,46 @@ function safeFilename(name: string) {
     .replace(/\s+/g, "-");
 }
 
+function extensionFromMimeType(mimeType: string) {
+  switch (mimeType) {
+    case "image/png":
+      return "png";
+    case "image/jpeg":
+      return "jpg";
+    case "image/webp":
+      return "webp";
+    case "image/svg+xml":
+      return "svg";
+    case "image/x-icon":
+    case "image/vnd.microsoft.icon":
+      return "ico";
+    case "image/gif":
+      return "gif";
+    case "image/avif":
+      return "avif";
+    default:
+      return "bin";
+  }
+}
+
+function parseDataUrl(dataUrl: string) {
+  const match = dataUrl.match(/^data:([^;,]+)?(;base64)?,([\s\S]*)$/);
+  if (!match) return null;
+
+  const mimeType = match[1] || "application/octet-stream";
+  const isBase64 = !!match[2];
+  const payload = match[3] || "";
+
+  try {
+    const buffer = isBase64
+      ? Buffer.from(payload, "base64")
+      : Buffer.from(decodeURIComponent(payload), "utf8");
+    return { mimeType, buffer };
+  } catch {
+    return null;
+  }
+}
+
 export async function uploadPublicFile({
   file,
   folder,
@@ -45,6 +85,47 @@ export async function uploadPublicFile({
   await mkdir(uploadDir, { recursive: true });
   const filePath = join(uploadDir, uniqueName);
   await writeFile(filePath, buffer);
+  return { url: `/uploads/${folder}/${uniqueName}` };
+}
+
+export async function uploadDataUrl({
+  dataUrl,
+  folder,
+  prefix,
+}: {
+  dataUrl: string;
+  folder: string;
+  prefix?: string;
+}): Promise<{ url: string }> {
+  const parsed = parseDataUrl(dataUrl);
+  if (!parsed) {
+    throw new Error("Invalid data URL");
+  }
+
+  const extension = extensionFromMimeType(parsed.mimeType);
+  const uniqueName = `${prefix ? `${prefix}-` : ""}${uuidv4()}.${extension}`;
+
+  const vercel = !!process.env.VERCEL;
+  const hasBlob = !!process.env.BLOB_READ_WRITE_TOKEN;
+
+  if (hasBlob) {
+    const blob = await put(`${folder}/${uniqueName}`, parsed.buffer, {
+      access: "public",
+      contentType: parsed.mimeType,
+    });
+    return { url: blob.url };
+  }
+
+  if (vercel) {
+    throw new Error(
+      "Missing BLOB_READ_WRITE_TOKEN. Configure Vercel Blob to enable uploads in production.",
+    );
+  }
+
+  const uploadDir = join(process.cwd(), "public", "uploads", folder);
+  await mkdir(uploadDir, { recursive: true });
+  const filePath = join(uploadDir, uniqueName);
+  await writeFile(filePath, parsed.buffer);
   return { url: `/uploads/${folder}/${uniqueName}` };
 }
 

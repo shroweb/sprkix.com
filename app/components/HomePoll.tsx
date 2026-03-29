@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import * as htmlToImage from "html-to-image";
 import { Download, Share2, X, Loader2 } from "lucide-react";
 
 type PollOption = {
@@ -80,6 +79,7 @@ export default function HomePoll({
     if (!cardRef.current) return null;
     setIsGenerating(true);
     try {
+      const htmlToImage = await import("html-to-image");
       return await htmlToImage.toPng(cardRef.current, {
         cacheBust: true,
         quality: 1,

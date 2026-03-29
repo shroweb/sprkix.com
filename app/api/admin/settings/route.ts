@@ -2,6 +2,7 @@ import { prisma } from "@lib/prisma";
 import { NextResponse } from "next/server";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { revalidatePath } from "next/cache";
+import { uploadDataUrl } from "@lib/uploads";
 
 export async function GET() {
   const user = await getUserFromServerCookie();
@@ -86,13 +87,52 @@ export async function POST(req: Request) {
     SOCIAL_LOGIN_ENABLED,
   } = body;
 
+  let heroImageValue = HERO_IMAGE;
+  let siteLogoValue = SITE_LOGO;
+  let faviconValue = FAVICON;
+
+  try {
+    if (typeof HERO_IMAGE === "string" && HERO_IMAGE.startsWith("data:")) {
+      heroImageValue = (
+        await uploadDataUrl({
+          dataUrl: HERO_IMAGE,
+          folder: "settings",
+          prefix: "hero-image",
+        })
+      ).url;
+    }
+    if (typeof SITE_LOGO === "string" && SITE_LOGO.startsWith("data:")) {
+      siteLogoValue = (
+        await uploadDataUrl({
+          dataUrl: SITE_LOGO,
+          folder: "settings",
+          prefix: "site-logo",
+        })
+      ).url;
+    }
+    if (typeof FAVICON === "string" && FAVICON.startsWith("data:")) {
+      faviconValue = (
+        await uploadDataUrl({
+          dataUrl: FAVICON,
+          folder: "settings",
+          prefix: "favicon",
+        })
+      ).url;
+    }
+  } catch (e: any) {
+    return NextResponse.json(
+      { error: "Failed to process uploaded site images", detail: e?.message },
+      { status: 500 },
+    );
+  }
+
   const updates = [
     { key: "HERO_TITLE", value: HERO_TITLE },
     { key: "HERO_DESC", value: HERO_DESC },
-    { key: "HERO_IMAGE", value: HERO_IMAGE },
+    { key: "HERO_IMAGE", value: heroImageValue },
     { key: "FEATURED_EVENT_ID", value: FEATURED_EVENT_ID },
-    { key: "SITE_LOGO", value: SITE_LOGO },
-    { key: "FAVICON", value: FAVICON },
+    { key: "SITE_LOGO", value: siteLogoValue },
+    { key: "FAVICON", value: faviconValue },
     { key: "LOGO_SIZE", value: LOGO_SIZE },
     { key: "BANNER_TEXT", value: BANNER_TEXT },
     { key: "BANNER_LINK", value: BANNER_LINK },

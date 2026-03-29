@@ -23,29 +23,43 @@ export default async function PublicLayout({
   let socialFacebook = "";
   let socialInstagram = "";
   try {
-    const [logoRow, sizeRow, bannerEnabledRow, bannerTextRow, bannerLinkRow, primaryRow, hoverRow, xRow, fbRow, igRow] =
-      await Promise.all([
-      (prisma as any).siteConfig.findUnique({ where: { key: "SITE_LOGO" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "LOGO_SIZE" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_ENABLED" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_TEXT" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "BANNER_LINK" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_COLOR" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "PRIMARY_HOVER_COLOR" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "SOCIAL_X" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "SOCIAL_FACEBOOK" } }),
-      (prisma as any).siteConfig.findUnique({ where: { key: "SOCIAL_INSTAGRAM" } }),
-    ]);
-    siteLogo = logoRow?.value || "";
-    logoSize = sizeRow?.value || "md";
-    bannerEnabled = (bannerEnabledRow?.value || "").toLowerCase() === "true";
-    bannerText = bannerTextRow?.value || "";
-    bannerLink = bannerLinkRow?.value || "";
-    primaryColor = primaryRow?.value || "";
-    primaryHoverColor = hoverRow?.value || "";
-    socialX = xRow?.value || "";
-    socialFacebook = fbRow?.value || "";
-    socialInstagram = igRow?.value || "";
+    const rows = await (prisma as any).siteConfig.findMany({
+      where: {
+        key: {
+          in: [
+            "SITE_LOGO",
+            "LOGO_SIZE",
+            "BANNER_ENABLED",
+            "BANNER_TEXT",
+            "BANNER_LINK",
+            "PRIMARY_COLOR",
+            "PRIMARY_HOVER_COLOR",
+            "SOCIAL_X",
+            "SOCIAL_FACEBOOK",
+            "SOCIAL_INSTAGRAM",
+          ],
+        },
+      },
+      select: { key: true, value: true },
+    });
+    const mapped = rows.reduce(
+      (acc: Record<string, string>, row: { key: string; value: string }) => {
+        acc[row.key] = row.value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    siteLogo = mapped.SITE_LOGO || "";
+    logoSize = mapped.LOGO_SIZE || "md";
+    bannerEnabled = (mapped.BANNER_ENABLED || "").toLowerCase() === "true";
+    bannerText = mapped.BANNER_TEXT || "";
+    bannerLink = mapped.BANNER_LINK || "";
+    primaryColor = mapped.PRIMARY_COLOR || "";
+    primaryHoverColor = mapped.PRIMARY_HOVER_COLOR || "";
+    socialX = mapped.SOCIAL_X || "";
+    socialFacebook = mapped.SOCIAL_FACEBOOK || "";
+    socialInstagram = mapped.SOCIAL_INSTAGRAM || "";
   } catch {}
 
   const cssVars = [
