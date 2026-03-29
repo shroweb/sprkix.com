@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { prisma } from "@lib/prisma";
 import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import {
   ArrowRight,
   TrendingUp,
   Database,
-  MessageSquare,
   Trophy,
   Star,
-  Award,
   Calendar,
-  Zap,
   Flame,
   Activity,
   Send,
@@ -19,52 +17,38 @@ import {
 } from "lucide-react";
 import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
-import HeroReviewCycler from "@components/HeroReviewCycler";
 import FeaturedEventCycler from "@components/FeaturedEventCycler";
 import HomePoll from "@components/HomePoll";
 
-export const dynamic = "force-dynamic";
+const getHomePageData = unstable_cache(
+  async () => {
+    const homeEventSelect = {
+      id: true,
+      title: true,
+      slug: true,
+      date: true,
+      promotion: true,
+      posterUrl: true,
+      startTime: true,
+      endTime: true,
+      reviews: { select: { rating: true } },
+    };
 
-export default async function Home() {
-  const user = await getUserFromServerCookie();
-  const userId = user?.id;
-
-  const eventSelect = {
-    id: true,
-    title: true,
-    slug: true,
-    date: true,
-    promotion: true,
-    venue: true,
-    posterUrl: true,
-    description: true,
-    type: true,
-    tmdbId: true,
-    profightdbUrl: true,
-    startTime: true,
-    endTime: true,
-    currentMatchOrder: true,
-    createdAt: true,
-  };
-
-  let results: any[] = [[], 0, 0, 0, 0, [], [], [], [], null];
-  try {
-    results = await Promise.all([
-      prisma.event.findMany({
-        take: 10,
-        orderBy: { createdAt: "desc" },
-        select: eventSelect,
-      }),
+    const [
+      eventCount,
+      wrestlerCount,
+      promotionCount,
+      allEventsForRank,
+      configs,
+      topMatches,
+      activePoll,
+      recentReviews,
+    ] = await Promise.all([
       prisma.event.count(),
-      prisma.review.count(),
       prisma.wrestler.count(),
       prisma.promotion.count(),
-      prisma.event.findMany({ select: { slug: true } }),
       prisma.event.findMany({
-        select: {
-          ...eventSelect,
-          reviews: { select: { rating: true, comment: true, user: { select: { name: true } } } },
-        },
+        select: homeEventSelect,
       }),
       prisma.siteConfig.findMany(),
       prisma.match.findMany({
@@ -73,7 +57,13 @@ export default async function Home() {
         take: 5,
         include: {
           participants: { include: { wrestler: true } },
-          event: { select: { ...eventSelect } },
+          event: {
+            select: {
+              slug: true,
+              title: true,
+              posterUrl: true,
+            },
+          },
         },
       }),
       prisma.poll.findFirst({
@@ -83,26 +73,76 @@ export default async function Home() {
             orderBy: { order: "asc" },
             include: { _count: { select: { votes: true } } },
           },
-          votes: userId ? { where: { userId }, select: { optionId: true } } : false,
         },
       }),
+      prisma.review.findMany({
+        where: {
+          createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        },
+        select: { eventId: true },
+      }),
     ]);
+
+    return {
+      eventCount,
+      wrestlerCount,
+      promotionCount,
+      allEventsForRank,
+      configs,
+      topMatches,
+      activePoll,
+      recentReviews,
+    };
+  },
+  ["home-page-shared-v2"],
+  { revalidate: 300 },
+);
+
+export default async function Home() {
+  const user = await getUserFromServerCookie();
+  const userId = user?.id;
+
+  let eventCount = 0;
+  let wrestlerCount = 0;
+  let promotionCount = 0;
+  let allEventsForRank: any[] = [];
+  let configs: { key: string; value: string }[] = [];
+  let topMatches: any[] = [];
+  let activePoll: any = null;
+  let recentReviews: { eventId: string }[] = [];
+
+  try {
+    ({
+      eventCount,
+      wrestlerCount,
+      promotionCount,
+      allEventsForRank,
+      configs,
+      topMatches,
+      activePoll,
+      recentReviews,
+    } = await getHomePageData());
   } catch (err) {
     console.error("Home page fetch error:", err);
   }
 
-  const [
-    events,
-    eventCount,
-    reviewCount,
-    wrestlerCount,
-    promotionCount,
-    allEventSlugs,
-    allEventsForRank,
-    configs,
-    topMatches,
-    activePoll,
-  ] = results;
+  let userVoteOptionId: string | null = null;
+  if (userId && activePoll?.id) {
+    try {
+      const vote = await prisma.pollVote.findUnique({
+        where: {
+          pollId_userId: {
+            pollId: activePoll.id,
+            userId,
+          },
+        },
+        select: { optionId: true },
+      });
+      userVoteOptionId = vote?.optionId ?? null;
+    } catch (err) {
+      console.error("Home poll vote fetch error:", err);
+    }
+  }
 
   const configMap = configs.reduce(
     (acc: Record<string, string>, curr: { key: string; value: string }) => ({
@@ -112,7 +152,7 @@ export default async function Home() {
     {} as Record<string, string>,
   );
 
-  const eventSlugs = allEventSlugs.map((e: any) => e.slug);
+  const eventSlugs = allEventsForRank.map((e: any) => e.slug);
   const heroImage = (configMap["HERO_IMAGE"] || "").trim();
 
   // Bayesian-weighted rankings for Hall of Fame
@@ -153,15 +193,6 @@ export default async function Home() {
     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Trending = most recently reviewed events (activity in last 7 days)
-  let recentReviews: { eventId: string }[] = [];
-  try {
-    recentReviews = await prisma.review.findMany({
-      where: { createdAt: { gte: sevenDaysAgo } },
-      select: { eventId: true },
-    });
-  } catch (err) {
-    console.error("Trending fetch error:", err);
-  }
   const trendingIds = Array.from(
     recentReviews.reduce((acc: Map<string, number>, r: any) => {
       acc.set(r.eventId, (acc.get(r.eventId) || 0) + 1);
@@ -180,7 +211,43 @@ export default async function Home() {
      .filter(Boolean) as typeof trendingEvents;
 
   // Featured events: Recent events if exist, else first in rank
-  const featuredEvents = recentEvents.length > 0 ? recentEvents.slice(0, 5) : ranked.slice(0, 1);
+  const featuredEventIds = (recentEvents.length > 0 ? recentEvents.slice(0, 5) : ranked.slice(0, 1)).map(
+    (event: any) => event.id,
+  );
+  let featuredEvents: any[] = [];
+  if (featuredEventIds.length > 0) {
+    try {
+      const featuredEventRows = await prisma.event.findMany({
+        where: { id: { in: featuredEventIds } },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          date: true,
+          promotion: true,
+          posterUrl: true,
+          startTime: true,
+          endTime: true,
+          reviews: {
+            select: {
+              id: true,
+              rating: true,
+              comment: true,
+              user: { select: { name: true } },
+            },
+          },
+        },
+      });
+      const featuredEventMap = new Map(
+        featuredEventRows.map((event: any) => [event.id, event]),
+      );
+      featuredEvents = featuredEventIds
+        .map((id: string) => featuredEventMap.get(id))
+        .filter(Boolean);
+    } catch (err) {
+      console.error("Featured events fetch error:", err);
+    }
+  }
 
   // Promotion cards computed from all events
   const promotionCardMap: Record<string, { name: string; eventCount: number; posters: (string|null)[]; latestDate: Date; avgRating: number|null; reviewCount: number }> = {};
@@ -454,7 +521,7 @@ export default async function Home() {
                 (sum: number, o: any) => sum + o._count.votes,
                 0
               )}
-              userVoteOptionId={activePoll.votes?.[0]?.optionId ?? null}
+              userVoteOptionId={userVoteOptionId}
               isLoggedIn={!!user}
               endsAt={activePoll.endsAt ? (activePoll.endsAt as Date).toISOString() : null}
             />
