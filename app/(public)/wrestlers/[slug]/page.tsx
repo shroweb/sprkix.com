@@ -11,6 +11,56 @@ import {
   Star,
 } from "lucide-react";
 import BioExpand from "./BioExpand";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const wrestler = await prisma.wrestler.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      slug: true,
+      imageUrl: true,
+      bio: true,
+      aliases: { select: { alias: true }, orderBy: { alias: "asc" } },
+    },
+  });
+
+  if (!wrestler) return {};
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
+  const aliases = wrestler.aliases.map((alias) => alias.alias).slice(0, 3).join(", ");
+  const description = wrestler.bio?.trim()
+    ? wrestler.bio.trim().slice(0, 155)
+    : aliases
+    ? `${wrestler.name} wrestler profile on Poison Rana. Match history, ratings, stats, and aliases including ${aliases}.`
+    : `${wrestler.name} wrestler profile on Poison Rana. Match history, ratings, career stats, and top-rated matches.`;
+
+  return {
+    title: `${wrestler.name} Wrestler Profile`,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/wrestlers/${wrestler.slug}`,
+    },
+    openGraph: {
+      title: `${wrestler.name} | Poison Rana`,
+      description,
+      url: `${siteUrl}/wrestlers/${wrestler.slug}`,
+      type: "profile",
+      images: wrestler.imageUrl ? [{ url: wrestler.imageUrl }] : undefined,
+    },
+    twitter: {
+      card: wrestler.imageUrl ? "summary_large_image" : "summary",
+      title: `${wrestler.name} | Poison Rana`,
+      description,
+      images: wrestler.imageUrl ? [wrestler.imageUrl] : undefined,
+    },
+  };
+}
 
 export default async function WrestlerPage({ params }: { params: any }) {
   const { slug } = await params;

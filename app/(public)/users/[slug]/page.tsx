@@ -11,6 +11,56 @@ import FollowListModal from "@components/FollowListModal";
 import VisualRating from "@components/VisualRating";
 import UserAvatar from "@components/UserAvatar";
 import PredictionsList from "@components/PredictionsList";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const profileUser = await prisma.user.findFirst({
+    where: {
+      OR: [{ slug }, { id: slug }],
+    },
+    select: {
+      name: true,
+      slug: true,
+      avatarUrl: true,
+      favoritePromotion: true,
+      _count: { select: { reviews: true } },
+    },
+  });
+
+  if (!profileUser) return {};
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
+  const displayName = profileUser.name || "Poison Rana user";
+  const description = profileUser.favoritePromotion
+    ? `${displayName}'s Poison Rana profile. Read reviews, see predictions, and track wrestling activity with a focus on ${profileUser.favoritePromotion}.`
+    : `${displayName}'s Poison Rana profile. Read reviews, see predictions, and explore their wrestling activity.`;
+
+  return {
+    title: `${displayName} Profile`,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/users/${profileUser.slug}`,
+    },
+    openGraph: {
+      title: `${displayName} | Poison Rana`,
+      description,
+      url: `${siteUrl}/users/${profileUser.slug}`,
+      type: "profile",
+      images: profileUser.avatarUrl ? [{ url: profileUser.avatarUrl }] : undefined,
+    },
+    twitter: {
+      card: profileUser.avatarUrl ? "summary_large_image" : "summary",
+      title: `${displayName} | Poison Rana`,
+      description,
+      images: profileUser.avatarUrl ? [profileUser.avatarUrl] : undefined,
+    },
+  };
+}
 
 export default async function UserProfilePage({
   params,
