@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Newspaper, Plus, Save, Search, Sparkles, Trash2 } from "lucide-react";
+import { ImageIcon, Newspaper, Plus, Save, Search, Sparkles, Trash2, Upload, X } from "lucide-react";
+import MediaPicker from "../components/MediaPicker";
 
 type NewsPost = {
   id: string;
@@ -71,6 +72,7 @@ export default function AdminNewsPage() {
   const [message, setMessage] = useState<string>("");
   const [entityQuery, setEntityQuery] = useState("");
   const [entityResults, setEntityResults] = useState<EntityResult[]>([]);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   async function loadPosts(selectId?: string | null) {
@@ -201,6 +203,7 @@ export default function AdminNewsPage() {
   );
 
   return (
+    <>
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-4">
         <div>
@@ -294,13 +297,63 @@ export default function AdminNewsPage() {
               />
             </Field>
 
-            <Field label="Cover Image URL">
-              <input
-                value={form.coverImage}
-                onChange={(e) => setForm((current) => ({ ...current, coverImage: e.target.value }))}
-                className="w-full rounded-xl border border-border px-4 py-3"
-                placeholder="https://..."
-              />
+            <Field label="Cover Image">
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-border bg-slate-50/80 p-4">
+                  {form.coverImage ? (
+                    <div className="space-y-4">
+                      <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-border bg-black/5">
+                        <img
+                          src={form.coverImage}
+                          alt="Selected cover"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowMediaPicker(true)}
+                          className="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-black uppercase text-white transition-colors hover:bg-zinc-800"
+                        >
+                          <Upload className="h-3.5 w-3.5" />
+                          Change Image
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setForm((current) => ({ ...current, coverImage: "" }))}
+                          className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-xs font-black uppercase text-muted-foreground transition-colors hover:bg-white"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                          Remove
+                        </button>
+                      </div>
+                      <p className="truncate text-xs text-muted-foreground">{form.coverImage}</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white border border-border">
+                          <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">No cover image selected</p>
+                          <p className="text-xs text-muted-foreground">
+                            Upload or choose from the media library.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowMediaPicker(true)}
+                        className="inline-flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-black uppercase text-white transition-colors hover:bg-zinc-800"
+                      >
+                        <Upload className="h-3.5 w-3.5" />
+                        Select Image
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </Field>
 
             <Field label="Article Body">
@@ -450,6 +503,17 @@ export default function AdminNewsPage() {
         </div>
       </div>
     </div>
+    {showMediaPicker ? (
+      <MediaPicker
+        title="Select News Cover Image"
+        onClose={() => setShowMediaPicker(false)}
+        onSelect={(url) => {
+          setForm((current) => ({ ...current, coverImage: url }));
+          setShowMediaPicker(false);
+        }}
+      />
+    ) : null}
+    </>
   );
 }
 

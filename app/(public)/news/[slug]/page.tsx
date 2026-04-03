@@ -7,6 +7,8 @@ import type { Metadata } from "next";
 import NewsContent from "@components/NewsContent";
 import { stripNewsShortcodes } from "@lib/news";
 
+export const revalidate = 300;
+
 async function getNewsPost(slug: string) {
   return prisma.newsPost.findFirst({
     where: {
@@ -18,6 +20,23 @@ async function getNewsPost(slug: string) {
       author: { select: { name: true, slug: true } },
     },
   });
+}
+
+export async function generateStaticParams() {
+  try {
+    const posts = await prisma.newsPost.findMany({
+      where: {
+        status: "published",
+        publishedAt: { lte: new Date() },
+      },
+      select: { slug: true },
+    });
+
+    return posts.map((post) => ({ slug: post.slug }));
+  } catch (error) {
+    console.error("News generateStaticParams error:", error);
+    return [];
+  }
 }
 
 export async function generateMetadata({
@@ -34,25 +53,57 @@ export async function generateMetadata({
   const description =
     post.seoDescription || post.excerpt || stripNewsShortcodes(post.content).slice(0, 155);
   const url = `${siteUrl}/news/${post.slug}`;
+  const coverImage = post.coverImage || `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
 
   return {
     title,
     description,
+    keywords: [
+      "wrestling news",
+      "pro wrestling news",
+      "wrestling analysis",
+      post.title,
+      post.author?.name || "Poison Rana",
+    ],
     alternates: { canonical: url },
+    authors: post.author?.name
+      ? [{ name: post.author.name, url: `${siteUrl}/users/${post.author.slug}` }]
+      : [{ name: "Poison Rana", url: siteUrl }],
+    category: "Sports",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     openGraph: {
       title,
       description,
       url,
       type: "article",
+      siteName: "Poison Rana",
+      locale: "en_GB",
       publishedTime: post.publishedAt?.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
+      section: "Wrestling News",
       authors: post.author?.name ? [post.author.name] : undefined,
-      images: post.coverImage ? [{ url: post.coverImage }] : undefined,
+      images: [
+        {
+          url: coverImage,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
-      card: post.coverImage ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: post.coverImage ? [post.coverImage] : undefined,
+      images: [coverImage],
     },
   };
 }
@@ -68,13 +119,21 @@ export default async function NewsArticlePage({
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
   const publishedAt = post.publishedAt || post.createdAt;
+  const articleUrl = `${siteUrl}/news/${post.slug}`;
+  const strippedContent = stripNewsShortcodes(post.content)
+    .replace(/\s+/g, " ")
+    .trim();
+  const wordCount = strippedContent ? strippedContent.split(" ").length : undefined;
+  const imageUrl = post.coverImage || `${siteUrl}/api/og?title=${encodeURIComponent(post.seoTitle || post.title)}`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: post.seoTitle || post.title,
-    description: post.seoDescription || post.excerpt,
+    description: post.seoDescription || post.excerpt || strippedContent.slice(0, 155),
     datePublished: publishedAt.toISOString(),
     dateModified: post.updatedAt.toISOString(),
+    inLanguage: "en-GB",
+    isAccessibleForFree: true,
     author: post.author?.name
       ? {
           "@type": "Person",
@@ -91,8 +150,37 @@ export default async function NewsArticlePage({
         url: `${siteUrl}/api/site/favicon`,
       },
     },
-    image: post.coverImage ? [post.coverImage] : undefined,
-    mainEntityOfPage: `${siteUrl}/news/${post.slug}`,
+    image: [imageUrl],
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": articleUrl,
+    },
+    articleSection: "Wrestling News",
+    wordCount,
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: siteUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "News",
+        item: `${siteUrl}/news`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: articleUrl,
+      },
+    ],
   };
 
   return (
@@ -100,6 +188,10 @@ export default async function NewsArticlePage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <Link
         href="/news"
