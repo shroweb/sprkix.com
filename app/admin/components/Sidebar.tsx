@@ -19,6 +19,7 @@ import {
   BarChart2,
   Send,
   Smartphone,
+  Newspaper,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -65,6 +66,7 @@ export default function Sidebar() {
               { href: "/admin/promotions", label: "Promotions", icon: Tag },
               { href: "/admin/users", label: "User Manager", icon: Users },
               { href: "/admin/reviews", label: "Review Browser", icon: LogOut },
+              { href: "/admin/news", label: "Newsroom", icon: Newspaper },
               { href: "/admin/submissions", label: "Event Submissions", icon: Send },
               { href: "/admin/import", label: "Import Queue", icon: Download },
               { href: "/admin/polls", label: "Polls", icon: BarChart2 },

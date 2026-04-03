@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/events',
     '/wrestlers',
     '/promotions',
+    '/news',
     '/rankings',
     '/leaderboard',
     '/lists',
@@ -29,16 +30,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let events: any[] = []
   let wrestlers: any[] = []
   let users: any[] = []
+  let promotions: any[] = []
+  let newsPosts: any[] = []
 
   try {
-    const [fetchedEvents, fetchedWrestlers, fetchedUsers] = await Promise.all([
+    const [fetchedEvents, fetchedWrestlers, fetchedUsers, fetchedPromotions, fetchedNewsPosts] = await Promise.all([
       prisma.event.findMany({ select: { slug: true, createdAt: true } }),
       prisma.wrestler.findMany({ select: { slug: true, createdAt: true } }),
       prisma.user.findMany({ select: { slug: true, createdAt: true } }),
+      prisma.promotion.findMany({ select: { shortName: true, createdAt: true } }),
+      prisma.newsPost.findMany({
+        where: { status: "published", publishedAt: { lte: new Date() } },
+        select: { slug: true, updatedAt: true },
+      }),
     ])
     events = fetchedEvents
     wrestlers = fetchedWrestlers
     users = fetchedUsers
+    promotions = fetchedPromotions
+    newsPosts = fetchedNewsPosts
   } catch (error) {
     console.error('Sitemap dynamic fetch error:', error)
   }
@@ -64,5 +74,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.4,
   }))
 
-  return [...staticRoutes, ...eventRoutes, ...wrestlerRoutes, ...userRoutes]
+  const promotionRoutes = promotions.map((promotion) => ({
+    url: `${baseUrl}/promotions/${promotion.shortName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`,
+    lastModified: promotion.createdAt,
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }))
+
+  const newsRoutes = newsPosts.map((post) => ({
+    url: `${baseUrl}/news/${post.slug}`,
+    lastModified: post.updatedAt,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  return [...staticRoutes, ...eventRoutes, ...wrestlerRoutes, ...userRoutes, ...promotionRoutes, ...newsRoutes]
 }

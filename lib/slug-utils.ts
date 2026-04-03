@@ -34,3 +34,13 @@ export async function uniqueEventSlug(title: string): Promise<string> {
   }
   return `${base}-${Date.now()}`;
 }
+
+export async function uniqueNewsSlug(title: string, excludeId?: string): Promise<string> {
+  const base = slugify(title);
+  const candidates = [base, ...Array.from({ length: 20 }, (_, i) => `${base}-${i + 2}`)];
+  for (const candidate of candidates) {
+    const existing = await prisma.newsPost.findUnique({ where: { slug: candidate } });
+    if (!existing || existing.id === excludeId) return candidate;
+  }
+  return `${base}-${Date.now()}`;
+}

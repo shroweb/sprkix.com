@@ -194,6 +194,13 @@ export default function Header({
             </button>
             <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-44 bg-card border border-border rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 z-50">
               <Link
+                href="/news"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                <Rss className="w-4 h-4 text-muted-foreground" />
+                News
+              </Link>
+              <Link
                 href="/faq"
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
               >
@@ -352,6 +359,9 @@ export default function Header({
               </span>
               <Link href="/polls" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 <BarChart2 className="w-5 h-5" /> Polls
+              </Link>
+              <Link href="/news" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
+                <Rss className="w-5 h-5" /> News
               </Link>
               <Link href="/faq" className="flex items-center gap-2 text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 <HelpCircle className="w-5 h-5" /> How it Works
