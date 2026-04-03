@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, Clock3 } from "lucide-react";
 import type { Metadata } from "next";
 import NewsContent from "@components/NewsContent";
-import { stripNewsShortcodes } from "@lib/news";
+import { stripNewsContent } from "@lib/news";
 
 export const revalidate = 300;
 
@@ -51,7 +51,7 @@ export async function generateMetadata({
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
   const title = post.seoTitle || post.title;
   const description =
-    post.seoDescription || post.excerpt || stripNewsShortcodes(post.content).slice(0, 155);
+    post.seoDescription || post.excerpt || stripNewsContent(post.content).slice(0, 155);
   const url = `${siteUrl}/news/${post.slug}`;
   const coverImage = post.coverImage || `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
 
@@ -120,7 +120,7 @@ export default async function NewsArticlePage({
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
   const publishedAt = post.publishedAt || post.createdAt;
   const articleUrl = `${siteUrl}/news/${post.slug}`;
-  const strippedContent = stripNewsShortcodes(post.content)
+  const strippedContent = stripNewsContent(post.content)
     .replace(/\s+/g, " ")
     .trim();
   const wordCount = strippedContent ? strippedContent.split(" ").length : undefined;

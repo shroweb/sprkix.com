@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { uniqueNewsSlug } from "@lib/slug-utils";
+import { stripNewsContent } from "@lib/news";
 import { revalidatePath } from "next/cache";
 
 function normalizeStatus(status?: string) {
@@ -42,8 +43,9 @@ export async function POST(req: Request) {
   const title = (body.title || "").trim();
   const excerpt = (body.excerpt || "").trim();
   const content = (body.content || "").trim();
+  const plainTextContent = stripNewsContent(content);
 
-  if (!title || !excerpt || !content) {
+  if (!title || !excerpt || !content || !plainTextContent) {
     return NextResponse.json(
       { error: "Title, excerpt, and content are required" },
       { status: 400 },

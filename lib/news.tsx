@@ -15,6 +15,20 @@ export function getPromotionNewsSlug(shortName: string) {
 }
 
 const SHORTCODE_RE = /\[\[(event|wrestler|promotion):([^\]|]+)\|([^\]]+)\]\]/g;
+const HTML_TAG_RE = /<\/?[a-z][\s\S]*>/i;
+
+export function isHtmlNewsContent(content: string) {
+  return HTML_TAG_RE.test(content);
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 function renderInline(text: string) {
   const parts: ReactNode[] = [];
@@ -50,7 +64,7 @@ function renderInline(text: string) {
   return parts;
 }
 
-export function renderNewsContent(content: string) {
+export function renderLegacyNewsContent(content: string) {
   const blocks = content
     .replace(/\r\n/g, "\n")
     .split(/\n{2,}/)
@@ -93,6 +107,37 @@ export function renderNewsContent(content: string) {
   });
 }
 
-export function stripNewsShortcodes(text: string) {
-  return text.replace(SHORTCODE_RE, (_, _type, _slug, label) => label);
+function replaceShortcodesWithAnchors(content: string) {
+  return content.replace(
+    SHORTCODE_RE,
+    (_match, type: NewsEntityType, slug: string, label: string) =>
+      `<a href="${escapeHtml(getNewsEntityHref(type, slug))}" data-news-entity="${type}" data-news-slug="${escapeHtml(slug)}">${escapeHtml(label)}</a>`,
+  );
+}
+
+export function sanitizeNewsHtml(content: string) {
+  return replaceShortcodesWithAnchors(content)
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
+    .replace(/<(iframe|object|embed|form|input|button|textarea|select|option)[^>]*>[\s\S]*?<\/\1>/gi, "")
+    .replace(/<(iframe|object|embed|form|input|button|textarea|select|option)([^>]*)\/?>/gi, "")
+    .replace(/\son[a-z]+="[^"]*"/gi, "")
+    .replace(/\son[a-z]+='[^']*'/gi, "")
+    .replace(/\son[a-z]+=[^\s>]+/gi, "")
+    .replace(/\sstyle="[^"]*"/gi, "")
+    .replace(/\sstyle='[^']*'/gi, "")
+    .replace(/href="javascript:[^"]*"/gi, 'href="#"')
+    .replace(/href='javascript:[^']*'/gi, "href='#'");
+}
+
+export function stripNewsContent(text: string) {
+  return text
+    .replace(SHORTCODE_RE, (_match, _type, _slug, label) => label)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
 }

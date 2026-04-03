@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageIcon, Newspaper, Plus, Save, Search, Sparkles, Trash2, Upload, X } from "lucide-react";
 import MediaPicker from "../components/MediaPicker";
+import { RichTextEditor, type RichTextEditorHandle } from "../components/RichTextEditor";
 
 type NewsPost = {
   id: string;
@@ -73,7 +74,7 @@ export default function AdminNewsPage() {
   const [entityQuery, setEntityQuery] = useState("");
   const [entityResults, setEntityResults] = useState<EntityResult[]>([]);
   const [showMediaPicker, setShowMediaPicker] = useState(false);
-  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<RichTextEditorHandle>(null);
 
   async function loadPosts(selectId?: string | null) {
     setLoading(true);
@@ -131,22 +132,11 @@ export default function AdminNewsPage() {
     setMessage("");
   }
 
-  function insertShortcode(shortcode: string) {
-    const textarea = contentRef.current;
-    const value = form.content;
-    if (!textarea) {
-      setForm((current) => ({ ...current, content: `${current.content}\n${shortcode}`.trim() }));
-      return;
-    }
-
-    const start = textarea.selectionStart ?? value.length;
-    const end = textarea.selectionEnd ?? value.length;
-    const next = `${value.slice(0, start)}${shortcode}${value.slice(end)}`;
-    setForm((current) => ({ ...current, content: next }));
-
-    requestAnimationFrame(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + shortcode.length, start + shortcode.length);
+  function insertEntityLink(result: EntityResult) {
+    editorRef.current?.insertEntityLink({
+      type: result.type,
+      slug: result.slug,
+      label: result.label,
     });
   }
 
@@ -357,12 +347,11 @@ export default function AdminNewsPage() {
             </Field>
 
             <Field label="Article Body">
-              <textarea
-                ref={contentRef}
+              <RichTextEditor
+                ref={editorRef}
                 value={form.content}
-                onChange={(e) => setForm((current) => ({ ...current, content: e.target.value }))}
-                className="w-full rounded-xl border border-border px-4 py-3 min-h-[420px] font-medium"
-                placeholder={"Use blank lines between paragraphs.\nUse ## for subheadings.\nUse [[wrestler:cody-rhodes|Cody Rhodes]] for internal links."}
+                onChange={(value) => setForm((current) => ({ ...current, content: value }))}
+                placeholder="Write the full article here. Use the toolbar for headings, lists, quotes, and links."
               />
             </Field>
 
@@ -474,7 +463,7 @@ export default function AdminNewsPage() {
                         </p>
                       </div>
                       <button
-                        onClick={() => insertShortcode(result.shortcode)}
+                        onClick={() => insertEntityLink(result)}
                         className="px-3 py-2 rounded-lg bg-primary/10 text-primary text-xs font-black uppercase"
                       >
                         Insert
@@ -488,15 +477,12 @@ export default function AdminNewsPage() {
             <div className="bg-white rounded-2xl border border-border p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <h2 className="font-bold">Writing Format</h2>
+                <h2 className="font-bold">Editor Tips</h2>
               </div>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>`## Heading` for section titles</li>
-                <li>`### Smaller Heading` for sub-sections</li>
-                <li>`- bullet` for lists</li>
-                <li>`[[event:slug|Label]]` for event links</li>
-                <li>`[[wrestler:slug|Label]]` for wrestler links</li>
-                <li>`[[promotion:slug|Label]]` for promotion links</li>
+                <li>Use the toolbar for headings, lists, quotes, and emphasis.</li>
+                <li>Use “Insert Internal Links” to place linked wrestlers, events, and promotions into the article.</li>
+                <li>Keep paragraphs short and use subheadings so posts scan well in search and on mobile.</li>
               </ul>
             </div>
           </div>
