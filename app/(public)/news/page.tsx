@@ -48,16 +48,6 @@ export default async function NewsIndexPage() {
         Back to Home
       </Link>
 
-      <div className="space-y-3">
-        <p className="text-xs font-black uppercase tracking-[0.25em] text-primary">Poison Rana News</p>
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black italic uppercase tracking-tighter">
-          Wrestling News
-        </h1>
-        <p className="text-muted-foreground font-medium italic max-w-2xl">
-          Breaking stories, sharp analysis, and the context behind the bell-to-bell.
-        </p>
-      </div>
-
       {featured ? (
         <Link
           href={`/news/${featured.slug}`}
