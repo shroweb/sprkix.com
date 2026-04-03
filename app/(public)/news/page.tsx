@@ -54,7 +54,7 @@ export default async function NewsIndexPage() {
           Wrestling News
         </h1>
         <p className="text-muted-foreground font-medium italic max-w-2xl">
-          Fresh wrestling coverage built for search, discovery, and deep internal linking.
+          Breaking stories, sharp analysis, and the context behind the bell-to-bell.
         </p>
       </div>
 
