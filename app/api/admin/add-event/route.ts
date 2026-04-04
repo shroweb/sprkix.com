@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { importMatchesFromCagematch } from "../../../../lib/cagematch";
 import { getUserFromServerCookie } from "../../../../lib/server-auth";
+import { revalidatePath } from "next/cache";
+import { postNewEventToX } from "@lib/x-event-post";
 
 export async function POST(req: Request) {
   const user = await getUserFromServerCookie();
@@ -36,6 +38,10 @@ export async function POST(req: Request) {
       },
     });
 
+    revalidatePath("/");
+    revalidatePath("/events");
+    revalidatePath(`/events/${newEvent.slug}`);
+
     // Auto-import matches if URL is present and matches Cagematch/ProfightDB pattern
     const importUrl = body.profightdbUrl;
     if (importUrl && (importUrl.includes("cagematch.net") || importUrl.includes("profightdb.com"))) {
@@ -48,6 +54,16 @@ export async function POST(req: Request) {
         );
         // We still return success for the event creation
       }
+    }
+
+    try {
+      await postNewEventToX({
+        title: newEvent.title,
+        slug: newEvent.slug,
+        promotion: newEvent.promotion,
+      });
+    } catch (postErr) {
+      console.error("❌ Error posting new event to X:", postErr);
     }
 
     return NextResponse.json({ success: true, id: newEvent.id, slug: newEvent.slug });
