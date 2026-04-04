@@ -15,6 +15,11 @@ function buildEventUrl(slug: string) {
   return `${siteUrl}/events/${slug}`;
 }
 
+function buildEventImageUrl(slug: string) {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
+  return `${siteUrl}/events/${slug}/opengraph-image`;
+}
+
 export async function postNewEventToX(payload: EventPostPayload) {
   const webhookUrl = getWebhookUrl();
   if (!webhookUrl) return;
@@ -25,9 +30,9 @@ export async function postNewEventToX(payload: EventPostPayload) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      value1: payload.title,
+      value1: payload.promotion?.trim() ? `${payload.promotion.trim()}: ${payload.title}` : payload.title,
       value2: buildEventUrl(payload.slug),
-      value3: payload.promotion || "New event",
+      value3: buildEventImageUrl(payload.slug),
     }),
     cache: "no-store",
   });
