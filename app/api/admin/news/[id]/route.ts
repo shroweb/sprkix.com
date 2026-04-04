@@ -71,6 +71,7 @@ export async function PATCH(
   revalidatePath(`/news/${existing.slug}`);
   revalidatePath(`/news/${post.slug}`);
   revalidatePath("/sitemap.xml");
+  revalidatePath("/news-sitemap.xml");
 
   return NextResponse.json(post);
 }
@@ -95,6 +96,7 @@ export async function DELETE(
   revalidatePath("/news");
   revalidatePath(`/news/${existing.slug}`);
   revalidatePath("/sitemap.xml");
+  revalidatePath("/news-sitemap.xml");
 
   return NextResponse.json({ success: true });
 }

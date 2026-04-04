@@ -75,6 +75,7 @@ export async function POST(req: Request) {
   revalidatePath("/news");
   revalidatePath(`/news/${post.slug}`);
   revalidatePath("/sitemap.xml");
+  revalidatePath("/news-sitemap.xml");
 
   return NextResponse.json(post);
 }
