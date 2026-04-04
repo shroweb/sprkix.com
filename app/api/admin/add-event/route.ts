@@ -61,6 +61,7 @@ export async function POST(req: Request) {
         title: newEvent.title,
         slug: newEvent.slug,
         promotion: newEvent.promotion,
+        posterUrl: newEvent.posterUrl,
       });
     } catch (postErr) {
       console.error("❌ Error posting new event to X:", postErr);

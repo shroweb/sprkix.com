@@ -91,6 +91,7 @@ export async function GET(req: NextRequest) {
         title: newEvent.title,
         slug: newEvent.slug,
         promotion: newEvent.promotion,
+        posterUrl: newEvent.posterUrl,
       });
     } catch (postErr) {
       console.error("NXT Sync IFTTT post error:", postErr);

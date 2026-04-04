@@ -291,6 +291,7 @@ export async function GET(req: Request) {
               where: { id: event.id },
               data: { posterUrl: tmdb.posterUrl },
             });
+            event.posterUrl = tmdb.posterUrl;
           }
         } catch { /* TMDB failing shouldn't block the import */ }
       }
@@ -300,6 +301,7 @@ export async function GET(req: Request) {
           title: event.title,
           slug: event.slug,
           promotion: event.promotion,
+          posterUrl: event.posterUrl,
         });
       } catch (postErr) {
         console.error(`[cron] Error posting "${normalised}" to IFTTT:`, postErr);

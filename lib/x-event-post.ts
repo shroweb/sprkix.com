@@ -2,6 +2,7 @@ type EventPostPayload = {
   title: string;
   slug: string;
   promotion?: string | null;
+  posterUrl?: string | null;
 };
 
 const DEFAULT_SITE_URL = "https://poisonrana.com";
@@ -15,8 +16,17 @@ function buildEventUrl(slug: string) {
   return `${siteUrl}/events/${slug}`;
 }
 
-function buildEventImageUrl({ title, promotion }: EventPostPayload) {
+function buildEventImageUrl({ title, promotion, posterUrl }: EventPostPayload) {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
+
+  if (posterUrl?.startsWith("http://") || posterUrl?.startsWith("https://")) {
+    return posterUrl;
+  }
+
+  if (posterUrl?.startsWith("/")) {
+    return `${siteUrl}${posterUrl}`;
+  }
+
   const params = new URLSearchParams({
     title,
     ...(promotion?.trim() ? { promotion: promotion.trim() } : {}),

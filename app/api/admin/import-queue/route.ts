@@ -182,6 +182,7 @@ export async function POST(req: NextRequest) {
         const tmdb = await findEventOnTMDB(event.title);
         if (tmdb?.posterUrl) {
           await prisma.event.update({ where: { id: event.id }, data: { posterUrl: tmdb.posterUrl } });
+          event.posterUrl = tmdb.posterUrl;
         }
       } catch { /* non-fatal */ }
     }
@@ -192,6 +193,7 @@ export async function POST(req: NextRequest) {
           title: event.title,
           slug: event.slug,
           promotion: event.promotion,
+          posterUrl: event.posterUrl,
         });
       } catch (postErr) {
         console.error("[import-queue] IFTTT post error:", postErr);
