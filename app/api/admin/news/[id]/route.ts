@@ -3,6 +3,7 @@ import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { uniqueNewsSlug } from "@lib/slug-utils";
 import { stripNewsContent } from "@lib/news";
+import { sendNewsPublishedWebhook } from "@lib/news-webhook";
 import { revalidatePath } from "next/cache";
 
 function normalizeStatus(status?: string) {
@@ -65,7 +66,19 @@ export async function PATCH(
       featured: !!body.featured,
       publishedAt,
     },
+    include: {
+      author: {
+        select: { name: true, slug: true },
+      },
+    },
   });
+
+  const becamePublished =
+    existing.status !== "published" && post.status === "published";
+
+  if (becamePublished) {
+    await sendNewsPublishedWebhook(post);
+  }
 
   revalidatePath("/news");
   revalidatePath(`/news/${existing.slug}`);
