@@ -3,6 +3,7 @@ import { prisma } from "../../../../../lib/prisma";
 import { importMatchesFromCagematch } from "../../../../../lib/cagematch";
 import { fetchCagematchEventInfo } from "../../../../../lib/cagematch-info";
 import { uniqueEventSlug } from "../../../../../lib/slug-utils";
+import { postNewEventToX } from "../../../../../lib/x-event-post";
 import * as cheerio from "cheerio";
 
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -84,6 +85,16 @@ export async function GET(req: NextRequest) {
     });
 
     await importMatchesFromCagematch(newEvent.id, absoluteUrl);
+
+    try {
+      await postNewEventToX({
+        title: newEvent.title,
+        slug: newEvent.slug,
+        promotion: newEvent.promotion,
+      });
+    } catch (postErr) {
+      console.error("NXT Sync IFTTT post error:", postErr);
+    }
 
     return NextResponse.json({
       success: true,

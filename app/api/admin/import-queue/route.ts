@@ -4,6 +4,7 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import { parseCagematchEventInfo, parseCagematchHtml } from "@lib/cagematch";
 import { findEventOnTMDB } from "@lib/tmdb";
 import { uniqueEventSlug } from "@lib/slug-utils";
+import { postNewEventToX } from "@lib/x-event-post";
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
 
 export const runtime = "nodejs";
@@ -136,6 +137,8 @@ export async function POST(req: NextRequest) {
     // Check if event already exists
     let event = await prisma.event.findFirst({ where: { profightdbUrl: absoluteUrl } });
 
+    let createdEvent = false;
+
     if (!event) {
       const slug = await uniqueEventSlug(title);
 
@@ -163,6 +166,7 @@ export async function POST(req: NextRequest) {
           network: info.network ?? null,
         },
       });
+      createdEvent = true;
     }
 
     // Import matches + wrestlers
@@ -180,6 +184,18 @@ export async function POST(req: NextRequest) {
           await prisma.event.update({ where: { id: event.id }, data: { posterUrl: tmdb.posterUrl } });
         }
       } catch { /* non-fatal */ }
+    }
+
+    if (createdEvent) {
+      try {
+        await postNewEventToX({
+          title: event.title,
+          slug: event.slug,
+          promotion: event.promotion,
+        });
+      } catch (postErr) {
+        console.error("[import-queue] IFTTT post error:", postErr);
+      }
     }
 
     return NextResponse.json({

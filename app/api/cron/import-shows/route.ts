@@ -9,6 +9,7 @@ import {
 } from "@lib/cagematch";
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
 import { findEventOnTMDB } from "@lib/tmdb";
+import { postNewEventToX } from "@lib/x-event-post";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 min — importing can be slow
@@ -292,6 +293,16 @@ export async function GET(req: Request) {
             });
           }
         } catch { /* TMDB failing shouldn't block the import */ }
+      }
+
+      try {
+        await postNewEventToX({
+          title: event.title,
+          slug: event.slug,
+          promotion: event.promotion,
+        });
+      } catch (postErr) {
+        console.error(`[cron] Error posting "${normalised}" to IFTTT:`, postErr);
       }
 
       console.log(`[cron] Created ${normalised} (${matchCount} matches)`);
