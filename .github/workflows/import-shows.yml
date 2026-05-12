@@ -15,27 +15,28 @@ on:
 jobs:
   import:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
-      - name: Call import endpoint
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Scrape and import shows
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          IMPORT_DATE: ${{ github.event.inputs.date }}
+          IMPORT_ENDPOINT_URL: https://poisonrana.com/api/cron/import-shows-browser
         run: |
-          DATE_PARAM=""
-          if [ -n "${{ github.event.inputs.date }}" ]; then
-            DATE_PARAM="?date=${{ github.event.inputs.date }}"
-          fi
-
-          RESPONSE=$(curl -s -L -w "\n%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "https://poisonrana.com/api/cron/import-shows${DATE_PARAM}")
-
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | head -n -1)
-
-          echo "HTTP Status: $HTTP_CODE"
-          echo "Response: $BODY"
-
-          if [ "$HTTP_CODE" != "200" ]; then
-            echo "Import failed with status $HTTP_CODE"
-            exit 1
-          fi
+          node scripts/import-shows-browser.mjs
