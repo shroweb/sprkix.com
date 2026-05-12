@@ -85,7 +85,7 @@ async function fetchHtml(url: string): Promise<FetchHtmlResult> {
     try {
       const renderedUrl =
         `https://api.scraperapi.com/?api_key=${scraperKey}` +
-        `&render=true&wait_for_selector=.Caption&url=${encodeURIComponent(url)}`;
+        `&premium=true&render=true&wait_for_selector=.Caption&url=${encodeURIComponent(url)}`;
       const rendered = await fetch(renderedUrl, {
         signal: AbortSignal.timeout(60000),
       });
@@ -97,7 +97,7 @@ async function fetchHtml(url: string): Promise<FetchHtmlResult> {
 
     try {
       const r = await fetch(
-        `https://api.scraperapi.com/?api_key=${scraperKey}&url=${encodeURIComponent(url)}`,
+        `https://api.scraperapi.com/?api_key=${scraperKey}&premium=true&url=${encodeURIComponent(url)}`,
         { signal: AbortSignal.timeout(30000) }
       );
       if (!r.ok) throw new Error(`status ${r.status}`);
