@@ -34,13 +34,50 @@ const PROMOTION_MAP: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
-async function fetchHtml(url: string): Promise<string> {
+type FetchHtmlResult = {
+  html: string;
+  source: "scraperapi" | "direct" | "allorigins" | "codetabs";
+};
+
+function detectBlockedHtml(html: string): string | null {
+  const lower = html.toLowerCase();
+  const blockMarkers: Array<[string, string]> = [
+    ["x-sucuri-block", "Sucuri block page"],
+    ["access denied", "Access denied page"],
+    ["request unsuccessful", "Blocked request page"],
+    ["captcha", "Captcha challenge page"],
+    ["just a moment", "Browser challenge page"],
+    ["cf-browser-verification", "Cloudflare challenge page"],
+    ["please enable cookies", "Cookie challenge page"],
+    ["please enable javascript", "JavaScript challenge page"],
+  ];
+
+  for (const [needle, label] of blockMarkers) {
+    if (lower.includes(needle)) return label;
+  }
+
+  return null;
+}
+
+async function fetchHtml(url: string): Promise<FetchHtmlResult> {
   const headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
     Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.5",
   };
+  const failures: string[] = [];
+
+  async function validateHtml(source: FetchHtmlResult["source"], html: string) {
+    const blockedReason = detectBlockedHtml(html);
+    if (blockedReason) {
+      throw new Error(`${source} returned ${blockedReason}`);
+    }
+    if (html.trim().length < 500) {
+      throw new Error(`${source} returned unexpectedly short HTML`);
+    }
+    return { html, source } as FetchHtmlResult;
+  }
 
   // Try ScraperAPI first (handles anti-bot protection)
   const scraperKey = process.env.SCRAPER_API_KEY;
@@ -50,35 +87,59 @@ async function fetchHtml(url: string): Promise<string> {
         `https://api.scraperapi.com/?api_key=${scraperKey}&url=${encodeURIComponent(url)}`,
         { signal: AbortSignal.timeout(30000) }
       );
-      if (r.ok) return r.text();
-    } catch { /* fall through */ }
+      if (!r.ok) throw new Error(`status ${r.status}`);
+      return await validateHtml("scraperapi", await r.text());
+    } catch (err: any) {
+      failures.push(`scraperapi: ${err.message}`);
+    }
   }
 
   // Fallback: direct fetch
   try {
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(12000) });
-    if (res.ok) return res.text();
-  } catch { /* fall through to proxies */ }
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    return await validateHtml("direct", await res.text());
+  } catch (err: any) {
+    failures.push(`direct: ${err.message}`);
+  }
 
   // Last resort proxies
-  const proxies = [
-    async () => {
-      const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
-      if (!r.ok) throw new Error("allorigins failed");
-      const d = await r.json();
-      if (!d.contents) throw new Error("allorigins empty");
-      return d.contents as string;
+  const proxies: Array<{
+    name: FetchHtmlResult["source"];
+    run: () => Promise<string>;
+  }> = [
+    {
+      name: "allorigins",
+      run: async () => {
+        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        const d = await r.json();
+        if (!d.contents) throw new Error("empty response");
+        return d.contents as string;
+      },
     },
-    async () => {
-      const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
-      if (!r.ok) throw new Error("codetabs failed");
-      return r.text();
+    {
+      name: "codetabs",
+      run: async () => {
+        const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`, { signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        return r.text();
+      },
     },
   ];
   for (const proxy of proxies) {
-    try { return await proxy(); } catch { /* try next */ }
+    try {
+      return await validateHtml(proxy.name, await proxy.run());
+    } catch (err: any) {
+      failures.push(`${proxy.name}: ${err.message}`);
+    }
   }
-  throw new Error(`Proxy failed for ${url}`);
+
+  throw new Error(`All fetch sources failed for ${url}. ${failures.join(" | ")}`);
+}
+
+function describeEntrySource(entryCount: number, source: FetchHtmlResult["source"]) {
+  return `${source}:${entryCount}`;
 }
 
 function slugifyTitle(title: string): string {
@@ -187,16 +248,19 @@ export async function GET(req: Request) {
   // headings and includes newly-added shows that haven't been rated yet.
   // Fall back to the list view if the homepage doesn't have the target date.
   let entries: ReturnType<typeof parseCagematchEventList> = [];
+  let listSource: string | null = null;
   try {
-    const homepageHtml = await fetchHtml("https://www.cagematch.net/");
-    entries = parseCagematchHomepage(homepageHtml, dateStr);
+    const homepageFetch = await fetchHtml("https://www.cagematch.net/");
+    entries = parseCagematchHomepage(homepageFetch.html, dateStr);
+    listSource = describeEntrySource(entries.length, homepageFetch.source);
 
     // If homepage didn't have events for this date (it only covers recent days),
     // fall back to the top-rated list view
     if (entries.length === 0) {
       const listUrl = `https://www.cagematch.net/?id=1&view=list&dateFrom=${dateStr}&dateTo=${dateStr}`;
-      const listHtml = await fetchHtml(listUrl);
-      entries = parseCagematchEventList(listHtml);
+      const listFetch = await fetchHtml(listUrl);
+      entries = parseCagematchEventList(listFetch.html);
+      listSource = describeEntrySource(entries.length, listFetch.source);
     }
   } catch (err: any) {
     console.error("[cron] Failed to fetch Cagematch listing:", err.message);
@@ -212,8 +276,21 @@ export async function GET(req: Request) {
     promotionMatched: 0,
     alreadyExists: 0,
     created: 0,
+    fetchSource: listSource,
     errors: [] as string[],
   };
+
+  if (entries.length === 0) {
+    const emptyError = `[cron] Parsed zero entries for ${dateStr}. Source: ${listSource ?? "unknown"}`;
+    console.error(emptyError);
+    return NextResponse.json(
+      {
+        ...results,
+        error: emptyError,
+      },
+      { status: 500 }
+    );
+  }
 
   for (const entry of entries) {
     const promoLower = entry.promotion.toLowerCase();
@@ -259,8 +336,8 @@ export async function GET(req: Request) {
 
     try {
       // Fetch the individual event page to get full details
-      const eventHtml = await fetchHtml(entry.cagematchUrl);
-      const info = parseCagematchEventInfo(eventHtml);
+      const eventFetch = await fetchHtml(entry.cagematchUrl);
+      const info = parseCagematchEventInfo(eventFetch.html);
 
       const slug = await uniqueEventSlug(slugifyTitle(normalised));
       const promotion = promoShort ?? entry.promotion;
@@ -280,7 +357,7 @@ export async function GET(req: Request) {
       });
 
       // Import match card
-      const matchCount = await importMatchesIntoEvent(event.id, eventHtml);
+      const matchCount = await importMatchesIntoEvent(event.id, eventFetch.html);
 
       // Try TMDB for poster (PPVs often have one; weekly TV usually won't)
       if (!event.posterUrl) {
