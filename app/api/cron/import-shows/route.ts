@@ -36,7 +36,7 @@ const PROMOTION_MAP: Record<string, string> = {
 
 type FetchHtmlResult = {
   html: string;
-  source: "scraperapi" | "direct" | "allorigins" | "codetabs";
+  source: "scraperapi-render" | "scraperapi" | "direct" | "allorigins" | "codetabs";
 };
 
 function detectBlockedHtml(html: string): string | null {
@@ -82,6 +82,19 @@ async function fetchHtml(url: string): Promise<FetchHtmlResult> {
   // Try ScraperAPI first (handles anti-bot protection)
   const scraperKey = process.env.SCRAPER_API_KEY;
   if (scraperKey) {
+    try {
+      const renderedUrl =
+        `https://api.scraperapi.com/?api_key=${scraperKey}` +
+        `&render=true&wait_for_selector=.Caption&url=${encodeURIComponent(url)}`;
+      const rendered = await fetch(renderedUrl, {
+        signal: AbortSignal.timeout(60000),
+      });
+      if (!rendered.ok) throw new Error(`status ${rendered.status}`);
+      return await validateHtml("scraperapi-render", await rendered.text());
+    } catch (err: any) {
+      failures.push(`scraperapi-render: ${err.message}`);
+    }
+
     try {
       const r = await fetch(
         `https://api.scraperapi.com/?api_key=${scraperKey}&url=${encodeURIComponent(url)}`,
