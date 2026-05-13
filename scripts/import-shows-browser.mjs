@@ -136,16 +136,20 @@ function parseEventList(html) {
 }
 
 async function gotoAndGetHtml(page, url, waitSelector) {
+  console.log(`[browser-import] Visiting ${url}`);
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 90000 });
   if (waitSelector) {
     try {
       await page.waitForSelector(waitSelector, { timeout: 15000 });
+      console.log(`[browser-import] Found selector ${waitSelector} on ${url}`);
     } catch {
-      // Keep going — content check happens afterwards.
+      console.log(`[browser-import] Selector ${waitSelector} not found on ${url}, continuing with raw HTML`);
     }
   }
   await page.waitForTimeout(1500);
-  return page.content();
+  const html = await page.content();
+  console.log(`[browser-import] Retrieved ${html.length} chars from ${url}`);
+  return html;
 }
 
 function dedupeEntries(entries) {
@@ -164,6 +168,9 @@ async function main() {
     process.env.IMPORT_ENDPOINT_URL ||
     "https://poisonrana.com/api/cron/import-shows-browser";
 
+  console.log(`[browser-import] Target date: ${targetDate}`);
+  console.log(`[browser-import] Import endpoint: ${endpoint}`);
+
   if (!cronSecret) {
     throw new Error("CRON_SECRET is required");
   }
@@ -178,27 +185,35 @@ async function main() {
   try {
     const homepageHtml = await gotoAndGetHtml(page, "https://www.cagematch.net/", ".Caption");
     let entries = parseHomepage(homepageHtml, targetDate);
+    console.log(`[browser-import] Homepage yielded ${entries.length} entries`);
 
     if (entries.length === 0) {
       const listUrl = `https://www.cagematch.net/?id=1&view=list&dateFrom=${targetDate}&dateTo=${targetDate}`;
       const listHtml = await gotoAndGetHtml(page, listUrl, "tr.TRow1, tr.TRow2");
       entries = parseEventList(listHtml);
+      console.log(`[browser-import] List page yielded ${entries.length} entries`);
     }
 
     entries = dedupeEntries(entries);
+    console.log(`[browser-import] ${entries.length} entries remain after dedupe`);
 
     if (entries.length === 0) {
+      console.log("[browser-import] Homepage preview:");
+      console.log(homepageHtml.slice(0, 1000));
       throw new Error(`No entries found for ${targetDate}`);
     }
 
     const events = [];
     for (const entry of entries) {
+      console.log(`[browser-import] Fetching event page for ${entry.title} (${entry.cagematchUrl})`);
       const eventHtml = await gotoAndGetHtml(page, entry.cagematchUrl, ".InformationBoxTable, .Match, table");
       events.push({
         ...entry,
         eventHtml,
       });
     }
+
+    console.log(`[browser-import] Posting ${events.length} scraped events to import endpoint`);
 
     const res = await fetch(endpoint, {
       method: "POST",
@@ -214,6 +229,7 @@ async function main() {
     });
 
     const text = await res.text();
+    console.log(`[browser-import] Import endpoint status: ${res.status}`);
     console.log(text);
 
     if (!res.ok) {
