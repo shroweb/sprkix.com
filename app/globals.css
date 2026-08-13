@@ -93,15 +93,19 @@
 
 @layer components {
   .glass-card {
-    @apply bg-opacity-20 backdrop-blur-lg bg-white border border-white border-opacity-10 shadow-xl;
+    @apply bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 shadow-xl rounded-2xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-slate-700 hover:bg-slate-900/80 hover:-translate-y-1 hover:shadow-2xl;
   }
 
   .btn-primary {
-    @apply px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg transition-all hover:opacity-90 active:scale-95;
+    @apply px-4 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl transition-all hover:bg-[var(--primary-hover)] active:scale-95 shadow-md;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-secondary text-secondary-foreground font-semibold rounded-lg transition-all hover:bg-opacity-80 active:scale-95;
+    @apply px-4 py-2.5 bg-secondary text-secondary-foreground font-semibold rounded-xl transition-all hover:bg-slate-800 active:scale-95 border border-slate-700/60;
   }
 
   .admin-sidebar-link {
@@ -111,11 +115,27 @@
   .admin-sidebar-link.active {
     @apply text-foreground bg-secondary font-medium;
   }
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(30, 41, 59, 0.4) 25%, rgba(51, 65, 85, 0.6) 50%, rgba(30, 41, 59, 0.4) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s infinite ease-in-out;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -123,9 +143,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted rounded-full;
+  @apply bg-slate-800 rounded-full border-2 border-background;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-accent;
+  @apply bg-slate-700;
 }
+

@@ -23,6 +23,7 @@ import WatchlistIcon from "@components/WatchlistIcon";
 import WatchedIcon from "@components/WatchedIcon";
 import AddToListButton from "@components/AddToListButton";
 import VisualRating from "@components/VisualRating";
+import RatingDistribution from "@components/RatingDistribution";
 import type { Metadata } from "next";
 
 // Cached per-request: avoids running the full-table rating scan more than once
@@ -759,8 +760,15 @@ export default async function EventPage({
               // ── Review tab (archive only) ────────────────────────────────
               let reviewContent: React.ReactNode = undefined;
               if (isArchive) {
+                const eventRatings = (event.reviews || []).map((r: any) => r.rating);
                 reviewContent = (
-                  <div className="grid xl:grid-cols-2 gap-12">
+                  <div className="space-y-8">
+                    <RatingDistribution
+                      ratings={eventRatings}
+                      averageRating={averageRating || undefined}
+                      totalCount={event.reviews.length}
+                    />
+                    <div className="grid xl:grid-cols-2 gap-12">
                     {/* Review Form */}
                     <div className="space-y-6">
                       <h2 className="text-3xl font-semibold uppercase italic tracking-tighter underline decoration-primary decoration-4 underline-offset-8">
@@ -902,8 +910,9 @@ export default async function EventPage({
                       })()}
                     </div>
                   </div>
-                );
-              }
+                </div>
+              );
+            }
 
               // ── Build tabs list (only include what's relevant) ────────────
               const tabs: EventTab[] = [

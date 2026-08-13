@@ -82,11 +82,10 @@ export default function Header({
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border py-4 shadow-2xl"
-          : // Give the nav its own readable fade without smothering the hero image.
-            "bg-gradient-to-b from-background/85 via-background/35 to-transparent backdrop-blur-md py-6"
+          ? "bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80 py-3 shadow-xl"
+          : "bg-gradient-to-b from-slate-950/90 via-slate-950/40 to-transparent backdrop-blur-md py-5"
       }`}
     >
       {showBanner && (
