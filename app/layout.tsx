@@ -10,7 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
   let tagline = "Rate, review, rank, and track professional wrestling.";
   let description =
     "Poison Rana is the community archive for professional wrestling: rate events and matches, track predictions, explore rankings, and discover shows across WWE, AEW, NJPW, TNA, ROH, Stardom, and more.";
-  let favicon = "/api/site/favicon";
+  const favicon =
+    "https://poisonrana.com/media/settings/site-logo-87c0f9ef-6a20-4abe-a05e-f8e6fb258a36.png";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
 
   try {
@@ -40,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: "/",
     },
     icons: {
-      icon: favicon,
+      icon: { url: favicon, type: "image/png" },
       shortcut: favicon,
       apple: favicon,
     },

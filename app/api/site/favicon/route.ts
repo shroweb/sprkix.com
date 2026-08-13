@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const DEFAULT_FAVICON =
+  "https://poisonrana.com/media/settings/site-logo-87c0f9ef-6a20-4abe-a05e-f8e6fb258a36.png";
+
 function parseDataUrl(value: string) {
   const match = value.match(/^data:([^;,]+)?(;base64)?,([\s\S]*)$/);
   if (!match) return null;
@@ -23,7 +26,7 @@ function parseDataUrl(value: string) {
 }
 
 export async function GET(req: Request) {
-  const fallbackUrl = new URL("/favicon.ico", req.url);
+  const fallbackUrl = new URL(DEFAULT_FAVICON);
 
   try {
     const row = await (prisma as any).siteConfig
