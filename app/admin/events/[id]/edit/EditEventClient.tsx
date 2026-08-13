@@ -447,7 +447,7 @@ export default function EditEventClient({
       <div className="bg-white rounded-[2rem] border border-border shadow-sm overflow-hidden">
         <div className="bg-slate-50 border-b border-border p-6 flex items-center gap-3">
           <ImageIcon className="w-5 h-5 text-primary" />
-          <h2 className="font-black uppercase italic tracking-tighter text-sm">
+          <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
             Event Details
           </h2>
         </div>
@@ -796,7 +796,7 @@ export default function EditEventClient({
         <div className="bg-slate-50 border-b border-border p-6 flex items-center gap-3">
           <Sparkles className="w-5 h-5 text-primary" />
           <div>
-            <h2 className="font-black uppercase italic tracking-tighter text-sm">
+            <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
               Import Match Card
             </h2>
             <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
@@ -898,7 +898,7 @@ export default function EditEventClient({
       {/* Match Card Section */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-black tracking-tight uppercase italic">
+          <h2 className="text-xl font-semibold tracking-tight uppercase italic">
             Match Card
           </h2>
           <p className="text-muted-foreground text-sm font-medium italic">
@@ -918,7 +918,7 @@ export default function EditEventClient({
       {isAddingMatch && (
         <div className="bg-white rounded-[2rem] border border-border shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
           <div className="bg-slate-50 border-b border-border p-6 flex justify-between items-center">
-            <h2 className="font-black uppercase italic tracking-tighter flex items-center gap-2">
+            <h2 className="font-semibold uppercase italic tracking-tighter flex items-center gap-2">
               <Trophy className="w-5 h-5 text-primary" /> Create New Match
             </h2>
             <button
@@ -1128,7 +1128,7 @@ export default function EditEventClient({
         {matches.length === 0 ? (
           <div className="bg-white rounded-3xl border border-border p-16 text-center shadow-sm">
             <Trophy className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-            <h3 className="text-lg font-black uppercase italic tracking-tighter mb-1">
+            <h3 className="text-lg font-bold uppercase italic tracking-tighter mb-1">
               No Matches Booked
             </h3>
             <p className="text-muted-foreground text-sm italic">
@@ -1145,7 +1145,7 @@ export default function EditEventClient({
                 /* ── Inline Edit Mode ── */
                 <div className="p-6 space-y-5">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-black uppercase italic tracking-tighter text-sm text-primary flex items-center gap-2">
+                    <h3 className="font-bold uppercase italic tracking-tighter text-sm text-primary flex items-center gap-2">
                       <Pencil className="w-4 h-4" /> Editing Match
                     </h3>
                     <button
@@ -1414,7 +1414,7 @@ export default function EditEventClient({
 
                   <div className="flex justify-between items-start mb-4 pr-20">
                     <div>
-                      <h3 className="font-black italic uppercase tracking-tighter text-xl">
+                      <h3 className="font-bold italic uppercase tracking-tighter text-xl">
                         {match.title}
                       </h3>
                       <div className="flex items-center gap-3 mt-1">

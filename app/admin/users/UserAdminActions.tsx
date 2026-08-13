@@ -196,7 +196,7 @@ export default function UserAdminActions({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-black text-sm uppercase tracking-widest">Edit User</h3>
+              <h3 className="font-bold text-sm uppercase tracking-widest">Edit User</h3>
               <button onClick={() => setEditOpen(false)} className="p-1 hover:bg-secondary rounded-lg"><X className="w-4 h-4" /></button>
             </div>
             <div className="space-y-3">
@@ -234,7 +234,7 @@ export default function UserAdminActions({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-black text-sm uppercase tracking-widest">Temporary Password</h3>
+              <h3 className="font-bold text-sm uppercase tracking-widest">Temporary Password</h3>
               <button onClick={() => setTempPassword(null)} className="p-1 hover:bg-secondary rounded-lg"><X className="w-4 h-4" /></button>
             </div>
             <p className="text-xs text-muted-foreground">Share this with the user. They should change it after logging in.</p>

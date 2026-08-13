@@ -64,7 +64,7 @@ export default function LoginPage() {
           onSubmit={handleLogin}
           className="space-y-4 backdrop-blur p-8 rounded-2xl shadow-lg border border-white/10"
         >
-          <h1 className="text-2xl font-extrabold text-white text-center mb-6">
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white text-center mb-6">
             Login to Poison Rana
           </h1>
 

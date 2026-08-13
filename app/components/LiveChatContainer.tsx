@@ -156,7 +156,7 @@ export default function LiveChatContainer({
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse border-2 border-background" />
           </div>
           <div>
-            <h3 className="text-sm font-black uppercase italic tracking-tighter">Watch Party Chat</h3>
+            <h3 className="text-sm font-bold uppercase italic tracking-tighter">Watch Party Chat</h3>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
               {comments.length > 0
                 ? `${comments.length} message${comments.length === 1 ? "" : "s"}`

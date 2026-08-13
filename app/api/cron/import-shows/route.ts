@@ -14,6 +14,14 @@ import { postNewEventToX } from "@lib/x-event-post";
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 min — importing can be slow
 
+const CRON_SECRET = process.env.CRON_SECRET;
+
+function getBearerSecret(req: Request): string | null {
+  const auth = req.headers.get("authorization") || "";
+  const match = auth.match(/^Bearer\s+(.+)$/i);
+  return match?.[1] ?? null;
+}
+
 // ─── Promotions to auto-import ────────────────────────────────────────────
 // Cagematch uses full promotion names in their listings.
 // These strings are matched case-insensitively against the scraped promotion column.
@@ -228,6 +236,11 @@ async function importMatchesIntoEvent(eventId: string, html: string) {
 // ─── Cron handler ─────────────────────────────────────────────────────────
 
 export async function GET(req: Request) {
+  // Require the cron secret whenever it's configured — this endpoint triggers
+  // expensive Cagematch scraping, and admin bulk-import already sends it.
+  if (CRON_SECRET && getBearerSecret(req) !== CRON_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { searchParams } = new URL(req.url);
 
@@ -334,11 +347,17 @@ export async function GET(req: Request) {
     const normalised = entry.title.trim();
     const existing = await prisma.event.findFirst({
       where: {
-        title: { equals: normalised, mode: "insensitive" },
-        date: {
-          gte: new Date(eventDate.getTime() - 12 * 3600_000),
-          lte: new Date(eventDate.getTime() + 36 * 3600_000),
-        },
+        OR: [
+          // Same Cagematch page (catches re-airs listed on multiple days)
+          { profightdbUrl: entry.cagematchUrl },
+          {
+            title: { equals: normalised, mode: "insensitive" },
+            date: {
+              gte: new Date(eventDate.getTime() - 12 * 3600_000),
+              lte: new Date(eventDate.getTime() + 36 * 3600_000),
+            },
+          },
+        ],
       },
     });
 

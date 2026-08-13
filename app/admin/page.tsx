@@ -54,7 +54,7 @@ export default async function AdminHome() {
               <div className="p-2 rounded-xl bg-secondary text-slate-600 border border-border">
                 <stat.icon className="w-4 h-4" />
               </div>
-              <h3 className="text-muted-foreground text-[9px] font-black uppercase tracking-[0.2em]">
+              <h3 className="text-muted-foreground text-[9px] font-bold uppercase tracking-[0.2em]">
                 {stat.label}
               </h3>
             </div>

@@ -84,7 +84,7 @@ export default async function PulsePage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px]" />
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="space-y-2 text-center md:text-left">
-            <h2 className="text-3xl font-black italic tracking-tighter italic italic">System Efficiency</h2>
+            <h2 className="text-3xl font-semibold italic tracking-tighter italic italic">System Efficiency</h2>
             <p className="text-slate-400 text-sm max-w-sm">The database is operating at peak performance. All match caches are warmed and ready for traffic.</p>
           </div>
           <div className="flex gap-4">

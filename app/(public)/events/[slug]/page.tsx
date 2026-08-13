@@ -763,7 +763,7 @@ export default async function EventPage({
                   <div className="grid xl:grid-cols-2 gap-12">
                     {/* Review Form */}
                     <div className="space-y-6">
-                      <h2 className="text-3xl font-black uppercase italic tracking-tighter underline decoration-primary decoration-4 underline-offset-8">
+                      <h2 className="text-3xl font-semibold uppercase italic tracking-tighter underline decoration-primary decoration-4 underline-offset-8">
                         Write a Review
                       </h2>
                       <div className="bg-card border border-border rounded-[2rem] p-8">
@@ -785,7 +785,7 @@ export default async function EventPage({
                     {/* Recent Reviews List */}
                     <div className="space-y-6">
                       <div className="flex justify-between items-center">
-                        <h2 className="text-3xl font-black uppercase italic tracking-tighter underline decoration-primary decoration-4 underline-offset-8">
+                        <h2 className="text-3xl font-semibold uppercase italic tracking-tighter underline decoration-primary decoration-4 underline-offset-8">
                           Fan Reactions
                         </h2>
                         <Link
@@ -973,7 +973,7 @@ export default async function EventPage({
           <section className="pt-16 pb-4 relative z-10">
             <div>
               <div className="flex flex-col sm:flex-row items-baseline sm:items-center justify-between gap-4 mb-10">
-                <h2 className="text-2xl sm:text-3xl font-black uppercase italic tracking-tighter">
+                <h2 className="text-2xl sm:text-3xl font-semibold uppercase italic tracking-tighter">
                   More from {event.promotion}
                 </h2>
                 <Link
@@ -1007,7 +1007,7 @@ export default async function EventPage({
                         </div>
                       )}
                     </div>
-                    <h3 className="font-black text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {rel.title.replace(/–\s\d{4}.*$/, "")}
                     </h3>
                     <p className="text-[10px] font-bold text-muted-foreground mt-1">

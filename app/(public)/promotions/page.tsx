@@ -136,7 +136,7 @@ export default async function PromotionsPage() {
             {/* Info */}
             <div className="space-y-3">
               <div>
-                <h2 className="text-2xl font-black italic uppercase tracking-tighter group-hover:text-primary transition-colors">
+                <h2 className="text-2xl font-semibold italic uppercase tracking-tighter group-hover:text-primary transition-colors">
                   {promo.name}
                 </h2>
               </div>

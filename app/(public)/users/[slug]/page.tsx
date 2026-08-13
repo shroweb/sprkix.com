@@ -374,7 +374,7 @@ export default async function UserProfilePage({
         <section className="space-y-8">
           <div className="flex items-center gap-6">
             <div className="px-5 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-red-500">
+              <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-red-500">
                 Favorite Matches
               </h2>
             </div>
@@ -415,7 +415,7 @@ export default async function UserProfilePage({
                         {new Date(fav.match.event.date).getFullYear()}
                       </span>
                     </div>
-                    <h3 className="font-black text-lg uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
+                    <h3 className="font-bold text-lg uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
                       {fav.match.title}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 pt-2">
@@ -445,7 +445,7 @@ export default async function UserProfilePage({
           <section className="space-y-8">
             <div className="flex items-center gap-6">
               <div className="px-5 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                <h2 className="text-2xl font-black italic uppercase tracking-tighter text-emerald-400">
+                <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-emerald-400">
                   Predictions
                 </h2>
               </div>
@@ -467,7 +467,7 @@ export default async function UserProfilePage({
         <section className="space-y-8">
            <div className="flex items-center gap-6">
             <div className="px-5 py-2 bg-primary/10 border border-primary/20 rounded-xl">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+              <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-primary">
                 Reviews
               </h2>
             </div>
@@ -499,7 +499,7 @@ export default async function UserProfilePage({
                   <div className="flex-1 min-w-0 space-y-3">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-black text-xl uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-1">
+                        <h3 className="font-bold text-xl uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-1">
                           {review.event.title.replace(/–\s\d{4}.*$/, "")}
                         </h3>
                         <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.1em] mt-1">

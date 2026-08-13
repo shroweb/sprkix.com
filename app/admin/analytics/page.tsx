@@ -90,7 +90,7 @@ export default async function AnalyticsPage() {
       {/* 14-day Review Activity Chart */}
       <div className="bg-white rounded-2xl border border-border p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-black text-sm uppercase tracking-widest">Reviews · Last 14 Days</h2>
+          <h2 className="font-semibold text-sm uppercase tracking-widest">Reviews · Last 14 Days</h2>
           <TrendingUp className="w-4 h-4 text-muted-foreground" />
         </div>
         <div className="flex items-end gap-1.5 h-32">
@@ -113,7 +113,7 @@ export default async function AnalyticsPage() {
         {/* Top Events */}
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <h2 className="font-black text-sm uppercase tracking-widest">Top Events by Reviews</h2>
+            <h2 className="font-semibold text-sm uppercase tracking-widest">Top Events by Reviews</h2>
             <CalendarDays className="w-4 h-4 text-muted-foreground" />
           </div>
           <div className="divide-y divide-border">
@@ -141,7 +141,7 @@ export default async function AnalyticsPage() {
         {/* Most Active Users */}
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <h2 className="font-black text-sm uppercase tracking-widest">Most Active Users</h2>
+            <h2 className="font-semibold text-sm uppercase tracking-widest">Most Active Users</h2>
             <Zap className="w-4 h-4 text-muted-foreground" />
           </div>
           <div className="divide-y divide-border">

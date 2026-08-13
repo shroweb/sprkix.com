@@ -243,7 +243,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
       {topMatches.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <h2 className="text-3xl font-black uppercase italic tracking-tighter">
+            <h2 className="text-3xl font-semibold uppercase italic tracking-tighter">
               Top Rated Matches
             </h2>
             <div className="flex-1 h-[1px] bg-border" />
@@ -288,7 +288,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
       {/* Match History */}
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-black uppercase italic tracking-tighter">
+          <h2 className="text-3xl font-semibold uppercase italic tracking-tighter">
             Match History
           </h2>
           <div className="flex-1 h-[1px] bg-border" />

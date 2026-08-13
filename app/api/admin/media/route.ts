@@ -40,12 +40,8 @@ export async function DELETE(req: NextRequest) {
   try {
     await deletePublicFile(item.url);
   } catch (err) {
-    // If we're on Vercel and Blob isn't configured, don't delete the DB row.
-    const msg = err instanceof Error ? err.message : String(err);
-    if (process.env.VERCEL && msg.includes("BLOB_READ_WRITE_TOKEN")) {
-      return NextResponse.json({ error: msg }, { status: 500 });
-    }
-    /* file may already be gone / best-effort */
+    // Best-effort: the file may already be gone, still delete the DB row.
+    console.error("[admin/media] failed to delete file:", err);
   }
 
   await prisma.mediaItem.delete({ where: { id } });

@@ -69,7 +69,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
       {userHasMyLists && (
         <div className="flex items-center gap-6">
           <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-xl">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-foreground">
+            <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-foreground">
               Public Lists
             </h2>
           </div>
@@ -173,7 +173,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
 
               {/* Card body */}
               <div className="p-4 space-y-3">
-                <h3 className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                <h3 className="font-bold italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                   {list.title}
                 </h3>
 

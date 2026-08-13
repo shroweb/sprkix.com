@@ -23,7 +23,7 @@ export default function PrivacyPage() {
 
       <div className="prose prose-invert prose-sm max-w-none space-y-8">
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">1. Who We Are</h2>
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">1. Who We Are</h2>
           <p className="text-muted-foreground leading-relaxed">
             Poison Rana (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is a wrestling review and
             community platform available at poisonrana.com. We are committed to protecting your
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             2. Information We Collect
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             3. How We Use Your Information
           </h2>
           <ul className="text-muted-foreground space-y-1 list-disc list-inside">
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             4. Cookies &amp; Analytics
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             5. Third-Party Services
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">6. Your Rights</h2>
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">6. Your Rights</h2>
           <p className="text-muted-foreground leading-relaxed">
             You have the right to access, correct, or delete your personal data at any time. To
             request deletion of your account and all associated data, email us at{" "}
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             7. Data Retention
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -127,7 +127,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">8. Contact</h2>
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">8. Contact</h2>
           <p className="text-muted-foreground leading-relaxed">
             For any privacy-related questions, contact us at{" "}
             <a

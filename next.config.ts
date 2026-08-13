@@ -1,5 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+const nextConfig: NextConfig = {
+  // Required for Prisma to run on Cloudflare Workers — OpenNext patches the
+  // generated client to use a workerd-compatible engine when it's external.
+  serverExternalPackages: ["@prisma/client", ".prisma/client"],
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
@@ -10,11 +15,12 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
+    // Image optimization runs through the Cloudflare Images binding (IMAGES)
+    // defined in wrangler.jsonc. Requires Cloudflare Images enabled on the
+    // account — see README "Cloudflare Images".
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
 
+initOpenNextCloudflareForDev()

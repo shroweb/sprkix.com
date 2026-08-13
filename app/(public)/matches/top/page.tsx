@@ -187,7 +187,7 @@ export default async function TopMatchesPage() {
                         {match.type}
                       </span>
                       <Link href={`/events/${match.event.slug}`}>
-                        <h3 className="font-black italic uppercase tracking-tighter leading-tight group-hover:text-primary transition-colors mt-0.5 hover:underline decoration-primary/50 underline-offset-4">
+                        <h3 className="font-bold italic uppercase tracking-tighter leading-tight group-hover:text-primary transition-colors mt-0.5 hover:underline decoration-primary/50 underline-offset-4">
                           {match.title}
                         </h3>
                       </Link>

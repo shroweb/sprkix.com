@@ -210,7 +210,7 @@ export default function FAQPage() {
               <div className={`p-2 rounded-xl bg-card/60 border border-white/10`}>
                 <section.icon className={`w-5 h-5 ${section.color}`} />
               </div>
-              <h2 className="text-2xl font-black italic uppercase tracking-tight">
+              <h2 className="text-2xl font-semibold italic uppercase tracking-tight">
                 {section.title}
               </h2>
             </div>
@@ -241,7 +241,7 @@ export default function FAQPage() {
 
       {/* CTA */}
       <div className="mt-20 bg-card/40 border border-primary/20 rounded-3xl p-8 sm:p-12 text-center space-y-4">
-        <h3 className="text-2xl font-black italic uppercase tracking-tight">
+        <h3 className="text-2xl font-bold italic uppercase tracking-tight">
           Ready to get started?
         </h3>
         <p className="text-muted-foreground font-medium italic">

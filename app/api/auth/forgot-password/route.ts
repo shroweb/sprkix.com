@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
@@ -29,6 +27,13 @@ export async function POST(req: Request) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
     const resetUrl = `${siteUrl}/reset-password?token=${token}`;
+
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("[forgot-password] RESEND_API_KEY not set — skipping email");
+      return NextResponse.json({ success: true });
+    }
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
       from: "Poison Rana <noreply@poisonrana.com>",

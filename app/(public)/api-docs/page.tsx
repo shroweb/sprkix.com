@@ -719,7 +719,7 @@ export default function ApiDocsPage({
               <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <Zap className="w-4 h-4 text-primary" />
               </div>
-              <h2 className="text-xl font-black italic uppercase tracking-tight">Getting Started</h2>
+              <h2 className="text-xl font-semibold italic uppercase tracking-tight">Getting Started</h2>
             </div>
 
             <div className="space-y-3 text-sm text-muted-foreground font-medium leading-relaxed">
@@ -783,7 +783,7 @@ curl "${BASE_URL}/me" \\
               <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <Plug className="w-4 h-4 text-primary" />
               </div>
-              <h2 className="text-xl font-black italic uppercase tracking-tight">Connecting to the API</h2>
+              <h2 className="text-xl font-semibold italic uppercase tracking-tight">Connecting to the API</h2>
             </div>
 
             {/* Step 1 */}
@@ -960,7 +960,7 @@ if (result.type === "success") {
                 <div className="p-2 rounded-xl bg-card/60 border border-white/10">
                   <BookOpen className="w-4 h-4 text-primary" />
                 </div>
-                <h2 className="text-2xl font-black italic uppercase tracking-tight">
+                <h2 className="text-2xl font-semibold italic uppercase tracking-tight">
                   {section.title}
                 </h2>
               </div>

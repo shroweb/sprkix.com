@@ -57,7 +57,7 @@ export default async function NewsIndexPage() {
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
               Featured Story
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black italic uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-semibold italic uppercase tracking-tight">
               {featured.title}
             </h2>
             <p className="text-base text-foreground/80 leading-7">{featured.excerpt}</p>
@@ -99,7 +99,7 @@ export default async function NewsIndexPage() {
               )}
             </div>
             <div className="p-6 space-y-3">
-              <h2 className="text-2xl font-black italic uppercase tracking-tight group-hover:text-primary transition-colors">
+              <h2 className="text-2xl font-semibold italic uppercase tracking-tight group-hover:text-primary transition-colors">
                 {post.title}
               </h2>
               <p className="text-sm text-foreground/75 leading-6">{post.excerpt}</p>

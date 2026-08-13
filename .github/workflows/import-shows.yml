@@ -40,6 +40,6 @@ jobs:
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           IMPORT_DATE: ${{ github.event.inputs.date }}
-          IMPORT_ENDPOINT_URL: https://poisonrana.com/api/cron/import-shows-browser
+          IMPORT_ENDPOINT_URL: https://poison-rana-site.shrowebdesign.workers.dev/api/cron/import-shows-browser
         run: |
           node scripts/import-shows-browser.mjs

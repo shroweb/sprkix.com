@@ -175,7 +175,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <ImageIcon className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Site Logo
               </h2>
             </div>
@@ -271,7 +271,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <Star className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Favicon
               </h2>
             </div>
@@ -332,7 +332,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <Megaphone className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Announcement Banner
               </h2>
               <div className="ml-auto">
@@ -405,7 +405,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <Layout className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Homepage Hero Section
               </h2>
             </div>
@@ -495,7 +495,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <Info className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Site Identity & SEO
               </h2>
             </div>
@@ -541,7 +541,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <Palette className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Brand Colours
               </h2>
             </div>
@@ -624,7 +624,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <LinkIcon className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Social Links
               </h2>
             </div>
@@ -675,7 +675,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={cardHeaderClass}>
               <LogIn className="w-4 h-4 text-primary" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Social Login
               </h2>
               <div className="ml-auto">
@@ -727,7 +727,7 @@ export default function AdminSettings() {
           <div className={cardClass}>
             <div className={`${cardHeaderClass} text-amber-600`}>
               <Star className="w-4 h-4 fill-current" />
-              <h2 className="font-black uppercase italic tracking-tighter text-sm">
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
                 Community Choice Spotlight
               </h2>
             </div>
@@ -779,7 +779,7 @@ export default function AdminSettings() {
             </div>
           )}
           <div className="bg-slate-900 rounded-[2rem] p-8 text-white space-y-6 shadow-2xl">
-            <h3 className="font-black italic uppercase tracking-tighter text-lg">
+            <h3 className="font-bold italic uppercase tracking-tighter text-lg">
               Platform Status
             </h3>
             <div className="h-px bg-white/10" />

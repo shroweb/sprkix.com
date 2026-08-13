@@ -11,7 +11,7 @@ export default function RecentRatingsSidebar({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+      <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
         <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
         Recent Activity
       </h3>

@@ -220,7 +220,7 @@ export default function EditListClient({ list }: { list: List }) {
 
       {/* Items */}
       <div className="space-y-4">
-        <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
           Items ({items.length})
         </h2>
 

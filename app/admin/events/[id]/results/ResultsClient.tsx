@@ -127,7 +127,7 @@ export default function ResultsClient({
                 <span className="text-[10px] font-black text-muted-foreground bg-slate-200 px-2 py-0.5 rounded">
                   MATCH {idx + 1}
                 </span>
-                <h3 className="font-black uppercase italic tracking-tighter text-sm flex-1 truncate">
+                <h3 className="font-bold uppercase italic tracking-tighter text-sm flex-1 truncate">
                   {match.title}
                 </h3>
                 {match.type && (

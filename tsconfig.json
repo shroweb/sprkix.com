@@ -43,6 +43,8 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    // Standalone Cloudflare scheduler worker — its own project, not part of the Next app.
+    "workers"
   ]
 }

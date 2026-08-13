@@ -101,7 +101,7 @@ export default function FeaturedEventCycler({ events }: { events: any[] }) {
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-1">
                       {event.promotion}
                     </p>
-                    <h3 className="text-xl font-black italic uppercase tracking-tighter leading-tight text-white">
+                    <h3 className="text-xl font-bold italic uppercase tracking-tighter leading-tight text-white">
                       {event.title
                         .replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "")
                         .trim()}

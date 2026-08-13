@@ -34,29 +34,29 @@ export const GET = withErrorHandling(async (req: NextRequest) => {
   const [total, events] = await Promise.all([
     prisma.event.count({ where }),
     prisma.event.findMany({
-      where,
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit,
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        date: true,
-        promotion: true,
-        venue: true,
-        posterUrl: true,
-        type: true,
-        startTime: true,
-        endTime: true,
-        enableWatchParty: true,
-        enablePredictions: true,
-        _count: { select: { reviews: true, matches: true } },
-        reviews: {
-          select: { rating: true },
-        },
+    where,
+    orderBy,
+    skip: (page - 1) * limit,
+    take: limit,
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      date: true,
+      promotion: true,
+      venue: true,
+      posterUrl: true,
+      type: true,
+      startTime: true,
+      endTime: true,
+      enableWatchParty: true,
+      enablePredictions: true,
+      _count: { select: { reviews: true, matches: true } },
+      reviews: {
+        select: { rating: true },
       },
-    }),
+    },
+  }),
   ]);
 
   const data = events.map((e) => {

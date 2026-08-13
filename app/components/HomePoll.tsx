@@ -194,7 +194,7 @@ export default function HomePoll({
         </div>
 
         {/* Question */}
-        <h2 className="text-3xl sm:text-4xl font-black italic uppercase tracking-tight leading-tight">
+        <h2 className="text-3xl sm:text-4xl font-semibold italic uppercase tracking-tight leading-tight">
           {poll.question}
         </h2>
 
@@ -329,7 +329,7 @@ export default function HomePoll({
                 {/* Header */}
                 <div className="flex justify-between items-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/img/logo.png" alt="Sprkix" style={{ height: 40, width: "auto", objectFit: "contain" }} />
+                  <img src="/img/logo.png" alt="Poison Rana" style={{ height: 40, width: "auto", objectFit: "contain" }} />
                   <div className="flex items-center gap-1.5">
                     <span style={{ fontSize: 12, color: "#fbbf24" }}>⚡</span>
                     <span style={{ fontSize: 11, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(251,191,36,0.85)" }}>

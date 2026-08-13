@@ -188,7 +188,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
       {showForm && (
         <div className="bg-white border border-border rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-black text-lg">New Poll</h2>
+            <h2 className="font-semibold text-lg">New Poll</h2>
             <button
               onClick={() => setShowForm(false)}
               className="p-1 text-muted-foreground hover:text-foreground transition-colors"
@@ -320,7 +320,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
             </span>
-            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Active ({activePolls.length})</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Active ({activePolls.length})</h2>
           </div>
           {activePolls.map((poll) => (
             <PollCard key={poll.id} poll={poll} onToggle={toggleActive} onDelete={deletePoll} loading={loading} />
@@ -333,7 +333,7 @@ export default function AdminPollsClient({ initialPolls, events }: Props) {
         <div className="space-y-4">
           <div className="flex items-center gap-3 pt-2">
             <div className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
-            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Archived ({archivedPolls.length})</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Archived ({archivedPolls.length})</h2>
           </div>
           <div className="opacity-70 space-y-4">
             {archivedPolls.map((poll) => (
@@ -385,7 +385,7 @@ function PollCard({
               {poll._count.votes} votes total
             </span>
           </div>
-          <h3 className="font-black text-base italic">{poll.question}</h3>
+          <h3 className="font-bold text-base italic">{poll.question}</h3>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button

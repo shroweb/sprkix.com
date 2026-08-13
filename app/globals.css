@@ -72,6 +72,23 @@
     font-family: "Outfit", sans-serif;
     @apply tracking-tighter leading-tight;
   }
+  /* Display hierarchy: heavy h1, midweight h2+, refined tracking */
+  h1 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  h3 {
+    font-weight: 600;
+  }
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
 }
 
 @layer components {

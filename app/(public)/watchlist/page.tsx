@@ -53,7 +53,7 @@ export default async function WatchlistPage() {
       {watchListItems.length === 0 ? (
         <div className="bg-card/40 border border-white/5 border-dashed rounded-[3rem] p-24 text-center">
           <TrendingUp className="w-16 h-16 text-muted-foreground/30 mx-auto mb-6" />
-          <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4 text-muted-foreground">
+          <h2 className="text-3xl font-semibold uppercase italic tracking-tighter mb-4 text-muted-foreground">
             Your Queue is Empty
           </h2>
           <p className="text-muted-foreground font-medium italic mb-8 max-w-md mx-auto">

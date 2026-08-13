@@ -74,7 +74,7 @@ export default async function ListsDiscoveryPage() {
         <section className="space-y-6">
           <div className="flex items-center gap-6">
             <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+              <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-primary">
                 My Lists
               </h2>
             </div>

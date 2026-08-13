@@ -123,7 +123,7 @@ export default async function PromotionDetailPage({
                 )}
               </div>
               <div className="p-5 space-y-3">
-                <h2 className="font-black italic uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors">
+                <h2 className="font-semibold italic uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors">
                   {event.title}
                 </h2>
                 <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">

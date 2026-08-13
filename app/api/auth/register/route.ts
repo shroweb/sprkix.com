@@ -1,5 +1,5 @@
 import { prisma } from "../../../../lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { sendWelcomeEmail } from "../../../../lib/mail";

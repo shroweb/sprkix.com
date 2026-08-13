@@ -1,6 +1,6 @@
 import { prisma } from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 // One-time admin creation endpoint — only works when zero users exist in the DB
 export async function POST(req: Request) {

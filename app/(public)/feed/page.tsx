@@ -164,7 +164,7 @@ export default async function FeedPage() {
                     <span className="inline-block px-2 py-0.5 bg-primary text-black text-[9px] font-black uppercase rounded mb-2">
                       {review.event.promotion}
                     </span>
-                    <h2 className="font-black text-base uppercase italic tracking-tighter leading-tight group-hover:text-primary transition-colors">
+                    <h2 className="font-semibold text-base uppercase italic tracking-tighter leading-tight group-hover:text-primary transition-colors">
                       {review.event.title.replace(/–\s\d{4}.*$/, "")}
                     </h2>
                     <p className="text-[11px] font-bold text-muted-foreground mt-0.5">

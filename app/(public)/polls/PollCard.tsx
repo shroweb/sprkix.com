@@ -170,7 +170,7 @@ export default function PollCard({
     <>
       <div className="bg-card border border-border rounded-3xl p-6 space-y-5">
         {/* Question */}
-        <h3 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tight leading-tight">
+        <h3 className="text-2xl sm:text-3xl font-bold italic uppercase tracking-tight leading-tight">
           {poll.question}
         </h3>
 
@@ -310,7 +310,7 @@ export default function PollCard({
                 {/* Header */}
                 <div className="flex justify-between items-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/img/logo.png" alt="Sprkix" style={{ height: 40, width: "auto", objectFit: "contain" }} />
+                  <img src="/img/logo.png" alt="Poison Rana" style={{ height: 40, width: "auto", objectFit: "contain" }} />
                   <div className="flex items-center gap-1.5">
                     <span style={{ fontSize: 12, color: "#fbbf24" }}>⚡</span>
                     <span style={{ fontSize: 11, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(251,191,36,0.85)" }}>

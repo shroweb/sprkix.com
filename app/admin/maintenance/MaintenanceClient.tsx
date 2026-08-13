@@ -29,7 +29,7 @@ export default function MaintenanceClient({ initialMode }: { initialMode: boolea
                 {isMode ? <AlertTriangle className="w-10 h-10" /> : <ShieldCheck className="w-10 h-10" />}
             </div>
             <div>
-                <h2 className="text-2xl font-black italic uppercase tracking-tighter">
+                <h2 className="text-2xl font-semibold italic uppercase tracking-tighter">
                     {isMode ? "Maintenance Mode Active" : "System Online"}
                 </h2>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-2">

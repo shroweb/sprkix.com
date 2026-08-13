@@ -122,7 +122,7 @@ export default async function RankingsPage() {
                   <span className="px-2 py-0.5 bg-primary text-black text-[9px] font-black uppercase rounded">
                     {event.promotion}
                   </span>
-                  <h2 className="text-xl font-black italic uppercase tracking-tighter leading-tight">
+                  <h2 className="text-xl font-semibold italic uppercase tracking-tighter leading-tight">
                     {event.title.replace(/–\s\d{4}.*$/, "")}
                   </h2>
                   <div className="flex items-center justify-between">
@@ -151,7 +151,7 @@ export default async function RankingsPage() {
       {rest.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter">
+            <h2 className="text-2xl font-semibold italic uppercase tracking-tighter">
               Full Leaderboard
             </h2>
             <div className="flex-1 h-[1px] bg-border" />
@@ -189,7 +189,7 @@ export default async function RankingsPage() {
                     {new Date(event.date).getFullYear()}
                   </span>
                 </div>
-                <h3 className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors truncate">
+                <h3 className="font-bold text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors truncate">
                   {event.title.replace(/–\s\d{4}.*$/, "")}
                 </h3>
               </div>

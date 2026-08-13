@@ -49,7 +49,7 @@ export default function UsernameSetupModal({
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl font-black uppercase italic tracking-tight">
+            <h2 className="text-xl font-semibold uppercase italic tracking-tight">
               Welcome to Poison Rana!
             </h2>
             <p className="text-muted-foreground text-sm leading-relaxed">

@@ -66,7 +66,7 @@ export default function ContactPage() {
       <div className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3 mb-8">
         <div className="flex items-center gap-3">
           <MessageSquare className="w-5 h-5 text-primary shrink-0" />
-          <h2 className="font-black italic uppercase tracking-tight text-lg">
+          <h2 className="font-semibold italic uppercase tracking-tight text-lg">
             Bug Reports & Feature Requests
           </h2>
         </div>
@@ -88,7 +88,7 @@ export default function ContactPage() {
       <div className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
         <div className="flex items-center gap-3">
           <HelpCircle className="w-5 h-5 text-primary shrink-0" />
-          <h2 className="font-black italic uppercase tracking-tight text-lg">
+          <h2 className="font-semibold italic uppercase tracking-tight text-lg">
             Looking for help?
           </h2>
         </div>

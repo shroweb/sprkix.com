@@ -107,7 +107,7 @@ export default function AdminSubmissionsPage() {
           {/* Pending */}
           {pending.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-black uppercase tracking-widest text-amber-400 flex items-center gap-2">
+              <h2 className="text-xs font-semibold uppercase tracking-widest text-amber-400 flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5" /> Pending Review ({pending.length})
               </h2>
               {pending.map(s => (
@@ -131,7 +131,7 @@ export default function AdminSubmissionsPage() {
           {/* Reviewed */}
           {reviewed.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+              <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Previously Reviewed ({reviewed.length})
               </h2>
               {reviewed.map(s => (

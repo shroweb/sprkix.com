@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "poison-rana-import",
+  "main": "src/index.ts",
+  "account_id": "01e92812c3cd1f224a2bec5a9cbbd78e",
+  "compatibility_date": "2025-06-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "triggers": {
+    "crons": ["0 6 * * *"]
+  },
+  "services": [
+    {
+      "binding": "SITE",
+      "service": "poison-rana-site"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    // Days back to import each night (incl. yesterday). Idempotent catch-up:
+    // anything already in the DB is skipped, so missed/partial runs self-heal.
+    "IMPORT_LOOKBACK_DAYS": "3"
+  },
+  // Runtime secret (set with: wrangler secret put CRON_SECRET --name poison-rana-import):
+  //   CRON_SECRET — must match the site worker's secret (see .dev.vars)
+  // The site worker is reached via the SITE service binding (worker-to-worker
+  // fetches to *.workers.dev are 404'd by Cloudflare edge routing).
+}

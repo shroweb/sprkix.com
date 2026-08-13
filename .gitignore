@@ -59,3 +59,10 @@ next-env.d.ts
 # Build output (if not Next.js-managed)
 /dist
 .env*.local
+
+# OpenNext / Cloudflare
+/.open-next
+/.dev.vars
+/cloudflare-env.d.ts
+/.wrangler
+/public/uploads/

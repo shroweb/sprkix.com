@@ -395,7 +395,7 @@ export default async function ProfilePage() {
       <section className="space-y-6">
         <div className="flex items-center gap-6 pt-12">
           <div className="px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-xl">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-red-500">
+            <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-red-500">
               Favorite Matches
             </h2>
           </div>
@@ -437,7 +437,7 @@ export default async function ProfilePage() {
                       {new Date(fav.match.event.date).getFullYear()}
                     </span>
                   </div>
-                  <h3 className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
+                  <h3 className="font-bold text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
                     {fav.match.title}
                   </h3>
                   <div className="flex flex-wrap items-center gap-1.5 pt-2">
@@ -470,7 +470,7 @@ export default async function ProfilePage() {
       <section className="space-y-6">
         <div className="flex items-center gap-6 pt-12">
           <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+            <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-primary">
               Your Reviews
             </h2>
           </div>
@@ -491,7 +491,7 @@ export default async function ProfilePage() {
       <section className="space-y-6">
         <div className="flex items-center gap-6 pt-12">
           <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+            <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-primary">
               Watch List
             </h2>
           </div>
@@ -526,7 +526,7 @@ export default async function ProfilePage() {
                     </span>
                   </div>
                 </div>
-                <h3 className="font-black text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                <h3 className="font-bold text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                   {item.event.title.replace(/–\s\d{4}.*$/, "")}
                 </h3>
               </Link>
@@ -552,7 +552,7 @@ export default async function ProfilePage() {
       <section className="space-y-6">
         <div className="flex items-center gap-6 pt-12">
           <div className="px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter text-primary">
+            <h2 className="text-2xl font-semibold italic uppercase tracking-tighter text-primary">
               My Lists
             </h2>
           </div>

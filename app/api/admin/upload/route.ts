@@ -1,10 +1,8 @@
 import { prisma } from "@lib/prisma";
 import { NextResponse } from "next/server";
 import { getUserFromServerCookie } from "@lib/server-auth";
-import { writeFile, mkdir } from "fs/promises";
-import { join, basename } from "path";
 import { v4 as uuidv4 } from "uuid";
-import { put } from "@vercel/blob";
+import { r2Put } from "@lib/r2";
 
 export const runtime = "nodejs";
 
@@ -22,47 +20,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const isVercel = !!process.env.VERCEL;
-    if (isVercel && !process.env.BLOB_READ_WRITE_TOKEN) {
-      return NextResponse.json(
-        {
-          error:
-            "Uploads are not configured for production. Set BLOB_READ_WRITE_TOKEN (Vercel Blob) to enable admin uploads on Vercel.",
-        },
-        { status: 500 },
-      );
-    }
-
     const results = [];
     for (const file of files) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const safeName = basename(file.name)
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const safeName = file.name
         .replace(/[/\\?%*:|"<>\x00-\x1F]/g, "_")
         .replace(/\s+/g, "-");
       const uniqueName = `${uuidv4()}-${safeName}`;
-
-      let url = "";
-
-      // ── Vercel Blob (production) ────────────────────────────────────────────
-      let usedBlob = false;
-      if (process.env.BLOB_READ_WRITE_TOKEN) {
-        const blob = await put(uniqueName, buffer, {
-          access: "public",
-          contentType: file.type || "application/octet-stream",
-        });
-        url = blob.url;
-        usedBlob = true;
-      }
-
-      // ── Filesystem fallback (local dev / self-hosted) ───────────────────────
-      if (!usedBlob) {
-        const uploadDir = join(process.cwd(), "public", "uploads");
-        await mkdir(uploadDir, { recursive: true });
-        const path = join(uploadDir, uniqueName);
-        await writeFile(path, buffer);
-        url = `/uploads/${uniqueName}`;
-      }
+      const url = await r2Put(
+        `admin/${uniqueName}`,
+        buffer,
+        file.type || "application/octet-stream",
+      );
 
       // Record in DB
       const media = await prisma.mediaItem.create({

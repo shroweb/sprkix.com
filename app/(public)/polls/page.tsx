@@ -49,7 +49,7 @@ export default async function PollsPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              <h2 className="text-xl font-black italic uppercase tracking-tighter text-primary">
+              <h2 className="text-xl font-semibold italic uppercase tracking-tighter text-primary">
                 Active
               </h2>
             </div>
@@ -98,7 +98,7 @@ export default async function PollsPage() {
         <section className="space-y-6">
           <div className="flex items-center gap-4">
             <div className="px-4 py-1.5 bg-muted border border-border rounded-xl">
-              <h2 className="text-xl font-black italic uppercase tracking-tighter text-muted-foreground">
+              <h2 className="text-xl font-semibold italic uppercase tracking-tighter text-muted-foreground">
                 Archived
               </h2>
             </div>

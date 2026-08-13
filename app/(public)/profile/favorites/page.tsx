@@ -78,7 +78,7 @@ export default async function FavoritesPage() {
                     {new Date(fav.match.event.date).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
                   </div>
                 </div>
-                <h3 className="font-black text-base md:text-lg uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-8">
+                <h3 className="font-bold text-base md:text-lg uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-8">
                   {fav.match.title}
                 </h3>
                 <div className="flex flex-wrap items-center gap-1.5 pt-2">
@@ -100,7 +100,7 @@ export default async function FavoritesPage() {
       ) : (
         <div className="bg-card/20 border border-dashed border-border rounded-[3rem] p-32 text-center">
           <Heart className="w-16 h-16 text-muted-foreground/10 mx-auto mb-6" />
-          <h2 className="text-2xl font-black italic uppercase text-muted-foreground/40 mb-2">The Hall is Empty</h2>
+          <h2 className="text-2xl font-semibold italic uppercase text-muted-foreground/40 mb-2">The Hall is Empty</h2>
           <p className="text-muted-foreground font-bold italic">
             Go discover some absolute bangers and add them to your collection.
           </p>

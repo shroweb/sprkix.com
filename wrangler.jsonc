@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "poison-rana-site",
+  "main": ".open-next/worker.js",
+  "account_id": "01e92812c3cd1f224a2bec5a9cbbd78e",
+  "compatibility_date": "2025-06-15",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "poison-rana-site"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA_BUCKET",
+      "bucket_name": "poison-rana-avatars"
+    },
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "poison-rana-cache"
+    }
+  ],
+  // Cloudflare Images binding — enables next/image optimization on the worker.
+  // Requires Cloudflare Images to be enabled for the account (dashboard → Images).
+  "images": {
+    "binding": "IMAGES"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

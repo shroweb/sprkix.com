@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function GET() {
   const user = await getUserFromServerCookie();

@@ -191,7 +191,7 @@ export default function MatchesAdminClient({ allWrestlers }: { allWrestlers: Wre
       {editingId && (
         <div className="bg-white border border-border rounded-2xl p-6 space-y-5 shadow-sm">
           <div className="flex justify-between items-center">
-            <h3 className="font-black text-lg uppercase italic tracking-tight">Edit Match</h3>
+            <h3 className="font-bold text-lg uppercase italic tracking-tight">Edit Match</h3>
             <button onClick={() => setEditingId(null)} className="p-2 hover:bg-secondary rounded-lg transition-colors">
               <X className="w-4 h-4" />
             </button>

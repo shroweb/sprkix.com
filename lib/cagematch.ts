@@ -120,7 +120,7 @@ function extractRowEvent($: cheerio.CheerioAPI, row: any, dateDDMMYYYY: string):
     const $row = $(row)
     const eventLink = $row.find('a[href*="id=1&nr="]').first()
     if (!eventLink.length) return null
-    const title = eventLink.text().trim()
+    const title = cleanEventTitle(eventLink.text())
     const href = eventLink.attr('href') || ''
     if (!title || !href) return null
     const cagematchUrl = href.startsWith('http')
@@ -136,6 +136,18 @@ function extractRowEvent($: cheerio.CheerioAPI, row: any, dateDDMMYYYY: string):
 }
 
 const ALL_TROW = 'tr.TRow1, tr.TRow2, tr.TRowTVShow, tr.TRowPremiumLiveEvent, tr.TRowOnlineStream, tr.TRowPayPayView'
+
+/**
+ * Cagematch renders each event's rating inline inside the title link's DOM
+ * (e.g. "WWE N<span class=rating>6.62</span>XT #850"), so cheerio's .text()
+ * concatenates it into the word. Strip rating fragments glued between letters.
+ */
+function cleanEventTitle(raw: string): string {
+  return raw
+    .replace(/([a-zA-Z])\d+\.\d{1,2}([a-zA-Z])/g, "$1$2")
+    .replace(/\s+/g, " ")
+    .trim()
+}
 
 /**
  * Parses the Cagematch homepage (https://www.cagematch.net/) which groups
@@ -182,7 +194,7 @@ export function parseCagematchEventList(html: string): CagematchListEntry[] {
         const $row = $(row)
         const eventLink = $row.find('a[href*="id=1&nr="]').first()
         if (!eventLink.length) return
-        const title = eventLink.text().trim()
+        const title = cleanEventTitle(eventLink.text())
         const href = eventLink.attr('href') || ''
         if (!title || !href) return
         const cagematchUrl = href.startsWith('http')

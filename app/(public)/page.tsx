@@ -436,7 +436,7 @@ export default async function Home() {
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Coming Soon</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter leading-none">
+              <h2 className="text-2xl sm:text-3xl font-semibold italic uppercase tracking-tighter leading-none">
                 iOS &amp; Android App — April 27th
               </h2>
               <p className="text-muted-foreground font-medium text-sm max-w-lg">
@@ -463,7 +463,7 @@ export default async function Home() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
                     Latest Events
                   </h2>
                 </div>
@@ -518,7 +518,7 @@ export default async function Home() {
                         </div>
                       )}
                     </div>
-                    <h3 className="font-black text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
@@ -554,7 +554,7 @@ export default async function Home() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
                     Hall of Fame
                   </h2>
                 </div>
@@ -644,7 +644,7 @@ export default async function Home() {
               </div>
               <div className="relative z-10 flex-1 min-w-0">
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Community Lists</p>
-                <h3 className="font-black italic uppercase tracking-tight text-base leading-tight group-hover:text-primary transition-colors">
+                <h3 className="font-bold italic uppercase tracking-tight text-base leading-tight group-hover:text-primary transition-colors">
                   Build your own<br />top lists
                 </h3>
                 <p className="text-xs text-muted-foreground/60 mt-1.5 font-medium">Curate events and matches into shareable ranked collections.</p>
@@ -663,7 +663,7 @@ export default async function Home() {
               </div>
               <div className="relative z-10 flex-1 min-w-0">
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400 mb-1">Your Watchlist</p>
-                <h3 className="font-black italic uppercase tracking-tight text-base leading-tight group-hover:text-blue-400 transition-colors">
+                <h3 className="font-bold italic uppercase tracking-tight text-base leading-tight group-hover:text-blue-400 transition-colors">
                   Track what you've<br />watched
                 </h3>
                 <p className="text-xs text-muted-foreground/60 mt-1.5 font-medium">Mark events as watched, attended, or on your list.</p>
@@ -680,7 +680,7 @@ export default async function Home() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
                     Trending
                   </h2>
                 </div>
@@ -722,7 +722,7 @@ export default async function Home() {
                         </span>
                       </div>
                     </div>
-                    <h3 className="font-black text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
@@ -751,7 +751,7 @@ export default async function Home() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
                     Explore by Promotion
                   </h2>
                 </div>
@@ -797,7 +797,7 @@ export default async function Home() {
                   </div>
                   {/* Info */}
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-black italic uppercase tracking-tighter group-hover:text-primary transition-colors">
+                    <h3 className="text-2xl font-bold italic uppercase tracking-tighter group-hover:text-primary transition-colors">
                       {promo.name}
                     </h3>
                     <div className="flex items-center gap-4 text-sm">
@@ -836,7 +836,7 @@ export default async function Home() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
                     Top Matches
                   </h2>
                 </div>
@@ -908,7 +908,7 @@ export default async function Home() {
                   <Users className="w-4 h-4 text-primary" />
                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">The Community</span>
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-black italic uppercase tracking-tighter leading-none">
+                <h3 className="text-2xl sm:text-3xl font-bold italic uppercase tracking-tighter leading-none">
                   See who's leading<br className="hidden sm:block" /> the archive
                 </h3>
                 <p className="text-sm text-muted-foreground/60 font-medium">
@@ -946,7 +946,7 @@ export default async function Home() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full">
                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Limited Time</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold italic uppercase tracking-tighter leading-none">
                   Become a Founding Member
                 </h2>
                 <p className="text-muted-foreground font-medium text-sm max-w-lg">
@@ -979,7 +979,7 @@ export default async function Home() {
                 <Send className="w-3.5 h-3.5 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Community</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-none">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tighter leading-none">
                 Know an event<br />we&apos;re missing?
               </h2>
               <p className="text-muted-foreground font-medium italic max-w-md">

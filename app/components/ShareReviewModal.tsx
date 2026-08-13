@@ -142,7 +142,7 @@ export default function ShareReviewModal({
                 <div className="inline-flex px-4 py-1.5 bg-primary text-black text-[10px] font-black uppercase rounded-lg shadow-xl shadow-primary/20">
                     {event.promotion}
                 </div>
-                <h3 className="text-base font-black italic uppercase tracking-tighter text-white leading-tight">
+                <h3 className="text-base font-bold italic uppercase tracking-tighter text-white leading-tight">
                     {event.title}
                 </h3>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary pt-2">

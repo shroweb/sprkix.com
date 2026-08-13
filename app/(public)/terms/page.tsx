@@ -23,7 +23,7 @@ export default function TermsPage() {
 
       <div className="space-y-8">
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             1. Acceptance of Terms
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -34,7 +34,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">2. Your Account</h2>
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">2. Your Account</h2>
           <p className="text-muted-foreground leading-relaxed">
             You are responsible for maintaining the security of your account and password. You must
             be at least 13 years old to create an account. You may only have one account per person.
@@ -42,7 +42,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             3. Acceptable Use
           </h2>
           <p className="text-muted-foreground leading-relaxed">You agree not to:</p>
@@ -60,7 +60,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             4. User-Generated Content
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -72,7 +72,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             5. Intellectual Property
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -83,7 +83,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             6. Disclaimers
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -94,7 +94,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             7. Termination
           </h2>
           <p className="text-muted-foreground leading-relaxed">
@@ -104,7 +104,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">8. Changes</h2>
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">8. Changes</h2>
           <p className="text-muted-foreground leading-relaxed">
             We may update these terms from time to time. Continued use of the site after changes
             are posted constitutes acceptance of the updated terms.
@@ -112,7 +112,7 @@ export default function TermsPage() {
         </section>
 
         <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
-          <h2 className="text-lg font-black italic uppercase tracking-tight">9. Contact</h2>
+          <h2 className="text-lg font-semibold italic uppercase tracking-tight">9. Contact</h2>
           <p className="text-muted-foreground leading-relaxed">
             Questions about these terms? Email{" "}
             <a
