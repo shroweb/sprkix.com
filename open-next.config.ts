@@ -5,5 +5,9 @@ export default {
   ...defineCloudflareConfig({
     incrementalCache: r2IncrementalCache,
   }),
-  buildCommand: "pnpm build",
+  // Command OpenNext runs internally to build the Next.js app. Kept explicit
+  // and decoupled from the `build` npm script (which is `opennextjs-cloudflare
+  // build` itself) to avoid recursion on Cloudflare Workers Builds, where the
+  // platform runs `npm run build` and then `wrangler deploy`.
+  buildCommand: "pnpm exec next build",
 };
