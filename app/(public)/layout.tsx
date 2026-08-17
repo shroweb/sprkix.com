@@ -4,6 +4,8 @@ import GoogleAnalytics from "@components/GoogleAnalytics";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { prisma } from "@lib/prisma";
 
+import { ToastProvider } from "@components/ToastProvider";
+
 export default async function PublicLayout({
   children,
 }: {
@@ -68,7 +70,7 @@ export default async function PublicLayout({
   ].filter(Boolean).join(" ");
 
   return (
-    <>
+    <ToastProvider>
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       {cssVars && <style>{`:root { ${cssVars} }`}</style>}
       <Header
@@ -92,6 +94,6 @@ export default async function PublicLayout({
         socialFacebook={socialFacebook}
         socialInstagram={socialInstagram}
       />
-    </>
+    </ToastProvider>
   );
 }

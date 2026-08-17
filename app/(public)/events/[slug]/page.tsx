@@ -372,8 +372,36 @@ export default async function EventPage({
 
   const [c1, c2, c3] = await getPosterColors(event.posterUrl);
 
+  // Structured data for rich results (Google SportsEvent)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: event.title,
+    startDate: (event.startTime ?? event.date).toISOString(),
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location:
+      event.venue || event.city
+        ? {
+            "@type": "Place",
+            name: event.venue || undefined,
+            address: event.city
+              ? { "@type": "PostalAddress", addressLocality: event.city }
+              : undefined,
+          }
+        : undefined,
+    image: event.posterUrl || undefined,
+    description: event.description || undefined,
+    organizer: { "@type": "Organization", name: event.promotion },
+    url: `${siteUrl}/events/${event.slug}`,
+  };
+
   return (
     <div className="min-h-screen pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Poster colour gradient backdrop */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
@@ -1028,6 +1056,29 @@ export default async function EventPage({
             </div>
           </section>
         )}
+        {/* JSON-LD Structured Data for Google Rich Snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SportsEvent",
+              "name": event.title,
+              "startDate": new Date(event.date).toISOString(),
+              "location": {
+                "@type": "Place",
+                "name": event.venue || "Arena",
+                "address": event.city || ""
+              },
+              "image": event.posterUrl || "",
+              "description": event.description || `${event.title} presented by ${event.promotion}`,
+              "organizer": {
+                "@type": "Organization",
+                "name": event.promotion
+              }
+            })
+          }}
+        />
       </div>
     </div>
   );

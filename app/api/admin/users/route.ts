@@ -17,7 +17,10 @@ export async function GET() {
       isAdmin: true,
       isSuspended: true,
       isFoundingMember: true,
+      predictionScore: true,
+      predictionCount: true,
       createdAt: true,
+      badges: { select: { badgeType: true, icon: true, title: true } },
       _count: { select: { reviews: true, MatchRating: true, followers: true } },
     },
   });

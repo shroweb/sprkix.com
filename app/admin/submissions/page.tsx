@@ -46,7 +46,20 @@ export default function AdminSubmissionsPage() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const res = await fetch("/api/admin/submissions");
+      const data = await res.json();
+      if (active) {
+        setSubmissions(Array.isArray(data) ? data : []);
+        setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function approve(id: string) {
     setActing(id);

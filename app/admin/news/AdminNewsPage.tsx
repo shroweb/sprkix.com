@@ -76,40 +76,6 @@ export default function AdminNewsPage() {
   const [showMediaPicker, setShowMediaPicker] = useState(false);
   const editorRef = useRef<RichTextEditorHandle>(null);
 
-  async function loadPosts(selectId?: string | null) {
-    setLoading(true);
-    const res = await fetch("/api/admin/news");
-    const data = await res.json();
-    const nextPosts = Array.isArray(data) ? data : [];
-    setPosts(nextPosts);
-    setLoading(false);
-
-    if (selectId) {
-      const selected = nextPosts.find((post: NewsPost) => post.id === selectId);
-      if (selected) selectPost(selected);
-    } else if (!form.id && nextPosts[0]) {
-      selectPost(nextPosts[0]);
-    }
-  }
-
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(async () => {
-      if (entityQuery.trim().length < 2) {
-        setEntityResults([]);
-        return;
-      }
-      const res = await fetch(`/api/admin/news/entities?q=${encodeURIComponent(entityQuery.trim())}`);
-      const data = await res.json();
-      setEntityResults(Array.isArray(data.results) ? data.results : []);
-    }, 250);
-
-    return () => clearTimeout(timeout);
-  }, [entityQuery]);
-
   function selectPost(post: NewsPost) {
     setForm({
       id: post.id,
@@ -131,6 +97,53 @@ export default function AdminNewsPage() {
     setForm(EMPTY_FORM);
     setMessage("");
   }
+
+  async function loadPosts(selectId?: string | null) {
+    setLoading(true);
+    const res = await fetch("/api/admin/news");
+    const data = await res.json();
+    const nextPosts = Array.isArray(data) ? data : [];
+    setPosts(nextPosts);
+    setLoading(false);
+
+    if (selectId) {
+      const selected = nextPosts.find((post: NewsPost) => post.id === selectId);
+      if (selected) selectPost(selected);
+    } else if (!form.id && nextPosts[0]) {
+      selectPost(nextPosts[0]);
+    }
+  }
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const res = await fetch("/api/admin/news");
+      const data = await res.json();
+      const nextPosts = Array.isArray(data) ? data : [];
+      if (!active) return;
+      setPosts(nextPosts);
+      setLoading(false);
+      if (!active) return;
+      if (!form.id && nextPosts[0]) selectPost(nextPosts[0]);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      if (entityQuery.trim().length < 2) {
+        setEntityResults([]);
+        return;
+      }
+      const res = await fetch(`/api/admin/news/entities?q=${encodeURIComponent(entityQuery.trim())}`);
+      const data = await res.json();
+      setEntityResults(Array.isArray(data.results) ? data.results : []);
+    }, 250);
+
+    return () => clearTimeout(timeout);
+  }, [entityQuery]);
 
   function insertEntityLink(result: EntityResult) {
     editorRef.current?.insertEntityLink({

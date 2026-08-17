@@ -10,15 +10,20 @@ export default async function EventsPage({
   const { promotion: initialPromotion } = await searchParams;
   const user = await getUserFromServerCookie();
 
-  const [raw, userReviews] = await Promise.all([
+  const [raw, ratingAgg, userReviews] = await Promise.all([
     prisma.event.findMany({
       orderBy: { date: "desc" },
       select: {
         id: true, title: true, slug: true, date: true, promotion: true,
         venue: true, posterUrl: true, description: true, type: true,
         startTime: true, endTime: true, createdAt: true,
-        reviews: { select: { rating: true } },
       },
+    }),
+    // Aggregate review stats once instead of loading every review row
+    prisma.review.groupBy({
+      by: ["eventId"],
+      _avg: { rating: true },
+      _count: { rating: true },
     }),
     user
       ? prisma.review.findMany({
@@ -28,24 +33,28 @@ export default async function EventsPage({
       : Promise.resolve([]),
   ]);
 
+  const ratingByEvent = new Map(
+    ratingAgg.map((r) => [r.eventId, r]),
+  );
   const reviewedEventIds = (userReviews as { eventId: string }[]).map(
     (r) => r.eventId,
   );
 
-  const events = raw.map((e: any) => ({
-    id: e.id,
-    title: e.title,
-    slug: e.slug,
-    date: e.date,
-    promotion: e.promotion,
-    posterUrl: e.posterUrl,
-    startTime: e.startTime,
-    endTime: e.endTime,
-    avgRating: e.reviews.length
-      ? e.reviews.reduce((s: number, r: any) => s + r.rating, 0) / e.reviews.length
-      : 0,
-    reviewCount: e.reviews.length,
-  }));
+  const events = raw.map((e: any) => {
+    const agg = ratingByEvent.get(e.id);
+    return {
+      id: e.id,
+      title: e.title,
+      slug: e.slug,
+      date: e.date,
+      promotion: e.promotion,
+      posterUrl: e.posterUrl,
+      startTime: e.startTime,
+      endTime: e.endTime,
+      avgRating: agg?._count.rating ? (agg._avg.rating ?? 0) : 0,
+      reviewCount: agg?._count.rating ?? 0,
+    };
+  });
 
   return (
     <div className="rounded-t-lg text-white overflow-hidden">

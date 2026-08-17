@@ -10,7 +10,8 @@
     "prebuild": "prisma generate",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "test": "vitest run",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
@@ -20,8 +21,6 @@
     "@neondatabase/serverless": "^1.1.0",
     "@prisma/adapter-neon": "6.8.2",
     "@prisma/client": "^6.8.2",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.0.0",
@@ -34,7 +33,6 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.577.0",
     "next": "^16.3.0",
-    "node-fetch": "^2.7.0",
     "node-vibrant": "^4.0.4",
     "prisma": "^6.8.2",
     "react": "^19.0.0",
@@ -60,6 +58,10 @@
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
     "wrangler": "^4.122.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "esbuild", "prisma", "unrs-resolver", "workerd"]
   }
 }

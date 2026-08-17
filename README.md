@@ -11,8 +11,10 @@ The web app for Poison Rana — rate shows, write reviews, make predictions, and
 ## Local development
 
 ```bash
-npm install        # runs prisma generate
-npm run dev        # http://localhost:3000
+pnpm install       # runs prisma generate
+pnpm dev           # http://localhost:3000
+pnpm test          # vitest unit tests
+pnpm lint          # eslint (flat config)
 ```
 
 Local dev reads secrets from `.dev.vars` (gitignored) and uploads fall back to
@@ -73,9 +75,13 @@ The first registered user becomes admin (`app/api/auth/register`).
 
 ## Notes / known limitations on Cloudflare
 
-- **Image optimization is off** (`images.unoptimized` in `next.config.ts`) because
-  Cloudflare Images isn't configured yet. Enable the `IMAGES` binding and remove
-  the flag to get resized/optimized images.
+- **Image optimization** runs through the `IMAGES` Cloudflare Images binding
+  declared in `wrangler.jsonc`. It requires Cloudflare Images to be enabled on
+  the account; if the binding is missing, deployments fail — remove the `images`
+  block and set `images.unoptimized: true` in `next.config.ts` to opt out.
+- **Web analytics**: set `NEXT_PUBLIC_CF_ANALYTICS_TOKEN` (from Cloudflare Web
+  Analytics) to inject the beacon script. The old `@vercel/analytics` and
+  `@vercel/speed-insights` packages were removed — they do nothing on Workers.
 - **The nightly Cagematch import** is handled by the `poison-rana-import`
   scheduler worker (`workers/import-scheduler/`) — a Cloudflare cron trigger
   (`0 6 * * *`, daily 06:00 UTC) calls the site's `/api/cron/import-shows`
@@ -96,6 +102,12 @@ The first registered user becomes admin (`app/api/auth/register`).
   and descriptions automatically. `SCRAPER_API_KEY` (optional) improves
   Cagematch fetch reliability; without it the route falls back to direct
   fetch + public proxies.
+- **Community badges** are awarded by `GET /api/cron/award-badges` (protected
+  by `CRON_SECRET`): `ppv_master` (10+ correct predictions), `top_reviewer`
+  (5+ reviews), and `founding_member` (joined during the founding window).
+  Trigger it on a cron schedule alongside the import scheduler.
+- **Auth tokens** are HS256 JWTs signed with `jose` (the old `jsonwebtoken`
+  dependency was removed). Existing sessions remain valid.
 - **Prisma on the worker** uses `driverAdapters` + the Neon WebSocket pool
   adapter. Do not switch to `PrismaNeonHTTP` — it doesn't support transactions
   (upserts and `$transaction` calls will fail). `lib/prisma.ts` exposes a

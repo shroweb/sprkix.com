@@ -20,6 +20,11 @@ import {
   Send,
   Smartphone,
   Newspaper,
+  Trophy,
+  Medal,
+  Megaphone,
+  ClipboardCheck,
+  ScrollText,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -62,17 +67,19 @@ export default function Sidebar() {
             {[
               { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
               { href: "/admin/events", label: "Events", icon: Calendar },
+              { href: "/admin/championships", label: "Championships", icon: Trophy },
               { href: "/admin/wrestlers", label: "Wrestlers", icon: Users },
               { href: "/admin/promotions", label: "Promotions", icon: Tag },
               { href: "/admin/users", label: "User Manager", icon: Users },
-              { href: "/admin/reviews", label: "Review Browser", icon: LogOut },
+              { href: "/admin/reviews", label: "Review Browser", icon: Star },
               { href: "/admin/news", label: "Newsroom", icon: Newspaper },
               { href: "/admin/submissions", label: "Event Submissions", icon: Send },
               { href: "/admin/import", label: "Import Queue", icon: Download },
               { href: "/admin/polls", label: "Polls", icon: BarChart2 },
-              { href: "/admin/push-tokens", label: "Push Tokens", icon: Smartphone },
+              { href: "/admin/badges", label: "Badge Manager", icon: Medal },
+              { href: "/admin/broadcast", label: "Broadcast", icon: Megaphone },
             ].map((link) => {
-              const Icon = link.icon === LogOut ? Star : link.icon;
+              const Icon = link.icon;
               const isActive = pathname === link.href || (link.href !== "/admin" && pathname?.startsWith(link.href));
 
               return (
@@ -100,12 +107,12 @@ export default function Sidebar() {
             {[
               { href: "/admin/analytics", label: "Analytics", icon: Activity },
               { href: "/admin/pulse", label: "Platform Pulse", icon: Activity },
-              { href: "/admin/activity", label: "Activity Feed", icon: LogOut },
-              { href: "/admin/audit", label: "Content Audit", icon: ShieldAlert },
               { href: "/admin/duplicates", label: "Duplicate Finder", icon: Search },
               { href: "/admin/health", label: "Image Health", icon: Activity },
+              { href: "/admin/audit", label: "Content Audit", icon: ClipboardCheck },
+              { href: "/admin/logs", label: "Admin Log", icon: ScrollText },
             ].map((link) => {
-              const Icon = link.icon === LogOut ? Activity : link.icon;
+              const Icon = link.icon;
               const isActive = pathname?.startsWith(link.href);
 
               return (
@@ -127,15 +134,14 @@ export default function Sidebar() {
 
         <div>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-4 mb-4">
-            Foundation Tools
+            Tools & Settings
           </p>
           <div className="space-y-1">
             {[
               { href: "/admin/scraper", label: "Metadata Scraper", icon: Search },
-              { href: "/admin/bulk-tag", label: "Bulk Tagger", icon: Tag },
-              { href: "/admin/matches", label: "Card Drafts", icon: Calendar },
+              { href: "/admin/media", label: "Media Library", icon: Image },
               { href: "/admin/moderation", label: "Moderation Queue", icon: ShieldAlert },
-              { href: "/admin/notes", label: "Admin Scratchpad", icon: Settings },
+              { href: "/admin/settings", label: "Site Settings", icon: Settings },
               { href: "/admin/maintenance", label: "System Control", icon: Settings },
             ].map((link) => {
               const Icon = link.icon;

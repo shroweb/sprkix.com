@@ -33,8 +33,21 @@ export default function AdminMediaPage() {
   }, []);
 
   useEffect(() => {
-    fetchMedia();
-  }, [fetchMedia]);
+    let active = true;
+    (async () => {
+      const res = await fetch("/api/admin/media");
+      if (!active) return;
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!active) return;
+      setItems(data.items);
+      setNextCursor(data.nextCursor);
+      setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleUpload = async (files: FileList | File[]) => {
     setUploading(true);

@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
 import { prisma } from "@lib/prisma";
+import { signToken as jwtSign, verifyToken } from "@lib/jwt";
 import type { NextRequest } from "next/server";
 
 export type V1User = {
@@ -28,8 +28,8 @@ export async function getUserFromBearer(req: NextRequest): Promise<V1User | null
   if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId?: string };
-    if (!decoded.userId || typeof decoded.userId !== "string") return null;
+    const decoded = await verifyToken<{ userId?: string }>(token);
+    if (!decoded?.userId || typeof decoded.userId !== "string") return null;
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
@@ -66,6 +66,6 @@ export async function requireAuth(req: NextRequest): Promise<V1User> {
 /**
  * Sign a JWT for the given userId (used in login/register responses).
  */
-export function signToken(userId: string): string {
-  return jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: "30d" });
+export function signToken(userId: string): Promise<string> {
+  return jwtSign({ userId }, "30d");
 }

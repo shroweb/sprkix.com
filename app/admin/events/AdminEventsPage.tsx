@@ -11,6 +11,7 @@ import {
   Calendar,
   Sparkles,
   ImageIcon,
+  Download,
 } from "lucide-react";
 
 export default function AdminEventsPage() {
@@ -234,18 +235,27 @@ export default function AdminEventsPage() {
             Create and organize your wrestling events.
           </p>
         </div>
-        <button
-          onClick={() => setIsAdding(!isAdding)}
-          className="btn-primary flex items-center gap-2"
-        >
-          {isAdding ? (
-            "Cancel"
-          ) : (
-            <>
-              <Plus className="w-4 h-4" /> Add Event
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          <a
+            href="/api/admin/export?kind=events"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-xl text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors"
+            title="Export events as CSV"
+          >
+            <Download className="w-4 h-4" /> Export
+          </a>
+          <button
+            onClick={() => setIsAdding(!isAdding)}
+            className="btn-primary flex items-center gap-2"
+          >
+            {isAdding ? (
+              "Cancel"
+            ) : (
+              <>
+                <Plus className="w-4 h-4" /> Add Event
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {isAdding && (

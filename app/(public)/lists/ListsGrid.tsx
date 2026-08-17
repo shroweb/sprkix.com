@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Globe, Lock, List } from "lucide-react";
+import ListCollage from "@components/ListCollage";
 
 type ListItem = {
   event?: { posterUrl: string | null; title: string } | null;
@@ -137,38 +138,14 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
               href={`/lists/${list.id}`}
               className="group bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/20 transition-all"
             >
-              {/* Poster strip */}
-              <div className="relative flex h-28 overflow-hidden">
-                {list.items.length > 0 ? (
-                  list.items.map((item, i) => {
-                    const posterUrl =
-                      item.event?.posterUrl ||
-                      item.match?.event?.posterUrl ||
-                      "/placeholder.svg";
-                    const altText = item.event?.title || item.match?.title || "";
-                    return (
-                      <div
-                        key={i}
-                        className="relative flex-1 overflow-hidden"
-                        style={{
-                          flexBasis: `${100 / Math.min(list.items.length, 3)}%`,
-                        }}
-                      >
-                        <Image
-                          src={posterUrl}
-                          alt={altText}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="flex-1 bg-secondary flex items-center justify-center">
-                    <List className="w-8 h-8 text-muted-foreground/20" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent pointer-events-none" />
+              {/* Poster Collage Cover */}
+              <div className="p-3 pb-0">
+                <ListCollage
+                  title={list.title}
+                  posters={list.items.map(
+                    (item) => item.event?.posterUrl || item.match?.event?.posterUrl || null
+                  )}
+                />
               </div>
 
               {/* Card body */}

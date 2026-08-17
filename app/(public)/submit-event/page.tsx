@@ -27,7 +27,7 @@ export default function SubmitEventPage() {
   const [form, setForm] = useState({
     title: "", date: "", promotion: "", venue: "", city: "",
     attendance: "", network: "", posterUrl: "", description: "",
-    type: "", sourceUrl: "",
+    type: "", sourceUrl: "", website: "", // honeypot — must stay empty
   });
   const [customPromotion, setCustomPromotion] = useState("");
 
@@ -104,7 +104,7 @@ export default function SubmitEventPage() {
         </div>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => { setSuccess(false); setCustomPromotion(""); setForm({ title: "", date: "", promotion: "", venue: "", city: "", attendance: "", network: "", posterUrl: "", description: "", type: "", sourceUrl: "" }); }}
+            onClick={() => { setSuccess(false); setCustomPromotion(""); setForm({ title: "", date: "", promotion: "", venue: "", city: "", attendance: "", network: "", posterUrl: "", description: "", type: "", sourceUrl: "", website: "" }); }}
             className="px-6 py-2.5 bg-card border border-border rounded-xl text-sm font-black hover:border-primary/30 transition-all"
           >
             Submit Another
@@ -148,6 +148,18 @@ export default function SubmitEventPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-card/40 border border-white/5 rounded-[2rem] p-8 space-y-6">
+        {/* Honeypot field — hidden from humans, irresistible to bots */}
+        <div className="hidden" aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input
+            id="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={form.website}
+            onChange={e => set("website", e.target.value)}
+          />
+        </div>
         {error && (
           <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
             <AlertCircle className="w-4 h-4 shrink-0" />

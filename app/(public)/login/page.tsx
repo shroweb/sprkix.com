@@ -15,7 +15,13 @@ const ERROR_MESSAGES: Record<string, string> = {
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  // Derive any OAuth error from the URL during initial state — avoids a
+  // synchronous setState in an effect.
+  const [error, setError] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const oauthError = new URLSearchParams(window.location.search).get("error");
+    return (oauthError && ERROR_MESSAGES[oauthError]) || "";
+  });
   const [socialProviders, setSocialProviders] = useState<{
     enabled: boolean;
     google: boolean;
@@ -23,13 +29,6 @@ export default function LoginPage() {
   } | null>(null);
 
   useEffect(() => {
-    // Read any OAuth error from the URL
-    const params = new URLSearchParams(window.location.search);
-    const oauthError = params.get("error");
-    if (oauthError && ERROR_MESSAGES[oauthError]) {
-      setError(ERROR_MESSAGES[oauthError]);
-    }
-
     // Fetch social login availability
     fetch("/api/auth/social-providers")
       .then((r) => r.json())

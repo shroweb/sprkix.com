@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity -- server component: relative timestamps are computed once per request */
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { prisma } from "@lib/prisma";
 import { redirect } from "next/navigation";

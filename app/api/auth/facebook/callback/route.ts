@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
-import jwt from "jsonwebtoken";
+import { signToken } from "@lib/jwt";
 import { randomWrestlingName } from "@lib/wrestling-names";
 import { sendWelcomeEmail } from "@lib/mail";
 import { consumeOAuthState } from "@lib/oauth-state";
@@ -15,17 +15,16 @@ function makeSlug(name: string): string {
   return `${base}-${suffix}`;
 }
 
-function buildAuthResponse(
+async function buildAuthResponse(
   userId: string,
   email: string,
   name: string | null,
   siteUrl: string,
   platform: string = "web",
 ) {
-  const token = jwt.sign(
+  const token = await signToken(
     { userId, email, name },
-    process.env.JWT_SECRET!,
-    { expiresIn: "7d" }
+    "7d"
   );
 
   // Mobile app — redirect to deep link so the app can capture the token
@@ -146,7 +145,7 @@ export async function GET(req: NextRequest) {
       await sendWelcomeEmail(user.email, user.name || "");
     }
 
-    return buildAuthResponse(user.id, user.email, user.name, siteUrl, platform);
+    return await buildAuthResponse(user.id, user.email, user.name, siteUrl, platform);
   } catch (err) {
     console.error("[Facebook OAuth] Unexpected error:", err);
     return NextResponse.redirect(new URL("/login?error=server_error", siteUrl));

@@ -1,6 +1,6 @@
 import { prisma } from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { verifyToken } from "../../../../lib/jwt";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
@@ -16,10 +16,8 @@ export async function POST(req: Request) {
     }
 
     // Verify and decode the reset token
-    let payload: { userId: string; email: string; purpose: string };
-    try {
-      payload = jwt.verify(token, process.env.JWT_SECRET!) as typeof payload;
-    } catch {
+    const payload = await verifyToken<{ userId: string; email: string; purpose: string }>(token);
+    if (!payload) {
       return NextResponse.json({ error: "Reset link is invalid or has expired" }, { status: 400 });
     }
 

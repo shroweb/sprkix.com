@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../lib/server-auth";
 import { sendPushToUser } from "../../../../../lib/push";
+import { rateLimit, rateLimitedResponse } from "../../../../../lib/rate-limit";
 
 // POST /api/reviews/[id]/vote — toggle upvote
 export async function POST(
@@ -13,6 +14,10 @@ export async function POST(
     return NextResponse.json({ error: "Login required" }, { status: 401 });
 
   const { id: reviewId } = await params;
+
+  // Vote spam protection: 30 actions per minute per user
+  const rl = await rateLimit(`vote:${user.id}`, 30, 60);
+  if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
   const existing = await prisma.reviewVote.findUnique({
     where: { userId_reviewId: { userId: user.id, reviewId } },

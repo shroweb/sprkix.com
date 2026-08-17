@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
+import { rateLimit, rateLimitedResponse } from "@lib/rate-limit";
 
 function eventIsLive(event: { startTime: Date | null; endTime: Date | null }): boolean {
   if (!event.startTime) return false;
@@ -49,6 +50,10 @@ export async function POST(
   if (!text?.trim()) {
     return NextResponse.json({ error: "Message is empty" }, { status: 400 });
   }
+
+  // Chat flood control: 20 messages per minute per user per event
+  const rl = await rateLimit(`chat:${id}:${user.id}`, 20, 60);
+  if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
   try {
     // Gate: only allow posting while the event is actually live

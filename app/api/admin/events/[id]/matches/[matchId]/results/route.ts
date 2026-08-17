@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../../../../lib/server-auth";
 import { sendPushToUser } from "../../../../../../../../lib/push";
@@ -13,6 +14,12 @@ export async function PATCH(
 
   const { id: eventId, matchId } = await params;
   const { result, winners } = await req.json(); // winners = string[] of participantIds
+
+  // Fetch event slug up front for cache revalidation after the update
+  const matchRow = await prisma.match.findUnique({
+    where: { id: matchId },
+    select: { event: { select: { slug: true } } },
+  });
 
   // Update match result text
   await prisma.match.update({
@@ -137,6 +144,11 @@ export async function PATCH(
     }
   }
   // ── End Resolution ─────────────────────────────────────────────────────────
+
+  // Purge cached pages so the new result shows up immediately
+  if (matchRow?.event?.slug) revalidatePath(`/events/${matchRow.event.slug}`);
+  revalidatePath("/events");
+  revalidatePath("/");
 
   return NextResponse.json({ success: true });
 }

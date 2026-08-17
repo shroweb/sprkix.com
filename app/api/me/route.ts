@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import { prisma } from "../../../lib/prisma";
 import { NextResponse } from "next/server";
 import { SESSION_USER_SELECT } from "@lib/session-user";
+import { verifyToken } from "../../../lib/jwt";
 
 export async function GET() {
   try {
@@ -12,8 +12,11 @@ export async function GET() {
       return NextResponse.json({ user: null });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    const userId = decoded.userId;
+    const decoded = await verifyToken<{ userId?: string }>(token);
+    const userId = decoded?.userId;
+    if (!userId) {
+      return NextResponse.json({ user: null });
+    }
 
     const user = await prisma.user.findUnique({
       where: { id: userId as string },

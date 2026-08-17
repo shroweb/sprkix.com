@@ -62,12 +62,69 @@ export default function LiveChatContainer({
 
   useEffect(() => {
     fetchComments();
-    // Read-only (archived) — load once, no need to keep polling
-    if (!readOnly) {
+    // Read-only (archived) — load once, no need to keep watching
+    if (readOnly) return;
+
+    let es: EventSource | null = null;
+    let polling = false;
+
+    const startPolling = () => {
+      if (polling) return;
+      polling = true;
       pollRef.current = setInterval(fetchComments, 5000);
+    };
+
+    const stopPolling = () => {
+      polling = false;
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+
+    // Prefer a live SSE stream; fall back to 5s polling if unavailable
+    if (typeof EventSource !== "undefined") {
+      es = new EventSource(`/api/events/${eventId}/chat/stream`);
+      es.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data?.type === "comments" && Array.isArray(data.comments)) {
+            setComments((prev) => {
+              const existing = new Set(prev.map((c) => c.id));
+              const fresh = data.comments.filter(
+                (c: LiveComment) => !existing.has(c.id) && !c.id.startsWith("opt-")
+              );
+              return fresh.length > 0 ? [...prev, ...fresh].slice(-200) : prev;
+            });
+            stopPolling();
+          }
+        } catch { /* ignore malformed frames */ }
+      };
+      es.onerror = () => {
+        // Stream failed — close it and lean on polling (EventSource would
+        // otherwise retry aggressively and spam the server)
+        es?.close();
+        es = null;
+        startPolling();
+      };
+      // If no message arrives within 30s, the stream is probably dead — poll
+      const watchdog = setTimeout(() => {
+        if (es) {
+          es.close();
+          es = null;
+          startPolling();
+        }
+      }, 30000);
+      return () => {
+        clearTimeout(watchdog);
+        es?.close();
+        stopPolling();
+      };
     }
-    return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, [fetchComments, readOnly]);
+
+    startPolling();
+    return () => stopPolling();
+  }, [fetchComments, readOnly, eventId]);
 
   useEffect(() => {
     scrollToBottom();

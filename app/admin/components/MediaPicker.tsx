@@ -38,8 +38,20 @@ export default function MediaPicker({
   }, []);
 
   useEffect(() => {
-    fetchMedia();
-  }, [fetchMedia]);
+    let active = true;
+    (async () => {
+      const res = await fetch("/api/admin/media");
+      if (!active) return;
+      if (res.ok) {
+        const data = await res.json();
+        if (active) setItems(data.items);
+      }
+      if (active) setLoading(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleUpload = async (files: FileList | File[]) => {
     setUploading(true);

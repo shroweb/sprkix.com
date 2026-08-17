@@ -1,12 +1,21 @@
 import { prisma } from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { signToken } from "../../../../lib/jwt";
 import { sendWelcomeEmail } from "../../../../lib/mail";
+import { rateLimit, rateLimitedResponse } from "../../../../lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
+
+    // Signup flood protection: 5 registrations per hour per IP
+    const ip =
+      req.headers.get("cf-connecting-ip") ||
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "unknown";
+    const rl = await rateLimit(`register:${ip}`, 5, 60 * 60);
+    if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -44,10 +53,9 @@ export async function POST(req: Request) {
     await sendWelcomeEmail(user.email, user.name || "");
 
     // Automatically log in the user
-    const token = jwt.sign(
+    const token = await signToken(
       { userId: user.id, email: user.email, name: user.name || "" },
-      process.env.JWT_SECRET!,
-      { expiresIn: "7d" },
+      "7d",
     );
 
     const response = NextResponse.json({

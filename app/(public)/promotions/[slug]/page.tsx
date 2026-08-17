@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Calendar, Star } from "lucide-react";
+import { ChevronLeft, Calendar, Star, Trophy } from "lucide-react";
 
 async function getPromotionPageData(slug: string) {
   const promotions = await prisma.promotion.findMany({
@@ -20,20 +20,26 @@ async function getPromotionPageData(slug: string) {
   const promotion = promotions.find((item) => getPromotionNewsSlug(item.shortName) === slug);
   if (!promotion) return null;
 
-  const events = await prisma.event.findMany({
-    where: { promotion: promotion.shortName },
-    orderBy: { date: "desc" },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      date: true,
-      posterUrl: true,
-      reviews: { select: { rating: true } },
-    },
-  });
+  const [events, championships] = await Promise.all([
+    prisma.event.findMany({
+      where: { promotion: { equals: promotion.shortName, mode: "insensitive" } },
+      orderBy: { date: "desc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        date: true,
+        posterUrl: true,
+        reviews: { select: { rating: true } },
+      },
+    }),
+    prisma.championship.findMany({
+      where: { promotion: { equals: promotion.shortName, mode: "insensitive" } },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
-  return { promotion, events };
+  return { promotion, events, championships };
 }
 
 export async function generateMetadata({
@@ -79,7 +85,7 @@ export default async function PromotionDetailPage({
   const data = await getPromotionPageData(slug);
   if (!data) return notFound();
 
-  const { promotion, events } = data;
+  const { promotion, events, championships } = data;
   const promotionName = promotion.fullName || promotion.shortName;
 
   return (
@@ -103,6 +109,29 @@ export default async function PromotionDetailPage({
           {events.length} archived events
         </p>
       </div>
+
+      {championships.length > 0 && (
+        <div className="glass-card p-6 space-y-4">
+          <div className="flex items-center gap-2 text-amber-400 font-black uppercase tracking-wider text-xs">
+            <Trophy className="w-4 h-4" /> Championship Belts
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {championships.map((belt) => (
+              <div
+                key={belt.id}
+                className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+              >
+                <span className="text-xs font-bold text-white">{belt.title}</span>
+                {belt.shortName && (
+                  <span className="text-[10px] font-mono text-amber-400 font-bold px-2 py-0.5 bg-amber-400/10 rounded">
+                    {belt.shortName}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event) => {

@@ -1,6 +1,6 @@
 import Sidebar from "./components/Sidebar";
 import { UserCircle } from "lucide-react";
-import { getUserFromServerCookie } from "../../lib/getUserFromServerCookie";
+import { getUserFromServerCookie } from "@lib/server-auth";
 import { redirect } from "next/navigation";
 
 export default async function AdminLayout({

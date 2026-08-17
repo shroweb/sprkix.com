@@ -97,8 +97,15 @@ export default function NotificationBell() {
     setOpen(!open);
   };
 
+  // Ticking clock so relative times can be computed without Date.now() in render
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const timeAgo = (date: string) => {
-    const diff = Date.now() - new Date(date).getTime();
+    const diff = now - new Date(date).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return "just now";
     if (mins < 60) return `${mins}m ago`;

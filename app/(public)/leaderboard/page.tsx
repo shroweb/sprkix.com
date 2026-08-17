@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Target, Trophy, ChevronLeft, Crown } from "lucide-react";
 import type { Metadata } from "next";
 
+import PredictionLeague from "@components/PredictionLeague";
+
 export const metadata: Metadata = {
   title: "Prediction Leaderboard | Poison Rana",
   description: "The most accurate wrestling event predictors on Poison Rana.",
@@ -26,6 +28,7 @@ export default async function LeaderboardPage() {
       userId: true,
       predictedWinnerId: true,
       isCorrect: true,
+      createdAt: true,
       match: {
         select: {
           participants: {
@@ -37,8 +40,12 @@ export default async function LeaderboardPage() {
     },
   });
 
-  // Per-user tallies
+  // Per-user tallies + resolved history (for streak computation)
   const tallies: Record<string, { correct: number; total: number }> = {};
+  const resolvedByUser: Record<
+    string,
+    { isCorrect: boolean; createdAt: Date }[]
+  > = {};
   for (const p of rawPredictions) {
     if (!tallies[p.userId]) tallies[p.userId] = { correct: 0, total: 0 };
     tallies[p.userId].total++;
@@ -48,6 +55,21 @@ export default async function LeaderboardPage() {
         ? p.isCorrect
         : p.match.participants.some((mp) => mp.wrestlerId === p.predictedWinnerId);
     if (isCorrect) tallies[p.userId].correct++;
+    if (!resolvedByUser[p.userId]) resolvedByUser[p.userId] = [];
+    resolvedByUser[p.userId].push({ isCorrect, createdAt: p.createdAt });
+  }
+
+  // Current streak = consecutive correct picks, most recent first
+  const streaks: Record<string, number> = {};
+  for (const [userId, resolved] of Object.entries(resolvedByUser)) {
+    let streak = 0;
+    for (const r of [...resolved].sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )) {
+      if (r.isCorrect) streak++;
+      else break;
+    }
+    streaks[userId] = streak;
   }
 
   // Keep only users with ≥3 resolved predictions
@@ -72,6 +94,7 @@ export default async function LeaderboardPage() {
         predictionScore: t.correct,
         predictionCount: t.total,
         accuracy: Math.round((t.correct / t.total) * 100),
+        streak: streaks[u.id] || 0,
       };
     })
     .sort((a, b) => b.accuracy - a.accuracy || b.predictionCount - a.predictionCount)
@@ -107,6 +130,10 @@ export default async function LeaderboardPage() {
           <p className="text-muted-foreground font-medium italic max-w-xl">
             Ranked by accuracy across all resolved match predictions. Minimum 3 predictions to qualify.
           </p>
+        </div>
+
+        <div className="mb-10">
+          <PredictionLeague topPredictors={ranked} />
         </div>
 
         {ranked.length === 0 ? (
@@ -180,6 +207,9 @@ export default async function LeaderboardPage() {
                     </p>
                     <p className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-wider">
                       {entry.predictionScore} correct of {entry.predictionCount}
+                      {entry.streak >= 2 && (
+                        <span className="ml-1.5 text-orange-400">🔥 {entry.streak} streak</span>
+                      )}
                     </p>
                   </div>
 

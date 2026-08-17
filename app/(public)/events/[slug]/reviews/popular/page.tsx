@@ -87,7 +87,7 @@ export default async function PopularReviewsPage(props: {
     (await prisma.review.count({ where: { eventId: event.id } })) / 5,
   );
 
-  const Pagination = () => (
+  const pagination = (
     <div className="flex justify-center items-center gap-4 mt-8">
       <a
         href={`?page=${Math.max(1, page - 1)}`}
@@ -154,7 +154,7 @@ export default async function PopularReviewsPage(props: {
           </p>
         )}
       </div>
-      <Pagination />
+      {pagination}
     </div>
   );
 }

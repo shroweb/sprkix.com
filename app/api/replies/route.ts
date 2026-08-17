@@ -3,11 +3,16 @@ import { prisma } from "../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../lib/server-auth";
 import { sendReplyEmail } from "../../../lib/mail";
 import { sendPushToUser } from "../../../lib/push";
+import { rateLimit, rateLimitedResponse } from "../../../lib/rate-limit";
 
 export async function POST(req: Request) {
   const user = await getUserFromServerCookie();
   if (!user)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  // Reply spam protection: 20 replies per minute per user
+  const rl = await rateLimit(`reply:${user.id}`, 20, 60);
+  if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
   const { reviewId, comment } = await req.json();
 

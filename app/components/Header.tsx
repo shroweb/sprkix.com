@@ -125,45 +125,51 @@ export default function Header({
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-8">
+        <nav className="hidden md:flex items-center gap-3 lg:gap-6 shrink-0">
           <Link
             href="/events"
-            className="text-sm font-semibold hover:text-primary transition-colors"
+            className="text-sm font-semibold hover:text-primary transition-colors whitespace-nowrap"
           >
             Events
           </Link>
           <Link
             href="/promotions"
-            className="text-sm font-semibold hover:text-primary transition-colors"
+            className="text-sm font-semibold hover:text-primary transition-colors whitespace-nowrap"
           >
             Promotions
           </Link>
           <Link
             href="/wrestlers"
-            className="text-sm font-semibold hover:text-primary transition-colors"
+            className="text-sm font-semibold hover:text-primary transition-colors whitespace-nowrap"
           >
             Wrestlers
           </Link>
           <Link
             href="/lists"
-            className="text-sm font-semibold hover:text-primary transition-colors"
+            className="text-sm font-semibold hover:text-primary transition-colors whitespace-nowrap"
           >
             Lists
           </Link>
           <Link
             href="/news"
-            className="text-sm font-semibold hover:text-primary transition-colors"
+            className="text-sm font-semibold hover:text-primary transition-colors whitespace-nowrap"
           >
             News
           </Link>
           <div className="relative group">
             <button
-              className="flex items-center gap-1 text-sm font-semibold hover:text-primary transition-colors py-2"
+              className="flex items-center gap-1 text-sm font-semibold hover:text-primary transition-colors py-2 whitespace-nowrap"
             >
-              Rankings
+              Discover
               <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-all group-hover:rotate-180" />
             </button>
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-48 bg-card border border-border rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 z-50">
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-52 bg-card border border-border rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 z-50">
+              <Link
+                href="/matches/finder"
+                className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
+              >
+                Match Finder
+              </Link>
               <Link
                 href="/rankings"
                 className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors uppercase italic"
@@ -298,8 +304,11 @@ export default function Header({
             </Link>
             <div className="space-y-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                Rankings
+                Discover & Rankings
               </span>
+              <Link href="/matches/finder" className="block text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
+                Match Finder
+              </Link>
               <Link href="/rankings" className="block text-lg font-bold pl-2" onClick={() => setMenuOpen(false)}>
                 Top Events
               </Link>

@@ -1,12 +1,10 @@
 import "./globals.css";
 
 import { prisma } from "@lib/prisma";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
-  let siteName = "Poison Rana";
+  const siteName = "Poison Rana";
   let tagline = "Rate, review, rank, and track professional wrestling.";
   let description =
     "Poison Rana is the community archive for professional wrestling: rate events and matches, track predictions, explore rankings, and discover shows across WWE, AEW, NJPW, TNA, ROH, Stardom, and more.";
@@ -73,8 +71,14 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-gradient-to-b from-[#0d1020] to-black text-white min-h-screen">
         {children}
-        <Analytics />
-        <SpeedInsights />
+        {/* Cloudflare Web Analytics — set NEXT_PUBLIC_CF_ANALYTICS_TOKEN to enable */}
+        {process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN })}
+          />
+        )}
       </body>
     </html>
   );

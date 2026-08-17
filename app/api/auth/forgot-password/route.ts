@@ -1,7 +1,8 @@
 import { prisma } from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { signToken } from "../../../../lib/jwt";
 import { Resend } from "resend";
+import { rateLimit, rateLimitedResponse } from "../../../../lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -9,6 +10,10 @@ export async function POST(req: Request) {
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
+
+    // Prevent email bombing: 3 reset requests per hour per address
+    const rl = await rateLimit(`forgot:${String(email).toLowerCase()}`, 3, 60 * 60);
+    if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
     const trimmed = email.trim().toLowerCase();
     const user = await prisma.user.findUnique({ where: { email: trimmed } });
@@ -19,10 +24,9 @@ export async function POST(req: Request) {
     }
 
     // Generate a short-lived reset token (1 hour)
-    const token = jwt.sign(
+    const token = await signToken(
       { userId: user.id, email: user.email, purpose: "reset" },
-      process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
+      "1h"
     );
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";

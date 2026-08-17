@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { signToken } from "../../../../lib/jwt";
+import { rateLimit, rateLimitedResponse } from "../../../../lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
+
+  // Brute-force protection: 10 attempts per 15 minutes per account
+  const rl = await rateLimit(`login:${String(email ?? "").toLowerCase()}`, 10, 15 * 60);
+  if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
   let user;
   try {
@@ -36,10 +41,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const token = jwt.sign(
+  const token = await signToken(
     { userId: user.id, email: user.email, name: user.name },
-    process.env.JWT_SECRET!,
-    { expiresIn: "7d" },
+    "7d",
   );
 
   const response = NextResponse.json({

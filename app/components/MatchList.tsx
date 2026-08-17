@@ -205,6 +205,12 @@ export default function MatchList({
                           Night
                         </span>
                       )}
+                      {(match.championship || match.title?.toLowerCase().includes("championship") || match.title?.toLowerCase().includes("title")) && (
+                        <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-1 rounded-full">
+                          <Trophy className="w-3 h-3 text-amber-400" />
+                          {match.championship?.title || "Championship Match"}
+                        </span>
+                      )}
                     </div>
 
                     {/* Match title */}
@@ -269,7 +275,13 @@ export default function MatchList({
                     {/* Result — blurred until revealed */}
                     {match.result && (
                       <p
-                        className={`text-sm font-medium italic text-muted-foreground border-l-2 border-primary/30 pl-3 transition-all duration-500 ${!showSpoilers ? "blur-md select-none opacity-30" : ""}`}
+                        onClick={() => !showSpoilers && setShowSpoilers(true)}
+                        title={!showSpoilers ? "Click to reveal result" : undefined}
+                        className={`text-sm font-medium italic text-muted-foreground border-l-2 border-primary/30 pl-3 transition-all duration-500 ${
+                          !showSpoilers
+                            ? "blur-md select-none opacity-40 cursor-pointer hover:opacity-70"
+                            : "cursor-default"
+                        }`}
                       >
                         {match.result}
                       </p>

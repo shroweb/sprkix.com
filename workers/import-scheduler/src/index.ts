@@ -67,6 +67,30 @@ async function runDay(env: Env, date: string) {
   return outcome;
 }
 
+async function runBadgeAward(env: Env) {
+  const started = new Date().toISOString();
+  try {
+    const res = await env.SITE.fetch(`${SITE_HOST}/api/cron/award-badges`, {
+      headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+      signal: AbortSignal.timeout(120_000),
+    });
+    const text = await res.text();
+    let body: unknown = null;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      /* non-JSON response */
+    }
+    return { started, status: res.status, body };
+  } catch (err) {
+    return {
+      started,
+      status: "error",
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
 async function runImport(env: Env, opts: { days?: number; date?: string } = {}) {
   const started = new Date().toISOString();
 
@@ -109,6 +133,7 @@ async function runImport(env: Env, opts: { days?: number; date?: string } = {}) 
 export default {
   async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(runImport(env));
+    ctx.waitUntil(runBadgeAward(env));
   },
 
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -120,6 +145,10 @@ export default {
       }
       const date = url.searchParams.get("date");
       const days = url.searchParams.get("days");
+      if (url.searchParams.has("badges")) {
+        return Response.json(await runBadgeAward(env));
+      }
+
       return Response.json(
         await runImport(env, {
           ...(date ? { date } : {}),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Loader2, UserPlus, X, Shield } from "lucide-react";
+import { Search, Loader2, UserPlus, X, Shield, Download } from "lucide-react";
 import UserAdminActions from "./UserAdminActions";
 
 type User = {
@@ -12,6 +12,9 @@ type User = {
   isAdmin: boolean;
   isSuspended: boolean;
   isFoundingMember: boolean;
+  predictionScore: number;
+  predictionCount: number;
+  badges: { badgeType: string; icon: string; title: string }[];
   createdAt: string;
   _count: { reviews: number; MatchRating: number; followers: number };
 };
@@ -78,6 +81,13 @@ export default function UsersAdminPage() {
               className="w-full pl-10 pr-4 py-2 bg-white border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+          <a
+            href="/api/admin/export?kind=users"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-xl text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors shrink-0"
+            title="Export users as CSV"
+          >
+            <Download className="w-4 h-4" /> Export
+          </a>
           <button
             onClick={() => setAddOpen(true)}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-black rounded-xl text-sm font-black uppercase tracking-widest hover:opacity-90 transition-opacity shrink-0"
@@ -124,6 +134,23 @@ export default function UsersAdminPage() {
                     <p className="text-sm font-black">{u._count.followers}</p>
                     <p className="text-[9px] uppercase tracking-widest text-muted-foreground">Followers</p>
                   </div>
+                  <div title="Prediction accuracy">
+                    <p className="text-sm font-black">
+                      {u.predictionCount > 0
+                        ? `${Math.round((u.predictionScore / u.predictionCount) * 100)}%`
+                        : "—"}
+                    </p>
+                    <p className="text-[9px] uppercase tracking-widest text-muted-foreground">Predictions</p>
+                  </div>
+                  {u.badges.length > 0 && (
+                    <div className="flex gap-1" title={u.badges.map((b) => b.title).join(", ")}>
+                      {u.badges.map((b) => (
+                        <span key={b.badgeType} className="text-base leading-none">
+                          {b.icon}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="hidden md:block text-[11px] text-muted-foreground shrink-0 w-24 text-right">
                   {new Date(u.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}

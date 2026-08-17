@@ -1,26 +1,22 @@
 import { cookies } from 'next/headers'
-import jwt from 'jsonwebtoken'
 import { prisma } from './prisma'
 import { SESSION_USER_SELECT, type SessionUser } from './session-user'
+import { verifyToken } from './jwt'
 
 async function getUserByToken(token: string): Promise<SessionUser | null> {
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    const userId = (decoded as any).userId;
+  const decoded = await verifyToken<{ userId?: string }>(token);
+  const userId = decoded?.userId;
 
-    if (!userId || typeof userId !== 'string') {
-      return null;
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: SESSION_USER_SELECT,
-    });
-
-    return user as SessionUser | null;
-  } catch {
+  if (!userId || typeof userId !== 'string') {
     return null;
   }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: SESSION_USER_SELECT,
+  });
+
+  return user as SessionUser | null;
 }
 
 /**

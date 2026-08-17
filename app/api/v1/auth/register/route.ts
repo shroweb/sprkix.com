@@ -53,6 +53,6 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
     },
   });
 
-  const token = signToken(user.id);
+  const token = await signToken(user.id);
   return NextResponse.json({ success: true, token, user }, { status: 201, headers: CORS_HEADERS });
 });

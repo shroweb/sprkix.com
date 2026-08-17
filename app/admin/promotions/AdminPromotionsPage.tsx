@@ -28,7 +28,14 @@ export default function AdminPromotionsPage() {
   };
 
   useEffect(() => {
-    fetchPromotions();
+    let active = true;
+    (async () => {
+      const res = await fetch("/api/admin/promotions");
+      if (active && res.ok) setPromotions(await res.json());
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleCreate = async () => {

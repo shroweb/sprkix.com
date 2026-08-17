@@ -105,6 +105,56 @@ export default async function WrestlerPage({ params }: { params: any }) {
   const uniqueEvents = new Set(pastMatches.map((mp) => mp.match.event.id))
     .size;
 
+  // Current streak — most recent result repeated consecutively
+  let currentStreak = 0;
+  let streakType: "win" | "loss" | null = null;
+  if (pastMatches.length > 0) {
+    const byDate = [...pastMatches].sort(
+      (a, b) =>
+        new Date(b.match.event.startTime ?? b.match.event.date).getTime() -
+        new Date(a.match.event.startTime ?? a.match.event.date).getTime(),
+    );
+    streakType = byDate[0].isWinner ? "win" : "loss";
+    for (const mp of byDate) {
+      if ((mp.isWinner ? "win" : "loss") === streakType) currentStreak++;
+      else break;
+    }
+  }
+
+  // Head-to-head records against every opponent faced
+  const h2h = new Map<
+    string,
+    {
+      wrestler: { name: string; slug: string; imageUrl: string | null };
+      wins: number;
+      losses: number;
+      meets: number;
+    }
+  >();
+  for (const mp of pastMatches) {
+    for (const opp of mp.match.participants) {
+      if (opp.wrestlerId === wrestler.id) continue;
+      const entry =
+        h2h.get(opp.wrestlerId) ?? {
+          wrestler: {
+            name: opp.wrestler.name,
+            slug: opp.wrestler.slug,
+            imageUrl: opp.wrestler.imageUrl,
+          },
+          wins: 0,
+          losses: 0,
+          meets: 0,
+        };
+      entry.meets++;
+      if (mp.isWinner) entry.wins++;
+      else entry.losses++;
+      h2h.set(opp.wrestlerId, entry);
+    }
+  }
+  const rivals = [...h2h.values()]
+    .sort((a, b) => b.meets - a.meets || b.wins - a.wins)
+    .slice(0, 5);
+
   // Compute average match rating this wrestler has appeared in (past only)
   const ratedMatches = pastMatches
     .map((mp) => {
@@ -203,6 +253,16 @@ export default async function WrestlerPage({ params }: { params: any }) {
                   Events
                 </p>
               </div>
+              {currentStreak > 0 && (
+                <div className={`bg-card/60 backdrop-blur-md border rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center ${streakType === "win" ? "border-emerald-500/20" : "border-red-500/20"}`}>
+                  <p className={`text-3xl font-black ${streakType === "win" ? "text-emerald-400" : "text-red-400"}`}>
+                    {currentStreak}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                    {streakType === "win" ? "🔥 Win Streak" : "Loss Streak"}
+                  </p>
+                </div>
+              )}
               {overallAvgRating && (
                 <div className="bg-card/60 backdrop-blur-md border border-primary/20 rounded-2xl px-6 py-4 text-center ring-1 ring-primary/20">
                   <div className="flex items-center justify-center gap-1">
@@ -281,6 +341,61 @@ export default async function WrestlerPage({ params }: { params: any }) {
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Rivalries */}
+      {rivals.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-semibold uppercase italic tracking-tighter">
+              Rivalries
+            </h2>
+            <div className="flex-1 h-[1px] bg-border" />
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {rivals.map((r) => {
+              const h2hRate =
+                r.meets > 0 ? Math.round((r.wins / r.meets) * 100) : 0;
+              return (
+                <Link
+                  key={r.wrestler.slug}
+                  href={`/wrestlers/${r.wrestler.slug}`}
+                  className="group bg-card/40 border border-white/5 hover:border-primary/30 rounded-2xl p-5 transition-all flex items-center gap-4"
+                >
+                  <div className="w-11 h-11 rounded-full overflow-hidden bg-secondary flex items-center justify-center shrink-0">
+                    {r.wrestler.imageUrl ? (
+                      <Image
+                        src={r.wrestler.imageUrl}
+                        alt={r.wrestler.name}
+                        width={44}
+                        height={44}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <UserCircle className="w-6 h-6 text-muted-foreground/40" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black text-sm uppercase italic tracking-tight truncate group-hover:text-primary transition-colors">
+                      {r.wrestler.name}
+                    </p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      {r.meets} meeting{r.meets === 1 ? "" : "s"} · {r.wins}W / {r.losses}L
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className={`text-sm font-black italic ${h2hRate >= 50 ? "text-emerald-400" : "text-red-400"}`}>
+                      {h2hRate}%
+                    </p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                      vs {wrestler.name.split(" ")[0]}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}

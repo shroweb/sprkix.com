@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { parseCagematchHtml, parseProfightDbHtml } from "@lib/cagematch";
@@ -154,6 +155,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Import failure is non-fatal — event is already created
     console.error("Auto-import matches failed for approved submission:", err);
   }
+
+  // Purge cached pages so the new event appears immediately
+  revalidatePath("/events");
+  revalidatePath("/");
+  revalidatePath(`/events/${event.slug}`);
 
   return NextResponse.json({ success: true, eventId: event.id, slug: event.slug, matchesImported });
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
+import { rateLimit, rateLimitedResponse } from "@lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const user = await getUserFromServerCookie();
@@ -8,8 +9,17 @@ export async function POST(req: NextRequest) {
 
   const {
     title, date, promotion, venue, city, attendance,
-    network, posterUrl, description, type, sourceUrl,
+    network, posterUrl, description, type, sourceUrl, website,
   } = await req.json();
+
+  // Honeypot: bots fill hidden fields — silently accept without saving
+  if (website) {
+    return NextResponse.json({ success: true, id: "spam" }, { status: 201 });
+  }
+
+  // Submission flood protection: 5 per hour per user
+  const rl = await rateLimit(`submit:${user.id}`, 5, 60 * 60);
+  if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
   if (!title?.trim()) return NextResponse.json({ error: "Title is required" }, { status: 400 });
   if (!date) return NextResponse.json({ error: "Date is required" }, { status: 400 });

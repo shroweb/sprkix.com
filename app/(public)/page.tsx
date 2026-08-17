@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@lib/prisma";
 import Image from "next/image";
-import { unstable_cache } from "next/cache";
 import {
   ArrowRight,
   TrendingUp,
@@ -20,8 +19,24 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import FeaturedEventCycler from "@components/FeaturedEventCycler";
 import HomePoll from "@components/HomePoll";
 
-const getHomePageData = unstable_cache(
-  async () => {
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const user = await getUserFromServerCookie();
+  const userId = user?.id;
+
+  let eventCount = 0;
+  let wrestlerCount = 0;
+  let promotionCount = 0;
+  let allEvents: any[] = [];
+  let reviewAgg: any[] = [];
+  let configs: { key: string; value: string }[] = [];
+  let topMatches: any[] = [];
+  let activePoll: any = null;
+  let trendingAgg: { eventId: string; _count: { _all: number } }[] = [];
+
+  try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const homeEventSelect = {
       id: true,
@@ -34,23 +49,11 @@ const getHomePageData = unstable_cache(
       endTime: true,
     };
 
-    const [
-      eventCount,
-      wrestlerCount,
-      promotionCount,
-      allEvents,
-      reviewAgg,
-      configs,
-      topMatches,
-      activePoll,
-      trendingAgg,
-    ] = await Promise.all([
+    const results = await Promise.allSettled([
       prisma.event.count(),
       prisma.wrestler.count(),
       prisma.promotion.count(),
-      prisma.event.findMany({
-        select: homeEventSelect,
-      }),
+      prisma.event.findMany({ select: homeEventSelect }),
       prisma.review.groupBy({
         by: ["eventId"],
         _avg: { rating: true },
@@ -83,55 +86,24 @@ const getHomePageData = unstable_cache(
       }),
       prisma.review.groupBy({
         by: ["eventId"],
-        where: {
-          createdAt: { gte: sevenDaysAgo },
-        },
+        where: { createdAt: { gte: sevenDaysAgo } },
         _count: { _all: true },
       }),
     ]);
 
-    return {
-      eventCount,
-      wrestlerCount,
-      promotionCount,
-      allEvents,
-      reviewAgg,
-      configs,
-      topMatches,
-      activePoll,
-      trendingAgg,
-    };
-  },
-  ["home-page-shared-v3"],
-  { revalidate: 300 },
-);
+    eventCount = results[0].status === "fulfilled" ? results[0].value : 0;
+    wrestlerCount = results[1].status === "fulfilled" ? results[1].value : 0;
+    promotionCount = results[2].status === "fulfilled" ? results[2].value : 0;
+    allEvents = results[3].status === "fulfilled" ? results[3].value : [];
+    reviewAgg = results[4].status === "fulfilled" ? results[4].value : [];
+    configs = results[5].status === "fulfilled" ? results[5].value : [];
+    topMatches = results[6].status === "fulfilled" ? results[6].value : [];
+    activePoll = results[7].status === "fulfilled" ? results[7].value : null;
+    trendingAgg = results[8].status === "fulfilled" ? results[8].value : [];
 
-export default async function Home() {
-  const user = await getUserFromServerCookie();
-  const userId = user?.id;
-
-  let eventCount = 0;
-  let wrestlerCount = 0;
-  let promotionCount = 0;
-  let allEvents: any[] = [];
-  let reviewAgg: any[] = [];
-  let configs: { key: string; value: string }[] = [];
-  let topMatches: any[] = [];
-  let activePoll: any = null;
-  let trendingAgg: { eventId: string; _count: { _all: number } }[] = [];
-
-  try {
-    ({
-      eventCount,
-      wrestlerCount,
-      promotionCount,
-      allEvents,
-      reviewAgg,
-      configs,
-      topMatches,
-      activePoll,
-      trendingAgg,
-    } = await getHomePageData());
+    if (eventCount === 0 && allEvents.length > 0) {
+      eventCount = allEvents.length;
+    }
   } catch (err) {
     console.error("Home page fetch error:", err);
   }

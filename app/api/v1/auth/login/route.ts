@@ -42,7 +42,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   const valid = await bcrypt.compare(String(password), user.password);
   if (!valid) return err("Invalid email or password", 401);
 
-  const token = signToken(user.id);
+  const token = await signToken(user.id);
   const { password: _pw, ...safeUser } = user;
 
   return NextResponse.json({ success: true, token, user: safeUser }, { headers: CORS_HEADERS });

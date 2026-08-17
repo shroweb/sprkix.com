@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/promotions',
     '/news',
     '/rankings',
+    '/matches/finder',
     '/leaderboard',
     '/lists',
     '/polls',

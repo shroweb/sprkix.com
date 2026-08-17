@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity -- server component: relative timestamps are computed once per request */
 import { prisma } from "@lib/prisma";
 import Link from "next/link";
 import { Star, Activity, UserPlus, Bookmark, Zap } from "lucide-react";
