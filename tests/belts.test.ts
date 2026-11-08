@@ -80,6 +80,8 @@ describe("photoFor", () => {
 
   it("returns null for novelty prizes and unknown titles", () => {
     expect(photoFor("Custody of Dominik Mysterio")).toBeNull();
+    expect(photoFor("AEW National Title Match")).toBeNull();
+    expect(photoFor("TNA International Title")).toBeNull();
     expect(photoFor("Random Unknown Nonexistent Championship")).toBeNull();
   });
 });

@@ -118,7 +118,7 @@ export function photoFor(name: string): string | null {
     if (has(/international|all[\s-]?atlantic/)) return file("aew-international-championship");
     if (has(/continental/)) return file("aew-continental-championship");
     if (has(/world/) || has(/real world/)) return file("aew-world-championship");
-    return file("aew-world-championship");
+    return null;
   }
   if (has(/\btnt (championship|title)\b/)) return file("aew-tnt-championship");
   if (has(/\btbs (championship|title)\b/)) return file("aew-tbs-championship");
@@ -128,7 +128,8 @@ export function photoFor(name: string): string | null {
     if (tag) return file("tna-world-tag-team-championship");
     if (has(/knockouts/)) return file("tna-knockouts-world-championship");
     if (has(/x[\s-]?division/)) return file("tna-x-division-championship");
-    return file("tna-world-championship");
+    if (has(/world|heavyweight/)) return file("tna-world-championship");
+    return null;
   }
 
   // ROH
@@ -136,7 +137,8 @@ export function photoFor(name: string): string | null {
     if (tag) return file("roh-tag-team-championship");
     if (has(/pure/)) return file("roh-pure-championship");
     if (has(/television|\btv\b/)) return file("roh-television-championship");
-    return file("roh-world-championship");
+    if (has(/world|heavyweight/)) return file("roh-world-championship");
+    return null;
   }
 
   // NJPW / IWGP
@@ -146,7 +148,7 @@ export function photoFor(name: string): string | null {
     if (has(/junior|jr\.?/)) return file("iwgp-junior-heavyweight-championship");
     if (has(/world heavyweight/)) return file("iwgp-world-heavyweight-championship");
     if (has(/heavyweight/)) return file("iwgp-heavyweight-championship");
-    return file("iwgp-world-heavyweight-championship");
+    return null;
   }
 
   // ECW / WCW
