@@ -152,7 +152,10 @@ export function photoFor(name: string): string | null {
   // ECW / WCW
   if (has(/\becw\b/)) return file(tag ? "ecw-tag-team-championship" : has(/television|\btv\b/) ? "ecw-world-television-championship" : "ecw-championship");
   if (has(/\bwcw\b/)) return tag ? null : has(/world/) ? file("wcw-world-championship") : null;
-  if (has(/crown jewel/)) return null; // no official belt art available; use generated art
+  // Crown Jewel
+  if (has(/crown jewel/)) {
+    return file(womens ? "womens-crown-jewel-championship" : "crown-jewel-championship");
+  }
 
   // WWE Women's
   if (womens) {

@@ -51,7 +51,8 @@ describe("photoFor", () => {
     expect(photoFor("WWE Tag Team Title")).toBe("/belts/wwe-tag-team-championship.webp");
     expect(photoFor("WWE Speed Championship")).toBe("/belts/speed-championship.webp");
     expect(photoFor("Million Dollar Championship")).toBe("/belts/million-dollar-championship.webp");
-    expect(photoFor("WWE Women's Crown Jewel 2026 Title")).toBeNull();
+    expect(photoFor("WWE Women's Crown Jewel 2026 Title")).toBe("/belts/womens-crown-jewel-championship.webp");
+    expect(photoFor("WWE Crown Jewel Championship")).toBe("/belts/crown-jewel-championship.webp");
     expect(photoFor("WWE Championship")).toBe("/belts/wwe-championship.webp");
   });
 
@@ -79,6 +80,6 @@ describe("photoFor", () => {
 
   it("returns null for novelty prizes and unknown titles", () => {
     expect(photoFor("Custody of Dominik Mysterio")).toBeNull();
-    expect(photoFor("WWE Crown Jewel Championship")).toBeNull();
+    expect(photoFor("Random Unknown Nonexistent Championship")).toBeNull();
   });
 });
