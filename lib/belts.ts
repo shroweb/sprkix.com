@@ -111,7 +111,9 @@ export function photoFor(name: string): string | null {
   // AEW
   if (has(/\baew\b/) || has(/real world (championship|title)/)) {
     if (has(/trios/)) return file("aew-world-trios-championship");
+    if (tag && womens) return file("aew-womens-world-tag-team-championship");
     if (tag) return file("aew-tag-team-championship");
+    if (has(/\bnational\b/)) return file("aew-national-championship");
     if (womens) return file(has(/tbs/) ? "aew-tbs-championship" : "aew-womens-world-championship");
     if (has(/\btnt\b/)) return file("aew-tnt-championship");
     if (has(/\btbs\b/)) return file("aew-tbs-championship");
@@ -124,9 +126,13 @@ export function photoFor(name: string): string | null {
   if (has(/\btbs (championship|title)\b/)) return file("aew-tbs-championship");
 
   // TNA / Impact
-  if (has(/\b(tna|impact)\b/) || has(/x[\s-]?division/) || has(/knockouts/)) {
+  if (has(/\b(tna|impact)\b/) || has(/x[\s-]?division/) || has(/knockouts/) || has(/digital media/)) {
+    if (has(/knockouts/) && tag) return file("tna-knockouts-world-tag-team-championship");
     if (tag) return file("tna-world-tag-team-championship");
+    if (has(/knockouts/) && has(/television|\btv\b/)) return file("tna-knockouts-television-championship");
     if (has(/knockouts/)) return file("tna-knockouts-world-championship");
+    if (has(/international/)) return file("tna-international-championship");
+    if (has(/digital media/)) return file("tna-digital-media-championship");
     if (has(/x[\s-]?division/)) return file("tna-x-division-championship");
     if (has(/world|heavyweight/)) return file("tna-world-championship");
     return null;
@@ -134,15 +140,29 @@ export function photoFor(name: string): string | null {
 
   // ROH
   if (has(/\b(roh|ring of honor)\b/)) {
+    if (has(/six[\s-]?man|trios/)) return file("roh-six-man-tag-team-championship");
     if (tag) return file("roh-tag-team-championship");
+    if (has(/women/) && has(/pure/)) return file("roh-womens-pure-championship");
     if (has(/pure/)) return file("roh-pure-championship");
+    if (has(/women/) && has(/television|\btv\b/)) return file("roh-womens-television-championship");
     if (has(/television|\btv\b/)) return file("roh-television-championship");
+    if (has(/women/)) return file("roh-womens-world-championship");
     if (has(/world|heavyweight/)) return file("roh-world-championship");
     return null;
   }
 
-  // NJPW / IWGP
-  if (has(/\b(njpw|iwgp)\b/)) {
+  // NJPW / IWGP / Strong / NEVER
+  if (has(/\b(njpw|iwgp|strong|never)\b/) || has(/tamashii/)) {
+    if (has(/tamashii/)) return null;
+    if (has(/\bnever\b/)) return file(has(/6[\s-]?man|six[\s-]?man|trios/) ? "never-6-man-tag-team-championship" : "never-openweight-championship");
+    if (has(/\bstrong\b/)) {
+      if (womens) return file("strong-womens-championship");
+      if (tag) return file("strong-openweight-tag-team-championship");
+      return file("strong-openweight-championship");
+    }
+    if (womens) return null;
+    if (has(/television|\btv\b/)) return null;
+    if (tag && has(/junior|jr\.?/)) return file("iwgp-junior-heavyweight-tag-team-championship");
     if (tag) return file("iwgp-tag-team-championship");
     if (has(/global/)) return file("iwgp-global-heavyweight-championship");
     if (has(/junior|jr\.?/)) return file("iwgp-junior-heavyweight-championship");

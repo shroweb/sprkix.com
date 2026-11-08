@@ -69,19 +69,28 @@ describe("photoFor", () => {
     expect(photoFor("TNA World Championship")).toBe("/belts/tna-world-championship.webp");
     expect(photoFor("TNA X-Division Championship")).toBe("/belts/tna-x-division-championship.webp");
     expect(photoFor("TNA Knockouts World Championship")).toBe("/belts/tna-knockouts-world-championship.webp");
+    expect(photoFor("TNA World Tag Team Championship")).toBe("/belts/tna-world-tag-team-championship.webp");
+    expect(photoFor("TNA Digital Media Championship")).toBe("/belts/tna-digital-media-championship.webp");
+    expect(photoFor("TNA Knockouts World Tag Team Championship")).toBe("/belts/tna-knockouts-world-tag-team-championship.webp");
 
     expect(photoFor("ROH World Championship")).toBe("/belts/roh-world-championship.webp");
+    expect(photoFor("ROH Women's World Championship")).toBe("/belts/roh-womens-world-championship.webp");
+    expect(photoFor("ROH World Television Championship")).toBe("/belts/roh-television-championship.webp");
+    expect(photoFor("ROH Women's World Television Championship")).toBe("/belts/roh-womens-television-championship.webp");
     expect(photoFor("ROH Pure Championship")).toBe("/belts/roh-pure-championship.webp");
+    expect(photoFor("ROH Women's Pure Championship")).toBe("/belts/roh-womens-pure-championship.webp");
+    expect(photoFor("ROH World Six-Man Tag Team Championship")).toBe("/belts/roh-six-man-tag-team-championship.webp");
+    expect(photoFor("ROH World Tag Team Championship")).toBe("/belts/roh-tag-team-championship.webp");
 
     expect(photoFor("IWGP World Heavyweight Championship")).toBe("/belts/iwgp-world-heavyweight-championship.webp");
     expect(photoFor("IWGP Heavyweight Championship")).toBe("/belts/iwgp-heavyweight-championship.webp");
     expect(photoFor("IWGP Junior Heavyweight Championship")).toBe("/belts/iwgp-junior-heavyweight-championship.webp");
   });
 
-  it("returns null for novelty prizes and unknown titles", () => {
+  it("maps newly added belts and returns null for novelty prizes and unknown titles", () => {
     expect(photoFor("Custody of Dominik Mysterio")).toBeNull();
-    expect(photoFor("AEW National Title Match")).toBeNull();
-    expect(photoFor("TNA International Title")).toBeNull();
+    expect(photoFor("AEW National Title Match")).toBe("/belts/aew-national-championship.webp");
+    expect(photoFor("TNA International Title")).toBe("/belts/tna-international-championship.webp");
     expect(photoFor("Random Unknown Nonexistent Championship")).toBeNull();
   });
 });
