@@ -86,6 +86,15 @@ export async function generateMetadata({
   };
 }
 
+function formatEventType(type?: string | null): string {
+  const t = (type ?? "").trim();
+  if (!t) return "Special event";
+  const known: Record<string, string> = { ppv: "PPV", ple: "Premium live event", weekly: "Weekly show", tv: "TV show", house: "House show", special: "Special event" };
+  const k = known[t.toLowerCase()];
+  if (k) return k;
+  return t.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default async function EventPage({
   params,
   searchParams,
@@ -251,6 +260,7 @@ export default async function EventPage({
     communityStatsMap[mId] = Object.entries(counts).map(([winnerId, count]) => ({
       winnerId,
       percentage: Math.round((count / total) * 100),
+      count,
     }));
   });
 
@@ -554,25 +564,30 @@ export default async function EventPage({
                 </div>
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
                   <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Event type</dt>
-                  <dd className="mt-2 truncate text-xs font-bold capitalize text-white/90" title={event.type || "Special Event"}>
-                    {event.type || "Special Event"}
+                  <dd className="mt-2 truncate text-xs font-bold text-white/90" title={formatEventType(event.type)}>
+                    {formatEventType(event.type)}
                   </dd>
                 </div>
                 <div className="col-span-2 flex items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
                   <div>
                     <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Community rating</dt>
-                    <dd className="mt-1 flex items-baseline gap-1.5">
-                      <Star className="h-3.5 w-3.5 fill-primary text-primary" />
-                      <span className="text-lg font-black italic text-primary">{averageRating?.toFixed(2) || "0.00"}</span>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">out of 5</span>
-                    </dd>
+                    {averageRating ? (
+                      <dd className="mt-1 flex items-baseline gap-1.5">
+                        <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+                        <span className="text-lg font-black italic text-primary">{averageRating.toFixed(2)}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">out of 5</span>
+                      </dd>
+                    ) : (
+                      <dd className="mt-1 text-xs font-bold text-muted-foreground">
+                        {isUpcoming ? "Opens once the show airs" : "No ratings yet. Be the first."}
+                      </dd>
+                    )}
                   </div>
-                  <VisualRating rating={averageRating || 0} size="xs" />
+                  {averageRating ? <VisualRating rating={averageRating} size="xs" /> : null}
                 </div>
                 <div className="col-span-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground mb-2 flex items-center justify-between">
-                    <span>Where to Watch</span>
-                    <span className="text-[9px] font-bold uppercase text-primary/80">Broadcast</span>
+                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                    Where to watch
                   </dt>
                   <dd>
                     <WhereToWatchBadge
@@ -604,7 +619,7 @@ export default async function EventPage({
 
               <div className="mt-4 border-t border-white/10 pt-4">
                 <p className="mb-3 text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Your event</p>
-                <div className="grid grid-cols-3 gap-x-2 gap-y-3">
+                <div className="grid grid-cols-3 gap-x-2 gap-y-4">
                   {user && (
                     <>
                       <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchlistIcon eventId={event.id} initialActive={inWatchList ? (inWatchList as any).watchlist : false} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Watchlist</span></div>
@@ -641,9 +656,12 @@ export default async function EventPage({
 
               {/* Countdown for Upcoming */}
               {isUpcoming && (
-                <div className="pt-6 border-t border-border space-y-4">
-                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary italic">
-                      <Clock className="w-3 h-3" /> Event Countdown
+                <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
+                   <div className="flex items-center justify-between gap-2 text-[10px] font-black uppercase tracking-widest">
+                      <span className="flex items-center gap-2 text-primary italic"><Clock className="w-3 h-3" /> Starts in</span>
+                      <span className="text-muted-foreground font-bold normal-case tracking-normal">
+                        {new Date(startTime).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}
+                      </span>
                    </div>
                    <Countdown targetDate={startTime} />
                 </div>
@@ -651,7 +669,7 @@ export default async function EventPage({
 
               {/* Live Status for Sidebar */}
               {isLive && (
-                <div className="pt-6 border-t border-border space-y-3">
+                <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500 italic">
                       <Activity className="w-3 h-3 animate-pulse" /> Live Now
                    </div>

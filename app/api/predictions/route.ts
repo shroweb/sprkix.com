@@ -15,41 +15,40 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Check if match exists and has been resolved (a winner marked on participants)
+    // Match must exist, belong to an event with predictions on, and not be resolved yet.
     const match = await prisma.match.findUnique({
       where: { id: matchId },
       select: {
-        participants: { select: { isWinner: true } },
+        participants: { select: { isWinner: true, wrestlerId: true } },
+        event: { select: { enablePredictions: true, startTime: true } },
       },
     });
     if (!match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
-    const isResolved = match.participants.some((p: any) => p.isWinner === true);
-    if (isResolved) {
+    if (match.event && match.event.enablePredictions === false) {
+      return NextResponse.json({ error: "Predictions aren't open for this event" }, { status: 403 });
+    }
+    if (match.participants.some((p) => p.isWinner === true)) {
       return NextResponse.json(
         { error: "Predictions are locked — this match has already been resolved" },
         { status: 403 }
       );
     }
-
-    // Try to check startTime lock — column may not exist yet, so isolate in its own try/catch
-    try {
-      const eventRow = await prisma.match.findUnique({
-        where: { id: matchId },
-        select: { event: { select: { startTime: true } } },
-      });
-      if (eventRow?.event?.startTime && new Date() >= eventRow.event.startTime) {
-        return NextResponse.json(
-          { error: "Predictions are locked — the event has already started" },
-          { status: 403 }
-        );
+    if (match.event?.startTime && new Date() >= match.event.startTime) {
+      return NextResponse.json(
+        { error: "Predictions are locked — the event has already started" },
+        { status: 403 }
+      );
+    }
+    // A pick must be one of the wrestlers actually in this match.
+    if (predictedWinnerId !== null && predictedWinnerId !== undefined) {
+      if (typeof predictedWinnerId !== "string" || !match.participants.some((p) => p.wrestlerId === predictedWinnerId)) {
+        return NextResponse.json({ error: "That wrestler isn't in this match" }, { status: 400 });
       }
-    } catch {
-      // startTime column not yet in DB — skip the lock check
     }
 
-    if (predictedWinnerId === null) {
+    if (predictedWinnerId === null || predictedWinnerId === undefined) {
       // Toggle off — delete prediction
       try {
         await prisma.prediction.deleteMany({ where: { userId: user.id, matchId } });
