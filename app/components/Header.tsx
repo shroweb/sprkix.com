@@ -183,6 +183,9 @@ export default function Header({
                 <Link href="/lineal" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
                   Lineal Titles
                 </Link>
+                <Link href="/champions" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
+                  Current Champions
+                </Link>
               </div>
             </div>
 
@@ -352,6 +355,13 @@ export default function Header({
               </Link>
               <Link href="/leaderboard" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Predictions Leaderboard</span>
+              </Link>
+              <Link href="/champions" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
+                <span>Current Champions</span>
+                <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-amber-400/10 text-amber-400">Belts</span>
+              </Link>
+              <Link href="/lineal" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
+                <span>Lineal Titles</span>
               </Link>
             </div>
 

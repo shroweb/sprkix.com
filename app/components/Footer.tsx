@@ -41,9 +41,10 @@ const DISCOVER = [
 ];
 
 const COMMUNITY = [
+  { href: "/champions", label: "Current Champions" },
+  { href: "/lineal", label: "Lineal Titles" },
   { href: "/feed", label: "Activity Feed" },
   { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/lineal", label: "Lineal Titles" },
   { href: "/polls", label: "Polls" },
   { href: "/lists", label: "Lists" },
   { href: "/submit-event", label: "Submit an Event" },
