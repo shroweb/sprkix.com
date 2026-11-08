@@ -1,39 +1,22 @@
-import { prisma } from "@lib/prisma";
+import { getEventRanking } from "@lib/cached-data";
+import { getSiteUrl } from "@lib/seo";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Trophy, TrendingUp, Calendar, ChevronLeft } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Top Wrestling Events – Rankings | Poison Rana",
+  description: "The highest-rated pro wrestling events, ranked by community reviews.",
+  alternates: { canonical: `${getSiteUrl()}/rankings` },
+};
 
 export default async function RankingsPage() {
-  const events = await prisma.event.findMany({
-    select: {
-      id: true, title: true, slug: true, date: true, promotion: true,
-      venue: true, posterUrl: true, description: true, type: true,
-      createdAt: true,
-      reviews: { select: { rating: true } },
-    },
-  });
-
-  const allRatings = events.flatMap((e) => e.reviews.map((r) => r.rating));
-  const globalAvg = allRatings.length
-    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
-    : 3;
-  const minReviews = 1;
-
-  const ranked = events
-    .map((e) => {
-      const rats = e.reviews.map((r) => r.rating);
-      const v = rats.length;
-      const R = v ? rats.reduce((a, b) => a + b, 0) / v : 0;
-      const score =
-        (v / (v + minReviews)) * R +
-        (minReviews / (v + minReviews)) * globalAvg;
-      return { ...e, score: v > 0 ? score : 0, avgRating: R, reviewCount: v };
-    })
+  const { ranked: all } = await getEventRanking(1);
+  const ranked = all
     .filter((e) => e.reviewCount > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 50);
+    .slice(0, 50)
+    .map((e) => ({ ...e, score: e.weighted }));
 
   const top3 = ranked.slice(0, 3);
   const rest = ranked.slice(3);

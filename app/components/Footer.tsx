@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 interface FooterProps {
   siteLogo?: string;
@@ -42,6 +43,7 @@ const DISCOVER = [
 const COMMUNITY = [
   { href: "/feed", label: "Activity Feed" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/lineal", label: "Lineal Titles" },
   { href: "/polls", label: "Polls" },
   { href: "/lists", label: "Lists" },
   { href: "/submit-event", label: "Submit an Event" },
@@ -59,40 +61,48 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
   const hasSocial = socialX || socialFacebook || socialInstagram;
 
   return (
-    <footer className="mt-24 border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <footer className="relative mt-12 sm:mt-20 overflow-hidden border-t border-white/10 bg-gradient-to-b from-card/35 to-background">
+      <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
 
         {/* Main footer grid */}
-        <div className="py-14 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-10 lg:gap-12">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-12 sm:grid-cols-4 sm:py-14 lg:grid-cols-[1.65fr_1fr_1fr_1fr] lg:gap-14 lg:py-16">
 
           {/* Brand column */}
-          <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-5">
+          <div className="col-span-2 flex flex-col items-start gap-5 sm:col-span-4 lg:col-span-1">
             {/* Logo / wordmark */}
-            <Link href="/" className="inline-block">
+            <Link href="/" className="group inline-flex items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
               {siteLogo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={siteLogo} alt="Poison Rana" className="h-10 w-auto object-contain" />
+                <img src={siteLogo} alt="Poison Rana" className="h-10 w-auto object-contain transition-opacity group-hover:opacity-80" />
               ) : (
-                <span className="text-2xl font-black italic uppercase tracking-tighter text-primary leading-none">
+                <span className="text-2xl font-black italic uppercase leading-none tracking-tighter text-primary transition-colors group-hover:text-[var(--primary-hover)]">
                   Poison Rana
                 </span>
               )}
             </Link>
+            <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-primary">
+              Built for wrestling fans
+            </span>
 
-            <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-[220px]">
+            <p className="max-w-[290px] text-sm leading-relaxed text-muted-foreground/75">
               Rate shows. Write reviews. Make predictions. Discuss with fans. Everything wrestling in one place.
             </p>
 
+            <Link href="/events" className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-white transition-colors hover:text-primary">
+              Browse latest events
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+            </Link>
+
             {/* Social icons */}
             {hasSocial && (
-              <div className="flex items-center gap-3 pt-1">
+              <div className="flex items-center gap-2 pt-1">
                 {socialX && (
                   <a
                     href={socialX}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="X (Twitter)"
-                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-muted-foreground/50 hover:text-primary hover:bg-primary/10 hover:border-primary/20 transition-all"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-muted-foreground/60 transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
                   >
                     <XIcon size={13} />
                   </a>
@@ -103,7 +113,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Facebook"
-                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-muted-foreground/50 hover:text-primary hover:bg-primary/10 hover:border-primary/20 transition-all"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-muted-foreground/60 transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
                   >
                     <FacebookIcon size={13} />
                   </a>
@@ -114,7 +124,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
-                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-muted-foreground/50 hover:text-primary hover:bg-primary/10 hover:border-primary/20 transition-all"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-muted-foreground/60 transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
                   >
                     <InstagramIcon size={13} />
                   </a>
@@ -125,15 +135,15 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
           {/* Discover */}
           <div className="space-y-4">
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+            <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
               Discover
             </p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1">
               {DISCOVER.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-semibold text-muted-foreground/60 hover:text-primary transition-colors"
+                    className="block rounded-lg py-1.5 text-xs font-semibold text-muted-foreground/70 transition-all hover:translate-x-1 hover:text-primary"
                   >
                     {link.label}
                   </Link>
@@ -144,15 +154,15 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
           {/* Community */}
           <div className="space-y-4">
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+            <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
               Community
             </p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1">
               {COMMUNITY.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-semibold text-muted-foreground/60 hover:text-primary transition-colors"
+                    className="block rounded-lg py-1.5 text-xs font-semibold text-muted-foreground/70 transition-all hover:translate-x-1 hover:text-primary"
                   >
                     {link.label}
                   </Link>
@@ -163,15 +173,15 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
           {/* Account */}
           <div className="space-y-4">
-            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+            <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
               Account
             </p>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1">
               {ACCOUNT.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-semibold text-muted-foreground/60 hover:text-primary transition-colors"
+                    className="block rounded-lg py-1.5 text-xs font-semibold text-muted-foreground/70 transition-all hover:translate-x-1 hover:text-primary"
                   >
                     {link.label}
                   </Link>
@@ -182,28 +192,30 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <p className="text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-5 sm:flex-row">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:justify-start">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/45">
               © {new Date().getFullYear()} Poison Rana
             </p>
-            <a href="/privacy" className="text-[10px] text-muted-foreground/30 hover:text-muted-foreground font-bold uppercase tracking-widest transition-colors">
+            <Link href="/privacy" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/45 transition-colors hover:text-primary">
               Privacy
-            </a>
-            <a href="/terms" className="text-[10px] text-muted-foreground/30 hover:text-muted-foreground font-bold uppercase tracking-widest transition-colors">
+            </Link>
+            <Link href="/terms" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/45 transition-colors hover:text-primary">
               Terms
-            </a>
+            </Link>
           </div>
-          <p className="text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
-            Developed by{" "}
+          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/45">
+            A{" "}
             <a
-              href="https://shroweb.com"
+              href="https://shro.co.uk"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary/50 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1 text-primary/70 transition-colors hover:text-primary"
             >
-              Shro Web
-            </a>
+              Shro
+              <ExternalLink className="h-2.5 w-2.5" />
+            </a>{" "}
+            product
           </p>
         </div>
 

@@ -1,4 +1,6 @@
-import { prisma } from "@lib/prisma";
+import { getLeaderboard } from "@lib/cached-data";
+import { parsePeriod, LEADERBOARD_PERIODS } from "@lib/leaderboard";
+import { getSiteUrl } from "@lib/seo";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,95 +12,30 @@ import PredictionLeague from "@components/PredictionLeague";
 export const metadata: Metadata = {
   title: "Prediction Leaderboard | Poison Rana",
   description: "The most accurate wrestling event predictors on Poison Rana.",
+  alternates: { canonical: `${getSiteUrl()}/leaderboard` },
 };
 
-export default async function LeaderboardPage() {
-  const currentUser = await getUserFromServerCookie();
+export default async function LeaderboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const period = parsePeriod((await searchParams).period);
+  const [currentUser, entries] = await Promise.all([
+    getUserFromServerCookie(),
+    getLeaderboard(period),
+  ]);
 
-  // Fetch all predictions on matches that have at least one declared winner.
-  // We compute correctness ourselves so the leaderboard works even when the
-  // denormalized predictionScore / predictionCount fields are stale (e.g. results
-  // saved via the edit route rather than the Quick Results endpoint).
-  const rawPredictions = await prisma.prediction.findMany({
-    where: {
-      match: { participants: { some: { isWinner: true } } },
-      predictedWinnerId: { not: null },
-    },
-    select: {
-      userId: true,
-      predictedWinnerId: true,
-      isCorrect: true,
-      createdAt: true,
-      match: {
-        select: {
-          participants: {
-            where: { isWinner: true },
-            select: { wrestlerId: true },
-          },
-        },
-      },
-    },
-  });
-
-  // Per-user tallies + resolved history (for streak computation)
-  const tallies: Record<string, { correct: number; total: number }> = {};
-  const resolvedByUser: Record<
-    string,
-    { isCorrect: boolean; createdAt: Date }[]
-  > = {};
-  for (const p of rawPredictions) {
-    if (!tallies[p.userId]) tallies[p.userId] = { correct: 0, total: 0 };
-    tallies[p.userId].total++;
-    // Prefer stored isCorrect; fall back to live computation
-    const isCorrect =
-      p.isCorrect !== null
-        ? p.isCorrect
-        : p.match.participants.some((mp) => mp.wrestlerId === p.predictedWinnerId);
-    if (isCorrect) tallies[p.userId].correct++;
-    if (!resolvedByUser[p.userId]) resolvedByUser[p.userId] = [];
-    resolvedByUser[p.userId].push({ isCorrect, createdAt: p.createdAt });
-  }
-
-  // Current streak = consecutive correct picks, most recent first
-  const streaks: Record<string, number> = {};
-  for (const [userId, resolved] of Object.entries(resolvedByUser)) {
-    let streak = 0;
-    for (const r of [...resolved].sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-    )) {
-      if (r.isCorrect) streak++;
-      else break;
-    }
-    streaks[userId] = streak;
-  }
-
-  // Keep only users with ≥3 resolved predictions
-  const qualifiedIds = Object.entries(tallies)
-    .filter(([, t]) => t.total >= 3)
-    .map(([id]) => id);
-
-  const userProfiles =
-    qualifiedIds.length > 0
-      ? await prisma.user.findMany({
-          where: { id: { in: qualifiedIds } },
-          select: { id: true, name: true, slug: true, avatarUrl: true },
-        })
-      : [];
-
-  // Sort by accuracy % then by volume
-  const ranked = userProfiles
-    .map((u) => {
-      const t = tallies[u.id];
-      return {
-        ...u,
-        predictionScore: t.correct,
-        predictionCount: t.total,
-        accuracy: Math.round((t.correct / t.total) * 100),
-        streak: streaks[u.id] || 0,
-      };
-    })
-    .sort((a, b) => b.accuracy - a.accuracy || b.predictionCount - a.predictionCount)
-    .slice(0, 50);
+  const ranked = entries.map((e) => ({
+    id: e.userId,
+    name: e.name,
+    slug: e.slug,
+    avatarUrl: e.avatarUrl,
+    predictionScore: e.correct,
+    predictionCount: e.total,
+    accuracy: e.accuracy,
+    streak: e.streak,
+  }));
 
   const currentUserRank = currentUser
     ? ranked.findIndex((u) => u.id === currentUser.id)
@@ -128,8 +65,26 @@ export default async function LeaderboardPage() {
             Prediction<br />Leaderboard
           </h1>
           <p className="text-muted-foreground font-medium italic max-w-xl">
-            Ranked by accuracy across all resolved match predictions. Minimum 3 predictions to qualify.
+            Ranked by accuracy across resolved match predictions for the selected period. Minimum 3 predictions to qualify. Updated every few minutes.
           </p>
+        </div>
+
+        <div className="flex gap-2 mb-8" role="tablist" aria-label="Leaderboard period">
+          {LEADERBOARD_PERIODS.map((p) => (
+            <Link
+              key={p.id}
+              href={p.id === "all" ? "/leaderboard" : `/leaderboard?period=${p.id}`}
+              role="tab"
+              aria-selected={p.id === period}
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider border transition-colors ${
+                p.id === period
+                  ? "bg-primary text-black border-primary"
+                  : "border-white/10 text-muted-foreground hover:text-primary hover:border-primary/40"
+              }`}
+            >
+              {p.label}
+            </Link>
+          ))}
         </div>
 
         <div className="mb-10">

@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+import SignUpPrompt from "@components/SignUpPrompt";
 
 interface StarRatingProps {
   matchId: string;
@@ -27,6 +28,7 @@ export default function StarRating({
   const [rating, setRating] = useState(initialRating);
   const [hovered, setHovered] = useState<number | null>(null);
   const [avg, setAvg] = useState(averageRating);
+  const [showSignUp, setShowSignUp] = useState(false);
 
   // Sync when props change (e.g. different match selected)
   useEffect(() => {
@@ -88,7 +90,10 @@ export default function StarRating({
                     setHovered(val);
                 }}
                 onClick={(e) => {
-                    if (!user) return;
+                    if (!user) {
+                      setShowSignUp(true);
+                      return;
+                    }
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const percent = x / rect.width;
@@ -126,6 +131,7 @@ export default function StarRating({
           {avg.toFixed(2)}
         </span>
       )}
+      <SignUpPrompt open={showSignUp} onClose={() => setShowSignUp(false)} reason="rate" />
     </div>
   );
 }

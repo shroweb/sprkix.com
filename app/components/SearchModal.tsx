@@ -29,7 +29,7 @@ type SearchResult = {
   }[];
 };
 
-export default function SearchModal() {
+export default function SearchModal({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult>({
@@ -102,11 +102,12 @@ export default function SearchModal() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 border border-border px-4 py-2 rounded-xl hover:bg-secondary transition-colors"
+        aria-label="Open search dialog"
+        className={className ?? "hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 border border-border px-4 py-2 rounded-xl hover:bg-secondary transition-colors"}
       >
-        <Search className="w-3.5 h-3.5" />
-        <span className="font-medium">Search...</span>
-        <kbd className="ml-2 text-[10px] font-black bg-background border border-border rounded px-1.5 py-0.5 text-muted-foreground">
+        <Search className="w-4 h-4 shrink-0" />
+        <span className="font-medium hidden md:inline">Search...</span>
+        <kbd className="hidden md:inline ml-2 text-[10px] font-black bg-background border border-border rounded px-1.5 py-0.5 text-muted-foreground">
           ⌘K
         </kbd>
       </button>

@@ -10,6 +10,7 @@ import {
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
 import { findEventOnTMDB } from "@lib/tmdb";
 import { postNewEventToX } from "@lib/x-event-post";
+import { recomputeLinealQuietly } from "@lib/lineal-data";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 min — importing can be slow
@@ -266,9 +267,21 @@ export async function GET(req: Request) {
   const configRow = await prisma.siteConfig.findUnique({
     where: { key: "AUTO_IMPORT_PROMOTIONS" },
   });
-  const configuredNames: string[] = configRow?.value
+  const configuredTokens: string[] = configRow?.value
     ? configRow.value.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)
     : Object.keys(PROMOTION_MAP);
+
+  // Expand shorthand codes (e.g. "wwe" -> ["wwe", "world wrestling entertainment"])
+  const configuredNames = new Set<string>();
+  for (const token of configuredTokens) {
+    configuredNames.add(token);
+    for (const [longName, shortCode] of Object.entries(PROMOTION_MAP)) {
+      if (token === shortCode.toLowerCase() || token === longName) {
+        configuredNames.add(longName);
+        configuredNames.add(shortCode.toLowerCase());
+      }
+    }
+  }
 
   // Fetch the Cagematch homepage — it groups events by date under .Caption
   // headings and includes newly-added shows that haven't been rated yet.
@@ -325,8 +338,8 @@ export async function GET(req: Request) {
       Object.entries(PROMOTION_MAP).find(([k]) => promoLower.includes(k))?.[1];
 
     // Skip if not in configured import list
-    const isConfigured = configuredNames.some(
-      (n) => promoLower === n || promoLower.includes(n)
+    const isConfigured = Array.from(configuredNames).some(
+      (n) => promoLower === n || promoLower.includes(n) || (promoShort && promoShort.toLowerCase() === n)
     );
     if (!isConfigured) continue;
     results.promotionMatched++;
@@ -384,6 +397,7 @@ export async function GET(req: Request) {
           city:       info.city       ?? null,
           attendance: info.attendance ?? null,
           network:    info.network    ?? null,
+          posterUrl:  info.posterUrl  ?? null,
           profightdbUrl: entry.cagematchUrl,
         },
       });
@@ -402,7 +416,40 @@ export async function GET(req: Request) {
             });
             event.posterUrl = tmdb.posterUrl;
           }
-        } catch { /* TMDB failing shouldn't block the import */ }
+        } catch (posterErr) {
+          console.warn(`[cron] Poster enrichment failed for "${normalised}":`, posterErr);
+        }
+      }
+
+      // Fall back to matching show series or promotion artwork from existing events in DB
+      if (!event.posterUrl) {
+        try {
+          const baseShow = event.title
+            .replace(/\s*#\d+.*$/g, '')
+            .replace(/\s*[-–—]\s*(?:Tag|Night|Day)\s*\d+.*$/i, '')
+            .replace(/\s*[-–—].*$/g, '')
+            .trim();
+
+          const sibling = await prisma.event.findFirst({
+            where: {
+              OR: [
+                { title: { startsWith: baseShow }, posterUrl: { not: null } },
+                { promotion: event.promotion, posterUrl: { not: null } }
+              ]
+            },
+            select: { posterUrl: true }
+          });
+
+          if (sibling?.posterUrl) {
+            await prisma.event.update({
+              where: { id: event.id },
+              data: { posterUrl: sibling.posterUrl }
+            });
+            event.posterUrl = sibling.posterUrl;
+          }
+        } catch (fallbackErr) {
+          console.warn(`[cron] Sibling poster fallback failed for "${normalised}":`, fallbackErr);
+        }
       }
 
       try {
@@ -423,6 +470,9 @@ export async function GET(req: Request) {
       results.errors.push(`${normalised}: ${err.message}`);
     }
   }
+
+  // New matches may have moved a lineal title
+  if (results.created > 0) await recomputeLinealQuietly();
 
   return NextResponse.json(results);
 }

@@ -3,8 +3,6 @@ import { prisma } from "@lib/prisma";
 import Image from "next/image";
 import {
   ArrowRight,
-  TrendingUp,
-  Database,
   Trophy,
   Star,
   Calendar,
@@ -14,7 +12,6 @@ import {
   List,
   Users,
 } from "lucide-react";
-import RandomRingButton from "@components/RandomRingButton";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import FeaturedEventCycler from "@components/FeaturedEventCycler";
 import HomePoll from "@components/HomePoll";
@@ -181,7 +178,7 @@ export default async function Home() {
   // Latest events by date (upcoming first, then most recent past)
   const latestEvents = [...allEventsForRank]
     .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 8);
+    .slice(0, 6);
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -258,184 +255,55 @@ export default async function Home() {
   for (const p of Object.values(promotionCardMap)) {
     p.avgRating = p.reviewCount ? parseFloat((p.totalRating / p.reviewCount).toFixed(2)) : null;
   }
-  const promotionCards = Object.values(promotionCardMap).sort((a, b) => b.eventCount - a.eventCount);
+  const promotionCards = Object.values(promotionCardMap)
+    .sort((a, b) => b.eventCount - a.eventCount)
+    .slice(0, 6);
 
   return (
-    <div className="-mt-28 space-y-16 md:space-y-32 pb-20 md:pb-32">
-      {/* ── Hero ── */}
-      <section className="relative min-h-[90vh] flex items-center pt-24 overflow-hidden rounded-b-[3rem]">
-        <div className="absolute inset-0 z-0 bg-slate-950 rounded-b-[3rem] overflow-hidden">
-          {heroImage ? (
-            <>
-              <Image
-                src={heroImage}
-                alt="Hero Background"
-                fill
-                className="object-cover opacity-45 scale-105 contrast-110 saturate-125"
-                priority
-              />
-              {/* Keep the bottom readable, but let the image breathe. */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/25 to-background/95 rounded-b-[3rem]" />
-            </>
-          ) : (
-            <>
-              {/* No hero image set: gradient-only hero backdrop */}
-              <div className="absolute inset-0 bg-[radial-gradient(1000px_700px_at_20%_10%,rgba(251,191,36,0.18)_0%,transparent_60%),radial-gradient(900px_600px_at_85%_20%,rgba(59,130,246,0.10)_0%,transparent_55%),linear-gradient(to_bottom,rgba(2,6,23,0.92)_0%,rgba(2,6,23,0.88)_40%,rgba(0,0,0,0.98)_100%)]" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/10 to-background/95 rounded-b-[3rem]" />
-            </>
-          )}
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[160px] pointer-events-none" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
-        </div>
+    <div className="-mt-28 space-y-14 md:space-y-24 pb-20 md:pb-28 overflow-x-clip">
+      {/* ── Full-width cinematic hero ── */}
+      <FeaturedEventCycler
+        events={featuredEvents}
+        eventSlugs={eventSlugs}
+        fallbackImage={heroImage}
+        stats={{ events: eventCount, wrestlers: wrestlerCount, promotions: promotionCount }}
+      />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 relative z-10 grid lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-24 items-center w-full">
-          <div className="space-y-10 animate-in fade-in slide-in-from-left-12 duration-1000">
-            <div className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 border border-primary/20 rounded-full shadow-lg shadow-primary/5">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                Community-Rated Wrestling
-              </span>
-            </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 md:space-y-28 relative z-10">
 
-            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-[0.82] uppercase italic whitespace-pre-line text-white">
-              {(configMap["HERO_TITLE"]?.includes("DISCOVER") || !configMap["HERO_TITLE"]
-                ? "RATE. REVIEW. \nWRESTLING."
-                : configMap["HERO_TITLE"]
-              )
-                .split("\n")
-                .map((line: string, i: number) => {
-                  const parts = line.split(/(WRESTLING\.?)/i);
-                  return (
-                    <span key={i} className="block">
-                      {parts.map((p: string, j: number) => (
-                        <span
-                          key={j}
-                          className={
-                            /WRESTLING/i.test(p) ? "text-primary" : "text-white"
-                          }
-                        >
-                          {p}
-                        </span>
-                      ))}
-                    </span>
-                  );
-                })}
-            </h1>
-
-            <p className="text-lg text-muted-foreground max-w-lg leading-relaxed font-medium italic">
-              {configMap["HERO_DESC"] ||
-                "Rate shows. Write reviews. Make predictions. Discuss with fans. Everything wrestling in one place."}
-            </p>
-
-            {/* CTA Buttons — uniform height, 2 primary only */}
-            <div className="flex flex-wrap gap-4 pt-4 items-center">
-              <Link
-                href="/events"
-                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/40] hover:scale-105 active:scale-95 transition-all"
-              >
-                Explore Archives <ArrowRight className="w-4 h-4" />
-              </Link>
-
-              <RandomRingButton
-                eventSlugs={eventSlugs}
-                label="Random Event"
-                className="h-12 sm:h-14 px-6 sm:px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/40] hover:scale-105 active:scale-95 transition-all shrink-0"
-              />
-
-              {!user && (
-                <Link
-                  href="/register"
-                  className="h-12 sm:h-14 px-6 sm:px-8 bg-card/60 border border-white/10 text-white text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-card hover:border-primary/20 hover:scale-105 active:scale-95 transition-all"
-                >
-                  Join Free
+        {/* ── Quick discovery rail ── */}
+        <nav aria-label="Quick links" className="-mt-7 relative z-20">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 rounded-2xl border border-white/10 bg-background/90 p-2 sm:p-3 shadow-2xl shadow-black/40 backdrop-blur-xl">
+            {[
+              { href: "/events", label: "Browse events", detail: `${eventCount.toLocaleString()} in the archive`, icon: Calendar },
+              { href: "/rankings", label: "View rankings", detail: "Community favourites", icon: Trophy },
+              { href: "/wrestlers", label: "Find wrestlers", detail: `${wrestlerCount.toLocaleString()} profiles`, icon: Users },
+              { href: "/lists", label: "Explore lists", detail: "Fan-made collections", icon: List },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.href} href={item.href} className="group flex items-center gap-3 rounded-xl border border-transparent px-3 py-3.5 hover:border-white/10 hover:bg-white/[0.04] transition-all">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-black transition-colors">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-xs font-black uppercase tracking-wide text-white group-hover:text-primary transition-colors">{item.label}</span>
+                    <span className="hidden sm:block truncate text-[10px] font-medium text-muted-foreground">{item.detail}</span>
+                  </span>
                 </Link>
-              )}
-            </div>
-
-            {/* Stats */}
-            <div className="flex flex-wrap gap-6 pt-4 border-t border-white/5">
-              <div className="flex items-center gap-2">
-                <Database className="w-4 h-4 text-primary" />
-                <span className="text-lg font-black tracking-tighter">
-                  {eventCount.toLocaleString()}
-                </span>
-                <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                  Events
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="text-lg font-black tracking-tighter">
-                  {wrestlerCount.toLocaleString()}
-                </span>
-                <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                  Wrestlers
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-primary" />
-                <span className="text-lg font-black tracking-tighter">
-                  {promotionCount.toLocaleString()}
-                </span>
-                <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                  Promotions
-                </span>
-              </div>
-            </div>
+              );
+            })}
           </div>
-          
-          {/* Featured Card Cycler */}
-          {featuredEvents.length > 0 && (
-            <div className="hidden lg:block relative group animate-in fade-in slide-in-from-right-12 duration-1000 delay-300 h-full">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-blue-500/30 rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
-              <FeaturedEventCycler events={featuredEvents} />
-            </div>
-          )}
-        </div>
-      </section>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 md:space-y-40 relative z-10">
-
-        {/* ── App Launch Banner ── */}
-        <section>
-          <div className="relative rounded-[2.5rem] overflow-hidden border border-white/10 bg-gradient-to-br from-black via-zinc-900 to-black p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
-            <div className="relative z-10 shrink-0 w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-3xl">
-              📱
-            </div>
-            <div className="relative z-10 flex-1 space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Coming Soon</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-semibold italic uppercase tracking-tighter leading-none">
-                iOS &amp; Android App — April 27th
-              </h2>
-              <p className="text-muted-foreground font-medium text-sm max-w-lg">
-                Ratings, watchlist, predictions, push notifications and more — in your pocket. Sign up now to be notified on launch day.
-              </p>
-            </div>
-            {!user && (
-              <div className="relative z-10 shrink-0">
-                <Link
-                  href="/register"
-                  className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
-                >
-                  Notify Me <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
+        </nav>
 
         {/* ── Latest Events ── */}
         {latestEvents.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
+            <div className="flex items-end justify-between gap-4 mb-7 md:mb-10 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
+                  <h2 className="text-2xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tight">
                     Latest Events
                   </h2>
                 </div>
@@ -450,7 +318,7 @@ export default async function Home() {
                 All Events <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
               {latestEvents.map((event: any) => {
                 const rating = event.avgRating ?? 0;
                 const now = new Date();
@@ -459,8 +327,8 @@ export default async function Home() {
                 const isLive = !!event.startTime && now >= sTime && (eTime === null || now <= eTime);
                 const isUpcoming = !isLive && now < sTime;
                 return (
-                  <Link key={event.id} href={`/events/${event.slug}`} className="group relative">
-                    <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-xl mb-4 border border-white/5">
+                  <Link key={event.id} href={`/events/${event.slug}`} className="group relative w-[54vw] max-w-[220px] shrink-0 snap-start sm:w-auto sm:max-w-none rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                    <div className="relative aspect-[2/3] rounded-xl sm:rounded-2xl overflow-hidden shadow-xl mb-3 border border-white/10 bg-card group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300">
                       <Image
                         src={event.posterUrl || "/placeholder.svg"}
                         alt={event.title}
@@ -496,6 +364,9 @@ export default async function Home() {
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
                       {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </p>
+                    <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                      {event.reviewCount ? `${event.reviewCount} community review${event.reviewCount === 1 ? "" : "s"}` : "Be the first to rate"}
+                    </p>
                   </Link>
                 );
               })}
@@ -522,7 +393,7 @@ export default async function Home() {
         {/* ── Hall of Fame ── */}
         {hallOfFame.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
+            <div className="flex justify-between items-end mb-7 md:mb-10 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
@@ -542,12 +413,12 @@ export default async function Home() {
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="space-y-3">
+            <div className="grid md:grid-cols-2 gap-3">
               {hallOfFame.map((event: any, i: number) => (
                 <Link
                   key={event.id}
                   href={`/events/${event.slug}`}
-                  className="group flex items-center gap-5 bg-card/30 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl px-6 py-5 transition-all"
+                  className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 sm:gap-5 bg-card/40 border border-white/10 hover:border-primary/30 hover:bg-card/70 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-5 transition-all"
                 >
                   {/* Rank */}
                   <span
@@ -608,7 +479,7 @@ export default async function Home() {
             {/* Lists */}
             <Link
               href="/lists"
-              className="group relative rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/25 bg-card/30 hover:bg-card/60 p-8 flex items-center gap-6 transition-all"
+              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-primary/30 bg-card/40 hover:bg-card/70 p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10 w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
@@ -627,7 +498,7 @@ export default async function Home() {
             {/* Watchlist */}
             <Link
               href={user ? "/watchlist" : "/register"}
-              className="group relative rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/25 bg-card/30 hover:bg-card/60 p-8 flex items-center gap-6 transition-all"
+              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-blue-400/30 bg-card/40 hover:bg-card/70 p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10 w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
@@ -668,16 +539,16 @@ export default async function Home() {
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-8">
+            <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
                {trendingSorted.map((event: any) => {
                 const rating = event.avgRating ?? 0;
                 return (
                   <Link
                     key={event.id}
                     href={`/events/${event.slug}`}
-                    className="group relative"
+                    className="group relative w-[54vw] max-w-[220px] shrink-0 snap-start sm:w-auto sm:max-w-none"
                   >
-                    <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl mb-4 border border-white/5">
+                    <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl mb-3 border border-white/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all">
                       <Image
                         src={event.posterUrl || "/placeholder.svg"}
                         alt={event.title}
@@ -719,7 +590,7 @@ export default async function Home() {
         {/* ── Explore by Promotion ── */}
         {promotionCards.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
+            <div className="flex justify-between items-end mb-7 md:mb-10 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
@@ -739,12 +610,12 @@ export default async function Home() {
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
               {promotionCards.map((promo) => (
                 <Link
                   key={promo.name}
                   href={`/events?promotion=${encodeURIComponent(promo.name)}`}
-                  className="group bg-card/40 border border-white/5 rounded-[2rem] p-6 hover:border-primary/30 hover:bg-card/60 transition-all space-y-5"
+                  className="group w-[82vw] max-w-[340px] shrink-0 snap-start sm:w-auto sm:max-w-none bg-card/40 border border-white/10 rounded-2xl p-5 hover:border-primary/30 hover:bg-card/70 transition-all space-y-4"
                 >
                   {/* Poster collage */}
                   <div className="flex gap-2 h-28">
@@ -804,7 +675,7 @@ export default async function Home() {
         {/* ── Top Matches ── */}
         {topMatches.length > 0 && (
           <section>
-            <div className="flex justify-between items-end mb-8 md:mb-16 px-0 sm:px-2">
+            <div className="flex justify-between items-end mb-7 md:mb-10 px-0 sm:px-2">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="w-1 h-8 bg-primary rounded-full block" />
@@ -824,7 +695,7 @@ export default async function Home() {
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="space-y-3">
+            <div className="grid md:grid-cols-2 gap-3">
               {topMatches.map((match: any, i: number) => {
                 const names = match.participants
                   .map((p: any) => p.wrestler.name)
@@ -833,7 +704,7 @@ export default async function Home() {
                   <Link
                     key={match.id}
                     href={`/events/${match.event.slug}`}
-                    className="group flex items-center gap-5 bg-card/30 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl px-6 py-5 transition-all"
+                    className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 sm:gap-4 bg-card/40 border border-white/10 hover:border-primary/30 hover:bg-card/70 rounded-xl sm:rounded-2xl px-4 sm:px-5 py-4 transition-all"
                   >
                     <span className="text-2xl font-black italic text-muted-foreground/40 w-8 shrink-0">
                       #{i + 1}
@@ -872,7 +743,7 @@ export default async function Home() {
 
         {/* ── Community CTA ── */}
         <section>
-          <div className="relative rounded-[2rem] overflow-hidden border border-white/5 bg-card/20 p-8 md:p-10">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-card/30 p-6 md:p-8">
             <div className="absolute inset-0 bg-[radial-gradient(600px_400px_at_80%_50%,rgba(59,130,246,0.06)_0%,transparent_70%)]" />
             <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div className="space-y-1.5">
@@ -886,6 +757,10 @@ export default async function Home() {
                 <p className="text-sm text-muted-foreground/60 font-medium">
                   Rank up by rating, reviewing, and predicting. Every action counts.
                 </p>
+                <div className="flex gap-4 pt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                  <span><strong className="text-primary text-sm">{eventCount}</strong> events</span>
+                  <span><strong className="text-primary text-sm">{wrestlerCount}</strong> wrestlers</span>
+                </div>
               </div>
               <div className="flex flex-wrap gap-3 shrink-0">
                 <Link
@@ -905,43 +780,9 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ── Founding Member CTA ── */}
-        {!user && (
-          <section>
-            <div className="relative rounded-[2.5rem] overflow-hidden border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-card/20 p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-              <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
-              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
-
-              <div className="relative z-10 shrink-0 text-5xl">⚡</div>
-
-              <div className="relative z-10 flex-1 space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Limited Time</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold italic uppercase tracking-tighter leading-none">
-                  Become a Founding Member
-                </h2>
-                <p className="text-muted-foreground font-medium text-sm max-w-lg">
-                  Sign up before <strong className="text-foreground">June 27th</strong> and earn the exclusive Founding Member badge — shown permanently on your profile. Be part of the crew that built this community from day one.
-                </p>
-              </div>
-
-              <div className="relative z-10 shrink-0 flex flex-col items-center gap-2">
-                <Link
-                  href="/register"
-                  className="h-14 px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all"
-                >
-                  Join Free <ArrowRight className="w-4 h-4" />
-                </Link>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Offer ends June 27th 2026</p>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* ── Submit Event CTA ── */}
         <section>
-          <div className="relative rounded-[2.5rem] overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/10 via-card/60 to-card/30 p-10 md:p-16 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/10 via-card/60 to-card/30 p-7 md:p-10 flex flex-col md:flex-row items-center gap-7 md:gap-10">
             {/* Glow */}
             <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />

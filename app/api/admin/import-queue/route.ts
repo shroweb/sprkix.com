@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
-import { parseCagematchEventInfo, parseCagematchHtml } from "@lib/cagematch";
+import { cleanEventTitle, parseCagematchEventInfo, parseCagematchHtml } from "@lib/cagematch";
 import { findEventOnTMDB } from "@lib/tmdb";
 import { uniqueEventSlug } from "@lib/slug-utils";
 import { postNewEventToX } from "@lib/x-event-post";
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
 
     // Parse event metadata
     const info = parseCagematchEventInfo(html);
-    const title = info.title || absoluteUrl;
+    const title = cleanEventTitle(info.title || absoluteUrl);
     const promotionShort = resolvePromotion(info.promotion || "", title);
 
     // Auto-create promotion if needed
@@ -164,6 +164,7 @@ export async function POST(req: NextRequest) {
           city: info.city ?? null,
           attendance: attendance && !isNaN(attendance) ? attendance : null,
           network: info.network ?? null,
+          posterUrl: info.posterUrl ?? null,
         },
       });
       createdEvent = true;
@@ -184,7 +185,9 @@ export async function POST(req: NextRequest) {
           await prisma.event.update({ where: { id: event.id }, data: { posterUrl: tmdb.posterUrl } });
           event.posterUrl = tmdb.posterUrl;
         }
-      } catch { /* non-fatal */ }
+      } catch (posterErr) {
+        console.warn(`[import-queue] Poster enrichment failed for "${event.title}":`, posterErr);
+      }
     }
 
     if (createdEvent) {

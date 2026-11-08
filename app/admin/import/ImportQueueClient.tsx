@@ -14,9 +14,52 @@ type QueueItem = {
 };
 
 export default function ImportQueueClient() {
+  const [singleUrl, setSingleUrl] = useState("");
+  const [singleImporting, setSingleImporting] = useState(false);
+  const [singleMsg, setSingleMsg] = useState("");
+
+  const [options, setOptions] = useState({
+    importTitleAndDate: true,
+    importVenueAndCity: true,
+    importPosters: true,
+    importMatchCards: true,
+    importMatchDurations: true,
+    autoCreateWrestlers: true,
+    importAttendanceAndNetwork: true,
+  });
+
   const [rawUrls, setRawUrls] = useState("");
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [running, setRunning] = useState(false);
+
+  const toggleOption = (key: keyof typeof options) => {
+    setOptions((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSingleImport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!singleUrl.trim()) return;
+    setSingleImporting(true);
+    setSingleMsg("");
+    try {
+      const res = await fetch("/api/admin/import/url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: singleUrl, options }),
+      });
+      const data = await res.json();
+      if (data.event) {
+        setSingleMsg(`Successfully imported "${data.event.title}"!`);
+        setSingleUrl("");
+      } else {
+        setSingleMsg(data.error || "Import failed");
+      }
+    } catch (err: any) {
+      setSingleMsg(err.message || "Import failed");
+    } finally {
+      setSingleImporting(false);
+    }
+  };
 
   const buildQueue = () => {
     const lines = rawUrls
@@ -47,7 +90,7 @@ export default function ImportQueueClient() {
         const res = await fetch("/api/admin/import-queue", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: item.url }),
+          body: JSON.stringify({ url: item.url, options }),
         });
         const data = await res.json();
         if (res.ok) {
@@ -92,6 +135,83 @@ export default function ImportQueueClient() {
 
   return (
     <div className="space-y-6">
+      {/* Importer Field Selection Matrix */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 text-white">
+        <div>
+          <h2 className="text-base font-bold uppercase tracking-tight text-amber-400 italic flex items-center gap-2">
+            <Link2 className="w-4 h-4 text-amber-400" /> Importer Field Selection Matrix
+          </h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Choose which elements the importer should scrape, parse, and save into the database.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            { key: "importTitleAndDate", label: "Show Title & Date", desc: "Event Name, Air Date, Promotion" },
+            { key: "importVenueAndCity", label: "Venue & Location", desc: "Arena Name, City, Country" },
+            { key: "importPosters", label: "Posters & Graphics", desc: "TMDB & Cagematch artwork" },
+            { key: "importMatchCards", label: "Match Cards & Results", desc: "Participants, Winners, Stipulations" },
+            { key: "importMatchDurations", label: "Durations & Star Ratings", desc: "Length in mins & match ratings" },
+            { key: "autoCreateWrestlers", label: "Auto-Create Wrestlers", desc: "Insert new wrestler profiles" },
+            { key: "importAttendanceAndNetwork", label: "Attendance & Network", desc: "Gate attendance & TV channel" },
+          ].map((item) => {
+            const isChecked = options[item.key as keyof typeof options];
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => toggleOption(item.key as keyof typeof options)}
+                className={`p-3.5 rounded-xl border text-left transition-all flex items-start justify-between gap-3 ${
+                  isChecked
+                    ? "bg-amber-400/10 border-amber-400/50 text-white"
+                    : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                }`}
+              >
+                <div>
+                  <p className="text-xs font-bold text-white">{item.label}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{item.desc}</p>
+                </div>
+                <div
+                  className={`w-4 h-4 rounded mt-0.5 shrink-0 flex items-center justify-center text-[10px] font-bold ${
+                    isChecked ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-500"
+                  }`}
+                >
+                  {isChecked ? "✓" : ""}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 1-Click Direct URL Importer */}
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-4">
+        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <Link2 className="w-4 h-4 text-primary" /> Direct Cagematch URL Importer
+        </h2>
+        <form onSubmit={handleSingleImport} className="flex items-center gap-3">
+          <input
+            type="url"
+            required
+            placeholder="https://www.cagematch.net/?id=1&nr=312450"
+            value={singleUrl}
+            onChange={(e) => setSingleUrl(e.target.value)}
+            className="flex-1 bg-slate-50 border border-border rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-primary"
+          />
+          <button
+            type="submit"
+            disabled={singleImporting}
+            className="px-6 py-2.5 bg-primary text-black font-black uppercase italic tracking-wide rounded-xl shadow hover:opacity-90 transition-opacity flex items-center gap-2 shrink-0 disabled:opacity-50"
+          >
+            {singleImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Import Show"}
+          </button>
+        </form>
+        {singleMsg && (
+          <p className="text-xs font-bold text-primary italic">{singleMsg}</p>
+        )}
+      </div>
+
       {/* URL Input */}
       {queue.length === 0 && (
         <div className="bg-white rounded-2xl border border-border p-8 space-y-4">

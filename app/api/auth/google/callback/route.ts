@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { notifyNewUser } from "@lib/discord";
+import { cookies } from "next/headers";
+import { safeNextPath, POST_AUTH_COOKIE } from "@lib/auth-redirect";
 import { prisma } from "@lib/prisma";
 import { signToken } from "@lib/jwt";
 import { randomWrestlingName } from "@lib/wrestling-names";
@@ -33,8 +36,10 @@ async function buildAuthResponse(
     return NextResponse.redirect(deepLink);
   }
 
-  // Web — set httpOnly cookie and redirect to home
-  const response = NextResponse.redirect(new URL("/", siteUrl));
+  // Web — set httpOnly cookie and return to where sign-up was prompted (default: home)
+  const next = safeNextPath((await cookies()).get(POST_AUTH_COOKIE)?.value);
+  const response = NextResponse.redirect(new URL(next, siteUrl));
+  response.cookies.delete(POST_AUTH_COOKIE);
   response.cookies.set({
     name: "token",
     value: token,
@@ -147,6 +152,7 @@ export async function GET(req: NextRequest) {
 
       // Send welcome email
       await sendWelcomeEmail(user.email, user.name || "");
+      await notifyNewUser({ name: user.name, slug }, "google");
     }
 
     return await buildAuthResponse(user.id, user.email, user.name, siteUrl, platform);

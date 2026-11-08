@@ -62,41 +62,55 @@ export async function getTmdbPerson(tmdbId: number): Promise<{ imageUrl: string 
 
 // ── Event search ─────────────────────────────────────────────────────────────
 
+export function buildEventTmdbQueries(title: string): string[] {
+    const cleanTitle = title
+        .normalize('NFKC')
+        .replace(/[\u200B-\u200D\u2060\uFEFF]/g, '')
+        .replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ')
+        .replace(/(#\d{1,2})\d\.\d{2}(\d+)/g, '$1$2')
+        .replace(/(#\d{1,2})\.\d{2}(\d+)/g, '$1$2')
+        .replace(/\d{1,2}\.\d{1,2}(?=#\d+)/g, '')
+        .replace(/([a-zA-Z])\d{1,2}\.\d{1,2}/g, '$1')
+        .replace(/\d{1,2}\.\d{1,2}([a-zA-Z])/g, '$1')
+        .replace(/\d{1,2}\.\d{1,2}(-)/g, '$1')
+        .replace(/\s+\d{1,2}\.\d{1,2}(?=\s|$)/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const queries = new Set<string>();
+    const withoutEpisodeNum = cleanTitle
+        .replace(/\s*#\d+\s*/g, ' ')
+        .replace(/[–—]\s*\d{4}\s*$/g, '')
+        .replace(/\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    if (withoutEpisodeNum) queries.add(withoutEpisodeNum);
+
+    const baseShowName = cleanTitle
+        .replace(/\s*#\d+.*$/g, '')
+        .replace(/\s*[-–—].*$/g, '')
+        .trim();
+    if (baseShowName) queries.add(baseShowName);
+
+    // Pre-shows and tour-card suffixes are rarely separate TMDB entries. A
+    // final parent-event query can still recover the main event artwork.
+    const parentEvent = withoutEpisodeNum
+        .replace(/\s+(?:countdown\s+to|zero\s+hour|kickoff|pre[- ]?show)\s+/i, ' ')
+        .replace(/\s*[-–—]\s*(?:tag|night|day)\s*\d+.*$/i, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    if (parentEvent) queries.add(parentEvent);
+
+    return [...queries];
+}
+
 export async function findEventOnTMDB(title: string) {
     const apiKey = process.env.TMDB_API_KEY;
     if (!apiKey) {
         throw new Error('TMDB_API_KEY is not set in .env. Get a free key at https://www.themoviedb.org/settings/api');
     }
 
-    // Build progressively simpler queries to maximise match rate:
-    //
-    // "AEW Collision #136 - Slam Dunk Sunday 2026"
-    //   1. "AEW Collision - Slam Dunk Sunday 2026"  (remove episode #)
-    //   2. "AEW Collision"                           (remove # AND subtitle — best for weekly TV)
-    //
-    // "WrestleMania 41"
-    //   1. "WrestleMania 41"                         (no episode # to strip, matches directly)
-    //
-    // "WWE Friday Night SmackDown #1387"
-    //   1. "WWE Friday Night SmackDown"              (remove episode #)
-
-    const queries = new Set<string>();
-
-    // Pass 1: strip episode number only
-    const withoutEpisodeNum = title
-        .replace(/\s*#\d+\s*/g, ' ')
-        .replace(/[–—]\s*\d{4}\s*$/g, '')         // trailing em-dash + year
-        .replace(/\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    if (withoutEpisodeNum) queries.add(withoutEpisodeNum);
-
-    // Pass 2: strip episode number AND subtitle/episode title (everything after " - " or " – ")
-    const baseShowName = title
-        .replace(/\s*#\d+.*$/g, '')   // remove #N and everything after
-        .replace(/\s*[-–—].*$/g, '')  // remove " - subtitle" if no episode num
-        .trim();
-    if (baseShowName && baseShowName !== withoutEpisodeNum) queries.add(baseShowName);
+    const queries = buildEventTmdbQueries(title);
 
     for (const q of queries) {
         const encoded = encodeURIComponent(q);
@@ -112,7 +126,24 @@ export async function findEventOnTMDB(title: string) {
         const results = [
             ...(movieData.results || []).map((r: any) => ({ ...r, tmdbType: 'movie' })),
             ...(tvData.results || []).map((r: any) => ({ ...r, tmdbType: 'tv' })),
-        ];
+        ].filter((item: any) => {
+            const titleOrName = (item.title || item.name || '').toLowerCase();
+            const overview = (item.overview || '').toLowerCase();
+            // Filter out non-wrestling false positive movie matches:
+            if (
+                titleOrName === 'noah' ||
+                titleOrName === 'the noah' ||
+                titleOrName.startsWith('noah:') ||
+                titleOrName.includes("noah's") ||
+                overview.includes('russell crowe') ||
+                overview.includes('ark') ||
+                overview.includes('great flood') ||
+                overview.includes('biblical')
+            ) {
+                return false;
+            }
+            return true;
+        });
 
         if (results.length > 0) {
             const best = results.sort((a: any, b: any) => b.popularity - a.popularity)[0];

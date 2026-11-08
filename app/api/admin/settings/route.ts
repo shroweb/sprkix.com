@@ -85,6 +85,8 @@ export async function POST(req: Request) {
     PRIMARY_COLOR,
     PRIMARY_HOVER_COLOR,
     SOCIAL_LOGIN_ENABLED,
+    AUTO_IMPORT_PROMOTIONS,
+    AUTO_IMPORT_ENABLED,
   } = body;
 
   let heroImageValue = HERO_IMAGE;
@@ -142,6 +144,8 @@ export async function POST(req: Request) {
     { key: "PRIMARY_COLOR", value: PRIMARY_COLOR },
     { key: "PRIMARY_HOVER_COLOR", value: PRIMARY_HOVER_COLOR },
     { key: "SOCIAL_LOGIN_ENABLED", value: SOCIAL_LOGIN_ENABLED },
+    { key: "AUTO_IMPORT_PROMOTIONS", value: AUTO_IMPORT_PROMOTIONS },
+    { key: "AUTO_IMPORT_ENABLED", value: AUTO_IMPORT_ENABLED },
   ];
 
   try {

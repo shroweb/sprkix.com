@@ -1,5 +1,19 @@
 <svg xmlns='http://www.w3.org/2000/svg' width='400' height='560' viewBox='0 0 400 560'>
-  <rect width='400' height='560' fill='#111113'/>
-  <rect x='160' y='220' width='80' height='80' rx='8' fill='#1f1f23' stroke='#2a2a2e' stroke-width='1'/>
-  <path d='M185 255 L215 255 M200 240 L200 270' stroke='#333' stroke-width='2' stroke-linecap='round'/>
+  <defs>
+    <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#0f172a'/>
+      <stop offset='50%' stop-color='#020617'/>
+      <stop offset='100%' stop-color='#090d16'/>
+    </linearGradient>
+    <linearGradient id='accent' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='#fbbf24' stop-opacity='0.25'/>
+      <stop offset='100%' stop-color='#fbbf24' stop-opacity='0.05'/>
+    </linearGradient>
+  </defs>
+  <rect width='400' height='560' fill='url(#bg)'/>
+  <circle cx='200' cy='280' r='140' fill='url(#accent)' />
+  <polygon points='120,240 280,240 280,320 120,320' fill='none' stroke='#fbbf24' stroke-width='2' stroke-opacity='0.3' />
+  <line x1='120' y1='266' x2='280' y2='266' stroke='#fbbf24' stroke-width='1.5' stroke-opacity='0.2' />
+  <line x1='120' y1='293' x2='280' y2='293' stroke='#fbbf24' stroke-width='1.5' stroke-opacity='0.2' />
+  <polygon points='200,265 204,275 215,275 206,281 209,291 200,285 191,291 194,281 185,275 196,275' fill='#fbbf24' fill-opacity='0.5'/>
 </svg>

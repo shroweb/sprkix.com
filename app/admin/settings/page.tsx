@@ -46,7 +46,10 @@ export default function AdminSettings() {
     SOCIAL_X: "",
     SOCIAL_FACEBOOK: "",
     SOCIAL_INSTAGRAM: "",
+    AUTO_IMPORT_PROMOTIONS: "",
+    AUTO_IMPORT_ENABLED: "true",
   });
+  const [customPromo, setCustomPromo] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -77,6 +80,8 @@ export default function AdminSettings() {
           SOCIAL_X: configs.SOCIAL_X || "",
           SOCIAL_FACEBOOK: configs.SOCIAL_FACEBOOK || "",
           SOCIAL_INSTAGRAM: configs.SOCIAL_INSTAGRAM || "",
+          AUTO_IMPORT_PROMOTIONS: configs.AUTO_IMPORT_PROMOTIONS || "All Elite Wrestling,World Wrestling Entertainment,TNA Wrestling,Ring of Honor,New Japan Pro-Wrestling,All Japan Pro Wrestling,Stardom,Pro Wrestling NOAH",
+          AUTO_IMPORT_ENABLED: configs.AUTO_IMPORT_ENABLED || "true",
         });
         setEvents(data.events || []);
         setLoading(false);
@@ -719,6 +724,182 @@ export default function AdminSettings() {
                   Set these in your Vercel project environment variables. Redirect URIs: <br />
                   <span className="font-mono">/api/auth/google/callback</span> &nbsp;·&nbsp; <span className="font-mono">/api/auth/facebook/callback</span>
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Daily Morning Auto-Importer Worker Card */}
+          <div className={cardClass}>
+            <div className={cardHeaderClass}>
+              <RefreshCcw className="w-4 h-4 text-primary" />
+              <h2 className="font-semibold uppercase italic tracking-tighter text-sm">
+                Daily Morning Auto-Importer Worker
+              </h2>
+              <div className="ml-auto">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSettings((s) => ({
+                      ...s,
+                      AUTO_IMPORT_ENABLED:
+                        s.AUTO_IMPORT_ENABLED === "true" ? "false" : "true",
+                    }))
+                  }
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.AUTO_IMPORT_ENABLED === "true" ? "bg-primary" : "bg-slate-200"}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow ${settings.AUTO_IMPORT_ENABLED === "true" ? "translate-x-6" : "translate-x-1"}`}
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="p-8 space-y-5">
+              <p className="text-xs text-muted-foreground">
+                The platform executes a Cloudflare Worker every morning at 06:00 UTC (`0 6 * * *`) that scrapes recent shows from Cagematch for configured promotions.
+              </p>
+
+              <div className="space-y-3">
+                <label className={labelClass}>
+                  <Type className="w-3.5 h-3.5" /> Promotions to Auto-Import
+                </label>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {[
+                    { code: "WWE", name: "World Wrestling Entertainment" },
+                    { code: "AEW", name: "All Elite Wrestling" },
+                    { code: "TNA", name: "Total Nonstop Action" },
+                    { code: "ROH", name: "Ring of Honor" },
+                    { code: "NJPW", name: "New Japan Pro-Wrestling" },
+                    { code: "AJPW", name: "All Japan Pro Wrestling" },
+                    { code: "STARDOM", name: "Stardom" },
+                    { code: "NOAH", name: "Pro Wrestling NOAH" },
+                  ].map((promo) => {
+                    const activePromos = settings.AUTO_IMPORT_PROMOTIONS
+                      ? settings.AUTO_IMPORT_PROMOTIONS.split(",").map((s) => s.trim().toUpperCase())
+                      : [];
+                    const isSelected = activePromos.includes(promo.code.toUpperCase()) ||
+                      settings.AUTO_IMPORT_PROMOTIONS.toLowerCase().includes(promo.name.toLowerCase());
+
+                    const togglePromo = () => {
+                      let currentList = settings.AUTO_IMPORT_PROMOTIONS
+                        ? settings.AUTO_IMPORT_PROMOTIONS.split(",").map((s) => s.trim()).filter(Boolean)
+                        : [];
+                      if (isSelected) {
+                        currentList = currentList.filter(
+                          (p) => p.toUpperCase() !== promo.code.toUpperCase() && p.toLowerCase() !== promo.name.toLowerCase()
+                        );
+                      } else {
+                        currentList.push(promo.code);
+                      }
+                      setSettings((s) => ({ ...s, AUTO_IMPORT_PROMOTIONS: currentList.join(",") }));
+                    };
+
+                    return (
+                      <button
+                        key={promo.code}
+                        type="button"
+                        onClick={togglePromo}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider border transition-all flex items-center gap-1.5 ${
+                          isSelected
+                            ? "bg-amber-400 border-amber-500 text-slate-950 shadow-sm"
+                            : "bg-slate-100 border-slate-200 text-slate-500 hover:border-slate-300"
+                        }`}
+                      >
+                        <span>{isSelected ? "✓" : "+"}</span>
+                        <span>{promo.code}</span>
+                      </button>
+                    );
+                  })}
+
+                  {/* Render any additional custom promotion chips added by the user */}
+                  {settings.AUTO_IMPORT_PROMOTIONS.split(",")
+                    .map((s) => s.trim())
+                    .filter((s) => {
+                      if (!s) return false;
+                      const standard = ["WWE", "AEW", "TNA", "ROH", "NJPW", "AJPW", "STARDOM", "NOAH"];
+                      return !standard.includes(s.toUpperCase());
+                    })
+                    .map((custom) => (
+                      <div
+                        key={custom}
+                        className="px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider border bg-amber-400 border-amber-500 text-slate-950 shadow-sm flex items-center gap-2"
+                      >
+                        <span>✓ {custom}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = settings.AUTO_IMPORT_PROMOTIONS.split(",")
+                              .map((s) => s.trim())
+                              .filter((p) => p.toLowerCase() !== custom.toLowerCase());
+                            setSettings((s) => ({ ...s, AUTO_IMPORT_PROMOTIONS: updated.join(",") }));
+                          }}
+                          className="hover:opacity-70 font-mono text-slate-900"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                </div>
+
+                {/* Add Custom Promotion Input */}
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="text"
+                    placeholder="Add custom promotion (e.g. GCW, CMLL, AAA, RevPro)..."
+                    value={customPromo}
+                    onChange={(e) => setCustomPromo(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (!customPromo.trim()) return;
+                        const currentList = settings.AUTO_IMPORT_PROMOTIONS
+                          ? settings.AUTO_IMPORT_PROMOTIONS.split(",").map((s) => s.trim()).filter(Boolean)
+                          : [];
+                        if (!currentList.some((p) => p.toLowerCase() === customPromo.trim().toLowerCase())) {
+                          currentList.push(customPromo.trim());
+                          setSettings((s) => ({ ...s, AUTO_IMPORT_PROMOTIONS: currentList.join(",") }));
+                        }
+                        setCustomPromo("");
+                      }
+                    }}
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!customPromo.trim()) return;
+                      const currentList = settings.AUTO_IMPORT_PROMOTIONS
+                        ? settings.AUTO_IMPORT_PROMOTIONS.split(",").map((s) => s.trim()).filter(Boolean)
+                        : [];
+                      if (!currentList.some((p) => p.toLowerCase() === customPromo.trim().toLowerCase())) {
+                        currentList.push(customPromo.trim());
+                        setSettings((s) => ({ ...s, AUTO_IMPORT_PROMOTIONS: currentList.join(",") }));
+                      }
+                      setCustomPromo("");
+                    }}
+                    className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-slate-800 transition-colors"
+                  >
+                    + Add
+                  </button>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground italic">
+                  Selected and custom promotions will be automatically scraped every morning.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Manual Test Run</p>
+                  <p className="text-[10px] text-slate-500">Trigger the morning importer worker right now for yesterday's shows.</p>
+                </div>
+                <a
+                  href="/api/cron/import-shows"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-slate-800 transition-colors"
+                >
+                  Run Importer Worker Now ↗
+                </a>
               </div>
             </div>
           </div>

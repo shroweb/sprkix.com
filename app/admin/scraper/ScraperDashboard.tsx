@@ -13,7 +13,28 @@ export default function ScraperDashboard({
 }) {
     const [events, setEvents] = useState(initialEvents);
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
+    const [bulkRepairing, setBulkRepairing] = useState(false);
     const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
+
+    const handleBulkRepair = async () => {
+        setBulkRepairing(true);
+        try {
+            const res = await fetch("/api/admin/scraper/bulk-posters", { method: "POST" });
+            const data = await res.json();
+            if (data.results) {
+                const map = new Map(data.results.map((r: any) => [r.eventId, r.posterUrl]));
+                setEvents((prev) =>
+                    prev.map((e) =>
+                        map.has(e.id) ? { ...e, posterUrl: map.get(e.id), success: true } : e
+                    )
+                );
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setBulkRepairing(false);
+        }
+    };
 
     const handleFetch = async (eventId: string) => {
         setIsProcessing(eventId);
@@ -76,14 +97,20 @@ export default function ScraperDashboard({
             </div>
 
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
-                <div className="p-6 border-b border-border bg-slate-50/50 flex justify-between items-center">
-                    <h2 className="font-bold text-lg">Incomplete Archives ({events.length})</h2>
-                    <div className="flex gap-2">
-                        {events.length > 0 && (
-                            <span className="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold uppercase rounded">
-                                Action Required
-                            </span>
-                        )}
+                <div className="p-6 border-b border-border bg-slate-50/50 flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <h2 className="font-bold text-lg">Incomplete Archives ({events.length})</h2>
+                        <p className="text-xs text-muted-foreground">Events missing posters or full overview metadata</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleBulkRepair}
+                            disabled={bulkRepairing || events.length === 0}
+                            className="px-4 py-2 bg-primary text-black font-black uppercase italic text-xs tracking-wider rounded-xl shadow hover:opacity-90 disabled:opacity-40 flex items-center gap-2 transition-opacity"
+                        >
+                            {bulkRepairing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                            Auto-Fetch All Missing Posters
+                        </button>
                     </div>
                 </div>
                 

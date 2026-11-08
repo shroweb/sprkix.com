@@ -1,14 +1,18 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from "next";
+import { getSiteUrl, SITEMAP_IDS } from "@lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://poisonrana.com'
+  const baseUrl = getSiteUrl();
 
   return {
     rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: '/admin/',
+      userAgent: "*",
+      allow: "/",
+      disallow: "/admin/",
     },
-    sitemap: [`${baseUrl}/sitemap.xml`, `${baseUrl}/news-sitemap.xml`],
-  }
+    sitemap: [
+      ...SITEMAP_IDS.map((id) => `${baseUrl}/sitemap/${id}.xml`),
+      `${baseUrl}/news-sitemap.xml`,
+    ],
+  };
 }

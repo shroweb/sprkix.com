@@ -93,6 +93,23 @@ export default function MaintenanceClient({ initialMode }: { initialMode: boolea
         </div>
       </div>
 
+      {/* Database Backup Export */}
+      <div className="bg-white rounded-2xl border border-border p-6 space-y-3">
+        <h3 className="font-bold text-lg flex items-center gap-2">
+          <Power className="w-4 h-4 text-primary" /> Database Backup Export
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Download a complete JSON export of Events, Wrestlers, Reviews, Championships, and Promotions for offline safekeeping.
+        </p>
+        <a
+          href="/api/admin/backup"
+          download
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-colors"
+        >
+          Download JSON Database Backup
+        </a>
+      </div>
+
       {/* Data repair */}
       <div className="bg-white rounded-2xl border border-border p-6">
         <h3 className="font-bold text-lg flex items-center gap-2">

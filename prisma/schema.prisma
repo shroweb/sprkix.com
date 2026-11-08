@@ -240,6 +240,7 @@ model Wrestler {
   bio       String?
   matches   MatchParticipant[]
   aliases   WrestlerAlias[]
+  linealReigns LinealReign[]
   createdAt DateTime           @default(now())
 }
 
@@ -487,4 +488,43 @@ model NewsPost {
   updatedAt      DateTime @updatedAt
 
   @@index([status, publishedAt])
+}
+
+// Fan-tracked "lineal" titles: the holder only changes when they lose a qualifying
+// match. Unofficial — not recognised by any promotion. See lib/lineal.ts.
+model LinealTitle {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  name          String
+  description   String?
+  kind          String        @default("title") // "title" | "novelty"
+  emoji         String?
+  origin        String? // short "where it started" blurb
+  allowMultiMan Boolean       @default(false) // triple threats / fatal 4-ways etc. change the holder
+  requireClean  Boolean       @default(true) // DQ / count-out / no-contest do not change the holder
+  isActive      Boolean       @default(true)
+  sortOrder     Int           @default(0)
+  reigns        LinealReign[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model LinealReign {
+  id           String      @id @default(cuid())
+  titleId      String
+  title        LinealTitle @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  wrestlerId   String
+  wrestler     Wrestler    @relation(fields: [wrestlerId], references: [id], onDelete: Cascade)
+  reignNumber  Int         @default(1)
+  startedAt    DateTime
+  endedAt      DateTime?
+  startMatchId String?
+  endMatchId   String?
+  defences     Int         @default(0)
+  source       String      @default("auto") // "seed" (curated starting point) | "auto" (derived from matches)
+  note         String?
+  createdAt    DateTime    @default(now())
+
+  @@index([titleId, startedAt])
+  @@index([wrestlerId])
 }

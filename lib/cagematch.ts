@@ -21,6 +21,7 @@ export interface ParsedEventInfo {
     attendance?: number
     network?: string
     cagematchUrl?: string
+    posterUrl?: string
 }
 
 export interface CagematchListEntry {
@@ -90,6 +91,22 @@ export function parseCagematchEventInfo(html: string): ParsedEventInfo {
     const date = info['date'] || undefined
     const promotionRaw = info['promotion'] || undefined
 
+    // Prefer explicit social/event artwork, then the image inside the event
+    // information box. Resolve relative Cagematch paths to absolute URLs.
+    const posterSrc =
+        $('meta[property="og:image"]').attr('content') ||
+        $('.InformationBoxTable img[src*="pics/"]').first().attr('src') ||
+        $('img[src*="pics/"]').first().attr('src') ||
+        ''
+    let posterUrl: string | undefined
+    if (posterSrc) {
+        try {
+            posterUrl = new URL(posterSrc, 'https://www.cagematch.net/').toString()
+        } catch {
+            posterUrl = undefined
+        }
+    }
+
     return {
         title,
         date,
@@ -98,6 +115,7 @@ export function parseCagematchEventInfo(html: string): ParsedEventInfo {
         network: info['tv station/network'] || info['tv station / network'] || info['network'] || undefined,
         city: city || undefined,
         venue: info['arena'] || info['venue'] || undefined,
+        posterUrl,
     }
 }
 
@@ -120,7 +138,13 @@ function extractRowEvent($: cheerio.CheerioAPI, row: any, dateDDMMYYYY: string):
     const $row = $(row)
     const eventLink = $row.find('a[href*="id=1&nr="]').first()
     if (!eventLink.length) return null
-    const title = cleanEventTitle(eventLink.text())
+
+    // Clone link and strip rating elements (e.g. <span class="rating">6.62</span>)
+    // so Cagematch ratings don't bleed into event title text.
+    const linkClone = eventLink.clone()
+    linkClone.find('.rating, .Rating, span[class*="rating"], span[class*="Rating"]').remove()
+
+    const title = cleanEventTitle(linkClone.text())
     const href = eventLink.attr('href') || ''
     if (!title || !href) return null
     const cagematchUrl = href.startsWith('http')
@@ -139,13 +163,28 @@ const ALL_TROW = 'tr.TRow1, tr.TRow2, tr.TRowTVShow, tr.TRowPremiumLiveEvent, tr
 
 /**
  * Cagematch renders each event's rating inline inside the title link's DOM
- * (e.g. "WWE N<span class=rating>6.62</span>XT #850"), so cheerio's .text()
- * concatenates it into the word. Strip rating fragments glued between letters.
+ * (e.g. "WWE N<span class=rating>6.62</span>XT #850" or "WWE <span class=rating>2.80</span>Main Event #729"),
+ * so cheerio's .text() concatenates it into words.
+ * This function strips rating fragments and hidden zero-width unicode characters.
  */
-function cleanEventTitle(raw: string): string {
+export function cleanEventTitle(raw: string): string {
   return raw
-    .replace(/([a-zA-Z])\d+\.\d{1,2}([a-zA-Z])/g, "$1$2")
-    .replace(/\s+/g, " ")
+    .normalize('NFKC')
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, '')
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ')
+    // Fix rating injected inside episode numbers like #14.5183 -> #183
+    .replace(/(#\d{1,2})\d\.\d{2}(\d+)/g, '$1$2')
+    .replace(/(#\d{1,2})\.\d{2}(\d+)/g, '$1$2')
+    // Rating preceding '#' like 3.97#158 -> #158
+    .replace(/\d{1,2}\.\d{1,2}(?=#\d+)/g, '')
+    // Rating concatenated to letters (Dynamite1.95 -> Dynamite, 2.80Main -> Main)
+    .replace(/([a-zA-Z])\d{1,2}\.\d{1,2}/g, '$1')
+    .replace(/\d{1,2}\.\d{1,2}([a-zA-Z])/g, '$1')
+    // Rating concatenated to dash or N-1 like 8.66- -> -, 1.0N-1 -> N-1
+    .replace(/\d{1,2}\.\d{1,2}(-)/g, '$1')
+    // Standalone ratings (preceded by space)
+    .replace(/\s+\d{1,2}\.\d{1,2}(?=\s|$)/g, '')
+    .replace(/\s+/g, ' ')
     .trim()
 }
 
@@ -194,7 +233,9 @@ export function parseCagematchEventList(html: string): CagematchListEntry[] {
         const $row = $(row)
         const eventLink = $row.find('a[href*="id=1&nr="]').first()
         if (!eventLink.length) return
-        const title = cleanEventTitle(eventLink.text())
+        const linkClone = eventLink.clone()
+        linkClone.find('.rating, .Rating, span[class*="rating"], span[class*="Rating"]').remove()
+        const title = cleanEventTitle(linkClone.text())
         const href = eventLink.attr('href') || ''
         if (!title || !href) return
         const cagematchUrl = href.startsWith('http')

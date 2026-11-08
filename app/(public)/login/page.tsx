@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getClientNext } from "@lib/auth-redirect";
 
 const ERROR_MESSAGES: Record<string, string> = {
   social_disabled: "Social login is currently disabled.",
@@ -48,7 +49,7 @@ export default function LoginPage() {
 
     const data = await res.json();
     if (data.success) {
-      window.location.href = "/";
+      window.location.href = getClientNext();
     } else {
       setError(data.error || "Login failed");
     }

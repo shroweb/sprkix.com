@@ -2,8 +2,9 @@ import Link from "next/link";
 import { prisma } from "@lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { cache } from "react";
 import { getPosterColors } from "@lib/poster-color";
+import { getEventRanking } from "@lib/cached-data";
+import { getSiteUrl, jsonLdString, breadcrumbLd } from "@lib/seo";
 import ReviewForm from "@components/ReviewForm";
 import ReplyForm from "@components/ReplyForm";
 import { getUserFromServerCookie } from "@lib/server-auth";
@@ -24,30 +25,8 @@ import WatchedIcon from "@components/WatchedIcon";
 import AddToListButton from "@components/AddToListButton";
 import VisualRating from "@components/VisualRating";
 import RatingDistribution from "@components/RatingDistribution";
+import WhereToWatchBadge from "@components/WhereToWatchBadge";
 import type { Metadata } from "next";
-
-// Cached per-request: avoids running the full-table rating scan more than once
-// (generateMetadata and the page component both run in the same request)
-const getGlobalRankingData = cache(async () => {
-  const events = await prisma.event.findMany({
-    select: { id: true, promotion: true, title: true, slug: true, posterUrl: true, date: true, reviews: { select: { rating: true } } },
-  });
-  const allRatings = events.flatMap((e) => e.reviews.map((r) => r.rating));
-  const globalAverage = allRatings.length
-    ? allRatings.reduce((a, b) => a + b, 0) / allRatings.length
-    : 0;
-  const minReviews = 10;
-  const ranked = events
-    .map((e) => {
-      const rats = e.reviews.map((r) => r.rating);
-      const R = rats.length ? rats.reduce((a, b) => a + b, 0) / rats.length : 0;
-      const v = rats.length;
-      const weighted = (v / (v + minReviews)) * R + (minReviews / (v + minReviews)) * globalAverage;
-      return { id: e.id, promotion: e.promotion, title: e.title, slug: e.slug, posterUrl: e.posterUrl, date: e.date, weighted, avgRating: R, reviewCount: v };
-    })
-    .sort((a, b) => b.weighted - a.weighted);
-  return { ranked, globalAverage, minReviews, allEvents: events };
-});
 
 export async function generateMetadata({
   params,
@@ -90,7 +69,9 @@ export async function generateMetadata({
   return {
     title: `${cleanTitle} (${year}) – ${event.promotion} | Poison Rana`,
     description: desc,
+    alternates: { canonical: `${siteUrl}/events/${slug}` },
     openGraph: {
+      url: `${siteUrl}/events/${slug}`,
       title: `${cleanTitle} – ${event.promotion}`,
       description: desc,
       images: [{ url: ogImageUrl, width: 1200, height: 630 }],
@@ -338,8 +319,8 @@ export default async function EventPage({
     orderBy: { createdAt: "asc" },
   });
 
-  // Ranking — uses per-request cache to avoid duplicate full-table scans
-  const { ranked, globalAverage, minReviews } = await getGlobalRankingData();
+  // Ranking — shared cross-request cache built from DB aggregates
+  const { ranked } = await getEventRanking(10);
   const top10 = ranked.slice(0, 10);
   const eventRank = top10.findIndex((e) => e.id === event.id);
 
@@ -372,35 +353,78 @@ export default async function EventPage({
 
   const [c1, c2, c3] = await getPosterColors(event.posterUrl);
 
-  // Structured data for rich results (Google SportsEvent)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
+  // Structured data for rich results (Google Event / SportsEvent)
+  const siteUrl = getSiteUrl();
+  const eventUrl = `${siteUrl}/events/${event.slug}`;
+  const startsAt: Date = event.startTime ?? event.date;
+  const performers = Array.from(
+    new Map(
+      event.matches
+        .flatMap((m: any) => m.participants ?? [])
+        .filter((p: any) => p.wrestler?.slug)
+        .map((p: any) => [p.wrestler.slug, p.wrestler]),
+    ).values(),
+  )
+    .slice(0, 30)
+    .map((w: any) => ({
+      "@type": "Person",
+      name: w.name,
+      url: `${siteUrl}/wrestlers/${w.slug}`,
+    }));
+  const reviewCount = event.reviews.length;
+  const avgReview = reviewCount
+    ? event.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount
+    : 0;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     name: event.title,
-    startDate: (event.startTime ?? event.date).toISOString(),
+    startDate: startsAt.toISOString(),
+    endDate: event.endTime ? event.endTime.toISOString() : undefined,
+    eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    sport: "Professional wrestling",
     location:
       event.venue || event.city
         ? {
             "@type": "Place",
-            name: event.venue || undefined,
+            name: event.venue || event.city,
             address: event.city
               ? { "@type": "PostalAddress", addressLocality: event.city }
               : undefined,
           }
         : undefined,
-    image: event.posterUrl || undefined,
-    description: event.description || undefined,
+    image: event.posterUrl?.startsWith("http") ? event.posterUrl : undefined,
+    description: event.description || `${event.title} presented by ${event.promotion}`,
     organizer: { "@type": "Organization", name: event.promotion },
-    url: `${siteUrl}/events/${event.slug}`,
+    performer: performers.length ? performers : undefined,
+    aggregateRating:
+      reviewCount > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: Number(avgReview.toFixed(2)),
+            reviewCount,
+            bestRating: 5,
+            worstRating: 0,
+          }
+        : undefined,
+    url: eventUrl,
   };
+  const breadcrumbs = breadcrumbLd([
+    { name: "Home", path: "/" },
+    { name: "Events", path: "/events" },
+    { name: event.title, path: `/events/${event.slug}` },
+  ]);
 
   return (
     <div className="min-h-screen pb-20">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbs) }}
       />
       {/* Poster colour gradient backdrop */}
       <div
@@ -415,18 +439,18 @@ export default async function EventPage({
       />
       <div className="fixed inset-0 z-0 bg-background/80" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 relative z-10">
         {/* Back Link */}
         <Link
           href="/events"
-          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors mb-8 group"
+          className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mb-6 sm:mb-8 group rounded-full border border-white/10 bg-black/20 px-4 py-2 backdrop-blur-md"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to All Events
         </Link>
 
         {/* Mobile-first Title & Metadata Header */}
-        <div className="space-y-6 mb-10">
+        <div className="space-y-6 mb-8 sm:mb-10 rounded-2xl sm:rounded-3xl border border-white/10 bg-black/25 backdrop-blur-xl p-5 sm:p-8 shadow-2xl shadow-black/20">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-4 flex-1">
               <div className="flex items-center gap-3">
@@ -443,8 +467,8 @@ export default async function EventPage({
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9] break-words hyphens-auto">
                 {event.title.replace(/–\s\d{4}-\d{2}-\d{2}$/, "")}
               </h1>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-muted-foreground">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
                   <Calendar className="w-4 h-4 text-primary" />
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                     {new Date(event.date).toLocaleDateString("en-US", {
@@ -455,31 +479,29 @@ export default async function EventPage({
                   </span>
                 </div>
                 {(event.venue || event.city) && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
                     <MapPin className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                       {[event.venue, event.city].filter(Boolean).join(" · ")}
                     </span>
                   </div>
                 )}
-                {event.network && (
-                  <div className="flex items-center gap-2">
-                    <Tv className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
-                      {event.network}
-                    </span>
-                  </div>
-                )}
                 {event.attendance && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
                     <Users className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                       {event.attendance.toLocaleString()} Attendance
                     </span>
                   </div>
                 )}
+                <WhereToWatchBadge
+                  promotion={event.promotion}
+                  network={event.network}
+                  title={event.title}
+                  variant="header-pill"
+                />
                 {!event.venue && !event.city && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
                     <Clock className="w-4 h-4 text-primary" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Archive Record</span>
                   </div>
@@ -500,9 +522,9 @@ export default async function EventPage({
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-[320px_1fr] gap-10 items-start">
+        <div className="grid lg:grid-cols-[300px_1fr] xl:grid-cols-[330px_1fr] gap-7 lg:gap-10 items-start">
           {/* Left Column: Poster & Quick Info */}
-          <div className="space-y-6 lg:sticky lg:top-28">
+          <div className="space-y-5 lg:sticky lg:top-24">
             <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group max-w-[320px] mx-auto lg:mx-0">
               <Image
                 src={event.posterUrl || "/placeholder.svg"}
@@ -520,38 +542,51 @@ export default async function EventPage({
               )}
             </div>
 
-            <div className="bg-card/50 backdrop-blur-md border border-border rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
-              <div className="flex justify-between items-center gap-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground shrink-0">
-                  Promotion
-                </span>
-                <span className="px-3 py-1 bg-primary text-black text-[10px] font-black uppercase rounded-lg shadow-sm whitespace-nowrap">
-                  {event.promotion}
-                </span>
-              </div>
-              <div className="flex justify-between items-center gap-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground shrink-0">
-                  Type
-                </span>
-                <span className="text-xs font-bold capitalize italic text-white/90 text-right">
-                  {event.type || "Special Event"}
-                </span>
-              </div>
-              <div className="flex justify-between items-center gap-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground shrink-0">
-                  Community
-                </span>
-                <div className="flex items-center gap-1.5 text-primary shrink-0">
-                  <Star className="w-3.5 h-3.5 fill-current" />
-                  <span className="text-sm font-black italic">
-                    {averageRating?.toFixed(2) || "0.00"}
-                  </span>
+            <aside aria-label="Event details and actions" className="bg-card/65 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/20">
+              <dl className="grid grid-cols-2 gap-2">
+                <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Promotion</dt>
+                  <dd className="mt-2">
+                    <span className="inline-flex rounded-lg bg-primary px-2.5 py-1 text-[10px] font-black uppercase text-black">
+                      {event.promotion}
+                    </span>
+                  </dd>
+                </div>
+                <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Event type</dt>
+                  <dd className="mt-2 truncate text-xs font-bold capitalize text-white/90" title={event.type || "Special Event"}>
+                    {event.type || "Special Event"}
+                  </dd>
+                </div>
+                <div className="col-span-2 flex items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                  <div>
+                    <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Community rating</dt>
+                    <dd className="mt-1 flex items-baseline gap-1.5">
+                      <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+                      <span className="text-lg font-black italic text-primary">{averageRating?.toFixed(2) || "0.00"}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">out of 5</span>
+                    </dd>
+                  </div>
                   <VisualRating rating={averageRating || 0} size="xs" />
                 </div>
-              </div>
+                <div className="col-span-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground mb-2 flex items-center justify-between">
+                    <span>Where to Watch</span>
+                    <span className="text-[9px] font-bold uppercase text-primary/80">Broadcast</span>
+                  </dt>
+                  <dd>
+                    <WhereToWatchBadge
+                      promotion={event.promotion}
+                      network={event.network}
+                      title={event.title}
+                      variant="details"
+                    />
+                  </dd>
+                </div>
+              </dl>
 
               {userReview && (
-                <div className="flex justify-between items-center gap-4">
+                <div className="mt-3 flex justify-between items-center gap-4 rounded-xl border border-primary/15 bg-primary/5 p-3">
                   <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground shrink-0">
                     Your Rating
                   </span>
@@ -567,45 +602,36 @@ export default async function EventPage({
                 </div>
               )}
 
-              <div className="pt-4 border-t border-border">
-                <div className="flex gap-2 items-center overflow-x-auto no-scrollbar">
+              <div className="mt-4 border-t border-white/10 pt-4">
+                <p className="mb-3 text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Your event</p>
+                <div className="grid grid-cols-3 gap-x-2 gap-y-3">
                   {user && (
                     <>
-                      <WatchlistIcon
-                        eventId={event.id}
-                        initialActive={inWatchList ? (inWatchList as any).watchlist : false}
-                      />
-                      <WatchedIcon
-                        eventId={event.id}
-                        initialActive={inWatchList ? inWatchList.watched : false}
-                      />
-                      <AttendButton 
-                        eventId={event.id}
-                        initialAttended={(inWatchList as any)?.attended || false}
-                        minimal={true}
-                      />
-                      <SetThemeButton eventId={event.id} minimal={true} />
-                      <AddToListButton eventId={event.id} isLoggedIn={!!user} minimal={true} />
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchlistIcon eventId={event.id} initialActive={inWatchList ? (inWatchList as any).watchlist : false} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Watchlist</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchedIcon eventId={event.id} initialActive={inWatchList ? inWatchList.watched : false} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Watched</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><AttendButton eventId={event.id} initialAttended={(inWatchList as any)?.attended || false} minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Attended</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><SetThemeButton eventId={event.id} minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Theme</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><AddToListButton eventId={event.id} isLoggedIn={!!user} minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Add to list</span></div>
                     </>
                   )}
-                  <ShareButton minimal={true} />
+                  <div className="flex min-w-0 flex-col items-center gap-1.5"><ShareButton minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Share</span></div>
                 </div>
               </div>
 
               {/* Completion Progress for Archived Shows */}
               {isArchive && totalMatches > 0 && (
-                <div className="pt-6 border-t border-border space-y-3">
-                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                <div className="mt-4 border-t border-white/10 pt-4">
+                  <div className="mb-3 flex justify-between items-center text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground">
                     <span>Card Progress</span>
                     <span className="text-primary">{ratedMatches}/{totalMatches} Rated</span>
                   </div>
-                  <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Match card rating progress" aria-valuemin={0} aria-valuemax={totalMatches} aria-valuenow={ratedMatches}>
                     <div 
-                      className="h-full bg-primary transition-all duration-1000 ease-out"
+                      className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
                       style={{ width: `${completionPercentage}%` }}
                     />
                   </div>
-                  <p className="text-[9px] font-bold italic text-muted-foreground/60 leading-tight">
+                  <p className="mt-2.5 text-[9px] font-medium text-muted-foreground leading-relaxed">
                     {completionPercentage === 100 
                       ? "✨ Card Completed! You're a true completionist." 
                       : `Rate ${totalMatches - ratedMatches} more match${totalMatches - ratedMatches === 1 ? "" : "es"} to finish the card.`}
@@ -635,12 +661,12 @@ export default async function EventPage({
                    </div>
                 </div>
               )}
-            </div>
+            </aside>
           </div>
 
           {/* Right Column: Content */}
-          <div className="space-y-12">
-            <div className="relative">
+          <div className="space-y-8 sm:space-y-12 min-w-0">
+            <div className="relative rounded-2xl border border-white/10 bg-card/30 p-5 sm:p-7">
               <div className="hidden sm:block absolute top-0 left-0 w-1 h-full bg-primary/20 rounded-full"></div>
               <p className="sm:pl-6 text-lg sm:text-xl text-foreground font-medium italic leading-relaxed max-w-3xl">
                 {event.description ||
@@ -650,7 +676,7 @@ export default async function EventPage({
 
             {/* At a Glance Dashboard */}
             {processedMatches.length > 0 && (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
                 <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                     {processedMatches.length}
@@ -1056,29 +1082,6 @@ export default async function EventPage({
             </div>
           </section>
         )}
-        {/* JSON-LD Structured Data for Google Rich Snippets */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SportsEvent",
-              "name": event.title,
-              "startDate": new Date(event.date).toISOString(),
-              "location": {
-                "@type": "Place",
-                "name": event.venue || "Arena",
-                "address": event.city || ""
-              },
-              "image": event.posterUrl || "",
-              "description": event.description || `${event.title} presented by ${event.promotion}`,
-              "organizer": {
-                "@type": "Organization",
-                "name": event.promotion
-              }
-            })
-          }}
-        />
       </div>
     </div>
   );

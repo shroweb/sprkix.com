@@ -91,6 +91,30 @@ async function runBadgeAward(env: Env) {
   }
 }
 
+async function runSiteCron(env: Env, path: string, timeoutMs = 120_000) {
+  const started = new Date().toISOString();
+  try {
+    const res = await env.SITE.fetch(`${SITE_HOST}${path}`, {
+      headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    const text = await res.text();
+    let body: unknown = null;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      /* non-JSON response */
+    }
+    return { started, path, status: res.status, body };
+  } catch (err) {
+    return { started, path, status: "error", error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+const runLineal = (env: Env) => runSiteCron(env, "/api/cron/lineal");
+const runReminders = (env: Env) => runSiteCron(env, "/api/cron/event-reminders");
+const runWeeklyDigest = (env: Env) => runSiteCron(env, "/api/cron/weekly-digest");
+
 async function runImport(env: Env, opts: { days?: number; date?: string } = {}) {
   const started = new Date().toISOString();
 
@@ -134,6 +158,10 @@ export default {
   async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(runImport(env));
     ctx.waitUntil(runBadgeAward(env));
+    ctx.waitUntil(runReminders(env));
+    ctx.waitUntil(runLineal(env));
+    // Weekly digest goes out on Mondays (06:00 UTC run)
+    if (new Date().getUTCDay() === 1) ctx.waitUntil(runWeeklyDigest(env));
   },
 
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -147,6 +175,15 @@ export default {
       const days = url.searchParams.get("days");
       if (url.searchParams.has("badges")) {
         return Response.json(await runBadgeAward(env));
+      }
+      if (url.searchParams.has("lineal")) {
+        return Response.json(await runLineal(env));
+      }
+      if (url.searchParams.has("reminders")) {
+        return Response.json(await runReminders(env));
+      }
+      if (url.searchParams.has("digest")) {
+        return Response.json(await runWeeklyDigest(env));
       }
 
       return Response.json(

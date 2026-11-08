@@ -1,93 +1,114 @@
-import { MetadataRoute } from 'next'
-import { prisma } from '@lib/prisma'
+import type { MetadataRoute } from "next";
+import { prisma } from "@lib/prisma";
+import { getSiteUrl, SITEMAP_IDS, type SitemapId } from "@lib/seo";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://poisonrana.com'
+// One sitemap per content type (/sitemap/<id>.xml). Keeps each file far below
+// Google's 50k-URL limit as the catalogue grows and makes indexing per type
+// visible in Search Console.
 
-  // Static routes
-  const staticRoutes = [
-    '',
-    '/events',
-    '/wrestlers',
-    '/promotions',
-    '/news',
-    '/rankings',
-    '/matches/finder',
-    '/leaderboard',
-    '/lists',
-    '/polls',
-    '/faq',
-    '/contact',
-    '/privacy',
-    '/terms',
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.8,
-  }))
+const STATIC_ROUTES = [
+  "",
+  "/events",
+  "/wrestlers",
+  "/promotions",
+  "/news",
+  "/rankings",
+  "/matches/finder",
+  "/leaderboard",
+  "/lineal",
+  "/lists",
+  "/polls",
+  "/faq",
+  "/contact",
+  "/privacy",
+  "/terms",
+];
 
-  // Dynamic routes
-  let events: any[] = []
-  let wrestlers: any[] = []
-  let users: any[] = []
-  let promotions: any[] = []
-  let newsPosts: any[] = []
+// The database isn't reachable during `next build`, so a prerendered sitemap would be
+// baked in empty. Render on request instead.
+export const dynamic = "force-dynamic";
+
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+export async function generateSitemaps() {
+  return SITEMAP_IDS.map((id) => ({ id }));
+}
+
+export default async function sitemap(props: {
+  id: Promise<string>;
+}): Promise<MetadataRoute.Sitemap> {
+  const id = (await props.id) as SitemapId;
+  const baseUrl = getSiteUrl();
+  const now = new Date();
 
   try {
-    const [fetchedEvents, fetchedWrestlers, fetchedUsers, fetchedPromotions, fetchedNewsPosts] = await Promise.all([
-      prisma.event.findMany({ select: { slug: true, createdAt: true } }),
-      prisma.wrestler.findMany({ select: { slug: true, createdAt: true } }),
-      prisma.user.findMany({ select: { slug: true, createdAt: true } }),
-      prisma.promotion.findMany({ select: { shortName: true, createdAt: true } }),
-      prisma.newsPost.findMany({
-        where: { status: "published", publishedAt: { lte: new Date() } },
-        select: { slug: true, updatedAt: true },
-      }),
-    ])
-    events = fetchedEvents
-    wrestlers = fetchedWrestlers
-    users = fetchedUsers
-    promotions = fetchedPromotions
-    newsPosts = fetchedNewsPosts
+    switch (id) {
+      case "pages":
+        return STATIC_ROUTES.map((route) => ({
+          url: `${baseUrl}${route}`,
+          lastModified: now,
+          changeFrequency: "daily" as const,
+          priority: route === "" ? 1 : 0.8,
+        }));
+
+      case "events": {
+        const events = await prisma.event.findMany({
+          select: { slug: true, date: true, createdAt: true },
+        });
+        return events.map((e) => ({
+          url: `${baseUrl}/events/${e.slug}`,
+          // Past events are settled; upcoming ones are still changing.
+          lastModified: e.date <= now ? e.date : e.createdAt,
+          changeFrequency: e.date <= now ? ("monthly" as const) : ("daily" as const),
+          priority: e.date <= now ? 0.6 : 0.8,
+        }));
+      }
+
+      case "wrestlers": {
+        const rows = await prisma.wrestler.findMany({ select: { slug: true, createdAt: true } });
+        return rows.map((w) => ({
+          url: `${baseUrl}/wrestlers/${w.slug}`,
+          lastModified: w.createdAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.5,
+        }));
+      }
+
+      case "promotions": {
+        const rows = await prisma.promotion.findMany({ select: { shortName: true, createdAt: true } });
+        return rows.map((p) => ({
+          url: `${baseUrl}/promotions/${slugify(p.shortName)}`,
+          lastModified: p.createdAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.5,
+        }));
+      }
+
+      case "users": {
+        const rows = await prisma.user.findMany({ select: { slug: true, createdAt: true } });
+        return rows.map((u) => ({
+          url: `${baseUrl}/users/${u.slug}`,
+          lastModified: u.createdAt,
+          changeFrequency: "monthly" as const,
+          priority: 0.4,
+        }));
+      }
+
+      case "news": {
+        const rows = await prisma.newsPost.findMany({
+          where: { status: "published", publishedAt: { lte: now } },
+          select: { slug: true, updatedAt: true },
+        });
+        return rows.map((p) => ({
+          url: `${baseUrl}/news/${p.slug}`,
+          lastModified: p.updatedAt,
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        }));
+      }
+    }
   } catch (error) {
-    console.error('Sitemap dynamic fetch error:', error)
+    console.error(`Sitemap "${id}" fetch error:`, error);
   }
-
-  const eventRoutes = events.map((event) => ({
-    url: `${baseUrl}/events/${event.slug}`,
-    lastModified: event.createdAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }))
-
-  const wrestlerRoutes = wrestlers.map((wrestler) => ({
-    url: `${baseUrl}/wrestlers/${wrestler.slug}`,
-    lastModified: wrestler.createdAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.5,
-  }))
-
-  const userRoutes = users.map((user) => ({
-    url: `${baseUrl}/users/${user.slug}`,
-    lastModified: user.createdAt,
-    changeFrequency: 'monthly' as const,
-    priority: 0.4,
-  }))
-
-  const promotionRoutes = promotions.map((promotion) => ({
-    url: `${baseUrl}/promotions/${promotion.shortName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`,
-    lastModified: promotion.createdAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.5,
-  }))
-
-  const newsRoutes = newsPosts.map((post) => ({
-    url: `${baseUrl}/news/${post.slug}`,
-    lastModified: post.updatedAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
-
-  return [...staticRoutes, ...eventRoutes, ...wrestlerRoutes, ...userRoutes, ...promotionRoutes, ...newsRoutes]
+  return [];
 }

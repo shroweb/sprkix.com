@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -29,33 +30,45 @@ import {
 
 export default function Sidebar() {
   const pathname = usePathname();
-
-  const links = [
-    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/events", label: "Events", icon: Calendar },
-    { href: "/admin/wrestlers", label: "Wrestlers", icon: Users },
-    { href: "/admin/promotions", label: "Promotions", icon: Tag },
-    { href: "/admin/users", label: "User Manager", icon: Users },
-    { href: "/admin/media", label: "Media Library", icon: Image },
-    { href: "/admin/settings", label: "Site Settings", icon: Settings },
-  ];
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <aside className="w-64 bg-white border-r border-border min-h-screen flex flex-col sticky top-0 z-50">
+    <>
+      {/* Mobile Toggle Button */}
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="md:hidden fixed top-3 left-4 z-50 p-2.5 bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800"
+      >
+        <LayoutDashboard className="w-5 h-5 text-amber-400" />
+      </button>
+
+      {/* Overlay for Mobile */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+        />
+      )}
+
+      <aside
+        className={`fixed md:sticky top-0 z-40 w-64 bg-white border-r border-border min-h-screen flex flex-col transition-transform duration-200 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
       <div className="p-6">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="bg-primary p-2 rounded-xl shadow-lg shadow-primary/20">
+        <Link href="/admin" className="flex items-center gap-3 mb-8 group">
+          <div className="bg-primary p-2 rounded-xl shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
             <Star className="w-5 h-5 text-primary-foreground fill-current" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-black tracking-tighter leading-none italic uppercase">
+            <span className="text-lg font-black tracking-tighter leading-none italic uppercase text-slate-900">
               Poison Rana
             </span>
             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em]">
               Foundation
             </span>
           </div>
-        </div>
+        </Link>
       </div>
 
       <nav className="flex-1 px-4 space-y-8 overflow-y-auto pb-8">
@@ -86,6 +99,7 @@ export default function Sidebar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMobileOpen(false)}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all group ${isActive ? "bg-primary/5 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -119,6 +133,7 @@ export default function Sidebar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMobileOpen(false)}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all group ${isActive ? "bg-primary/5 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -151,6 +166,7 @@ export default function Sidebar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMobileOpen(false)}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all group ${isActive ? "bg-primary/5 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
                 >
                   <div className="flex items-center gap-3">
@@ -169,6 +185,7 @@ export default function Sidebar() {
         <div className="space-y-1">
           <Link
             href="/"
+            onClick={() => setMobileOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-red-500 transition-all"
           >
             <LogOut className="w-4 h-4" />
@@ -177,5 +194,6 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

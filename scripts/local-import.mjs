@@ -3,18 +3,21 @@
  * Imports events + full match cards including wrestler creation.
  * Usage: node scripts/local-import.mjs 2026-02-23 2026-03-23
  */
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { load } from "cheerio";
 
-// Load .env manually
-const envFile = readFileSync(".env", "utf-8");
+// Load .env or .dev.vars manually
 const env = {};
-for (const line of envFile.split("\n")) {
-  const m = line.match(/^([^=]+)=(.*)$/);
-  if (m) env[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, "");
+const envPath = existsSync(".env") ? ".env" : existsSync(".dev.vars") ? ".dev.vars" : null;
+if (envPath) {
+  const envFile = readFileSync(envPath, "utf-8");
+  for (const line of envFile.split("\n")) {
+    const m = line.match(/^([^=]+)=(.*)$/);
+    if (m) env[m[1].trim()] = m[2].trim().replace(/^["']|["']$/g, "");
+  }
 }
-process.env.DATABASE_URL = env.DATABASE_URL;
-process.env.DIRECT_URL   = env.DIRECT_URL;
+process.env.DATABASE_URL = process.env.DATABASE_URL || env.DATABASE_URL;
+process.env.DIRECT_URL   = process.env.DIRECT_URL || env.DIRECT_URL;
 
 const { PrismaClient } = await import("@prisma/client");
 const prisma = new PrismaClient();

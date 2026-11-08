@@ -2,7 +2,7 @@
 import { prisma } from "@lib/prisma";
 import { sendPushToUser } from "@lib/push";
 
-export type BadgeType = "ppv_master" | "top_reviewer" | "founding_member";
+export type BadgeType = "ppv_master" | "top_reviewer" | "founding_member" | "sharpshooter";
 
 export interface BadgeDef {
   type: BadgeType;
@@ -17,6 +17,12 @@ export const BADGE_DEFS: BadgeDef[] = [
     title: "PPV Master",
     icon: "🎯",
     description: "Got 10+ match predictions correct.",
+  },
+  {
+    type: "sharpshooter",
+    title: "Sharpshooter",
+    icon: "🏹",
+    description: "70%+ prediction accuracy across 10+ resolved picks.",
   },
   {
     type: "top_reviewer",
@@ -43,9 +49,12 @@ export function computeEligibleBadges(stats: {
   correctPredictions: number;
   reviews: number;
   isFoundingMember: boolean;
+  resolvedPredictions?: number;
 }): BadgeType[] {
   const eligible: BadgeType[] = [];
   if (stats.correctPredictions >= 10) eligible.push("ppv_master");
+  const resolved = stats.resolvedPredictions ?? 0;
+  if (resolved >= 10 && stats.correctPredictions / resolved >= 0.7) eligible.push("sharpshooter");
   if (stats.reviews >= 5) eligible.push("top_reviewer");
   if (stats.isFoundingMember) eligible.push("founding_member");
   return eligible;
@@ -56,8 +65,9 @@ export function computeEligibleBadges(stats: {
  * an in-app notification and push. Returns the list of newly awarded types.
  */
 export async function awardBadgesForUser(userId: string): Promise<BadgeType[]> {
-  const [correctCount, reviewCount, user, existing] = await Promise.all([
+  const [correctCount, resolvedCount, reviewCount, user, existing] = await Promise.all([
     prisma.prediction.count({ where: { userId, isCorrect: true } }),
+    prisma.prediction.count({ where: { userId, isCorrect: { not: null } } }),
     prisma.review.count({ where: { userId } }),
     prisma.user.findUnique({
       where: { id: userId },
@@ -74,6 +84,7 @@ export async function awardBadgesForUser(userId: string): Promise<BadgeType[]> {
   const owned = new Set(existing.map((b) => b.badgeType as BadgeType));
   const eligible = computeEligibleBadges({
     correctPredictions: correctCount,
+    resolvedPredictions: resolvedCount,
     reviews: reviewCount,
     isFoundingMember: user.isFoundingMember,
   });

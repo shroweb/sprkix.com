@@ -1,4 +1,5 @@
 "use client";
+import { getClientNext } from "@lib/auth-redirect";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -25,7 +26,7 @@ export default function RegisterPage() {
         const res = await fetch("/api/auth/me");
         if (res.ok) {
           const user = await res.json();
-          if (user && user.id) { router.push("/"); return; }
+          if (user && user.id) { router.push(getClientNext()); return; }
         }
       } catch {}
       setCheckingUser(false);
@@ -66,7 +67,8 @@ export default function RegisterPage() {
       const data = await res.json();
       if (res.ok) {
         setMessage({ type: "success", text: "Account created! Redirecting..." });
-        setTimeout(() => { window.location.href = "/"; }, 1500);
+        const next = getClientNext();
+        setTimeout(() => { window.location.href = next; }, 1500);
       } else {
         setMessage({ type: "error", text: data.error || "Registration failed." });
       }

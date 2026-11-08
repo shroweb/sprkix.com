@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../../../../../../../lib/prisma";
 import { getUserFromServerCookie } from "../../../../../../../../lib/server-auth";
+import { invalidateCache } from "@lib/cached-data";
+import { recomputeLinealQuietly } from "@lib/lineal-data";
 import { sendPushToUser } from "../../../../../../../../lib/push";
 
 export async function PATCH(
@@ -150,5 +152,7 @@ export async function PATCH(
   revalidatePath("/events");
   revalidatePath("/");
 
+  invalidateCache("predictions");
+  await recomputeLinealQuietly();
   return NextResponse.json({ success: true });
 }

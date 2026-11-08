@@ -3,6 +3,7 @@ import { prisma } from "../../../../lib/prisma";
 import { importMatchesFromCagematch } from "../../../../lib/cagematch";
 import { getUserFromServerCookie } from "../../../../lib/server-auth";
 import { revalidatePath } from "next/cache";
+import { invalidateCache } from "@lib/cached-data";
 import { postNewEventToX } from "@lib/x-event-post";
 
 export async function POST(req: Request) {
@@ -67,6 +68,7 @@ export async function POST(req: Request) {
       console.error("❌ Error posting new event to X:", postErr);
     }
 
+    invalidateCache("events");
     return NextResponse.json({ success: true, id: newEvent.id, slug: newEvent.slug });
   } catch (error) {
     console.error("❌ Error adding event:", error);

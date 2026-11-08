@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import BioExpand from "./BioExpand";
 import type { Metadata } from "next";
+import { getSiteUrl, jsonLdString, breadcrumbLd } from "@lib/seo";
 
 export async function generateMetadata({
   params,
@@ -181,8 +182,33 @@ export default async function WrestlerPage({ params }: { params: any }) {
     .sort((a, b) => b.avgRating - a.avgRating)
     .slice(0, 3);
 
+  const siteUrl = getSiteUrl();
+  const personLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: wrestler.name,
+    url: `${siteUrl}/wrestlers/${wrestler.slug}`,
+    image: wrestler.imageUrl?.startsWith("http") ? wrestler.imageUrl : undefined,
+    description: wrestler.bio?.trim() ? wrestler.bio.trim().slice(0, 300) : undefined,
+    alternateName: wrestler.aliases.length ? wrestler.aliases.map((a) => a.alias) : undefined,
+    jobTitle: "Professional wrestler",
+  };
+  const breadcrumbs = breadcrumbLd([
+    { name: "Home", path: "/" },
+    { name: "Wrestlers", path: "/wrestlers" },
+    { name: wrestler.name, path: `/wrestlers/${wrestler.slug}` },
+  ]);
+
   return (
     <div className="space-y-12 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(personLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbs) }}
+      />
       {/* Hero */}
       <div className="relative rounded-[3rem] overflow-hidden">
         {wrestler.imageUrl && (

@@ -51,13 +51,11 @@ export async function generateMetadata({
       description,
       url: `${siteUrl}/users/${profileUser.slug}`,
       type: "profile",
-      images: profileUser.avatarUrl ? [{ url: profileUser.avatarUrl }] : undefined,
     },
     twitter: {
-      card: profileUser.avatarUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: `${displayName} | Poison Rana`,
       description,
-      images: profileUser.avatarUrl ? [profileUser.avatarUrl] : undefined,
     },
   };
 }
@@ -276,15 +274,9 @@ export default async function UserProfilePage({
                      >
                        Edit My Profile
                      </Link>
-                   ) : currentUser ? (
-                     <FollowButton targetUserId={profileUser.id} initialIsFollowing={!!isFollowing} />
                    ) : (
-                     <Link
-                       href="/login"
-                       className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary text-black rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all"
-                     >
-                       Login to Follow
-                     </Link>
+                     // Logged-out visitors get the sign-up prompt when they click Follow
+                     <FollowButton targetUserId={profileUser.id} initialIsFollowing={!!isFollowing} />
                    )}
                  </div>
                </div>

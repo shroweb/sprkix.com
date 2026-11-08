@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UserPlus, UserMinus, Loader2 } from "lucide-react";
+import SignUpPrompt from "@components/SignUpPrompt";
 
 interface FollowButtonProps {
   targetUserId: string;
@@ -19,6 +20,7 @@ export default function FollowButton({
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [loading, setLoading] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
 
   const handleToggle = async () => {
     setLoading(true);
@@ -28,6 +30,10 @@ export default function FollowButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ targetUserId }),
       });
+      if (res.status === 401) {
+        setShowSignUp(true);
+        return;
+      }
       const data = await res.json();
       setIsFollowing(data.followed);
     } catch (e) {
@@ -50,6 +56,7 @@ export default function FollowButton({
       : "gap-2 px-5 py-2.5 rounded-xl text-sm";
 
   return (
+    <>
     <button
       onClick={handleToggle}
       disabled={loading}
@@ -72,5 +79,7 @@ export default function FollowButton({
       )}
       {getLabel()}
     </button>
+    <SignUpPrompt open={showSignUp} onClose={() => setShowSignUp(false)} reason="follow" />
+    </>
   );
 }

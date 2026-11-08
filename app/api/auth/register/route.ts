@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { signToken } from "../../../../lib/jwt";
 import { sendWelcomeEmail } from "../../../../lib/mail";
+import { notifyNewUser } from "../../../../lib/discord";
 import { rateLimit, rateLimitedResponse } from "../../../../lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
 
     // Send welcome email
     await sendWelcomeEmail(user.email, user.name || "");
+    await notifyNewUser({ name: user.name, slug: user.slug }, "email");
 
     // Automatically log in the user
     const token = await signToken(

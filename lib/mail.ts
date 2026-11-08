@@ -271,3 +271,120 @@ export async function sendFollowEmail(email: string, userName: string, followerN
     html,
   });
 }
+
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/**
+ * "Show starts soon" reminder. When predictions are open, the CTA is to make picks.
+ */
+export async function sendEventReminderEmail(
+  email: string,
+  name: string,
+  event: { title: string; slug: string; startsAt: Date; predictionsOpen: boolean },
+) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return false;
+
+  const config = await getEmailConfig(email);
+  if (!config.emailEnabled) return false;
+
+  const when = event.startsAt.toLocaleString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "UTC",
+    timeZoneName: "short",
+  });
+  const title = escapeHtml(event.title);
+  const cta = event.predictionsOpen ? "→ Make your picks" : "→ View the card";
+  const resend = new Resend(apiKey);
+  const html = getEmailLayout(`
+    <h1>${title} is almost here</h1>
+    <p>Hey ${escapeHtml(name)}, <strong>${title}</strong> starts ${when}.</p>
+    ${event.predictionsOpen
+      ? "<p>Predictions are open — pick your winners before the bell and see how you stack up on the leaderboard.</p>"
+      : "<p>Check out the full card and rate the matches as they happen.</p>"}
+    <div class="button-container">
+      <a href="${config.siteUrl}/events/${event.slug}" class="button">${cta}</a>
+    </div>
+    <p style="margin-top:32px;margin-bottom:0;">— The PoisonRana Team</p>
+  `, config.primaryColor, config.siteUrl, config.finalLogoUrl, config.useImageLogo);
+
+  await resend.emails.send({
+    from: "Poison Rana <updates@poisonrana.com>",
+    to: email,
+    subject: event.predictionsOpen ? `Make your picks: ${event.title}` : `Starting soon: ${event.title}`,
+    html,
+  });
+  return true;
+}
+
+export interface DigestEvent {
+  title: string;
+  slug: string;
+  promotion: string;
+  date: Date;
+  avgRating?: number;
+  reviewCount?: number;
+  predictionsOpen?: boolean;
+}
+
+/**
+ * Weekly roundup: what's coming up and what the community rated highest.
+ */
+export async function sendWeeklyDigestEmail(
+  email: string,
+  name: string,
+  digest: { upcoming: DigestEvent[]; topRated: DigestEvent[] },
+) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return false;
+
+  const config = await getEmailConfig(email);
+  if (!config.emailEnabled) return false;
+
+  const row = (e: DigestEvent, detail: string) => `
+    <tr>
+      <td style="padding:10px 0;border-bottom:1px solid #222;">
+        <a href="${config.siteUrl}/events/${e.slug}" style="color:#ffffff;font-weight:700;text-decoration:none;">${escapeHtml(e.title)}</a>
+        <div style="font-size:13px;color:#71717a;">${escapeHtml(e.promotion)} · ${detail}</div>
+      </td>
+    </tr>`;
+  const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+  const upcomingHtml = digest.upcoming.length
+    ? `<h2 style="font-size:18px;color:#fff;margin:28px 0 4px;">Coming up</h2>
+       <table width="100%" cellpadding="0" cellspacing="0">${digest.upcoming
+         .map((e) => row(e, `${fmt(e.date)}${e.predictionsOpen ? " · predictions open" : ""}`))
+         .join("")}</table>`
+    : "";
+  const topHtml = digest.topRated.length
+    ? `<h2 style="font-size:18px;color:#fff;margin:28px 0 4px;">Top rated this week</h2>
+       <table width="100%" cellpadding="0" cellspacing="0">${digest.topRated
+         .map((e) => row(e, `★ ${(e.avgRating ?? 0).toFixed(2)} (${e.reviewCount ?? 0} reviews)`))
+         .join("")}</table>`
+    : "";
+
+  const resend = new Resend(apiKey);
+  const html = getEmailLayout(`
+    <h1>Your week in wrestling</h1>
+    <p>Hey ${escapeHtml(name)}, here's what's happening on Poison Rana.</p>
+    ${upcomingHtml}
+    ${topHtml}
+    <div class="button-container">
+      <a href="${config.siteUrl}/events" class="button">→ Browse all events</a>
+    </div>
+  `, config.primaryColor, config.siteUrl, config.finalLogoUrl, config.useImageLogo);
+
+  await resend.emails.send({
+    from: "Poison Rana <updates@poisonrana.com>",
+    to: email,
+    subject: "Your week in wrestling",
+    html,
+  });
+  return true;
+}

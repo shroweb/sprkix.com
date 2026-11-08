@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Trophy, CheckCircle, XCircle, Users, Lock, Zap } from "lucide-react";
+import SignUpPrompt from "@components/SignUpPrompt";
 
 function WrestlerAvatar({
   wrestler,
@@ -54,6 +55,7 @@ export default function PredictionCard({
     initialPredictionId || null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
   const [lockError, setLockError] = useState<string | null>(null);
 
   // ── Team detection ────────────────────────────────────────────────────────
@@ -81,7 +83,12 @@ export default function PredictionCard({
     hasTrueTeams && selectedParticipant ? (selectedParticipant.team ?? null) : null;
 
   const handlePredict = async (wrestlerId: string) => {
-    if (!user || isSubmitting || readOnly) return;
+    if (readOnly) return;
+    if (!user) {
+      setShowSignUp(true);
+      return;
+    }
+    if (isSubmitting) return;
     setLockError(null);
 
     let newWinnerId: string | null;
@@ -168,6 +175,7 @@ export default function PredictionCard({
             </div>
           )}
         </div>
+        <SignUpPrompt open={showSignUp} onClose={() => setShowSignUp(false)} reason="predict" />
       </div>
     );
   }
@@ -215,7 +223,7 @@ export default function PredictionCard({
         <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-stretch">
           {/* Team A */}
           <button
-            disabled={!user || isSubmitting}
+            disabled={isSubmitting}
             onClick={() => handlePredict(teamA[0].wrestler.id)}
             className={`relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all overflow-hidden text-center disabled:opacity-60 disabled:cursor-default ${
               isTeamASelected
@@ -257,7 +265,7 @@ export default function PredictionCard({
 
           {/* Team B */}
           <button
-            disabled={!user || isSubmitting}
+            disabled={isSubmitting}
             onClick={() => handlePredict(teamB[0].wrestler.id)}
             className={`relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all overflow-hidden text-center disabled:opacity-60 disabled:cursor-default ${
               isTeamBSelected
@@ -312,7 +320,7 @@ export default function PredictionCard({
           ) : (
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground">
               <Users className="w-3 h-3" />
-              {totalPicks > 0 ? "Global Consensus" : !user ? "Sign in to predict" : "Be the first to pick"}
+              {totalPicks > 0 ? "Global Consensus" : !user ? "Tap a side to save your pick" : "Be the first to pick"}
             </div>
           )}
         </div>
@@ -352,7 +360,7 @@ export default function PredictionCard({
           return (
             <button
               key={p.wrestler.id}
-              disabled={!user || isSubmitting}
+              disabled={isSubmitting}
               onClick={() => handlePredict(p.wrestler.id)}
               className={`relative flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all overflow-hidden disabled:opacity-60 disabled:cursor-default ${
                 isSelected
@@ -381,8 +389,9 @@ export default function PredictionCard({
       {/* Footer */}
       <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground pt-3 border-t border-white/5 mt-4">
         <Users className="w-3 h-3" />
-        {totalPicks > 0 ? "Global Consensus" : !user ? "Sign in to predict" : "Be the first to pick"}
+        {totalPicks > 0 ? "Global Consensus" : !user ? "Tap a side to save your pick" : "Be the first to pick"}
       </div>
+      <SignUpPrompt open={showSignUp} onClose={() => setShowSignUp(false)} reason="predict" />
     </div>
   );
 }

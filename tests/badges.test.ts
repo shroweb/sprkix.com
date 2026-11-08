@@ -38,3 +38,15 @@ describe("computeEligibleBadges", () => {
     expect(badges).toEqual(["ppv_master", "top_reviewer", "founding_member"]);
   });
 });
+
+describe("sharpshooter", () => {
+  const base = { reviews: 0, isFoundingMember: false };
+  it("needs 10+ resolved picks at 70%+ accuracy", () => {
+    expect(computeEligibleBadges({ ...base, correctPredictions: 7, resolvedPredictions: 10 })).toContain("sharpshooter");
+    expect(computeEligibleBadges({ ...base, correctPredictions: 6, resolvedPredictions: 10 })).not.toContain("sharpshooter");
+    expect(computeEligibleBadges({ ...base, correctPredictions: 5, resolvedPredictions: 5 })).not.toContain("sharpshooter");
+  });
+  it("is not awarded when resolved count is unknown", () => {
+    expect(computeEligibleBadges({ ...base, correctPredictions: 20 })).not.toContain("sharpshooter");
+  });
+});

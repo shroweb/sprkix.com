@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@lib/prisma";
+import { invalidateCache } from "@lib/cached-data";
 import { getUserFromServerCookie } from "@lib/server-auth";
 
 export async function PATCH(
@@ -26,6 +27,7 @@ export async function PATCH(
       comment: comment ?? review.comment,
     },
   });
+  invalidateCache("reviews");
   return NextResponse.json({ success: true, review: updated });
 }
 
@@ -52,5 +54,6 @@ export async function DELETE(
   await prisma.reply.deleteMany({ where: { reviewId: id } });
   await prisma.review.delete({ where: { id } });
 
+  invalidateCache("reviews");
   return NextResponse.json({ success: true });
 }

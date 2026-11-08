@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
+import { invalidateCache } from "@lib/cached-data";
+import { notifyNewReview } from "@lib/discord";
 import { getUserFromServerCookie } from "../../../lib/server-auth";
 
 export async function POST(req: Request) {
@@ -12,6 +14,12 @@ export async function POST(req: Request) {
   const { eventId, rating, comment } = body;
   // userId always comes from the verified session — never trusted from the client
   const userId = user.id;
+
+  // Only announce first-time reviews, not edits
+  const previous = await prisma.review.findUnique({
+    where: { userId_eventId: { userId, eventId } },
+    select: { id: true },
+  });
 
   const [review, event] = await Promise.all([
     prisma.review.upsert({
@@ -27,5 +35,16 @@ export async function POST(req: Request) {
     }),
   ]);
 
+  invalidateCache("reviews");
+  if (!previous && event) {
+    await notifyNewReview({
+      userName: user.name ?? null,
+      userSlug: user.slug,
+      eventTitle: event.title,
+      eventSlug: event.slug,
+      rating: typeof rating === "number" ? rating : null,
+      comment: comment ?? null,
+    });
+  }
   return NextResponse.json(review);
 }

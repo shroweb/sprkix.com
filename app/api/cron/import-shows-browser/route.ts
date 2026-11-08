@@ -4,6 +4,7 @@ import {
   parseCagematchDate,
   parseCagematchEventInfo,
   parseCagematchHtml,
+  cleanEventTitle,
 } from "@lib/cagematch";
 import { uniqueEventSlug, uniqueWrestlerSlug } from "@lib/slug-utils";
 import { findEventOnTMDB } from "@lib/tmdb";
@@ -151,7 +152,7 @@ export async function POST(req: NextRequest) {
   };
 
   for (const entry of events) {
-    const title = entry.title?.trim();
+    const title = entry.title ? cleanEventTitle(entry.title) : "";
     const dateValue = entry.date?.trim();
     const promotionValue = entry.promotion?.trim();
     const cagematchUrl = entry.cagematchUrl?.trim();
@@ -220,6 +221,7 @@ export async function POST(req: NextRequest) {
           city: info.city ?? null,
           attendance: info.attendance ?? null,
           network: info.network ?? null,
+          posterUrl: info.posterUrl ?? null,
           profightdbUrl: cagematchUrl,
         },
       });
@@ -237,8 +239,38 @@ export async function POST(req: NextRequest) {
             });
             event.posterUrl = tmdb.posterUrl;
           }
-        } catch {
-          // Non-fatal.
+        } catch (posterErr) {
+          console.warn(`[browser-import] Poster enrichment failed for "${title}":`, posterErr);
+        }
+      }
+
+      if (!event.posterUrl) {
+        try {
+          const baseShow = event.title
+            .replace(/\s*#\d+.*$/g, '')
+            .replace(/\s*[-–—]\s*(?:Tag|Night|Day)\s*\d+.*$/i, '')
+            .replace(/\s*[-–—].*$/g, '')
+            .trim();
+
+          const sibling = await prisma.event.findFirst({
+            where: {
+              OR: [
+                { title: { startsWith: baseShow }, posterUrl: { not: null } },
+                { promotion: event.promotion, posterUrl: { not: null } }
+              ]
+            },
+            select: { posterUrl: true }
+          });
+
+          if (sibling?.posterUrl) {
+            await prisma.event.update({
+              where: { id: event.id },
+              data: { posterUrl: sibling.posterUrl }
+            });
+            event.posterUrl = sibling.posterUrl;
+          }
+        } catch (fallbackErr) {
+          console.warn(`[browser-import] Sibling poster fallback failed for "${title}":`, fallbackErr);
         }
       }
 
