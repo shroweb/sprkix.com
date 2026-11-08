@@ -52,7 +52,7 @@ export function parseChampionship(...candidates: (string | null | undefined)[]):
   return null;
 }
 
-function initials(text: string): string {
+export function initials(text: string): string {
   const words = text.split(" ").filter((w) => /[a-z]/i.test(w) && w.length > 2);
   return (words.slice(0, 3).map((w) => w[0]).join("") || "★").toUpperCase();
 }

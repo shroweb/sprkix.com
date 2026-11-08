@@ -7,7 +7,7 @@ import { prisma } from "@lib/prisma";
 import { getSiteUrl, jsonLdString, breadcrumbLd } from "@lib/seo";
 import { daysBetween } from "@lib/lineal";
 import { BeltArt } from "@components/BeltImage";
-import { styleForName } from "@lib/belts";
+import { initials, styleForName } from "@lib/belts";
 
 export const dynamic = "force-dynamic";
 
@@ -92,12 +92,11 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
       </Link>
 
       <header className="space-y-3">
-        <BeltArt style={styleForName(title.name)} label={title.emoji ?? "👑"} name={title.name} height={96} framed className="mb-2" />
+        <BeltArt style={styleForName(title.name)} label={initials(title.name)} name={title.name} height={96} framed className="mb-2" />
         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
           {title.kind === "novelty" ? "Lineal novelty prize" : "Lineal championship"}
         </p>
         <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic leading-[0.95]">
-          <span className="mr-3">{title.emoji ?? "👑"}</span>
           {title.name}
         </h1>
         {title.origin && <p className="text-muted-foreground font-medium max-w-2xl">{title.origin}</p>}
