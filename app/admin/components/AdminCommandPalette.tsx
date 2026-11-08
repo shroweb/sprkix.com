@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Calendar, Users, Trophy, Tag, Settings, Command } from "lucide-react";
+import { Search, Calendar, Users, Trophy, Command, CornerDownLeft } from "lucide-react";
+import { ALL_NAV } from "./nav";
 
 export default function AdminCommandPalette() {
   const [open, setOpen] = useState(false);
@@ -64,6 +65,11 @@ export default function AdminCommandPalette() {
   }, [query]);
 
   if (!open) return null;
+
+  const q = query.trim().toLowerCase();
+  const pageMatches = q
+    ? ALL_NAV.filter((n) => `${n.label} ${n.keywords ?? ""}`.toLowerCase().includes(q)).slice(0, 6)
+    : [];
 
   const handleSelect = (url: string) => {
     setOpen(false);
@@ -146,6 +152,24 @@ export default function AdminCommandPalette() {
           {loading && (
             <div className="py-6 text-center text-xs text-slate-400 font-medium">
               Searching database...
+            </div>
+          )}
+
+          {pageMatches.length > 0 && (
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Admin pages</span>
+              {pageMatches.map((n) => (
+                <button
+                  key={n.href}
+                  onClick={() => handleSelect(n.href)}
+                  className="w-full p-2.5 bg-slate-950 hover:bg-slate-800 flex items-center justify-between text-left transition-colors"
+                >
+                  <span className="flex items-center gap-2.5 text-xs font-bold text-white">
+                    <n.icon className="w-3.5 h-3.5 text-amber-400" /> {n.label}
+                  </span>
+                  <CornerDownLeft className="w-3 h-3 text-slate-500" />
+                </button>
+              ))}
             </div>
           )}
 

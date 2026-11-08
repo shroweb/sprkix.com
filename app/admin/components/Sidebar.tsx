@@ -3,197 +3,86 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  LogOut,
-  Settings,
-  Star,
-  ChevronRight,
-  Tag,
-  Image,
-  ShieldAlert,
-  Search,
-  Activity,
-  Download,
-  BarChart2,
-  Send,
-  Smartphone,
-  Newspaper,
-  Trophy,
-  Medal,
-  Megaphone,
-  ClipboardCheck,
-  ScrollText,
-} from "lucide-react";
+import { Star, LogOut, Menu, X, ExternalLink } from "lucide-react";
+import { NAV, isActive } from "./nav";
 
-export default function Sidebar() {
+export type Badges = Partial<Record<"submissions" | "drafts" | "reports", number>>;
+
+export default function Sidebar({ badges = {} }: { badges?: Badges }) {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      {/* Mobile Toggle Button */}
       <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="md:hidden fixed top-3 left-4 z-50 p-2.5 bg-slate-900 text-white rounded-xl shadow-xl border border-slate-800"
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Toggle navigation"
+        className="md:hidden fixed top-3 left-3 z-50 p-2.5 bg-card border border-border text-foreground"
       >
-        <LayoutDashboard className="w-5 h-5 text-amber-400" />
+        {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
-
-      {/* Overlay for Mobile */}
-      {mobileOpen && (
-        <div
-          onClick={() => setMobileOpen(false)}
-          className="md:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
-        />
-      )}
+      {open && <div onClick={() => setOpen(false)} className="md:hidden fixed inset-0 z-40 bg-black/70" />}
 
       <aside
-        className={`fixed md:sticky top-0 z-40 w-64 bg-white border-r border-border min-h-screen flex flex-col transition-transform duration-200 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        className={`fixed md:sticky top-0 z-40 w-60 shrink-0 h-screen bg-[#0a0e18] border-r border-border flex flex-col transition-transform duration-200 ${
+          open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-      <div className="p-6">
-        <Link href="/admin" className="flex items-center gap-3 mb-8 group">
-          <div className="bg-primary p-2 rounded-xl shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-            <Star className="w-5 h-5 text-primary-foreground fill-current" />
+        <Link href="/admin" className="flex items-center gap-3 px-5 h-16 border-b border-border shrink-0">
+          <div className="bg-primary p-1.5">
+            <Star className="w-4 h-4 text-primary-foreground fill-current" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-black tracking-tighter leading-none italic uppercase text-slate-900">
-              Poison Rana
-            </span>
-            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em]">
-              Foundation
-            </span>
+          <div className="leading-none">
+            <div className="text-sm font-black italic uppercase tracking-tight text-foreground">Poison Rana</div>
+            <div className="text-[9px] font-bold uppercase tracking-[0.3em] text-muted-foreground mt-1">Control Room</div>
           </div>
         </Link>
-      </div>
 
-      <nav className="flex-1 px-4 space-y-8 overflow-y-auto pb-8">
-        <div>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-4 mb-4">
-            Management
-          </p>
-          <div className="space-y-1">
-            {[
-              { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-              { href: "/admin/events", label: "Events", icon: Calendar },
-              { href: "/admin/championships", label: "Championships", icon: Trophy },
-              { href: "/admin/wrestlers", label: "Wrestlers", icon: Users },
-              { href: "/admin/promotions", label: "Promotions", icon: Tag },
-              { href: "/admin/users", label: "User Manager", icon: Users },
-              { href: "/admin/reviews", label: "Review Browser", icon: Star },
-              { href: "/admin/news", label: "Newsroom", icon: Newspaper },
-              { href: "/admin/submissions", label: "Event Submissions", icon: Send },
-              { href: "/admin/import", label: "Import Queue", icon: Download },
-              { href: "/admin/polls", label: "Polls", icon: BarChart2 },
-              { href: "/admin/badges", label: "Badge Manager", icon: Medal },
-              { href: "/admin/broadcast", label: "Broadcast", icon: Megaphone },
-            ].map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href || (link.href !== "/admin" && pathname?.startsWith(link.href));
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+          {NAV.map((group) => (
+            <div key={group.title}>
+              <p className="px-3 mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-500/80">{group.title}</p>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const active = isActive(pathname, item.href);
+                  const count = item.badge ? badges[item.badge] ?? 0 : 0;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className={`relative flex items-center justify-between gap-3 pl-3 pr-2.5 py-2 text-[13px] font-semibold transition-colors ${
+                        active ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      {active && <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary" />}
+                      <span className="flex items-center gap-3 min-w-0">
+                        <Icon className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </span>
+                      {count > 0 && (
+                        <span className="text-[10px] font-black bg-primary text-primary-foreground px-1.5 py-0.5 min-w-[18px] text-center">
+                          {count > 99 ? "99+" : count}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
 
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all group ${isActive ? "bg-primary/5 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-900"}`} />
-                    {link.label}
-                  </div>
-                  {isActive && <ChevronRight className="w-3 h-3" />}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-4 mb-4">
-            Analysis & Ops
-          </p>
-          <div className="space-y-1">
-            {[
-              { href: "/admin/analytics", label: "Analytics", icon: Activity },
-              { href: "/admin/pulse", label: "Platform Pulse", icon: Activity },
-              { href: "/admin/duplicates", label: "Duplicate Finder", icon: Search },
-              { href: "/admin/health", label: "Image Health", icon: Activity },
-              { href: "/admin/audit", label: "Content Audit", icon: ClipboardCheck },
-              { href: "/admin/logs", label: "Admin Log", icon: ScrollText },
-            ].map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname?.startsWith(link.href);
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all group ${isActive ? "bg-primary/5 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-900"}`} />
-                    {link.label}
-                  </div>
-                  {isActive && <ChevronRight className="w-3 h-3" />}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-4 mb-4">
-            Tools & Settings
-          </p>
-          <div className="space-y-1">
-            {[
-              { href: "/admin/scraper", label: "Metadata Scraper", icon: Search },
-              { href: "/admin/media", label: "Media Library", icon: Image },
-              { href: "/admin/moderation", label: "Moderation Queue", icon: ShieldAlert },
-              { href: "/admin/settings", label: "Site Settings", icon: Settings },
-              { href: "/admin/maintenance", label: "System Control", icon: Settings },
-            ].map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname?.startsWith(link.href);
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-all group ${isActive ? "bg-primary/5 text-primary" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-900"}`} />
-                    {link.label}
-                  </div>
-                  {isActive && <ChevronRight className="w-3 h-3" />}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
-
-      <div className="p-4 border-t border-border mt-auto">
-        <div className="space-y-1">
-          <Link
-            href="/"
-            onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-red-500 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Exit Admin
+        <div className="p-3 border-t border-border space-y-0.5 shrink-0">
+          <Link href="/" target="_blank" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-slate-400 hover:text-white hover:bg-white/5">
+            <ExternalLink className="w-4 h-4" /> View site
+          </Link>
+          <Link href="/" className="flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-slate-400 hover:text-red-400 hover:bg-white/5">
+            <LogOut className="w-4 h-4" /> Exit admin
           </Link>
         </div>
-      </div>
-    </aside>
+      </aside>
     </>
   );
 }

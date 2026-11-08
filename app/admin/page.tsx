@@ -1,276 +1,333 @@
-import { prisma } from "../../lib/prisma";
 import Link from "next/link";
+import { prisma } from "@lib/prisma";
 import {
-  Users,
-  Calendar,
-  Award,
-  MessageSquare,
-  TrendingUp,
-  ArrowUpRight,
-  BarChart2,
-  Send,
-  Newspaper,
-  Activity,
+  Users, Calendar, Star, Target, Send, Newspaper, ImageOff, ListChecks, CalendarX, Crown,
+  Plus, Download, Megaphone, ArrowUpRight, TrendingUp, TrendingDown, Minus, CheckCircle2, type LucideIcon,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
+const DAY = 86_400_000;
+// Request-time clock (this page is force-dynamic).
+const currentTime = () => Date.now();
+
+async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await p;
+  } catch {
+    return fallback;
+  }
+}
+
+function bucketByDay(dates: Date[], days: number, now: number) {
+  const out = Array<number>(days).fill(0);
+  for (const d of dates) {
+    const idx = days - 1 - Math.floor((now - d.getTime()) / DAY);
+    if (idx >= 0 && idx < days) out[idx]++;
+  }
+  return out;
+}
+
 export default async function AdminHome() {
+  const now = currentTime();
+  const d14 = new Date(now - 14 * DAY);
+  const in7 = new Date(now + 7 * DAY);
+
   const [
-    userCountRes, eventCountRes, wrestlerCountRes, matchCountRes, championshipCountRes,
-    submissionsRes, draftsRes, pollsRes, upcomingRes,
-  ] = await Promise.allSettled([
-    prisma.user.count(),
-    prisma.event.count(),
-    prisma.wrestler.count(),
-    prisma.match.count(),
-    prisma.championship.count(),
-    prisma.eventSubmission.count({ where: { status: "pending" } }),
-    prisma.newsPost.count({ where: { status: "draft" } }),
-    prisma.poll.count({ where: { isActive: true } }),
-    prisma.event.count({ where: { date: { gte: new Date() } } }),
+    totals, pendingSubs, drafts, upcoming, noCard, noPoster, unresulted,
+    users14, reviews14, ratings14, predictions14, recentReviews, recentSubs, recentLogs, lineal,
+  ] = await Promise.all([
+    safe(Promise.all([prisma.user.count(), prisma.event.count(), prisma.wrestler.count(), prisma.match.count(), prisma.review.count()]), [0, 0, 0, 0, 0]),
+    safe(prisma.eventSubmission.count({ where: { status: "pending" } }), 0),
+    safe(prisma.newsPost.count({ where: { status: "draft" } }), 0),
+    safe(
+      prisma.event.findMany({
+        where: { date: { gte: new Date(now - DAY), lte: in7 } },
+        orderBy: { date: "asc" },
+        take: 8,
+        select: { id: true, title: true, slug: true, date: true, promotion: true, posterUrl: true, _count: { select: { matches: true } } },
+      }),
+      [],
+    ),
+    safe(prisma.event.count({ where: { date: { gte: new Date(), lte: in7 }, matches: { none: {} } } }), 0),
+    safe(prisma.event.count({ where: { date: { gte: d14 }, posterUrl: null } }), 0),
+    safe(
+      prisma.event.count({
+        where: { date: { lt: new Date(now - DAY), gte: d14 }, matches: { some: {} }, NOT: { matches: { some: { participants: { some: { isWinner: true } } } } } },
+      }),
+      0,
+    ),
+    safe(prisma.user.findMany({ where: { createdAt: { gte: d14 } }, select: { createdAt: true } }), []),
+    safe(prisma.review.findMany({ where: { createdAt: { gte: d14 } }, select: { createdAt: true } }), []),
+    safe(prisma.matchRating.findMany({ where: { createdAt: { gte: d14 } }, select: { createdAt: true } }), []),
+    safe(prisma.prediction.findMany({ where: { createdAt: { gte: d14 } }, select: { createdAt: true } }), []),
+    safe(
+      prisma.review.findMany({
+        take: 6,
+        orderBy: { createdAt: "desc" },
+        select: { id: true, rating: true, comment: true, createdAt: true, user: { select: { name: true } }, event: { select: { title: true, slug: true } } },
+      }),
+      [],
+    ),
+    safe(prisma.eventSubmission.findMany({ where: { status: "pending" }, take: 4, orderBy: { createdAt: "desc" }, select: { id: true, title: true, promotion: true, createdAt: true } }), []),
+    safe(prisma.adminLog.findMany({ take: 6, orderBy: { createdAt: "desc" }, select: { id: true, action: true, detail: true, createdAt: true, actor: { select: { name: true } } } }), []),
+    safe(
+      prisma.linealTitle.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, slug: true, name: true, emoji: true, reigns: { where: { endedAt: null }, take: 1, select: { startedAt: true, wrestler: { select: { name: true } } } } },
+      }),
+      [],
+    ),
   ]);
 
-  const v = (r: PromiseSettledResult<number>) => (r.status === "fulfilled" ? r.value : 0);
-  const userCount = v(userCountRes);
-  const eventCount = v(eventCountRes);
-  const wrestlerCount = v(wrestlerCountRes);
-  const matchCount = v(matchCountRes);
-  const championshipCount = v(championshipCountRes);
-  const pendingSubmissions = v(submissionsRes);
-  const newsDrafts = v(draftsRes);
-  const activePolls = v(pollsRes);
-  const upcomingEvents = v(upcomingRes);
+  const [userTotal, eventTotal, wrestlerTotal, matchTotal, reviewTotal] = totals;
+  const series = {
+    users: bucketByDay(users14.map((x) => x.createdAt), 14, now),
+    reviews: bucketByDay(reviews14.map((x) => x.createdAt), 14, now),
+    ratings: bucketByDay(ratings14.map((x) => x.createdAt), 14, now),
+    predictions: bucketByDay(predictions14.map((x) => x.createdAt), 14, now),
+  };
+  const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 
-  const stats = [
-    { label: "Users", value: userCount, icon: Users, href: "/admin/users" },
-    { label: "Events", value: eventCount, icon: Calendar, href: "/admin/events" },
-    { label: "Wrestlers", value: wrestlerCount, icon: Award, href: "/admin/wrestlers" },
-    { label: "Matches", value: matchCount, icon: TrendingUp, href: "/admin/matches" },
-    { label: "Pending Submissions", value: pendingSubmissions, icon: Send, href: "/admin/submissions", highlight: pendingSubmissions > 0 },
-    { label: "News Drafts", value: newsDrafts, icon: Newspaper, href: "/admin/news" },
-    { label: "Active Polls", value: activePolls, icon: BarChart2, href: "/admin/polls" },
-    { label: "Upcoming Events", value: upcomingEvents, icon: Activity, href: "/admin/events" },
+  const kpis: { label: string; icon: LucideIcon; total: number; data: number[]; href: string }[] = [
+    { label: "Users", icon: Users, total: userTotal, data: series.users, href: "/admin/users" },
+    { label: "Reviews", icon: Star, total: reviewTotal, data: series.reviews, href: "/admin/reviews" },
+    { label: "Match ratings", icon: ListChecks, total: matchTotal, data: series.ratings, href: "/admin/analytics" },
+    { label: "Predictions", icon: Target, total: 0, data: series.predictions, href: "/admin/analytics" },
   ];
 
-  const [recentReviews, recentSignups, recentComments, recentSubmissions] = await Promise.all([
-    prisma.review.findMany({
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      include: {
-        user: { select: { id: true, name: true, slug: true, avatarUrl: true, isAdmin: true, isVerified: true } },
-        event: { select: { id: true, title: true, slug: true, promotion: true } },
-      },
-    }),
-    prisma.user.findMany({
-      take: 3,
-      orderBy: { createdAt: "desc" },
-      select: { id: true, name: true, slug: true, createdAt: true },
-    }),
-    prisma.liveComment.findMany({
-      take: 3,
-      orderBy: { createdAt: "desc" },
-      select: { id: true, text: true, createdAt: true, user: { select: { name: true } } },
-    }),
-    prisma.eventSubmission.findMany({
-      take: 3,
-      orderBy: { createdAt: "desc" },
-      select: { id: true, title: true, status: true, createdAt: true },
-    }),
-  ]);
+  const attention: { label: string; count: number; href: string; icon: LucideIcon; hint: string }[] = [
+    { label: "Event submissions to review", count: pendingSubs, href: "/admin/submissions", icon: Send, hint: "Users are waiting on these" },
+    { label: "Upcoming events with no card", count: noCard, href: "/admin/events", icon: CalendarX, hint: "Next 7 days, no matches yet" },
+    { label: "Past events missing results", count: unresulted, href: "/admin/events", icon: ListChecks, hint: "Last 14 days, no winners set" },
+    { label: "Recent events without a poster", count: noPoster, href: "/admin/scraper", icon: ImageOff, hint: "Run the metadata scraper" },
+    { label: "News drafts", count: drafts, href: "/admin/news", icon: Newspaper, hint: "Unpublished posts" },
+  ].filter((a) => a.count > 0);
 
-  // Combined, most-recent-first activity feed
-  type FeedItem = { id: string; time: number; kind: string; text: string; href: string };
-  const feed: FeedItem[] = [
-    ...recentSignups.map((u) => ({
-      id: `u-${u.id}`,
-      time: new Date(u.createdAt).getTime(),
-      kind: "signup",
-      text: `${u.name ?? "New user"} joined`,
-      href: `/admin/users`,
-    })),
-    ...recentComments.map((c) => ({
-      id: `c-${c.id}`,
-      time: new Date(c.createdAt).getTime(),
-      kind: "comment",
-      text: `${c.user.name ?? "Someone"}: ${c.text.slice(0, 60)}${c.text.length > 60 ? "…" : ""}`,
-      href: `/admin/pulse`,
-    })),
-    ...recentSubmissions.map((s) => ({
-      id: `s-${s.id}`,
-      time: new Date(s.createdAt).getTime(),
-      kind: "submission",
-      text: `Submission: ${s.title} (${s.status})`,
-      href: `/admin/submissions`,
-    })),
-  ].sort((a, b) => b.time - a.time).slice(0, 8);
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-black tracking-tight text-foreground">
-          Dashboard
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Overview of the Poison Rana database.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-primary">
+            {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
+          </p>
+          <h1 className="text-3xl font-black tracking-tight mt-1">{greet}.</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {eventTotal.toLocaleString()} events · {wrestlerTotal.toLocaleString()} wrestlers · {matchTotal.toLocaleString()} matches in the archive
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <ActionLink href="/admin/events" icon={Plus} label="Add event" primary />
+          <ActionLink href="/admin/import" icon={Download} label="Import" />
+          <ActionLink href="/admin/news" icon={Newspaper} label="New post" />
+          <ActionLink href="/admin/broadcast" icon={Megaphone} label="Broadcast" />
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Link
-            key={stat.label}
-            href={stat.href}
-            className={`bg-white p-4 rounded-2xl border transition-all hover:translate-y-[-2px] ${stat.highlight ? "border-amber-300" : "border-border"}`}
-          >
-            <div className="flex justify-between items-center mb-3">
-              <div className={`p-2 rounded-xl border border-border ${stat.highlight ? "bg-amber-50 text-amber-600" : "bg-secondary text-slate-600"}`}>
-                <stat.icon className="w-4 h-4" />
-              </div>
-              <h3 className="text-muted-foreground text-[9px] font-bold uppercase tracking-[0.2em]">
-                {stat.label}
-              </h3>
-            </div>
-            <p className="text-xl font-black tracking-tighter text-foreground">
-              {stat.value.toLocaleString()}
-            </p>
-          </Link>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Reviews */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-border overflow-hidden">
-          <div className="p-6 border-b border-border flex justify-between items-center">
-            <h3 className="font-bold text-lg">Recent Reviews</h3>
-            <Link
-              href="/admin/events"
-              className="text-sm text-primary font-semibold hover:underline"
-            >
-              View Events
-            </Link>
+      {/* Needs attention */}
+      <section>
+        <SectionTitle>Needs attention</SectionTitle>
+        {attention.length === 0 ? (
+          <div className="bg-card border border-border p-5 flex items-center gap-3 text-sm text-muted-foreground">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" /> All clear. Nothing is waiting on you.
           </div>
-          <div className="p-6">
-            <div className="space-y-5">
-              {recentReviews.length > 0 ? (
-                recentReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="flex gap-4 items-center group"
-                  >
-                    <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-[10px] font-bold">
-                      {review.user?.name?.charAt(0).toUpperCase() || "A"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        <span className="font-bold">{review.user?.name}</span>{" "}
-                        reviewed{" "}
-                        <span className="text-primary italic">
-                          {review.event?.title}
-                        </span>
-                      </p>
-                      <p className="text-[10px] text-muted-foreground font-bold uppercase">
-                        {review.createdAt.toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, star) => (
-                        <div
-                          key={star}
-                          className={`w-1.5 h-1.5 rounded-full ${star < (review.rating || 0) ? "bg-primary" : "bg-slate-200"}`}
-                        ></div>
-                      ))}
-                    </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {attention.map((a) => (
+              <Link key={a.label} href={a.href} className="group bg-card border border-border hover:border-primary/50 p-4 flex items-center gap-4 transition-colors">
+                <div className="w-10 h-10 bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <a.icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold truncate">{a.label}</p>
+                  <p className="text-xs text-muted-foreground truncate">{a.hint}</p>
+                </div>
+                <span className="text-2xl font-black text-primary tabular-nums">{a.count}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* KPIs */}
+      <section>
+        <SectionTitle>Last 7 days</SectionTitle>
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+          {kpis.map((k) => {
+            const cur = sum(k.data.slice(7));
+            const prev = sum(k.data.slice(0, 7));
+            const delta = prev === 0 ? (cur > 0 ? 100 : 0) : Math.round(((cur - prev) / prev) * 100);
+            const max = Math.max(1, ...k.data);
+            const Trend = delta > 0 ? TrendingUp : delta < 0 ? TrendingDown : Minus;
+            return (
+              <Link key={k.label} href={k.href} className="bg-card border border-border hover:border-primary/40 p-4 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+                    <k.icon className="w-3.5 h-3.5" /> {k.label}
+                  </span>
+                  <span className={`flex items-center gap-1 text-[11px] font-bold ${delta > 0 ? "text-emerald-400" : delta < 0 ? "text-red-400" : "text-slate-500"}`}>
+                    <Trend className="w-3 h-3" /> {delta > 0 ? "+" : ""}{delta}%
+                  </span>
+                </div>
+                <p className="text-3xl font-black tracking-tight mt-2 tabular-nums">{cur.toLocaleString()}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  new{k.total > 0 ? ` · ${k.total.toLocaleString()} total` : ""}
+                </p>
+                <div className="flex items-end gap-[3px] h-10 mt-3" aria-hidden>
+                  {k.data.map((v, i) => (
+                    <div key={i} className={i >= 7 ? "bg-primary" : "bg-primary/30"} style={{ height: `${Math.max(6, (v / max) * 100)}%`, width: "100%" }} />
+                  ))}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-3">
+        {/* Upcoming */}
+        <section className="xl:col-span-2">
+          <SectionTitle action={{ href: "/admin/events", label: "All events" }}>Coming up</SectionTitle>
+          <div className="bg-card border border-border divide-y divide-border">
+            {upcoming.length === 0 && <Empty text="No events in the next 7 days." />}
+            {upcoming.map((e) => (
+              <Link key={e.id} href={`/admin/events/${e.id}/edit`} className="flex items-center gap-4 p-3 hover:bg-white/[0.03]">
+                <div className="w-12 text-center shrink-0">
+                  <p className="text-[10px] font-black uppercase text-primary">{e.date.toLocaleDateString("en-GB", { month: "short" })}</p>
+                  <p className="text-xl font-black leading-none">{e.date.getDate()}</p>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold truncate">{e.title}</p>
+                  <p className="text-xs text-muted-foreground">{e.promotion}</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {e._count.matches === 0 && <Chip tone="red">No card</Chip>}
+                  {!e.posterUrl && <Chip tone="amber">No poster</Chip>}
+                  {e._count.matches > 0 && <Chip>{e._count.matches} matches</Chip>}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Lineal */}
+        <section>
+          <SectionTitle action={{ href: "/admin/lineal", label: "Manage" }}>Lineal champions</SectionTitle>
+          <div className="bg-card border border-border divide-y divide-border">
+            {lineal.length === 0 && <Empty text="No lineal titles yet." />}
+            {lineal.map((t) => {
+              const r = t.reigns[0];
+              return (
+                <Link key={t.id} href="/admin/lineal" className="flex items-center gap-3 p-3 hover:bg-white/[0.03]">
+                  <Crown className="w-4 h-4 text-primary shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground truncate">{t.name}</p>
+                    <p className="text-sm font-bold truncate">{r?.wrestler.name ?? "Vacant"}</p>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-10 space-y-2">
-                  <MessageSquare className="w-8 h-8 text-muted-foreground/20 mx-auto" />
-                  <p className="text-sm text-muted-foreground italic">
-                    No recent activity found.
+                  {r && <span className="text-[11px] text-muted-foreground tabular-nums">{Math.floor((now - r.startedAt.getTime()) / DAY)}d</span>}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-3">
+        <section className="xl:col-span-2">
+          <SectionTitle action={{ href: "/admin/reviews", label: "All reviews" }}>Latest reviews</SectionTitle>
+          <div className="bg-card border border-border divide-y divide-border">
+            {recentReviews.length === 0 && <Empty text="No reviews yet." />}
+            {recentReviews.map((r) => (
+              <div key={r.id} className="p-3 flex gap-3">
+                <div className="w-8 h-8 bg-secondary flex items-center justify-center text-xs font-black shrink-0">
+                  {(r.user?.name ?? "?").charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm">
+                    <span className="font-bold">{r.user?.name ?? "Someone"}</span>{" "}
+                    <span className="text-muted-foreground">on</span>{" "}
+                    <Link href={`/events/${r.event.slug}`} className="text-primary hover:underline">{r.event.title}</Link>
+                  </p>
+                  {r.comment && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{r.comment}</p>}
+                </div>
+                <span className="flex items-center gap-1 text-sm font-black text-primary shrink-0">
+                  <Star className="w-3.5 h-3.5 fill-current" /> {r.rating}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="space-y-6">
+          <section>
+            <SectionTitle action={{ href: "/admin/submissions", label: "Queue" }}>Pending submissions</SectionTitle>
+            <div className="bg-card border border-border divide-y divide-border">
+              {recentSubs.length === 0 && <Empty text="Nothing pending." />}
+              {recentSubs.map((s) => (
+                <Link key={s.id} href="/admin/submissions" className="flex items-center justify-between gap-3 p-3 hover:bg-white/[0.03]">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold truncate">{s.title}</p>
+                    <p className="text-xs text-muted-foreground">{s.promotion}</p>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section>
+            <SectionTitle action={{ href: "/admin/logs", label: "Full log" }}>Admin activity</SectionTitle>
+            <div className="bg-card border border-border divide-y divide-border">
+              {recentLogs.length === 0 && <Empty text="No admin actions logged." />}
+              {recentLogs.map((l) => (
+                <div key={l.id} className="p-3">
+                  <p className="text-xs font-bold truncate">{l.actor?.name ?? "Admin"} · <span className="text-primary">{l.action}</span></p>
+                  {l.detail && <p className="text-xs text-muted-foreground truncate">{l.detail}</p>}
+                  <p className="text-[10px] uppercase tracking-wider text-slate-500 mt-0.5">
+                    {l.createdAt.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
-              )}
+              ))}
             </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-border p-6">
-            <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <Link
-                href="/admin/events"
-                className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
-              >
-                <span className="font-medium text-sm">Manage Events</span>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-              </Link>
-              <Link
-                href="/admin/championships"
-                className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
-              >
-                <span className="font-medium text-sm">Championship Manager</span>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-              </Link>
-              <Link
-                href="/admin/wrestlers"
-                className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
-              >
-                <span className="font-medium text-sm">Manage Roster</span>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-              </Link>
-              <Link
-                href="/admin/broadcast"
-                className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
-              >
-                <span className="font-medium text-sm">Broadcast to Users</span>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-              </Link>
-              <Link
-                href="/admin/polls"
-                className="w-full text-left p-4 rounded-xl border border-border hover:bg-slate-50 transition-colors flex items-center justify-between group block"
-              >
-                <div className="flex items-center gap-2">
-                  <BarChart2 className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-                  <span className="font-medium text-sm">Community Polls</span>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Recent Activity Feed */}
-          <div className="bg-white rounded-2xl border border-border overflow-hidden">
-            <div className="p-6 border-b border-border">
-              <h3 className="font-bold text-lg">Recent Activity</h3>
-            </div>
-            <div className="p-4 space-y-1">
-              {feed.length === 0 ? (
-                <p className="text-sm text-muted-foreground italic text-center py-4">
-                  No activity yet.
-                </p>
-              ) : (
-                feed.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    className="flex items-start gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium truncate">{item.text}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                        {new Date(item.time).toLocaleString([], { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })}
-                      </p>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>
   );
+}
+
+function SectionTitle({ children, action }: { children: React.ReactNode; action?: { href: string; label: string } }) {
+  return (
+    <div className="flex items-center justify-between mb-3">
+      <h2 className="text-[11px] font-black uppercase tracking-[0.22em] text-muted-foreground">{children}</h2>
+      {action && (
+        <Link href={action.href} className="text-xs font-bold text-primary hover:underline">{action.label} →</Link>
+      )}
+    </div>
+  );
+}
+
+function ActionLink({ href, icon: Icon, label, primary }: { href: string; icon: LucideIcon; label: string; primary?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-2 px-3.5 py-2 text-xs font-black uppercase tracking-wider border transition-colors ${
+        primary ? "bg-primary text-primary-foreground border-primary hover:brightness-110" : "bg-card border-border text-foreground hover:border-primary/50"
+      }`}
+    >
+      <Icon className="w-3.5 h-3.5" /> {label}
+    </Link>
+  );
+}
+
+function Chip({ children, tone }: { children: React.ReactNode; tone?: "red" | "amber" }) {
+  const cls = tone === "red" ? "text-red-400 border-red-500/30 bg-red-500/10" : tone === "amber" ? "text-amber-400 border-amber-500/30 bg-amber-500/10" : "text-muted-foreground border-border";
+  return <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 ${cls}`}>{children}</span>;
+}
+
+function Empty({ text }: { text: string }) {
+  return <p className="p-5 text-sm text-muted-foreground italic">{text}</p>;
 }
