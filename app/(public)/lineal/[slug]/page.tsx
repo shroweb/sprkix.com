@@ -6,6 +6,8 @@ import { ChevronLeft, Crown, Info, Swords } from "lucide-react";
 import { prisma } from "@lib/prisma";
 import { getSiteUrl, jsonLdString, breadcrumbLd } from "@lib/seo";
 import { daysBetween } from "@lib/lineal";
+import { BeltArt } from "@components/BeltImage";
+import { styleForName } from "@lib/belts";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +92,7 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
       </Link>
 
       <header className="space-y-3">
+        <BeltArt style={styleForName(title.name)} label={title.emoji ?? "👑"} name={title.name} height={96} framed className="mb-2" />
         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
           {title.kind === "novelty" ? "Lineal novelty prize" : "Lineal championship"}
         </p>

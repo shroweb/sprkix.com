@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trophy, CheckCircle, XCircle, Users, Lock, Zap } from "lucide-react";
 import SignUpPrompt from "@components/SignUpPrompt";
+import BeltImage from "@components/BeltImage";
 
 function WrestlerAvatar({
   wrestler,
@@ -141,7 +142,8 @@ export default function PredictionCard({
         <div className="flex flex-col gap-5">
           <div className="flex justify-between items-start gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary italic">{match.type || "Match"}</span>
+              <BeltImage type={match.type} title={match.title} height={32} framed className="block mb-1.5" />
+<span className="text-[10px] font-black uppercase tracking-widest text-primary italic">{match.type || "Match"}</span>
               <h4 className="text-lg font-black italic uppercase tracking-tight leading-tight">{match.title}</h4>
             </div>
             {predictedWrestler && hasResolved && (
@@ -205,7 +207,8 @@ export default function PredictionCard({
         {/* Header */}
         <div className="mb-5 flex items-start justify-between gap-3">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary italic">{match.type || "Match"}</span>
+            <BeltImage type={match.type} title={match.title} height={32} framed className="block mb-1.5" />
+<span className="text-[10px] font-black uppercase tracking-widest text-primary italic">{match.type || "Match"}</span>
             <h4 className="text-base font-black italic uppercase tracking-tight leading-tight mt-0.5">{match.title}</h4>
           </div>
           {selectedWinnerId && (
@@ -336,7 +339,8 @@ export default function PredictionCard({
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-primary italic">{match.type || "Match"}</span>
+          <BeltImage type={match.type} title={match.title} height={32} framed className="block mb-1.5" />
+<span className="text-[10px] font-black uppercase tracking-widest text-primary italic">{match.type || "Match"}</span>
           <h4 className="text-base font-black italic uppercase tracking-tight leading-tight mt-0.5">{match.title}</h4>
         </div>
         {selectedWinnerId && (

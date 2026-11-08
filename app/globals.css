@@ -35,7 +35,7 @@
   --input: #1e293b;
   --ring: #fbbf24;
 
-  --radius: 0.75rem;
+  --radius: 0;
 }
 
 /* Admin Theme - Professional & Clean */
@@ -150,3 +150,10 @@
   @apply bg-slate-700;
 }
 
+
+/* Square design: no rounded corners anywhere (overrides Tailwind rounded-*, inline styles and arbitrary values). */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}

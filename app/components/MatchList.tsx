@@ -10,6 +10,7 @@ function secsToMmss(secs: number | null | undefined): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 import Link from "next/link";
+import BeltImage from "@components/BeltImage";
 import StarRating from "./StarRating";
 import AddToListButton from "./AddToListButton";
 import {
@@ -131,6 +132,7 @@ export default function MatchList({
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary/60 italic shrink-0 hidden lg:inline truncate max-w-[140px]">
                     {match.type}
                   </span>
+                  <BeltImage type={match.type} title={match.title} height={22} className="shrink-0 hidden sm:block" />
 
                   {/* Title */}
                   <p className="text-xs sm:text-sm font-black italic uppercase tracking-tight flex-1 group-hover:text-primary transition-colors break-words line-clamp-2 md:line-clamp-none">
@@ -199,6 +201,12 @@ export default function MatchList({
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary italic">
                         {match.type}
                       </span>
+                      <BeltImage type={match.type} title={match.title} height={36} framed className="shrink-0" />
+                      {/title change/i.test(match.result ?? "") && (
+                        <span className="text-[10px] font-black uppercase tracking-wider text-primary bg-primary/10 border border-primary/30 px-2.5 py-1 rounded-full">
+                          New champion
+                        </span>
+                      )}
                       {isMotN && (
                         <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-2.5 py-1 rounded-full">
                           <Star className="w-3 h-3 fill-current" /> Match of the

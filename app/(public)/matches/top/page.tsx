@@ -1,4 +1,5 @@
 import { prisma } from "@lib/prisma";
+import BeltImage from "@components/BeltImage";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Clock, Trophy, Swords, ChevronLeft } from "lucide-react";
@@ -183,6 +184,7 @@ export default async function TopMatchesPage() {
 
                     {/* Match info */}
                     <div>
+                      <BeltImage type={match.type} title={match.title} height={26} framed className="block mb-1" />
                       <span className="text-[9px] font-black uppercase tracking-widest text-primary">
                         {match.type}
                       </span>
@@ -249,6 +251,7 @@ export default async function TopMatchesPage() {
                       </p>
                     </Link>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground">
+                      <BeltImage type={match.type} title={match.title} height={20} className="shrink-0" />
                       <span className="text-primary/70 uppercase">
                         {match.type}
                       </span>

@@ -5,6 +5,8 @@ import { Crown, ChevronLeft, Info } from "lucide-react";
 import { prisma } from "@lib/prisma";
 import { getSiteUrl } from "@lib/seo";
 import { daysBetween } from "@lib/lineal";
+import { BeltArt } from "@components/BeltImage";
+import { styleForName } from "@lib/belts";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +121,7 @@ export default async function LinealIndexPage() {
                 href={`/lineal/${t.slug}`}
                 className="group rounded-3xl border border-white/10 bg-card/40 p-6 hover:border-primary/40 hover:bg-card/60 transition-all"
               >
+                <BeltArt style={styleForName(t.name)} label={t.emoji ?? "👑"} name={t.name} height={64} framed className="mb-4" />
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-lg font-black italic uppercase tracking-tight leading-tight group-hover:text-primary transition-colors">
                     <span className="mr-2">{t.emoji ?? "👑"}</span>
