@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ChevronLeft, Trophy } from "lucide-react";
 import { prisma } from "@lib/prisma";
 import { getSiteUrl, jsonLdString, breadcrumbLd } from "@lib/seo";
-import { getAllCurrentChampions, type ChampionRecord } from "@lib/champions";
+import { getAllCurrentChampions, CHAMPIONS_AS_OF, type ChampionRecord } from "@lib/champions";
 import ChampionsClient from "./ChampionsClient";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +35,7 @@ async function getEnrichedChampions(): Promise<ChampionRecord[]> {
         OR: [
           { slug: { in: Array.from(slugs) } },
           { name: { in: Array.from(names) } },
+          ...Array.from(names).map((n) => ({ name: { equals: n, mode: "insensitive" as const } })),
         ],
       },
       select: { id: true, name: true, slug: true, imageUrl: true },
@@ -43,8 +44,10 @@ async function getEnrichedChampions(): Promise<ChampionRecord[]> {
     console.error("Failed to query wrestlers for champions page:", err);
   }
 
+  const norm = (v: string) =>
+    v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/["'“”‘’.]/g, "").toLowerCase().trim();
   const bySlug = new Map(dbWrestlers.map((w) => [w.slug.toLowerCase(), w]));
-  const byName = new Map(dbWrestlers.map((w) => [w.name.toLowerCase(), w]));
+  const byName = new Map(dbWrestlers.map((w) => [norm(w.name), w]));
 
   // Enrich each champion with live database photo and verified slug
   return base.map((record) => ({
@@ -52,7 +55,7 @@ async function getEnrichedChampions(): Promise<ChampionRecord[]> {
     champions: record.champions.map((p) => {
       const match =
         (p.slug && bySlug.get(p.slug.toLowerCase())) ||
-        byName.get(p.name.toLowerCase());
+        byName.get(norm(p.name));
       return {
         name: p.name,
         slug: match ? match.slug : p.slug,
@@ -105,7 +108,10 @@ export default async function ChampionsPage() {
           </div>
           <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/80 self-start sm:self-auto bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5">
             <Trophy className="w-4 h-4 text-primary" />
-            <span>{champions.length} Titles Tracked</span>
+            <span>
+              {champions.length} Titles · updated{" "}
+              {new Date(CHAMPIONS_AS_OF + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+            </span>
           </div>
         </div>
       </header>
