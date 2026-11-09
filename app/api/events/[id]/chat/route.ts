@@ -3,13 +3,6 @@ import { prisma } from "@lib/prisma";
 import { getUserFromServerCookie } from "@lib/server-auth";
 import { rateLimit, rateLimitedResponse } from "@lib/rate-limit";
 
-function eventIsLive(event: { startTime: Date | null; endTime: Date | null }): boolean {
-  if (!event.startTime) return false;
-  const now = new Date();
-  const end = event.endTime ?? new Date(event.startTime.getTime() + 4 * 60 * 60 * 1000);
-  return now >= event.startTime && now <= end;
-}
-
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -56,19 +49,9 @@ export async function POST(
   if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
   try {
-    // Gate: only allow posting while the event is actually live
-    const event = await prisma.event.findUnique({
-      where: { id },
-      select: { startTime: true, endTime: true },
-    });
+    const event = await prisma.event.findUnique({ where: { id }, select: { id: true } });
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
-    }
-    if (!eventIsLive(event)) {
-      return NextResponse.json(
-        { error: "Chat is only open during the live event" },
-        { status: 403 }
-      );
     }
 
     const comment = await prisma.liveComment.create({

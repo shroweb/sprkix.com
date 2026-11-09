@@ -281,11 +281,6 @@ export default async function EventPage({
   const isArchive = !isLive && !isUpcoming;
   const recap = isArchive && user && event.enablePredictions ? await getRecap(event.slug, user.id).catch(() => null) : null;
 
-  // For archive mode: check if there's a chat transcript worth showing
-  const hasChatTranscript = isArchive
-    ? (await prisma.liveComment.count({ where: { eventId: event.id } })) > 0
-    : false;
-
   // Completion stats for user
   const totalMatches = event.matches.length;
   const ratedMatches = processedMatches.filter((m: any) => m.userRating > 0).length;
@@ -837,14 +832,10 @@ export default async function EventPage({
               }
 
               // ── Watch Party tab (live = active chat, archive = transcript) ──
-              let watchPartyContent: React.ReactNode = undefined;
-              if (event.enableWatchParty) {
-                if (isLive) {
-                  watchPartyContent = <LiveChatContainer eventId={event.id} user={user} fullWidth />;
-                } else if (isArchive && hasChatTranscript) {
-                  watchPartyContent = <LiveChatContainer eventId={event.id} user={user} fullWidth readOnly />;
-                }
-              }
+              // Always available: live shows get the watch-party chat, everything else a persistent discussion.
+              const watchPartyContent: React.ReactNode = (
+                <LiveChatContainer eventId={event.id} user={user} fullWidth variant={isLive ? "live" : "discussion"} />
+              );
 
               // ── Review tab (archive only) ────────────────────────────────
               let reviewContent: React.ReactNode = undefined;
@@ -1011,7 +1002,7 @@ export default async function EventPage({
                 tabs.push({ id: "predictions", label: "Predictions", badge: isArchive ? matchesWithPredictions.length : undefined });
               }
               if (watchPartyContent) {
-                tabs.push({ id: "watchParty", label: isLive ? "Watch Party 🔴" : "Watch Party" });
+                tabs.push({ id: "watchParty", label: isLive ? "Watch Party 🔴" : "Discussion" });
               }
               if (reviewContent) {
                 tabs.push({ id: "review", label: "Reviews", badge: event.reviews.length });

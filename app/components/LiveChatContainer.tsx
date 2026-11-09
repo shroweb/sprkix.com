@@ -20,12 +20,16 @@ export default function LiveChatContainer({
   user,
   fullWidth = false,
   readOnly = false,
+  variant = "live",
 }: {
   eventId: string;
   user: any;
   fullWidth?: boolean;
   readOnly?: boolean;
+  /** "discussion" = always-open thread (no live badge); "live" = watch-party chat */
+  variant?: "live" | "discussion";
 }) {
+  const discussion = variant === "discussion";
   const [comments, setComments] = useState<LiveComment[]>([]);
   const [inputText, setInputText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -213,11 +217,11 @@ export default function LiveChatContainer({
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse border-2 border-background" />
           </div>
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-tighter">Watch Party Chat</h3>
+            <h3 className="text-sm font-bold uppercase tracking-tighter">{discussion ? "Discussion" : "Watch Party Chat"}</h3>
             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               {comments.length > 0
                 ? `${comments.length} message${comments.length === 1 ? "" : "s"}`
-                : readOnly ? "No messages were recorded" : "Be the first to react"}
+                : readOnly ? "No messages were recorded" : discussion ? "Start the conversation" : "Be the first to react"}
             </p>
           </div>
         </div>
@@ -225,7 +229,7 @@ export default function LiveChatContainer({
           <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
             <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Archived</span>
           </div>
-        ) : (
+        ) : discussion ? null : (
           <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
             <span className="text-[11px] font-bold text-red-400 uppercase tracking-wider">Live</span>
@@ -330,7 +334,7 @@ export default function LiveChatContainer({
             <input
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="React to the action…"
+              placeholder={discussion ? "Share your thoughts…" : "React to the action…"}
               maxLength={500}
               autoComplete="off"
               className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-4 pr-14 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/30 transition-all font-medium placeholder:text-muted-foreground/40"
@@ -349,7 +353,7 @@ export default function LiveChatContainer({
             className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider hover:bg-[var(--primary-hover)] hover:text-black hover:border-[var(--primary-hover)] transition-all group"
           >
             <LogIn className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            Login to join the watch party
+            {discussion ? "Login to join the discussion" : "Login to join the watch party"}
           </Link>
         )}
       </div>
