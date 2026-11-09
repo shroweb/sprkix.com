@@ -774,7 +774,7 @@ export default async function EventPage({
                     pickedIds={matchesWithParticipants.filter((m: any) => m.userPrediction).map((m: any) => m.id)}
                     signedIn={!!user}
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                       {matchesWithParticipants.map((match: any) => (
                         <PredictionCard
                           key={match.id}
@@ -819,7 +819,7 @@ export default async function EventPage({
                         <span className="text-muted-foreground">/ {resolvedPicks.length} correct</span>
                       </div>
                     )}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                       {matchesWithPredictions.map((match: any) => (
                         <PredictionCard
                           key={match.id}
