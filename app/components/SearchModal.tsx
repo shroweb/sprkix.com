@@ -187,7 +187,7 @@ export default function SearchModal({ className }: { className?: string }) {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open search dialog"
-        className={className ?? "hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 border border-border px-4 py-2 hover:bg-secondary transition-colors"}
+        className={className ?? "hidden md:flex items-center gap-2 rounded-lg text-sm text-foreground/80 bg-white/[0.04] border border-white/10 px-3.5 py-2 hover:bg-white/[0.08] hover:border-white/20 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"}
       >
         <Search className="w-4 h-4 shrink-0" />
         <span className="font-medium hidden md:inline">Search...</span>

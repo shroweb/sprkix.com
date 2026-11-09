@@ -130,7 +130,7 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={handleOpen}
-        className="relative p-2 rounded-xl hover:bg-secondary/80 transition-colors"
+        className="relative grid h-9 w-9 place-items-center rounded-lg text-foreground/80 hover:bg-white/5 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         title="Notifications"
       >
         <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />

@@ -14,6 +14,12 @@ import {
   Bookmark,
   ChevronDown,
   Rss,
+  Search as SearchIcon,
+  BarChart3,
+  Swords,
+  Trophy,
+  Crown,
+  Award,
 } from "lucide-react";
 import SearchModal from "./SearchModal";
 import NotificationBell from "./NotificationBell";
@@ -40,6 +46,18 @@ function getHeaderGradient(seed: string): [string, string] {
   }
   return HEADER_GRADIENTS[Math.abs(hash) % HEADER_GRADIENTS.length] as [string, string];
 }
+
+const iconBtn =
+  "grid h-9 w-9 place-items-center rounded-lg text-foreground/80 transition-colors hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary";
+
+const DISCOVER_ITEMS = [
+  { href: "/matches/finder", label: "Match Finder", hint: "Search matches by wrestler, rating or type", Icon: SearchIcon },
+  { href: "/rankings", label: "Top Events", hint: "The highest-rated shows of all time", Icon: BarChart3 },
+  { href: "/matches/top", label: "Top Matches", hint: "Fan-ranked best matches", Icon: Swords },
+  { href: "/leaderboard", label: "Predictions Leaderboard", hint: "Who calls the winners best", Icon: Trophy },
+  { href: "/lineal", label: "Lineal Titles", hint: "Unbroken championship lineages", Icon: Crown },
+  { href: "/champions", label: "Current Champions", hint: "Every reigning titleholder", Icon: Award },
+];
 
 const logoSizeMap: Record<string, string> = {
   sm: "h-8",
@@ -86,12 +104,14 @@ export default function Header({
     };
   }, [menuOpen]);
 
-  const navClass = (href: string) => {
-    const active = pathname === href || pathname.startsWith(`${href}/`);
-    return `relative whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold transition-colors after:absolute after:inset-x-2 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary after:transition-transform ${
+  const discoverActive = DISCOVER_ITEMS.some((i) => pathname === i.href || pathname.startsWith(`${i.href}/`));
+
+  const navClass = (href: string, forceActive?: boolean) => {
+    const active = forceActive ?? (pathname === href || pathname.startsWith(`${href}/`));
+    return `relative whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary after:transition-transform ${
       active
         ? "text-primary after:scale-x-100"
-        : "text-foreground/80 hover:text-primary after:scale-x-0"
+        : "text-foreground/85 hover:bg-white/5 hover:text-foreground after:scale-x-0"
     }`;
   };
 
@@ -106,7 +126,7 @@ export default function Header({
         className={`transition-all duration-300 ${
           isScrolled
             ? "bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 py-3 shadow-xl"
-            : "bg-gradient-to-b from-slate-950/95 via-slate-950/70 to-transparent backdrop-blur-md py-4 sm:py-5"
+            : "bg-gradient-to-b from-slate-950 via-slate-950/85 to-slate-950/20 backdrop-blur-md py-4 sm:py-5"
         }`}
       >
         {showBanner && (
@@ -146,94 +166,101 @@ export default function Header({
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-3 lg:gap-6 shrink-0">
-            <Link href="/events" className={navClass("/events")}>
-              Events
-            </Link>
-            <Link href="/promotions" className={navClass("/promotions")}>
-              Promotions
-            </Link>
-            <Link href="/wrestlers" className={navClass("/wrestlers")}>
-              Wrestlers
-            </Link>
-            <Link href="/lists" className={navClass("/lists")}>
-              Lists
-            </Link>
-            <Link href="/news" className={navClass("/news")}>
-              News
-            </Link>
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2 shrink-0" aria-label="Primary">
+            <Link href="/events" className={navClass("/events")}>Events</Link>
+            <Link href="/promotions" className={navClass("/promotions")}>Promotions</Link>
+            <Link href="/wrestlers" className={navClass("/wrestlers")}>Wrestlers</Link>
+            <Link href="/lists" className={navClass("/lists")}>Lists</Link>
+            <Link href="/news" className={navClass("/news")}>News</Link>
+
+            {/* Discover dropdown: hover + keyboard (focus-within) */}
             <div className="relative group">
-              <button className="flex items-center gap-1 text-sm font-semibold hover:text-primary transition-colors py-2 whitespace-nowrap">
+              <button
+                type="button"
+                aria-haspopup="menu"
+                className={`${navClass("/__discover__", discoverActive)} flex items-center gap-1`}
+              >
                 Discover
-                <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-all group-hover:rotate-180" />
+                <ChevronDown className="h-4 w-4 opacity-60 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
               </button>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-52 bg-card border border-border rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 z-50">
-                <Link href="/matches/finder" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
-                  Match Finder
-                </Link>
-                <Link href="/rankings" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
-                  Top Events
-                </Link>
-                <Link href="/matches/top" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
-                  Top Matches
-                </Link>
-                <Link href="/leaderboard" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
-                  Predictions Leaderboard
-                </Link>
-                <Link href="/lineal" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
-                  Lineal Titles
-                </Link>
-                <Link href="/champions" className="flex items-center gap-3 p-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">
-                  Current Champions
-                </Link>
+              <div className="invisible absolute left-1/2 top-full z-50 w-72 -translate-x-1/2 translate-y-1 pt-2 opacity-0 transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+                <div role="menu" className="rounded-xl border border-white/10 bg-slate-950 p-2 shadow-2xl shadow-black/50">
+                  {DISCOVER_ITEMS.map(({ href, label, hint, Icon }) => {
+                    const active = pathname === href || pathname.startsWith(`${href}/`);
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        role="menuitem"
+                        className={`flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-white/5 focus-visible:bg-white/5 focus-visible:outline-none ${active ? "bg-white/[0.04]" : ""}`}
+                      >
+                        <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-md border ${active ? "border-primary/40 bg-primary/10 text-primary" : "border-white/10 bg-white/5 text-primary"}`}>
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-bold text-foreground">{label}</span>
+                          <span className="block text-xs leading-snug text-muted-foreground">{hint}</span>
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
             <SearchModal />
 
-            <div className="h-6 w-[1px] bg-border mx-2"></div>
+            <div className="mx-2 h-6 w-px bg-white/10" aria-hidden />
 
             {user ? (
-              <div className="flex items-center gap-4">
-                <Link href="/feed" title="Feed" className="hover:text-primary transition-colors">
-                  <Rss className="w-5 h-5" />
+              <div className="flex items-center gap-1.5">
+                <Link href="/feed" title="Feed" aria-label="Feed" className={iconBtn}>
+                  <Rss className="h-5 w-5" />
                 </Link>
                 <NotificationBell />
                 {user.isAdmin && (
-                  <Link href="/admin" className="text-sm font-semibold flex items-center gap-2 text-primary hover:opacity-80 transition-opacity">
-                    <LayoutDashboard className="w-4 h-4" />
+                  <Link href="/admin" className="ml-1 flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/20">
+                    <LayoutDashboard className="h-4 w-4" />
                     Admin
                   </Link>
                 )}
-                <div className="flex items-center gap-3 bg-secondary p-1 pr-4 rounded-full border border-border hover:bg-muted transition-colors cursor-pointer group relative">
-                  {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.name || "Avatar"} className="w-8 h-8 rounded-full object-cover shrink-0" />
-                  ) : (
-                    <div
-                      className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm"
-                      style={{ background: `linear-gradient(135deg, ${getHeaderGradient(user.name || "user")[0]}, ${getHeaderGradient(user.name || "user")[1]})` }}
-                    >
-                      {(user.name || "U").charAt(0).toUpperCase()}
+                <div className="group relative ml-1">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/[0.04] py-1 pl-1 pr-3 transition-colors hover:border-white/20 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt="" className="h-8 w-8 shrink-0 rounded-md object-cover" />
+                    ) : (
+                      <div
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold text-white"
+                        style={{ background: `linear-gradient(135deg, ${getHeaderGradient(user.name || "user")[0]}, ${getHeaderGradient(user.name || "user")[1]})` }}
+                      >
+                        {(user.name || "U").charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="max-w-[110px] truncate text-sm font-semibold">{user.name}</span>
+                    <ChevronDown className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+                  </Link>
+                  <div className="invisible absolute right-0 top-full z-50 w-52 translate-y-1 pt-2 opacity-0 transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+                    <div className="rounded-xl border border-white/10 bg-slate-950 p-2 shadow-2xl shadow-black/50">
+                      <Link href="/profile" className="flex items-center gap-3 rounded-lg p-2.5 text-sm font-medium transition-colors hover:bg-white/5">
+                        <User className="h-4 w-4 text-primary" /> Profile
+                      </Link>
+                      <Link href="/watchlist" className="flex items-center gap-3 rounded-lg p-2.5 text-sm font-medium transition-colors hover:bg-white/5">
+                        <Bookmark className="h-4 w-4 text-primary" /> Watchlist
+                      </Link>
+                      <div className="my-1 h-px bg-white/10" />
+                      <button onClick={logout} className="flex w-full items-center gap-3 rounded-lg p-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10">
+                        <LogOut className="h-4 w-4" /> Logout
+                      </button>
                     </div>
-                  )}
-                  <span className="text-sm font-bold truncate max-w-[100px]">{user.name}</span>
-
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0">
-                    <Link href="/profile" className="flex items-center gap-3 p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors">
-                      <User className="w-4 h-4" /> Profile
-                    </Link>
-                    <Link href="/watchlist" className="flex items-center gap-3 p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors">
-                      <Bookmark className="w-4 h-4" /> Watchlist
-                    </Link>
-                    <button onClick={logout} className="w-full flex items-center gap-3 p-3 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-xl transition-colors">
-                      <LogOut className="w-4 h-4" /> Logout
-                    </button>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-6">
-                <Link href="/login" className="text-sm font-bold opacity-80 hover:opacity-100 hover:text-primary transition-all">
+              <div className="flex items-center gap-3">
+                <Link href="/login" className="rounded-lg px-3 py-2 text-sm font-semibold text-foreground/80 transition-colors hover:bg-white/5 hover:text-primary">
                   Login
                 </Link>
                 <Link href="/register" className="btn-primary py-2.5 px-6 text-sm shadow-xl shadow-primary/20">
