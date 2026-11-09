@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 import { prisma } from "@lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Prediction Leaderboard | Poison Rana",
+  title: "Prediction Leaderboard",
   description: "The most accurate wrestling event predictors on Poison Rana.",
   alternates: { canonical: `${getSiteUrl()}/leaderboard` },
 };

@@ -11,7 +11,7 @@ import { initials, styleForName } from "@lib/belts";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Lineal Championships | Poison Rana",
+  title: "Lineal Championships",
   description:
     "Who really holds it? Fan-tracked lineal titles, passed on only when the holder is beaten in a singles match.",
   alternates: { canonical: `${getSiteUrl()}/lineal` },

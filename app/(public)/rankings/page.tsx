@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Star, Trophy, TrendingUp, Calendar, ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Top Wrestling Events – Rankings | Poison Rana",
+  title: "Top Wrestling Events – Rankings",
   description: "The highest-rated pro wrestling events, ranked by community reviews.",
   alternates: { canonical: `${getSiteUrl()}/rankings` },
 };

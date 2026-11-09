@@ -47,8 +47,15 @@ export async function generateMetadata({
 
   const cleanTitle = event.title.replace(/–\s\d{4}.*$/, "").trim();
   const year = new Date(event.date).getFullYear();
+  // Trim at a word boundary so previews never end mid-word
+  const trimDesc = (t: string, max = 155) => {
+    const text = t.replace(/\s+/g, " ").trim();
+    if (text.length <= max) return text;
+    const cut = text.slice(0, max);
+    return `${cut.slice(0, Math.max(cut.lastIndexOf(" "), 80)).replace(/[\s,;:.\-–]+$/, "")}…`;
+  };
   const desc = event.description
-    ? event.description.slice(0, 155)
+    ? trimDesc(event.description)
     : `Ratings, reviews and match results for ${cleanTitle} (${year}) by ${event.promotion}.`;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.poisonrana.com";
@@ -71,7 +78,7 @@ export async function generateMetadata({
   const ogImageUrl = `${siteUrl}/api/og?${ogParams.toString()}`;
 
   return {
-    title: `${cleanTitle} (${year}) – ${event.promotion} | Poison Rana`,
+    title: `${cleanTitle} (${year}) – ${event.promotion}`,
     description: desc,
     alternates: { canonical: `${siteUrl}/events/${slug}` },
     openGraph: {

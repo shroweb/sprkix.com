@@ -7,7 +7,7 @@ import EventsGrid from "./EventsGrid";
 
 // Filters live in the query string (?promotion=…); every variant canonicalises to /events.
 export const metadata: Metadata = {
-  title: "Pro Wrestling Events – Ratings & Reviews | Poison Rana",
+  title: "Pro Wrestling Events – Ratings & Reviews",
   description:
     "Browse every pro wrestling event with community ratings, reviews and match results. Filter by promotion, year and more.",
   alternates: { canonical: `${getSiteUrl()}/events` },

@@ -9,7 +9,7 @@ import ChampionsClient from "./ChampionsClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Current Champions | Poison Rana",
+  title: "Current Champions",
   description:
     "Track all active professional wrestling champions across WWE, AEW, NXT, TNA, NJPW, and ROH. Real title belts, reign lengths, and championship history.",
   alternates: { canonical: `${getSiteUrl()}/champions` },

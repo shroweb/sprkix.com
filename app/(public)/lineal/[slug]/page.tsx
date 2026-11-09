@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     ? `${holder} is the lineal holder of the ${title.name}. See every reign and how it changed hands.`
     : `The lineal history of the ${title.name}.`;
   return {
-    title: `Lineal ${title.name} | Poison Rana`,
+    title: `Lineal ${title.name}`,
     description,
     alternates: { canonical: `${getSiteUrl()}/lineal/${title.slug}` },
     openGraph: { title: `Lineal ${title.name}`, description, type: "website" },
