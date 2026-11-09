@@ -1,51 +1,91 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import { Search, X, Calendar, UserCircle, Loader2, TrendingUp } from "lucide-react";
+import { Search, X, Calendar, UserCircle, Loader2, TrendingUp, Trophy, Building2, Clock, CornerDownLeft } from "lucide-react";
 
-type SearchResult = {
-  events: {
-    id: string;
-    title: string;
-    slug: string;
-    posterUrl: string | null;
-    promotion: string;
-    date: string;
-  }[];
-  wrestlers: {
-    id: string;
-    name: string;
-    slug: string;
-    imageUrl: string | null;
-  }[];
-  users: {
-    id: string;
-    name: string | null;
-    slug: string;
-    avatarUrl: string | null;
-  }[];
+type Row = {
+  key: string;
+  group: string;
+  href: string;
+  title: string;
+  sub?: string;
+  img?: string | null;
+  kind: "event" | "wrestler" | "user" | "promotion" | "title";
 };
+
+type Api = {
+  events?: { id: string; title: string; slug: string; posterUrl: string | null; promotion: string; date: string }[];
+  wrestlers?: { id: string; name: string; slug: string; imageUrl: string | null }[];
+  users?: { id: string; name: string | null; slug: string; avatarUrl: string | null }[];
+  promotions?: { id: string; shortName: string; fullName: string | null; logoUrl: string | null; slug: string }[];
+  titles?: { id: string; title: string; promotion: string; photoUrl: string | null; holder: string; href: string }[];
+};
+
+const RECENT_KEY = "pr_recent_searches";
+const PROMOS = ["WWE", "AEW", "TNA", "NJPW", "ROH"];
+
+function toRows(d: Api): Row[] {
+  const rows: Row[] = [];
+  d.promotions?.forEach((p) =>
+    rows.push({ key: `p${p.id}`, group: "Promotions", kind: "promotion", href: `/promotions/${p.slug}`, title: p.shortName, sub: p.fullName ?? undefined, img: p.logoUrl }),
+  );
+  d.titles?.forEach((t) =>
+    rows.push({ key: `t${t.id}`, group: "Titles", kind: "title", href: t.href, title: t.title, sub: t.holder ? `${t.promotion} · ${t.holder}` : t.promotion, img: t.photoUrl }),
+  );
+  d.wrestlers?.forEach((w) =>
+    rows.push({ key: `w${w.id}`, group: "Wrestlers", kind: "wrestler", href: `/wrestlers/${w.slug}`, title: w.name, img: w.imageUrl }),
+  );
+  d.events?.forEach((e) =>
+    rows.push({ key: `e${e.id}`, group: "Events", kind: "event", href: `/events/${e.slug}`, title: e.title, sub: `${e.promotion} · ${new Date(e.date).getFullYear()}`, img: e.posterUrl }),
+  );
+  d.users?.forEach((u) =>
+    rows.push({ key: `u${u.id}`, group: "Members", kind: "user", href: `/users/${u.slug || u.id}`, title: u.name ?? "Member", sub: "Community member", img: u.avatarUrl }),
+  );
+  return rows;
+}
+
+function Thumb({ row }: { row: Row }) {
+  const round = row.kind === "wrestler" || row.kind === "user";
+  const size = row.kind === "event" ? "w-10 h-14" : "w-10 h-10";
+  const Icon = row.kind === "event" ? Calendar : row.kind === "title" ? Trophy : row.kind === "promotion" ? Building2 : UserCircle;
+  return (
+    <div className={`relative shrink-0 overflow-hidden border border-white/5 bg-secondary ${size} ${round ? "rounded-full" : ""}`}>
+      {row.img ? (
+        <Image
+          src={row.img}
+          alt=""
+          fill
+          sizes="40px"
+          className={row.kind === "title" || row.kind === "promotion" ? "object-contain p-1" : "object-cover"}
+        />
+      ) : (
+        <div className="absolute inset-0 grid place-items-center">
+          <Icon className="w-4 h-4 text-muted-foreground/40" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function SearchModal({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult>({
-    events: [],
-    wrestlers: [],
-    users: [],
-  });
+  const [data, setData] = useState<Api>({});
   const [loading, setLoading] = useState(false);
-  const [trending, setTrending] = useState<{ title: string; slug: string; posterUrl: string | null; promotion: string } | null>(null);
+  const [active, setActive] = useState(0);
+  const [recent, setRecent] = useState<string[]>([]);
+  const [trending, setTrending] = useState<Row | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Cmd+K / Ctrl+K to open
+  const rows = useMemo(() => toRows(data), [data]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen((o) => !o);
       }
@@ -55,286 +95,220 @@ export default function SearchModal({ className }: { className?: string }) {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  // Focus input + fetch trending when opened
   useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      if (!trending) {
-        fetch("/api/search?q=wrestlemania")
-          .then((r) => r.json())
-          .then((d) => d.events?.[0] && setTrending(d.events[0]))
-          .catch(() => {});
-      }
-    } else {
+    if (!open) {
       setQuery("");
-      setResults({ events: [], wrestlers: [], users: [] });
+      setData({});
+      setActive(0);
+      return;
     }
+    try {
+      setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"));
+    } catch {
+      setRecent([]);
+    }
+    const t = setTimeout(() => inputRef.current?.focus(), 50);
+    if (!trending) {
+      fetch("/api/search?q=wrestlemania")
+        .then((r) => r.json())
+        .then((d: Api) => {
+          const e = d.events?.[0];
+          if (e) setTrending({ key: "trend", group: "Trending", kind: "event", href: `/events/${e.slug}`, title: e.title, sub: e.promotion, img: e.posterUrl });
+        })
+        .catch(() => {});
+    }
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Debounced search
   useEffect(() => {
-    if (!query.trim() || query.length < 2) {
-      setResults({ events: [], wrestlers: [], users: [] });
+    if (query.trim().length < 2) {
+      setData({});
       return;
     }
     setLoading(true);
+    const ctrl = new AbortController();
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
-        setResults(data);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, { signal: ctrl.signal });
+        setData(await res.json());
+        setActive(0);
       } catch {
-        // silently fail
+        /* aborted / offline */
       } finally {
         setLoading(false);
       }
-    }, 250);
-    return () => clearTimeout(timer);
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      ctrl.abort();
+    };
   }, [query]);
 
-  const hasResults =
-    results.events.length > 0 ||
-    results.wrestlers.length > 0 ||
-    results.users.length > 0;
-  const isEmpty = query.length >= 2 && !loading && !hasResults;
+  useEffect(() => {
+    listRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [active]);
+
+  const remember = (q: string) => {
+    const term = q.trim();
+    if (term.length < 2) return;
+    try {
+      const next = [term, ...recent.filter((r) => r.toLowerCase() !== term.toLowerCase())].slice(0, 5);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    } catch {
+      /* storage unavailable */
+    }
+  };
+
+  const go = (row: Row) => {
+    remember(query);
+    setOpen(false);
+    router.push(row.href);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (!rows.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => (i + 1) % rows.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => (i - 1 + rows.length) % rows.length);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      go(rows[active]);
+    }
+  };
+
+  const isEmpty = query.trim().length >= 2 && !loading && rows.length === 0;
 
   if (!open) {
     return (
       <button
         onClick={() => setOpen(true)}
         aria-label="Open search dialog"
-        className={className ?? "hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 border border-border px-4 py-2 rounded-xl hover:bg-secondary transition-colors"}
+        className={className ?? "hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 border border-border px-4 py-2 hover:bg-secondary transition-colors"}
       >
         <Search className="w-4 h-4 shrink-0" />
         <span className="font-medium hidden md:inline">Search...</span>
-        <kbd className="hidden md:inline ml-2 text-[10px] font-black bg-background border border-border rounded px-1.5 py-0.5 text-muted-foreground">
-          ⌘K
-        </kbd>
+        <kbd className="hidden md:inline ml-2 text-[10px] font-black bg-background border border-border px-1.5 py-0.5 text-muted-foreground">⌘K</kbd>
       </button>
     );
   }
 
+  let lastGroup = "";
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4"
-      onClick={() => setOpen(false)}
-    >
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] px-4" onClick={() => setOpen(false)}>
       <div className="absolute inset-0 bg-background/80 backdrop-blur-md" />
-
-      {/* Modal */}
       <div
-        className="relative w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        role="dialog"
+        aria-label="Search"
+        className="relative w-full max-w-2xl bg-card border border-border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Input */}
         <div className="flex items-center gap-4 p-5 border-b border-border">
           <Search className="w-5 h-5 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search events, wrestlers..."
+            placeholder="Search wrestlers, events, titles, promotions…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={onKeyDown}
             className="flex-1 bg-transparent text-base font-medium outline-none placeholder:text-muted-foreground"
           />
-          {loading && (
-            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />
-          )}
-          <button
-            onClick={() => setOpen(false)}
-            className="p-1.5 hover:bg-secondary rounded-lg transition-colors shrink-0"
-          >
+          {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />}
+          <button onClick={() => setOpen(false)} aria-label="Close search" className="p-1.5 hover:bg-secondary transition-colors shrink-0">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Results */}
-        {hasResults && (
-          <div className="max-h-[60vh] overflow-y-auto p-3 space-y-4">
-            {results.events.length > 0 && (
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-3 py-2">
-                  Events
-                </p>
-                <div className="space-y-1">
-                  {results.events.map((event) => (
-                    <Link
-                      key={event.id}
-                      href={`/events/${event.slug}`}
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors group"
-                    >
-                      <div className="w-10 h-14 relative rounded-lg overflow-hidden shrink-0 border border-white/5 bg-secondary">
-                        {event.posterUrl ? (
-                          <Image
-                            src={event.posterUrl}
-                            alt={event.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Calendar className="w-4 h-4 text-muted-foreground/30" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors truncate">
-                          {event.title}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">
-                          {event.promotion} ·{" "}
-                          {new Date(event.date).getFullYear()}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+        {rows.length > 0 && (
+          <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-3">
+            {rows.map((row, i) => {
+              const header = row.group !== lastGroup ? row.group : null;
+              lastGroup = row.group;
+              return (
+                <div key={row.key}>
+                  {header && (
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-3 pt-3 pb-1.5">{header}</p>
+                  )}
+                  <button
+                    data-idx={i}
+                    onMouseEnter={() => setActive(i)}
+                    onClick={() => go(row)}
+                    className={`group flex w-full items-center gap-4 px-3 py-2.5 text-left transition-colors ${i === active ? "bg-secondary" : ""}`}
+                  >
+                    <Thumb row={row} />
+                    <div className="min-w-0 flex-1">
+                      <p className={`truncate text-sm font-black uppercase italic tracking-tight ${i === active ? "text-primary" : ""}`}>{row.title}</p>
+                      {row.sub && <p className="mt-0.5 truncate text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{row.sub}</p>}
+                    </div>
+                    {i === active && <CornerDownLeft className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+                  </button>
                 </div>
-              </div>
-            )}
-
-            {results.wrestlers.length > 0 && (
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-3 py-2">
-                  Wrestlers
-                </p>
-                <div className="space-y-1">
-                  {results.wrestlers.map((wrestler) => (
-                    <Link
-                      key={wrestler.id}
-                      href={`/wrestlers/${wrestler.slug}`}
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors group"
-                    >
-                      <div className="w-10 h-10 relative rounded-full overflow-hidden shrink-0 border border-white/5 bg-secondary">
-                        {wrestler.imageUrl ? (
-                          <Image
-                            src={wrestler.imageUrl}
-                            alt={wrestler.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <UserCircle className="w-5 h-5 text-muted-foreground/30" />
-                          </div>
-                        )}
-                      </div>
-                      <p className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors">
-                        {wrestler.name}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {results.users.length > 0 && (
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-3 py-2">
-                  Users
-                </p>
-                <div className="space-y-1">
-                  {results.users.map((user) => (
-                    <Link
-                      key={user.id}
-                      href={`/users/${user.slug || user.id}`}
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors group"
-                    >
-                      <div className="w-10 h-10 relative rounded-full overflow-hidden shrink-0 border border-white/5 bg-secondary">
-                        {user.avatarUrl ? (
-                          <Image
-                            src={user.avatarUrl}
-                            alt={user.name ?? "User"}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-primary text-black font-black text-sm">
-                            {user.name
-                              ? user.name.charAt(0).toUpperCase()
-                              : "U"}
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors">
-                          {user.name}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                          Community Member
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+              );
+            })}
           </div>
         )}
 
         {isEmpty && (
           <div className="p-12 text-center">
-            <p className="text-muted-foreground font-bold italic text-sm">
-              No results for "{query}"
-            </p>
+            <p className="text-muted-foreground font-bold italic text-sm">No results for “{query}”</p>
           </div>
         )}
 
         {!query && (
           <div className="p-5 space-y-5">
-            {/* Promotion chips */}
+            {recent.length > 0 && (
+              <div>
+                <p className="mb-2 flex items-center gap-1.5 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                  <Clock className="w-3 h-3" /> Recent
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {recent.map((r) => (
+                    <button key={r} onClick={() => setQuery(r)} className="border border-border bg-secondary px-3 py-1.5 text-xs font-bold hover:border-primary hover:text-primary transition-colors">
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2">Browse by Promotion</p>
               <div className="flex flex-wrap gap-2">
-                {["WWE", "AEW", "TNA", "NJPW", "ROH"].map((promo) => (
+                {PROMOS.map((promo) => (
                   <button
                     key={promo}
                     onClick={() => setQuery(promo)}
-                    className="px-3 py-1.5 bg-secondary border border-border rounded-lg text-xs font-black uppercase tracking-wider hover:bg-primary hover:text-black hover:border-primary transition-all"
+                    className="px-3 py-1.5 bg-secondary border border-border text-xs font-black uppercase tracking-wider hover:bg-primary hover:text-black hover:border-primary transition-all"
                   >
                     {promo}
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Trending event */}
             {trending && (
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
                   <TrendingUp className="w-3 h-3" /> Trending
                 </p>
-                <Link
-                  href={`/events/${trending.slug}`}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-4 px-3 py-2.5 rounded-xl hover:bg-secondary transition-colors group"
-                >
-                  <div className="w-10 h-14 relative rounded-lg overflow-hidden shrink-0 border border-white/5 bg-secondary">
-                    {trending.posterUrl ? (
-                      <Image src={trending.posterUrl} alt={trending.title} fill className="object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Calendar className="w-4 h-4 text-muted-foreground/30" />
-                      </div>
-                    )}
+                <button onClick={() => go(trending)} className="group flex w-full items-center gap-4 px-3 py-2.5 text-left hover:bg-secondary transition-colors">
+                  <Thumb row={trending} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-black uppercase italic tracking-tight group-hover:text-primary">{trending.title}</p>
+                    <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{trending.sub}</p>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-black text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors truncate">{trending.title}</p>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">{trending.promotion}</p>
-                  </div>
-                </Link>
+                </button>
               </div>
             )}
           </div>
         )}
 
         <div className="px-5 py-3 border-t border-border flex items-center gap-4 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+          <span>↑↓ Navigate</span>
           <span>↵ Open</span>
           <span>Esc Close</span>
-          <span>⌘K Toggle</span>
         </div>
       </div>
     </div>

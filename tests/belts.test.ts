@@ -93,4 +93,9 @@ describe("photoFor", () => {
     expect(photoFor("TNA International Title")).toBe("/belts/tna-international-championship.webp");
     expect(photoFor("Random Unknown Nonexistent Championship")).toBeNull();
   });
+
+  it("recognises 'Undisputed' titles", () => {
+    expect(parseChampionship("Undisputed WWE Championship")?.name).toBe("Undisputed WWE Championship");
+    expect(parseChampionship("Cody vs Roman", "Unified Tag Team Championship Match")).not.toBeNull();
+  });
 });

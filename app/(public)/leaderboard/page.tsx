@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Target, Trophy, ChevronLeft, Crown } from "lucide-react";
 import type { Metadata } from "next";
 
-import PredictionLeague from "@components/PredictionLeague";
+import { prisma } from "@lib/prisma";
 
 export const metadata: Metadata = {
   title: "Prediction Leaderboard | Poison Rana",
@@ -20,13 +20,28 @@ export default async function LeaderboardPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const period = parsePeriod((await searchParams).period);
+  const sp = await searchParams;
+  const period = parsePeriod(sp.period);
+  const following = sp.scope === "following";
   const [currentUser, entries] = await Promise.all([
     getUserFromServerCookie(),
     getLeaderboard(period),
   ]);
 
-  const ranked = entries.map((e) => ({
+  let circle: Set<string> | null = null;
+  if (following && currentUser) {
+    const rows = await prisma.follow.findMany({ where: { followerId: currentUser.id }, select: { followingId: true } });
+    circle = new Set([currentUser.id, ...rows.map((r) => r.followingId)]);
+  }
+  const href = (p: string, scope: string) => {
+    const q = new URLSearchParams();
+    if (p !== "all") q.set("period", p);
+    if (scope === "following") q.set("scope", "following");
+    const qs = q.toString();
+    return qs ? `/leaderboard?${qs}` : "/leaderboard";
+  };
+
+  const ranked = entries.filter((e) => !circle || circle.has(e.userId)).map((e) => ({
     id: e.userId,
     name: e.name,
     slug: e.slug,
@@ -69,11 +84,33 @@ export default async function LeaderboardPage({
           </p>
         </div>
 
+        <div className="mb-3 flex gap-2" role="tablist" aria-label="Leaderboard scope">
+          {[
+            { id: "all", label: "Everyone" },
+            { id: "following", label: "Following" },
+          ].map((t) => (
+            <Link
+              key={t.id}
+              href={href(period, t.id)}
+              role="tab"
+              aria-selected={(t.id === "following") === following}
+              className={`px-4 py-2 text-xs font-black uppercase tracking-wider border transition-colors ${
+                (t.id === "following") === following ? "bg-white text-black border-white" : "border-white/10 text-muted-foreground hover:text-white hover:border-white/30"
+              }`}
+            >
+              {t.label}
+            </Link>
+          ))}
+        </div>
+        {following && !currentUser && (
+          <p className="mb-6 text-sm text-muted-foreground"><Link href="/login" className="font-bold text-primary underline">Sign in</Link> to see just the people you follow.</p>
+        )}
+
         <div className="flex gap-2 mb-8" role="tablist" aria-label="Leaderboard period">
           {LEADERBOARD_PERIODS.map((p) => (
             <Link
               key={p.id}
-              href={p.id === "all" ? "/leaderboard" : `/leaderboard?period=${p.id}`}
+              href={href(p.id, following ? "following" : "all")}
               role="tab"
               aria-selected={p.id === period}
               className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider border transition-colors ${
@@ -87,10 +124,33 @@ export default async function LeaderboardPage({
           ))}
         </div>
 
-        <div className="mb-10">
-          <PredictionLeague topPredictors={ranked} />
-        </div>
-
+        {ranked.length >= 3 && (
+          <div className="mb-10 grid grid-cols-3 items-end gap-2 sm:gap-4">
+            {[1, 0, 2].map((i) => {
+              const e = ranked[i];
+              const h = i === 0 ? "h-44" : i === 1 ? "h-36" : "h-28";
+              const tone = i === 0 ? "from-yellow-400/30 border-yellow-400/40" : i === 1 ? "from-slate-300/20 border-slate-300/30" : "from-orange-500/20 border-orange-500/30";
+              return (
+                <Link key={e.id} href={`/users/${e.slug}`} className="group flex flex-col items-center gap-2 text-center">
+                  <div className="relative h-14 w-14 overflow-hidden border border-white/20 bg-secondary sm:h-20 sm:w-20">
+                    {e.avatarUrl ? (
+                      <Image src={e.avatarUrl} alt="" fill sizes="80px" className="object-cover" />
+                    ) : (
+                      <span className="grid h-full w-full place-items-center text-xl font-black text-muted-foreground">{e.name?.charAt(0).toUpperCase() || "?"}</span>
+                    )}
+                  </div>
+                  <p className="max-w-full truncate text-xs font-black italic uppercase group-hover:text-primary sm:text-sm">{e.name}</p>
+                  <div className={`flex w-full flex-col items-center justify-start gap-1 border-t-2 bg-gradient-to-b to-transparent pt-3 ${h} ${tone}`}>
+                    <span className="text-3xl">{medals[i]}</span>
+                    <span className="text-lg font-black tabular-nums">{e.accuracy}%</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{e.predictionScore}/{e.predictionCount}</span>
+                    {e.streak >= 2 && <span className="text-[10px] font-black text-orange-400">🔥 {e.streak}</span>}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
         {ranked.length === 0 ? (
           <div className="bg-card/30 border border-dashed border-white/10 rounded-[2.5rem] p-20 text-center space-y-4">
             <Target className="w-16 h-16 text-white/10 mx-auto" />
@@ -103,17 +163,6 @@ export default async function LeaderboardPage({
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Current user callout if they're ranked */}
-            {currentUserRank > 2 && ranked[currentUserRank] && (
-              <div className="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-4">
-                <span className="text-xs font-black text-primary uppercase tracking-widest">Your rank</span>
-                <span className="text-2xl font-black italic text-primary">#{currentUserRank + 1}</span>
-                <span className="text-sm font-bold text-muted-foreground">
-                  {ranked[currentUserRank].accuracy}% accuracy · {ranked[currentUserRank].predictionScore}/{ranked[currentUserRank].predictionCount} correct
-                </span>
-              </div>
-            )}
-
             {ranked.map((entry, idx) => {
               const isCurrentUser = entry.id === currentUser?.id;
               const isMedal = idx < 3;
@@ -200,6 +249,19 @@ export default async function LeaderboardPage({
           </div>
         )}
       </div>
+
+      {currentUserRank >= 0 && ranked[currentUserRank] && (
+        <div className="sticky bottom-20 z-30 mx-auto mt-6 max-w-4xl px-4 sm:px-6 md:bottom-4">
+          <div className="flex items-center gap-4 border border-primary/40 bg-slate-950/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Your rank</span>
+            <span className="text-2xl font-black italic text-primary">#{currentUserRank + 1}</span>
+            <span className="min-w-0 truncate text-sm font-bold text-muted-foreground">
+              {ranked[currentUserRank].accuracy}% · {ranked[currentUserRank].predictionScore}/{ranked[currentUserRank].predictionCount} correct
+              {ranked[currentUserRank].streak >= 2 ? ` · 🔥 ${ranked[currentUserRank].streak}` : ""}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,6 +16,9 @@ import AttendButton from "@components/AttendButton";
 import SetThemeButton from "@components/SetThemeButton";
 import { Calendar, Clock, Star, ChevronLeft, Info, Trophy, MapPin, CheckCircle, Activity, Users, Tv, Send } from "lucide-react";
 import PredictionCard from "@components/PredictionCard";
+import PredictionSlip from "@components/PredictionSlip";
+import RecapCard from "@components/RecapCard";
+import { getRecap } from "@lib/recap";
 import HomePoll from "@components/HomePoll";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
@@ -276,6 +279,7 @@ export default async function EventPage({
   const isLive = !!event.startTime && now >= startTime && (endTime === null || now <= endTime);
   const isUpcoming = !isLive && now < startTime;
   const isArchive = !isLive && !isUpcoming;
+  const recap = isArchive && user && event.enablePredictions ? await getRecap(event.slug, user.id).catch(() => null) : null;
 
   // For archive mode: check if there's a chat transcript worth showing
   const hasChatTranscript = isArchive
@@ -770,17 +774,23 @@ export default async function EventPage({
               if (isUpcoming && event.enablePredictions && processedMatches.length > 0) {
                 const matchesWithParticipants = processedMatches.filter((m: any) => m.participants?.length > 0);
                 predictionsContent = matchesWithParticipants.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {matchesWithParticipants.map((match: any) => (
-                      <PredictionCard
-                        key={match.id}
-                        match={match}
-                        user={user}
-                        initialPredictionId={match.userPrediction}
-                        communityStats={communityStatsMap[match.id]}
-                      />
-                    ))}
-                  </div>
+                  <PredictionSlip
+                    matchIds={matchesWithParticipants.map((m: any) => m.id)}
+                    pickedIds={matchesWithParticipants.filter((m: any) => m.userPrediction).map((m: any) => m.id)}
+                    signedIn={!!user}
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {matchesWithParticipants.map((match: any) => (
+                        <PredictionCard
+                          key={match.id}
+                          match={match}
+                          user={user}
+                          initialPredictionId={match.userPrediction}
+                          communityStats={communityStatsMap[match.id]}
+                        />
+                      ))}
+                    </div>
+                  </PredictionSlip>
                 ) : (
                   <div className="bg-card/30 border border-border border-dashed rounded-[2rem] p-20 text-center">
                     <Info className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
@@ -795,7 +805,19 @@ export default async function EventPage({
                 const correctPicks = resolvedPicks.filter((m: any) => m.userPredictionIsCorrect === true).length;
                 predictionsContent = (
                   <div className="space-y-6">
-                    {resolvedPicks.length > 0 && user && (
+                    {recap && user && (
+                      <RecapCard
+                        eventSlug={recap.eventSlug}
+                        eventTitle={recap.eventTitle}
+                        userSlug={(user as any).slug || user.id}
+                        correct={recap.correct}
+                        total={recap.total}
+                        perfect={recap.perfect}
+                        bestCall={recap.bestCall}
+                        worstMiss={recap.worstMiss}
+                      />
+                    )}
+                    {resolvedPicks.length > 0 && user && !recap && (
                       <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card/40 text-sm font-black italic w-fit">
                         <Trophy className="w-4 h-4 text-primary" />
                         <span className="text-primary">{correctPicks}</span>

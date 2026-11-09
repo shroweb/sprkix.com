@@ -13,6 +13,8 @@ import Link from "next/link";
 import BeltImage from "@components/BeltImage";
 import StarRating from "./StarRating";
 import AddToListButton from "./AddToListButton";
+import FaceOff from "./FaceOff";
+import { groupSides, inferTeams, cardPosition } from "@lib/match-sides";
 import {
   Eye,
   EyeOff,
@@ -88,9 +90,43 @@ export default function MatchList({
         </div>
       )}
 
+      {(() => {
+        const main = matches[matches.length - 1];
+        if (!main || matches.length < 2 || (main.participants?.length ?? 0) < 2) return null;
+        const sides = groupSides(inferTeams(main.participants, main.type, main.title));
+        const mainIdx = matches.length - 1;
+        return (
+          <button
+            type="button"
+            onClick={() => setSelectedIdx(mainIdx)}
+            className="group relative block w-full overflow-hidden border border-primary/30 bg-gradient-to-b from-primary/10 to-slate-950/60 p-4 text-left sm:p-6"
+          >
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 bg-primary px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-primary-foreground">
+                <Trophy className="h-3 w-3" /> Main Event
+              </span>
+              <BeltImage type={main.type} title={main.title} height={34} className="shrink-0" />
+              <p className="min-w-0 flex-1 truncate text-sm font-black italic uppercase tracking-tight sm:text-base group-hover:text-primary transition-colors">
+                {main.title}
+              </p>
+            </div>
+            <FaceOff sides={sides} reveal={showSpoilers} size="lg" className="mx-auto max-w-sm" />
+          </button>
+        );
+      })()}
+
       <div className="space-y-3">
         {matches.map((match, idx) => {
           const isSelected = idx === selectedIdx;
+          const pos = cardPosition(idx, matches.length);
+          const firstOfSection = idx === 0 || cardPosition(idx - 1, matches.length) !== pos;
+          const sectionLabel = !firstOfSection
+            ? null
+            : pos === "undercard"
+              ? "Undercard"
+              : pos === "co-main"
+                ? "Co-Main Event"
+                : "Main Event";
 
           // Group participants by team
           const teams: Record<number, typeof match.participants> = {};
@@ -108,11 +144,19 @@ export default function MatchList({
 
           const isMotN = motNMatchId === match.id;
 
+          const label = sectionLabel ? (
+            <p key={`lbl-${match.id}`} className="flex items-center gap-3 pt-3 text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground">
+              {sectionLabel}
+              <span className="h-px flex-1 bg-white/10" />
+            </p>
+          ) : null;
+
           if (!isSelected) {
             /* ── Minimized Row ── */
             return (
+              <div key={match.id} className="space-y-3">
+              {label}
               <button
-                key={match.id}
                 type="button"
                 onClick={() => setSelectedIdx(idx)}
                 className={`w-full text-left border rounded-2xl px-4 py-3 sm:px-5 sm:py-4 transition-all group overflow-hidden ${isMotN ? "bg-yellow-400/5 border-yellow-400/30 hover:border-yellow-400/50" : "bg-card/40 border-border hover:border-primary/30"}`}
@@ -179,12 +223,15 @@ export default function MatchList({
                   <ChevronDown className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
                 </div>
               </button>
+              </div>
             );
           }
 
           /* ── Expanded Card (selected) ── */
           return (
-            <div key={match.id} className="relative group">
+            <div key={match.id} className="space-y-3">
+            {label}
+            <div className="relative group">
               <div
                 className={`absolute -left-3 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full transition-colors ${isMotN ? "bg-yellow-400" : "bg-primary"}`}
               />
@@ -345,6 +392,7 @@ export default function MatchList({
                     )}
                 </div>
               </div>
+            </div>
             </div>
           );
         })}

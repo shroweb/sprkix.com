@@ -1,6 +1,7 @@
 import { prisma } from './prisma'
 import { uniqueWrestlerSlug } from './slug-utils'
 import * as cheerio from 'cheerio'
+import { assignTeams } from './match-teams'
 
 interface ParsedMatch {
     wrestlers: string[]
@@ -312,25 +313,11 @@ export function parseProfightDbHtml(html: string): ParsedMatch[] {
         const teams: number[] = []
         const winners: boolean[] = []
 
-        wrestlerLinks.forEach(name => {
-            const ni = lowerText.indexOf(name.toLowerCase())
-            let team = 1
-            let isWinner = false
-            if (isFFA) {
-                team = wrestlers.length + 1
-                isWinner = defeatIdx !== -1 && ni !== -1 && ni < defeatIdx
-            } else {
-                if (defeatIdx !== -1 && ni !== -1 && ni > defeatIdx) {
-                    team = 2
-                    isWinner = false
-                } else {
-                    team = 1
-                    isWinner = defeatIdx !== -1
-                }
-            }
+        const assigned = assignTeams(text, wrestlerLinks)
+        wrestlerLinks.forEach((name, i) => {
             wrestlers.push(name)
-            teams.push(team)
-            winners.push(isWinner)
+            teams.push(assigned.teams[i])
+            winners.push(assigned.winners[i])
         })
 
         let matchType = 'Singles Match'
@@ -378,14 +365,6 @@ export async function parseCagematchHtml(html: string): Promise<ParsedMatch[]> {
             const winners: boolean[] = []
 
             const isFreeForAll = /triple threat|three way|four way|five way|six way|chamber|rumble|battle royal|scramble|survival/i.test(rawMatchText)
-            const lowerText = rawMatchText.toLowerCase()
-            // " defeats " = singles, " defeat " = tag/trios (plural subject), " def. " = abbreviation
-            const defeatKeyword =
-                lowerText.includes(' defeats ') ? ' defeats '
-                : lowerText.includes(' defeat ') ? ' defeat '
-                : lowerText.includes(' def. ') ? ' def. '
-                : null
-            const defeatIndex = defeatKeyword !== null ? lowerText.indexOf(defeatKeyword) : -1
 
             $clean('a').each((_, a) => {
                 const href = $clean(a).attr('href') || ''
@@ -395,26 +374,12 @@ export async function parseCagematchHtml(html: string): Promise<ParsedMatch[]> {
                 const name = $clean(a).text().trim()
                 if (name && !wrestlers.includes(name)) {
                     wrestlers.push(name)
-                    const nameIndex = lowerText.indexOf(name.toLowerCase())
-                    let isWinner = false
-                    let teamId = 1
-
-                    if (isFreeForAll) {
-                        teamId = wrestlers.length
-                        isWinner = defeatIndex !== -1 && nameIndex !== -1 && nameIndex < defeatIndex
-                    } else {
-                        if (defeatIndex !== -1 && nameIndex !== -1 && nameIndex > defeatIndex) {
-                            teamId = 2
-                            isWinner = false
-                        } else {
-                            teamId = 1
-                            isWinner = defeatIndex !== -1
-                        }
-                    }
-                    teams.push(teamId)
-                    winners.push(isWinner)
                 }
             })
+
+            const assigned = assignTeams(rawMatchText, wrestlers)
+            teams.push(...assigned.teams)
+            winners.push(...assigned.winners)
 
             const typeEl = $el.find('.MatchType, [class*="Type"], .matchtype').first()
             let matchType = typeEl.text().trim()

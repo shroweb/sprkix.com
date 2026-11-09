@@ -5,6 +5,7 @@ import { getUserFromServerCookie } from "@lib/server-auth";
 import { prisma } from "@lib/prisma";
 
 import { ToastProvider } from "@components/ToastProvider";
+import MobileTabBar from "@components/MobileTabBar";
 
 export default async function PublicLayout({
   children,
@@ -82,12 +83,13 @@ export default async function PublicLayout({
         bannerLink={bannerLink}
       />
       <main
-        className={`max-w-7xl mx-auto px-4 sm:px-6 pb-10 ${
+        className={`max-w-7xl mx-auto px-4 sm:px-6 pb-24 md:pb-10 ${
           bannerEnabled && bannerText.trim() ? "pt-40" : "pt-28"
         }`}
       >
         {children}
       </main>
+      <MobileTabBar signedIn={!!user} />
       <Footer
         siteLogo={siteLogo}
         socialX={socialX}

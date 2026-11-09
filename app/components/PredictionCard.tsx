@@ -5,6 +5,8 @@ import { Trophy, CheckCircle, XCircle, Users, Lock, Zap, Crown, Loader2, Check }
 import SignUpPrompt from "@components/SignUpPrompt";
 import { BeltArt } from "@components/BeltImage";
 import { parseChampionship } from "@lib/belts";
+import { inferTeams, groupSides } from "@lib/match-sides";
+import FaceOff, { Photo } from "@components/FaceOff";
 
 interface Wrestler {
   id: string;
@@ -103,19 +105,11 @@ export default function PredictionCard({
   readOnly = false,
   userPredictionIsCorrect = null,
 }: PredictionCardProps) {
-  // Imports often omit team numbers for tag matches. When the match is clearly a team match
-  // (tag / trios / six-man / eight-man) with an even field, the card lists each side's
-  // partners together, so split the field in half: side one, then side two.
-  const participants: Participant[] = useMemo(() => {
-    const list: Participant[] = match.participants ?? [];
-    const teamsGiven = new Set(list.map((p) => p.team).filter((t) => t != null)).size >= 2;
-    const teamMatch = /\b(tag|trios?|six[\s-]?man|eight[\s-]?man|6[\s-]?man|8[\s-]?man)\b/i.test(
-      `${match.type ?? ""} ${match.title ?? ""}`,
-    );
-    if (teamsGiven || !teamMatch || list.length < 4 || list.length % 2 !== 0) return list;
-    const half = list.length / 2;
-    return list.map((p, i) => ({ ...p, team: i < half ? 1 : 2 }));
-  }, [match.participants, match.type, match.title]);
+  // Imports sometimes omit team numbers; infer them for obvious team matches.
+  const participants: Participant[] = useMemo(
+    () => inferTeams<Participant>(match.participants ?? [], match.type, match.title),
+    [match.participants, match.type, match.title],
+  );
   const [selectedId, setSelectedId] = useState<string | null>(initialPredictionId || null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -170,6 +164,7 @@ export default function PredictionCard({
       } else {
         setSaved(true);
         setTimeout(() => setSaved(false), 1800);
+        window.dispatchEvent(new CustomEvent("pr:pick", { detail: { matchId: match.id, picked: next !== null } }));
       }
     } catch {
       setSelectedId(previous);
@@ -201,28 +196,15 @@ export default function PredictionCard({
       <div className="bg-card/40 border border-border p-5 sm:p-6">
         <MatchHeader match={match} status={badge} />
         {winners.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <Trophy className="w-3 h-3 text-primary" /> Winner{winners.length > 1 ? "s" : ""}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {winners.map((w) => {
-                const mine = w.id === initialPredictionId;
-                return (
-                  <div key={w.id} className={`flex items-center gap-2 px-3 py-2 border ${mine && userPredictionIsCorrect ? "bg-emerald-500/10 border-emerald-500/30" : "bg-primary/10 border-primary/25"}`}>
-                    <WrestlerAvatar wrestler={w} size="sm" />
-                    <span className="text-sm font-black italic uppercase tracking-tight">{w.name}</span>
-                    {mine && userPredictionIsCorrect && <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />}
-                  </div>
-                );
-              })}
-            </div>
+          <div className="space-y-3">
+            <FaceOff sides={groupSides(participants)} reveal />
+            {predicted && (
+              <p className={`pr-rise flex items-center gap-2 text-xs font-black uppercase tracking-widest ${userPredictionIsCorrect ? "text-emerald-400" : "text-red-400"}`}>
+                {userPredictionIsCorrect ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                You picked {predicted.name}
+              </p>
+            )}
           </div>
-        )}
-        {predicted && !userPredictionIsCorrect && resolved && (
-          <p className="text-xs text-muted-foreground mt-3">
-            You picked <span className="font-bold text-foreground">{predicted.name}</span>.
-          </p>
         )}
         <SignUpPrompt open={showSignUp} onClose={() => setShowSignUp(false)} reason="predict" />
       </div>
@@ -245,7 +227,6 @@ export default function PredictionCard({
   const sides: { key: string; members: Participant[]; label?: string }[] = hasTeams
     ? teamNums.map((n) => ({ key: `t${n}`, members: participants.filter((p) => p.team === n) }))
     : participants.map((p) => ({ key: p.wrestler.id, members: [p] }));
-  const twoTeam = hasTeams && sides.length === 2;
 
   const footer = error ? (
     <p className="text-[11px] font-bold text-red-400" role="alert">{error}</p>
@@ -268,7 +249,71 @@ export default function PredictionCard({
         <Zap className="w-3 h-3 text-primary" /> Pick your winner
       </p>
 
-      <div className={twoTeam ? "grid grid-cols-2 gap-3" : "grid grid-cols-2 gap-3 sm:grid-cols-2"}>
+      {sides.length === 2 && (
+        <div className="space-y-3">
+          <div className="relative grid grid-cols-2 gap-1">
+            {sides.map((side) => {
+              const ids = side.members.map((m) => m.wrestler.id);
+              const isSel = hasTeams ? side.members.some((m) => m.team === selectedTeam) && selectedTeam !== null : ids.includes(selectedId ?? "");
+              const other = selectedId !== null && !isSel;
+              return (
+                <button
+                  key={side.key}
+                  type="button"
+                  disabled={saving}
+                  aria-pressed={isSel}
+                  aria-label={`Pick ${side.members.map((m) => m.wrestler.name).join(" and ")}`}
+                  onClick={() => pick(ids[0])}
+                  className={`group relative overflow-hidden text-left outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary ${isSel ? "ring-2 ring-primary" : "ring-1 ring-white/10 hover:ring-white/30"} ${other ? "opacity-60" : ""}`}
+                >
+                  <div className={`grid gap-px ${side.members.length > 1 ? "aspect-[3/4] grid-cols-2" : "grid-cols-1"}`}>
+                    {side.members.slice(0, 4).map((m) => (
+                      <Photo key={m.wrestler.id} name={m.wrestler.name} src={m.wrestler.imageUrl} tall fill={side.members.length > 1} />
+                    ))}
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 space-y-0.5 p-2.5">
+                    {side.members.map((m) => (
+                      <p key={m.wrestler.id} className={`truncate text-xs font-black italic uppercase leading-tight tracking-tight sm:text-sm ${isSel ? "text-primary" : "text-white"}`}>
+                        {m.wrestler.name}
+                      </p>
+                    ))}
+                  </div>
+                  {isSel && (
+                    <span className="pr-rise absolute right-2 top-2 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary-foreground">
+                      <Check className="h-3 w-3" /> Your pick
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+            <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center border border-white/20 bg-slate-950 text-[11px] font-black italic text-white">
+              VS
+            </span>
+          </div>
+          {/* community split */}
+          {(() => {
+            const a = pct(sides[0].members.map((m) => m.wrestler.id));
+            const b = pct(sides[1].members.map((m) => m.wrestler.id));
+            const none = totalPicks === 0;
+            return (
+              <div>
+                <div className="flex h-2 w-full overflow-hidden bg-white/10">
+                  <div className="h-full bg-primary transition-all duration-500" style={{ width: none ? "50%" : `${a}%`, opacity: none ? 0.25 : 1 }} />
+                  <div className="h-full bg-sky-400 transition-all duration-500" style={{ width: none ? "50%" : `${b}%`, opacity: none ? 0.25 : 1 }} />
+                </div>
+                <div className="mt-1 flex justify-between text-[10px] font-black tabular-nums text-muted-foreground">
+                  <span className="text-primary">{none ? "—" : `${a}%`}</span>
+                  <span className="uppercase tracking-widest">Community</span>
+                  <span className="text-sky-400">{none ? "—" : `${b}%`}</span>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {sides.length !== 2 && (
+      <div className="grid grid-cols-2 gap-3">
         {sides.map((side) => {
           const ids = side.members.map((m) => m.wrestler.id);
           const isSel = hasTeams ? side.members.some((m) => m.team === selectedTeam) && selectedTeam !== null : ids.includes(selectedId ?? "");
@@ -308,6 +353,7 @@ export default function PredictionCard({
           );
         })}
       </div>
+      )}
 
       <div className="pt-3 border-t border-white/5 mt-4 min-h-[32px]">{footer}</div>
       <SignUpPrompt open={showSignUp} onClose={() => setShowSignUp(false)} reason="predict" />

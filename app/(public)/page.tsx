@@ -15,6 +15,8 @@ import {
 import { getUserFromServerCookie } from "@lib/server-auth";
 import FeaturedEventCycler from "@components/FeaturedEventCycler";
 import HomePoll from "@components/HomePoll";
+import TonightHero from "@components/TonightHero";
+import ForYou from "@components/ForYou";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -295,6 +297,9 @@ export default async function Home() {
             })}
           </div>
         </nav>
+
+        <TonightHero />
+        {userId && <ForYou userId={userId} />}
 
         {/* ── Latest Events ── */}
         {latestEvents.length > 0 && (

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendEventReminders } from "@lib/reminders";
+import { sendEventReminders, sendResultsReady } from "@lib/reminders";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -14,7 +14,12 @@ export async function GET(req: Request) {
   }
 
   try {
-    return NextResponse.json({ success: true, ...(await sendEventReminders()) });
+    const reminders = await sendEventReminders();
+    const results = await sendResultsReady().catch((err) => {
+      console.error("[cron] results-ready failed:", err);
+      return { error: String(err?.message ?? err) };
+    });
+    return NextResponse.json({ success: true, ...reminders, results });
   } catch (err: any) {
     console.error("[cron] event-reminders failed:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

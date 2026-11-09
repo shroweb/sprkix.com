@@ -14,7 +14,10 @@ describe("jwt helpers", () => {
 
   it("rejects a tampered token", async () => {
     const token = await signToken({ userId: "user_123" }, "1h");
-    const tampered = token.slice(0, -1) + (token.endsWith("a") ? "b" : "a");
+    // Flip a character in the middle of the signature. The final base64url char only carries
+    // partial bits, so changing it can still decode to the same bytes (a flaky false pass).
+    const i = token.length - 10;
+    const tampered = token.slice(0, i) + (token[i] === "a" ? "b" : "a") + token.slice(i + 1);
     expect(await verifyToken(tampered)).toBeNull();
   });
 

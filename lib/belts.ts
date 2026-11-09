@@ -26,7 +26,7 @@ export interface ParsedChampionship {
 
 const PROMO_RE = /^(WWE|WWF|WCW|ECW|AEW|TNA|ROH|NJPW|IWGP|NOAH|GHC|AJPW|STARDOM|NXT|MLW|CMLL|AAA|NWA|DDT|AIW|PWG|EVOLVE|WXW)\b/i;
 const KEYWORD_RE =
-  /heavyweight|cruiserweight|openweight|tag team|trios|world|intercontinental|united states|\bus\b|continental|television|\btv\b|women'?s|knockouts|x-division|junior|european|hardcore|crown jewel|triple crown|world title|championship|national|speed|iwgp|nxt|ring of honor|mid-?atlantic|international/i;
+  /heavyweight|cruiserweight|openweight|tag team|trios|world|intercontinental|united states|\bus\b|continental|television|\btv\b|women'?s|knockouts|x-division|junior|european|hardcore|crown jewel|triple crown|world title|championship|national|speed|iwgp|nxt|ring of honor|mid-?atlantic|international|undisputed|unified/i;
 
 const clean = (s: string) => s.replace(/\s+/g, " ").trim();
 

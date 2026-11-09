@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Bell, MessageSquare, Star, UserPlus, X, Target, ThumbsUp, XCircle } from "lucide-react";
+import { Bell, MessageSquare, Star, UserPlus, X, Target, ThumbsUp, XCircle, AlarmClock, Trophy } from "lucide-react";
 import Link from "next/link";
 
-type NotificationType = "reply" | "review" | "follow" | "prediction_correct" | "prediction_wrong" | "upvote";
+type NotificationType = "reply" | "review" | "follow" | "prediction_correct" | "prediction_wrong" | "upvote" | "event_reminder" | "results_ready";
 
 type Notification = {
   id: string;
@@ -43,6 +43,16 @@ const TYPE_CONFIG: Record<NotificationType, { icon: React.ReactNode; bg: string;
     icon: <Star className="w-3.5 h-3.5 text-primary fill-current" />,
     bg: "bg-primary/20",
     dot: "bg-primary",
+  },
+  event_reminder: {
+    icon: <AlarmClock className="w-3.5 h-3.5 text-amber-400" />,
+    bg: "bg-amber-500/20",
+    dot: "bg-amber-400",
+  },
+  results_ready: {
+    icon: <Trophy className="w-3.5 h-3.5 text-emerald-400" />,
+    bg: "bg-emerald-500/20",
+    dot: "bg-emerald-400",
   },
   reply: {
     icon: <MessageSquare className="w-3.5 h-3.5 text-purple-400" />,
@@ -144,9 +154,14 @@ export default function NotificationBell() {
                 </span>
               )}
             </div>
-            <button onClick={() => setOpen(false)} className="p-1 hover:bg-secondary rounded-lg transition-colors">
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
+            <div className="flex items-center gap-1">
+              <Link href="/profile/edit#notifications" onClick={() => setOpen(false)} className="px-2 py-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary">
+                Settings
+              </Link>
+              <button onClick={() => setOpen(false)} aria-label="Close notifications" className="p-1 hover:bg-secondary rounded-lg transition-colors">
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+            </div>
           </div>
 
           {/* List */}

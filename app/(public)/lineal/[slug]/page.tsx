@@ -76,6 +76,36 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
     return { loser: loser?.wrestler.name ?? null, event: m.event };
   };
 
+  // ── Records + timeline ────────────────────────────────────────────────
+  const reignDays = (r: (typeof title.reigns)[number]) => daysBetween(r.startedAt, r.endedAt ?? now);
+  const chronological = [...title.reigns].sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime());
+  const totalDays = chronological.reduce((a, r) => a + reignDays(r), 0) || 1;
+  const longest = [...title.reigns].sort((a, b) => reignDays(b) - reignDays(a))[0];
+  const shortest = [...title.reigns].filter((r) => r.endedAt).sort((a, b) => reignDays(a) - reignDays(b))[0];
+  const mostDefences = [...title.reigns].sort((a, b) => b.defences - a.defences)[0];
+  const perHolder = new Map<string, { name: string; slug: string; reigns: number; days: number }>();
+  for (const r of title.reigns) {
+    const e = perHolder.get(r.wrestlerId) ?? { name: r.wrestler.name, slug: r.wrestler.slug, reigns: 0, days: 0 };
+    e.reigns += 1;
+    e.days += reignDays(r);
+    perHolder.set(r.wrestlerId, e);
+  }
+  const holders = [...perHolder.values()];
+  const mostReigns = [...holders].sort((a, b) => b.reigns - a.reigns || b.days - a.days)[0];
+  const mostDays = [...holders].sort((a, b) => b.days - a.days)[0];
+  const hue = (id: string) => {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 360;
+    return h;
+  };
+  const records = [
+    longest && { k: "Longest reign", v: `${reignDays(longest).toLocaleString()} days`, who: longest.wrestler.name, slug: longest.wrestler.slug },
+    mostReigns && { k: "Most reigns", v: `${mostReigns.reigns}`, who: mostReigns.name, slug: mostReigns.slug },
+    mostDays && { k: "Most days combined", v: `${mostDays.days.toLocaleString()} days`, who: mostDays.name, slug: mostDays.slug },
+    shortest && { k: "Shortest reign", v: `${reignDays(shortest)} day${reignDays(shortest) === 1 ? "" : "s"}`, who: shortest.wrestler.name, slug: shortest.wrestler.slug },
+    mostDefences && mostDefences.defences > 0 && { k: "Most defences", v: `${mostDefences.defences}`, who: mostDefences.wrestler.name, slug: mostDefences.wrestler.slug },
+  ].filter(Boolean) as { k: string; v: string; who: string; slug: string }[];
+
   const breadcrumbs = breadcrumbLd([
     { name: "Home", path: "/" },
     { name: "Lineal Championships", path: "/lineal" },
@@ -121,6 +151,42 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
             <p className="text-sm text-muted-foreground mt-1">
               {daysBetween(current.startedAt, now)} days · {current.defences} defence{current.defences === 1 ? "" : "s"} since {fmt(current.startedAt)}
             </p>
+          </div>
+        </section>
+      )}
+
+      {title.reigns.length > 1 && (
+        <section className="space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">Records</h2>
+          <div className="grid grid-cols-2 gap-px bg-white/10 sm:grid-cols-3">
+            {records.map((r) => (
+              <div key={r.k} className="bg-slate-950 p-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{r.k}</p>
+                <p className="text-2xl font-black tabular-nums">{r.v}</p>
+                <Link href={`/wrestlers/${r.slug}`} className="block truncate text-xs font-bold uppercase italic text-primary hover:underline">{r.who}</Link>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Timeline · width = days held</p>
+            <div className="flex h-8 w-full gap-px overflow-hidden bg-white/5" role="img" aria-label="Reign lengths over time">
+              {chronological.map((r) => (
+                <Link
+                  key={r.id}
+                  href={`/wrestlers/${r.wrestler.slug}`}
+                  title={`${r.wrestler.name} · ${reignDays(r)} days`}
+                  className="relative min-w-[3px] transition-opacity hover:opacity-80"
+                  style={{ flexGrow: reignDays(r) / totalDays, flexBasis: 0, background: `hsl(${hue(r.wrestlerId)} 55% ${r.endedAt ? 45 : 60}%)` }}
+                >
+                  {!r.endedAt && <span className="pr-live-dot absolute right-1 top-1 h-1.5 w-1.5 bg-white" />}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-1 flex justify-between text-[10px] font-bold tabular-nums text-muted-foreground">
+              <span>{chronological[0]?.startedAt.getUTCFullYear()}</span>
+              <span>{now.getUTCFullYear()}</span>
+            </div>
           </div>
         </section>
       )}

@@ -102,6 +102,69 @@ export async function sendEventReminders(now = new Date()) {
   return { events: events.length, notified, emailed };
 }
 
+const RESULTS_TYPE = "results_ready";
+
+/**
+ * "Results are in" nudge for people who made picks on a show that just ended.
+ * Idempotent per user+event via the notification record; in-app + push only (no email).
+ */
+export async function sendResultsReady(now = new Date()) {
+  const since = new Date(now.getTime() - 36 * HOUR);
+  const events = await prisma.event.findMany({
+    where: { enablePredictions: true, date: { gte: since, lte: now } },
+    select: {
+      id: true, title: true, slug: true,
+      matches: {
+        select: {
+          id: true,
+          participants: { select: { wrestlerId: true, isWinner: true } },
+          predictions: { select: { userId: true, predictedWinnerId: true } },
+        },
+      },
+    },
+  });
+
+  let notified = 0;
+  for (const event of events) {
+    const resolved = event.matches.filter((m) => m.participants.some((p) => p.isWinner));
+    // Wait until the card is fully graded so the score we quote is final.
+    if (resolved.length === 0 || resolved.length < event.matches.filter((m) => m.participants.length >= 2).length) continue;
+
+    const score = new Map<string, { right: number; total: number }>();
+    for (const m of resolved) {
+      const winners = new Set(m.participants.filter((p) => p.isWinner).map((p) => p.wrestlerId));
+      for (const pr of m.predictions) {
+        if (!pr.predictedWinnerId) continue;
+        const e = score.get(pr.userId) ?? { right: 0, total: 0 };
+        e.total++;
+        if (winners.has(pr.predictedWinnerId)) e.right++;
+        score.set(pr.userId, e);
+      }
+    }
+    if (score.size === 0) continue;
+
+    const link = `/events/${event.slug}`;
+    const done = await prisma.notification.findMany({
+      where: { type: RESULTS_TYPE, link, userId: { in: [...score.keys()] } },
+      select: { userId: true },
+    });
+    const doneSet = new Set(done.map((n) => n.userId));
+
+    for (const [userId, { right, total }] of score) {
+      if (doneSet.has(userId) || notified >= MAX_RECIPIENTS_PER_RUN) continue;
+      const message = right === total && total >= 3 ? `Perfect card! ${right}/${total} 🔥` : `You got ${right}/${total} right`;
+      try {
+        await prisma.notification.create({ data: { userId, type: RESULTS_TYPE, message, detail: event.title, link } });
+        notified++;
+        await sendPushToUser(userId, { title: message, body: event.title, data: { path: link } });
+      } catch (err) {
+        console.error(`[results-ready] Failed for user ${userId} / event ${event.slug}:`, err);
+      }
+    }
+  }
+  return { events: events.length, notified };
+}
+
 export async function sendWeeklyDigest(now = new Date()) {
   const weekAgo = new Date(now.getTime() - 7 * 24 * HOUR);
   const weekAhead = new Date(now.getTime() + 7 * 24 * HOUR);

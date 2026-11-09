@@ -11,6 +11,7 @@ import FollowListModal from "@components/FollowListModal";
 import VisualRating from "@components/VisualRating";
 import UserAvatar from "@components/UserAvatar";
 import PredictionsList from "@components/PredictionsList";
+import TrophyCase from "@components/TrophyCase";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -189,6 +190,8 @@ export default async function UserProfilePage({
       isCorrect: true,
       match: {
         select: {
+          eventId: true,
+          event: { select: { promotion: true, date: true } },
           participants: {
             where: { isWinner: true },
             select: { wrestlerId: true },
@@ -198,6 +201,7 @@ export default async function UserProfilePage({
     },
   });
 
+  const trophyPicks: { correct: boolean; promotion: string; date: Date; eventId: string }[] = [];
   let predictionScore = 0;
   const predictionCount = allUserPredictions.length;
   for (const p of allUserPredictions) {
@@ -206,7 +210,18 @@ export default async function UserProfilePage({
         ? p.isCorrect
         : p.match.participants.some((mp: any) => mp.wrestlerId === p.predictedWinnerId);
     if (isCorrect) predictionScore++;
+    trophyPicks.push({
+      correct: isCorrect,
+      promotion: (p.match as any).event.promotion,
+      date: (p.match as any).event.date,
+      eventId: (p.match as any).eventId,
+    });
   }
+  const badges = await prisma.userBadge.findMany({
+    where: { userId: profileUser.id },
+    select: { id: true, icon: true, title: true },
+    orderBy: { awardedAt: "asc" },
+  });
   const predictionAccuracy =
     predictionCount > 0 ? Math.round((predictionScore / predictionCount) * 100) : null;
 
@@ -431,6 +446,8 @@ export default async function UserProfilePage({
             </div>
           )}
         </section>
+
+        <TrophyCase picks={trophyPicks} badges={badges} />
 
         {/* Predictions Section */}
         {predictionCount > 0 && (
