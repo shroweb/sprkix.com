@@ -23,6 +23,7 @@ import HomePoll from "@components/HomePoll";
 import LiveChatContainer from "@components/LiveChatContainer";
 import Countdown from "@components/Countdown";
 import EventTabs, { type EventTab } from "@components/EventTabs";
+import EventComments from "@components/EventComments";
 import WatchlistIcon from "@components/WatchlistIcon";
 import WatchedIcon from "@components/WatchedIcon";
 import AddToListButton from "@components/AddToListButton";
@@ -279,6 +280,7 @@ export default async function EventPage({
   const isLive = !!event.startTime && now >= startTime && (endTime === null || now <= endTime);
   const isUpcoming = !isLive && now < startTime;
   const isArchive = !isLive && !isUpcoming;
+  const commentCount = await prisma.eventComment.count({ where: { eventId: event.id, parentId: null } }).catch(() => 0);
   const recap = isArchive && user && event.enablePredictions ? await getRecap(event.slug, user.id).catch(() => null) : null;
 
   // For archive mode: check if there's a chat transcript worth showing
@@ -1016,6 +1018,9 @@ export default async function EventPage({
               if (reviewContent) {
                 tabs.push({ id: "review", label: "Reviews", badge: event.reviews.length });
               }
+              // Comments: open on every event (upcoming, live and archive)
+              const discussionContent = <EventComments eventId={event.id} user={user ? { id: user.id, isAdmin: !!(user as any).isAdmin } : null} />;
+              tabs.push({ id: "discussion", label: "Discussion", badge: commentCount });
 
               // ── Poll tab (show when event has polls) ─────────────────────
               let pollContent: React.ReactNode = undefined;
@@ -1058,6 +1063,7 @@ export default async function EventPage({
                   predictions={predictionsContent}
                   watchParty={watchPartyContent}
                   review={reviewContent}
+                  discussion={discussionContent}
                   poll={pollContent}
                 />
               );

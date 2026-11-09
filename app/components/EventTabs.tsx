@@ -16,6 +16,7 @@ interface EventTabsProps {
   predictions?: React.ReactNode;
   watchParty?: React.ReactNode;
   review?: React.ReactNode;
+  discussion?: React.ReactNode;
   poll?: React.ReactNode;
 }
 
@@ -26,6 +27,7 @@ export default function EventTabs({
   predictions,
   watchParty,
   review,
+  discussion,
   poll,
 }: EventTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab ?? tabs[0]?.id ?? "card");
@@ -35,6 +37,7 @@ export default function EventTabs({
     predictions,
     watchParty,
     review,
+    discussion,
     poll,
   };
 
