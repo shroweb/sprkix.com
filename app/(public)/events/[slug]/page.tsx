@@ -85,7 +85,9 @@ export async function generateMetadata({
       url: `${siteUrl}/events/${slug}`,
       title: `${cleanTitle} – ${event.promotion}`,
       description: desc,
-      images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: `${cleanTitle} – ${event.promotion} poster` }],
+      siteName: "Poison Rana",
+      locale: "en_GB",
       type: "website",
     },
     twitter: {

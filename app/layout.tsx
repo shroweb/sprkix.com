@@ -1,7 +1,9 @@
 import "./globals.css";
 
 import { prisma } from "@lib/prisma";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = { themeColor: "#0d1020" };
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteName = "Poison Rana";
@@ -56,6 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${siteName} | ${tagline}`,
       description,
     },
+    manifest: "/manifest.webmanifest",
     verification: {
       google: "A_qTq_pCJoyzV7hqoJMfyNVDN5XpNWpU1-7z18pIeWM",
     },
