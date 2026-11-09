@@ -464,7 +464,7 @@ export default async function EventPage({
         </Link>
 
         {/* Mobile-first Title & Metadata Header */}
-        <div className="space-y-6 mb-8 sm:mb-10 rounded-2xl sm:rounded-3xl border border-white/10 bg-black/25 backdrop-blur-xl p-5 sm:p-8 shadow-2xl shadow-black/20">
+        <div className="space-y-6 mb-8 sm:mb-10 rounded-2xl sm:rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl p-5 sm:p-8 shadow-2xl shadow-black/20">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-4 flex-1">
               <div className="flex items-center gap-3">
@@ -481,8 +481,8 @@ export default async function EventPage({
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9] break-words hyphens-auto">
                 {event.title.replace(/–\s\d{4}-\d{2}-\d{2}$/, "")}
               </h1>
-              <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
-                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
+              <div className="flex flex-wrap items-center gap-2 text-foreground">
+                <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/40 px-3 py-2">
                   <Calendar className="w-4 h-4 text-primary" />
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                     {new Date(event.date).toLocaleDateString("en-US", {
@@ -493,7 +493,7 @@ export default async function EventPage({
                   </span>
                 </div>
                 {(event.venue || event.city) && (
-                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/40 px-3 py-2">
                     <MapPin className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                       {[event.venue, event.city].filter(Boolean).join(" · ")}
@@ -501,7 +501,7 @@ export default async function EventPage({
                   </div>
                 )}
                 {event.attendance && (
-                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/40 px-3 py-2">
                     <Users className="w-4 h-4 text-primary shrink-0" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">
                       {event.attendance.toLocaleString()} Attendance
@@ -515,7 +515,7 @@ export default async function EventPage({
                   variant="header-pill"
                 />
                 {!event.venue && !event.city && (
-                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/40 px-3 py-2">
                     <Clock className="w-4 h-4 text-primary" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Archive Record</span>
                   </div>
@@ -688,9 +688,9 @@ export default async function EventPage({
 
           {/* Right Column: Content */}
           <div className="space-y-8 sm:space-y-12 min-w-0">
-            <div className="relative rounded-2xl border border-white/10 bg-card/30 p-5 sm:p-7">
+            <div className="relative rounded-2xl border border-white/15 bg-black/70 backdrop-blur-md p-5 sm:p-7">
               <div className="hidden sm:block absolute top-0 left-0 w-1 h-full bg-primary/20 rounded-full"></div>
-              <p className="sm:pl-6 text-lg sm:text-xl text-foreground font-medium italic leading-relaxed max-w-3xl">
+              <p className="sm:pl-6 text-base sm:text-lg text-foreground/95 font-normal not-italic leading-8 max-w-prose">
                 {event.description ||
                   "The curtains are drawn on this chapter of history. No description has been salvaged yet."}
               </p>
@@ -699,25 +699,25 @@ export default async function EventPage({
             {/* At a Glance Dashboard */}
             {processedMatches.length > 0 && (
               <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
-                <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                     {processedMatches.length}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-foreground/75">
                     Matches on this Card
                   </span>
                 </div>
                 {!isUpcoming && (
-                  <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                  <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
                     <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                       {durationStr ?? "—"}
                     </span>
-                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">
+                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-foreground/75 whitespace-nowrap">
                       Card Duration
                     </span>
                   </div>
                 )}
-                <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <div className="flex items-center gap-1.5">
                     <Star className="w-5 h-5 text-primary fill-current" />
                     <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-primary tracking-tighter">
@@ -729,15 +729,15 @@ export default async function EventPage({
                       <VisualRating rating={topMatch.averageRating} size="xs" />
                     )}
                   </div>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary/60 whitespace-nowrap">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-primary whitespace-nowrap">
                     Peak Performance
                   </span>
                 </div>
-                <div className="bg-card/40 border border-white/5 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                     {watchCount}
                   </span>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 whitespace-nowrap">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-foreground/75 whitespace-nowrap">
                     Watchers
                   </span>
                 </div>
