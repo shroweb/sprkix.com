@@ -6,7 +6,7 @@ import SignUpPrompt from "@components/SignUpPrompt";
 import { BeltArt } from "@components/BeltImage";
 import { parseChampionship } from "@lib/belts";
 import { inferTeams, groupSides } from "@lib/match-sides";
-import FaceOff, { Photo, COLS, colsFor, aspectFor } from "@components/FaceOff";
+import FaceOff, { Photo, COLS, colsFor, aspectFor, cellSpan } from "@components/FaceOff";
 
 interface Wrestler {
   id: string;
@@ -268,8 +268,10 @@ export default function PredictionCard({
                 >
                   {side.members.length > 1 ? (
                     <div className={`grid gap-px ${COLS[colsFor(Math.min(side.members.length, 6))]} ${aspectFor(Math.min(side.members.length, 6), true)}`}>
-                      {side.members.slice(0, 6).map((m) => (
-                        <Photo key={m.wrestler.id} name={m.wrestler.name} src={m.wrestler.imageUrl} tall fill label />
+                      {side.members.slice(0, 6).map((m, mi, arr) => (
+                        <div key={m.wrestler.id} className={`min-h-0 ${cellSpan(mi, arr.length)}`}>
+                          <Photo name={m.wrestler.name} src={m.wrestler.imageUrl} tall fill label />
+                        </div>
                       ))}
                     </div>
                   ) : (

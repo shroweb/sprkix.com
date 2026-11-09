@@ -28,14 +28,18 @@ export function Photo({ name, src, tall, fill = false, slug, label = false }: { 
   );
 }
 
-export const COLS: Record<number, string> = { 1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3" };
-/** Columns used to lay out a side with n members (3 in a row, 4 as 2x2, 5-6 as 3x2). */
+export const COLS: Record<number, string> = { 1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-2" };
+/** Columns for a side with n members: always at most 2 so names stay readable in narrow cards. */
 export function colsFor(n: number) {
-  return n <= 3 ? n : n === 4 ? 2 : 3;
+  return n <= 1 ? 1 : 2;
 }
-/** Overall aspect of a multi-member side so every member gets a roughly portrait cell. */
+/** With an odd count the last wrestler spans the full row (e.g. a trio = 2 on top, 1 wide below). */
+export function cellSpan(i: number, n: number) {
+  return n > 2 && n % 2 === 1 && i === n - 1 ? "col-span-2" : "";
+}
+/** Overall aspect of a multi-member side: 1-2 rows stay as tall as a singles photo; 3 rows get taller. */
 export function aspectFor(n: number, tall: boolean) {
-  if (n === 3 || n >= 5) return tall ? "aspect-square" : "aspect-[3/2]";
+  if (n >= 5) return tall ? "aspect-[2/3]" : "aspect-[3/4]";
   return tall ? "aspect-[3/4]" : "aspect-square";
 }
 
@@ -69,8 +73,10 @@ export default function FaceOff({
           <div key={side.key} className={`relative min-w-0 flex-1 ${multi ? "basis-1/3" : ""} ${lost ? "opacity-50 saturate-50" : ""} transition-opacity`}>
             {side.members.length > 1 ? (
               <div className={`grid gap-px ${COLS[colsFor(Math.min(side.members.length, 6))]} ${aspectFor(Math.min(side.members.length, 6), tall)}`}>
-                {side.members.slice(0, 6).map((m) => (
-                  <Photo key={m.wrestler.id} name={m.wrestler.name} src={m.wrestler.imageUrl} slug={m.wrestler.slug} tall={tall} fill label />
+                {side.members.slice(0, 6).map((m, mi, arr) => (
+                  <div key={m.wrestler.id} className={`min-h-0 ${cellSpan(mi, arr.length)}`}>
+                    <Photo name={m.wrestler.name} src={m.wrestler.imageUrl} slug={m.wrestler.slug} tall={tall} fill label />
+                  </div>
                 ))}
               </div>
             ) : (
