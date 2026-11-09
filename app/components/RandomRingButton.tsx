@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function RandomRingButton({ 
     eventSlugs, 
-    className = "group inline-flex h-14 items-center justify-center gap-2.5 rounded-xl border border-white/20 bg-black/40 px-6 text-sm font-black uppercase italic tracking-wider text-slate-200 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/60 hover:bg-amber-400/10 hover:text-amber-300 hover:shadow-lg hover:shadow-amber-400/20 active:translate-y-0 disabled:opacity-50",
+    className = "group inline-flex h-14 items-center justify-center gap-2.5 rounded-xl border border-white/20 bg-black/40 px-6 text-sm font-bold uppercase tracking-wider text-slate-200 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/60 hover:bg-amber-400/10 hover:text-amber-300 hover:shadow-lg hover:shadow-amber-400/20 active:translate-y-0 disabled:opacity-50",
     label = "Random Event"
 }: { 
     eventSlugs: string[], 

@@ -28,7 +28,7 @@ export default function StarDisplay({ rating, showNumber = false }: { rating: nu
         })}
       </div>
       {showNumber && (
-        <span className="text-xs font-bold italic tracking-tighter text-primary">
+        <span className="text-xs font-bold tracking-tighter text-primary">
           {rating.toFixed(2)}
         </span>
       )}

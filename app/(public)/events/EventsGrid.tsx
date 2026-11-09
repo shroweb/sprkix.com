@@ -108,7 +108,7 @@ export default function EventsGrid({
       </Link>
       <div className="flex flex-col justify-between gap-6 rounded-2xl border border-white/10 bg-gradient-to-br from-card/80 via-card/40 to-card/10 p-5 shadow-xl shadow-black/20 sm:rounded-3xl sm:p-8 lg:flex-row lg:items-end">
         <div className="space-y-2">
-          <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+          <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
             {events.length.toLocaleString()} shows indexed
           </span>
           <h1 className="text-3xl sm:text-5xl font-black italic uppercase tracking-tighter">
@@ -151,7 +151,7 @@ export default function EventsGrid({
                     if (random) window.location.href = `/events/${random.slug}`;
                 }}
                 aria-label="Open a random event"
-                className="group flex h-12 shrink-0 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-4 text-xs font-bold uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-black sm:px-5"
+                className="group flex h-12 shrink-0 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-4 text-xs font-bold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-black sm:px-5"
             >
                 <Zap className="w-3 h-3 group-hover:scale-110 transition-transform" />
                 <span className="hidden sm:inline">Random</span>
@@ -162,7 +162,7 @@ export default function EventsGrid({
 
       {/* Year Pills */}
       <div className="flex gap-2 items-center overflow-x-auto no-scrollbar pb-2 [scrollbar-width:none]">
-        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
           Year
         </span>
         {["All", ...uniqueYears.map(String)].map((year) => (
@@ -254,7 +254,7 @@ export default function EventsGrid({
 
         <div className="hidden flex-1 sm:block"></div>
 
-        <span aria-live="polite" className="col-span-2 pt-1 text-center text-[11px] font-bold uppercase tracking-widest text-muted-foreground sm:col-auto sm:pt-0 sm:text-left sm:text-xs">
+        <span aria-live="polite" className="col-span-2 pt-1 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground sm:col-auto sm:pt-0 sm:text-left sm:text-xs">
           {filteredEvents.length} {filteredEvents.length === 1 ? "entry" : "entries"} found
         </span>
       </div>
@@ -345,24 +345,24 @@ export default function EventsGrid({
                         </span>
                       </div>
                     ) : (
-                      <p className="text-[11px] font-bold text-white/75 uppercase tracking-widest">
+                      <p className="text-[11px] font-bold text-white/75 uppercase tracking-wider">
                         No reviews yet
                       </p>
                     )}
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
                       {isReviewed ? "✓ You reviewed this" : "View Event →"}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <h2 className="line-clamp-2 min-h-8 text-xs font-bold uppercase italic leading-tight transition-colors group-hover:text-primary sm:text-sm">
+              <h2 className="line-clamp-2 min-h-8 text-xs font-bold uppercase leading-tight transition-colors group-hover:text-primary sm:text-sm">
                 {event.title
                   .replace(/–\s\d{4}(\s–\s\d{2}\s–\s\d{2}|-\d{2}-\d{2})$/, "")
                   .trim()}
               </h2>
               <div className="flex items-center justify-between mt-2">
-                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold uppercase tracking-wider">
                   <Calendar className="w-3 h-3 text-primary" />
                   {new Date(event.date).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -414,7 +414,7 @@ export default function EventsGrid({
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="text-sm font-black italic uppercase tracking-widest">
+          <span className="text-sm font-bold uppercase tracking-wider">
             Page {currentPage} of {totalPages}
           </span>
           <button

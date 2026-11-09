@@ -41,7 +41,7 @@ export default function UnderlineTabs({ tabs, initial }: { tabs: TabDef[]; initi
               aria-selected={on}
               aria-controls={`panel-${t.id}`}
               onClick={() => select(t.id)}
-              className={`relative whitespace-nowrap px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] transition-colors ${
+              className={`relative whitespace-nowrap px-4 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${
                 on ? "text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -59,7 +59,7 @@ export default function UnderlineTabs({ tabs, initial }: { tabs: TabDef[]; initi
           id={`panel-${t.id}`}
           aria-labelledby={`tab-${t.id}`}
           hidden={t.id !== active}
-          className="pr-rise space-y-12 pt-8"
+          className="pr-rise space-y-8 sm:space-y-12 pt-8"
         >
           {t.content}
         </div>

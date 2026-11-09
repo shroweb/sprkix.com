@@ -62,10 +62,10 @@ export default function PredictionsList({ predictions }: { predictions: Predicti
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/75 mb-0.5">
+              <p className="text-xs font-bold uppercase tracking-wider text-white/75 mb-0.5">
                 {pred.match.event.promotion} · {new Date(pred.match.event.date).getFullYear()}
               </p>
-              <p className="text-sm font-black italic uppercase tracking-tight text-white/80 group-hover:text-white transition-colors truncate">
+              <p className="text-sm font-bold uppercase tracking-tight text-white/80 group-hover:text-white transition-colors truncate">
                 {names}
               </p>
               {predictedWrestler && (
@@ -78,7 +78,7 @@ export default function PredictionsList({ predictions }: { predictions: Predicti
               )}
             </div>
             <div
-              className={`text-[11px] font-bold uppercase tracking-widest shrink-0 ${
+              className={`text-[11px] font-bold uppercase tracking-wider shrink-0 ${
                 isCorrect ? "text-emerald-400" : "text-red-400/70"
               }`}
             >
@@ -91,7 +91,7 @@ export default function PredictionsList({ predictions }: { predictions: Predicti
       {hasMore && (
         <button
           onClick={() => setVisible((v) => v + PAGE_SIZE)}
-          className="w-full py-3 rounded-2xl border border-white/10 text-[11px] font-bold uppercase tracking-widest text-white/75 hover:text-white hover:border-white/20 transition-all"
+          className="w-full py-3 rounded-2xl border border-white/10 text-[11px] font-bold uppercase tracking-wider text-white/75 hover:text-white hover:border-white/20 transition-all"
         >
           Show more ({predictions.length - visible} remaining)
         </button>

@@ -116,7 +116,7 @@ export default function ChampionsClient({ initialChampions }: Props) {
               <button
                 key={p.code}
                 onClick={() => setSelectedPromo(p.code)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold uppercase italic tracking-wider transition-all shrink-0 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shrink-0 ${
                   active
                     ? "bg-primary text-slate-950 shadow-lg shadow-primary/20 scale-[1.02]"
                     : "border border-white/10 bg-white/[0.03] text-muted-foreground hover:bg-white/[0.08] hover:text-white"
@@ -158,7 +158,7 @@ export default function ChampionsClient({ initialChampions }: Props) {
 
       {/* Championship Cards Grid */}
       {filteredChampions.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-white/10 bg-card/85 p-12 text-center space-y-3">
+        <div className="rounded-3xl border border-dashed border-white/10 bg-card/85 p-6 sm:p-12 text-center space-y-3">
           <Trophy className="w-10 h-10 text-muted-foreground/80 mx-auto" />
           <p className="text-lg font-black italic uppercase text-white tracking-tight">
             No championships matched your search
@@ -210,13 +210,13 @@ export default function ChampionsClient({ initialChampions }: Props) {
 
                   {/* Champions */}
                   <div className="space-y-3 pt-3 border-t border-white/10">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground block">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
                       {c.champions.length > 1 ? "Reigning Champions" : "Reigning Champion"}
                     </span>
                     <div className="space-y-2.5">
                       {c.champions.map((champ) => (
                         <div key={champ.name} className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-full overflow-hidden border border-white/10 bg-secondary shrink-0 flex items-center justify-center font-black text-muted-foreground text-sm">
+                          <div className="w-11 h-11 rounded-full overflow-hidden border border-white/10 bg-secondary shrink-0 flex items-center justify-center font-bold text-muted-foreground text-sm">
                             {champ.imageUrl ? (
                               <Image
                                 src={champ.imageUrl}
@@ -233,12 +233,12 @@ export default function ChampionsClient({ initialChampions }: Props) {
                             {champ.slug ? (
                               <Link
                                 href={`/wrestlers/${champ.slug}`}
-                                className="font-black italic uppercase tracking-tight text-sm text-white hover:text-primary transition-colors truncate block"
+                                className="font-bold uppercase tracking-tight text-sm text-white hover:text-primary transition-colors truncate block"
                               >
                                 {champ.name}
                               </Link>
                             ) : (
-                              <span className="font-black italic uppercase tracking-tight text-sm text-white truncate block">
+                              <span className="font-bold uppercase tracking-tight text-sm text-white truncate block">
                                 {champ.name}
                               </span>
                             )}

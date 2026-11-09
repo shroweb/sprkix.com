@@ -199,7 +199,7 @@ export default function FAQPage() {
       </div>
 
       {/* Sections */}
-      <div className="space-y-16">
+      <div className="space-y-10 sm:space-y-16">
         {sections.map((section) => (
           <section
             key={section.title}
@@ -222,7 +222,7 @@ export default function FAQPage() {
                   className="group bg-card/85 border border-white/5 hover:border-primary/20 rounded-2xl overflow-hidden transition-colors"
                 >
                   <summary className="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer list-none">
-                    <span className="font-black text-sm uppercase italic tracking-tight">
+                    <span className="font-bold text-sm uppercase tracking-tight">
                       {item.q}
                     </span>
                     <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-180" />
@@ -240,7 +240,7 @@ export default function FAQPage() {
       </div>
 
       {/* CTA */}
-      <div className="mt-20 bg-card/85 border border-primary/20 rounded-3xl p-8 sm:p-12 text-center space-y-4">
+      <div className="mt-20 bg-card/85 border border-primary/20 rounded-3xl p-5 sm:p-8 sm:p-12 text-center space-y-4">
         <h3 className="text-2xl font-bold italic uppercase tracking-tight">
           Ready to get started?
         </h3>
@@ -250,13 +250,13 @@ export default function FAQPage() {
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <Link
             href="/register"
-            className="h-12 px-8 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl shadow-xl shadow-primary/30 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/30] hover:scale-105 active:scale-95 transition-all"
+            className="h-12 px-8 bg-primary text-black text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 rounded-2xl shadow-xl shadow-primary/30 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/30] hover:scale-105 active:scale-95 transition-all"
           >
             Create Free Account
           </Link>
           <Link
             href="/events"
-            className="h-12 px-8 bg-card/60 border border-white/10 text-white text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-2 rounded-2xl hover:border-primary/30 transition-all"
+            className="h-12 px-8 bg-card/60 border border-white/10 text-white text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 rounded-2xl hover:border-primary/30 transition-all"
           >
             Browse Events
           </Link>

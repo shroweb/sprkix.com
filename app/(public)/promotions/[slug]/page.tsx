@@ -160,7 +160,7 @@ export default async function PromotionDetailPage({
             </div>
           )}
           <div className="min-w-0 space-y-2">
-            <p className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>Promotion Hub</p>
+            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: accent }}>Promotion Hub</p>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter">{promotionName}</h1>
           </div>
         </div>
@@ -172,7 +172,7 @@ export default async function PromotionDetailPage({
           ].map(([k, v]) => (
             <div key={k} className="bg-slate-950/70 px-3 py-4">
               <dd className="text-2xl font-black tabular-nums">{v}</dd>
-              <dt className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{k}</dt>
+              <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{k}</dt>
             </div>
           ))}
         </dl>
@@ -187,7 +187,7 @@ export default async function PromotionDetailPage({
             {upcoming.posterUrl && <Image src={upcoming.posterUrl} alt="" fill sizes="64px" className="object-cover" />}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
+            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: accent }}>
               <Radio className="h-3 w-3" /> Next show
             </p>
             <p className="truncate text-xl font-black italic uppercase tracking-tight group-hover:text-primary">{upcoming.title}</p>
@@ -196,7 +196,7 @@ export default async function PromotionDetailPage({
               {upcoming.city ? ` · ${upcoming.city}` : ""}
             </p>
           </div>
-          <span className="hidden items-center gap-1.5 border px-3 py-2 text-[11px] font-bold uppercase tracking-widest sm:flex" style={{ borderColor: accent, color: accent }}>
+          <span className="hidden items-center gap-1.5 border px-3 py-2 text-[11px] font-bold uppercase tracking-wider sm:flex" style={{ borderColor: accent, color: accent }}>
             <Target className="h-3.5 w-3.5" /> Predict
           </span>
         </Link>
@@ -216,8 +216,8 @@ export default async function PromotionDetailPage({
               >
                 <BeltArt style={c.style} label={c.shortName ?? c.title} name={c.title} height={52} />
                 <div className="min-w-0">
-                  <p className="truncate text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{c.shortName ?? c.title}</p>
-                  <p className="truncate text-sm font-black italic uppercase group-hover:text-primary">
+                  <p className="truncate text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{c.shortName ?? c.title}</p>
+                  <p className="truncate text-sm font-bold uppercase group-hover:text-primary">
                     {c.champions.map((p) => p.name).join(" & ")}
                   </p>
                 </div>
@@ -236,10 +236,10 @@ export default async function PromotionDetailPage({
             {topPredictors.map((p, i) => (
               <li key={p.user.id}>
                 <Link href={`/users/${p.user.slug || p.user.id}`} className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.03]">
-                  <span className="w-5 text-center text-sm font-black tabular-nums text-muted-foreground">{i + 1}</span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-black uppercase italic">{p.user.name ?? "Member"}</span>
+                  <span className="w-5 text-center text-sm font-bold tabular-nums text-muted-foreground">{i + 1}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-bold uppercase ">{p.user.name ?? "Member"}</span>
                   <span className="text-xs font-bold tabular-nums text-muted-foreground">{p.right}/{p.total}</span>
-                  <span className="w-12 text-right text-sm font-black tabular-nums" style={{ color: accent }}>{Math.round((p.right / p.total) * 100)}%</span>
+                  <span className="w-12 text-right text-sm font-bold tabular-nums" style={{ color: accent }}>{Math.round((p.right / p.total) * 100)}%</span>
                 </Link>
               </li>
             ))}

@@ -105,11 +105,11 @@ export default function SubmitEventPage() {
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => { setSuccess(false); setCustomPromotion(""); setForm({ title: "", date: "", promotion: "", venue: "", city: "", attendance: "", network: "", posterUrl: "", description: "", type: "", sourceUrl: "", website: "" }); }}
-            className="px-6 py-2.5 bg-card border border-border rounded-xl text-sm font-black hover:border-primary/30 transition-all"
+            className="px-6 py-2.5 bg-card border border-border rounded-xl text-sm font-bold hover:border-primary/30 transition-all"
           >
             Submit Another
           </button>
-          <button onClick={() => router.push("/events")} className="btn-primary px-6 py-2.5 text-sm font-black">
+          <button onClick={() => router.push("/events")} className="btn-primary px-6 py-2.5 text-sm font-bold">
             Browse Events
           </button>
         </div>
@@ -123,9 +123,9 @@ export default function SubmitEventPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Community</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">Community</span>
         </div>
-        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+        <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter leading-none">
           Submit an Event
         </h1>
         <p className="text-muted-foreground font-medium ">
@@ -147,7 +147,7 @@ export default function SubmitEventPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-card/85 border border-white/5 rounded-[2rem] p-8 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-card/85 border border-white/5 rounded-[2rem] p-5 sm:p-8 space-y-6">
         {/* Honeypot field — hidden from humans, irresistible to bots */}
         <div className="hidden" aria-hidden="true">
           <label htmlFor="website">Website</label>
@@ -169,7 +169,7 @@ export default function SubmitEventPage() {
 
         {/* Title */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <Tag className="w-3 h-3" /> Event Title *
           </label>
           <input
@@ -184,7 +184,7 @@ export default function SubmitEventPage() {
         {/* Date + Promotion */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Calendar className="w-3 h-3" /> Date *
             </label>
             <input
@@ -196,7 +196,7 @@ export default function SubmitEventPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Promotion *
             </label>
             <select
@@ -214,7 +214,7 @@ export default function SubmitEventPage() {
         {/* If Other promotion, free text */}
         {form.promotion === "Other" && (
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Promotion Name *
             </label>
             <input
@@ -230,7 +230,7 @@ export default function SubmitEventPage() {
         {/* Venue + City */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <MapPin className="w-3 h-3" /> Venue
             </label>
             <input
@@ -241,7 +241,7 @@ export default function SubmitEventPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <MapPin className="w-3 h-3" /> City
             </label>
             <input
@@ -256,7 +256,7 @@ export default function SubmitEventPage() {
         {/* Network + Attendance */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Tv className="w-3 h-3" /> Network / Broadcast
             </label>
             <input
@@ -267,7 +267,7 @@ export default function SubmitEventPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Users className="w-3 h-3" /> Attendance
             </label>
             <input
@@ -282,7 +282,7 @@ export default function SubmitEventPage() {
 
         {/* Event Type */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Event Type
           </label>
           <div className="flex flex-wrap gap-2">
@@ -301,7 +301,7 @@ export default function SubmitEventPage() {
 
         {/* Poster Image */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <Image className="w-3 h-3" /> Poster Image
           </label>
           <div className="flex gap-2">
@@ -339,7 +339,7 @@ export default function SubmitEventPage() {
 
         {/* Description */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <FileText className="w-3 h-3" /> Description
           </label>
           <textarea
@@ -353,7 +353,7 @@ export default function SubmitEventPage() {
 
         {/* Source URL — Cagematch / ProFightDB only */}
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <Link2 className="w-3 h-3" /> Source URL *
           </label>
           <input
@@ -376,7 +376,7 @@ export default function SubmitEventPage() {
         <button
           type="submit"
           disabled={saving || uploading}
-          className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-sm font-black disabled:opacity-50"
+          className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-50"
         >
           {saving ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           {saving ? "Submitting..." : "Submit for Review"}

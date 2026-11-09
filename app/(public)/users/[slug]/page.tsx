@@ -251,7 +251,7 @@ export default async function UserProfilePage({
          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
-            <Link href="/events" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/75 hover:text-white transition-colors group mb-8">
+            <Link href="/events" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/75 hover:text-white transition-colors group mb-8">
               <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Events
             </Link>
 
@@ -274,7 +274,7 @@ export default async function UserProfilePage({
                      <CheckCircle className="w-5 h-5 text-blue-400 fill-blue-400/20 shrink-0" />
                    )}
                   {(profileUser as any).isFoundingMember && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] font-bold uppercase tracking-widest shrink-0">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] font-bold uppercase tracking-wider shrink-0">
                       ⚡ Founding Member
                     </span>
                   )}
@@ -285,7 +285,7 @@ export default async function UserProfilePage({
                    {isOwnProfile ? (
                      <Link
                        href="/profile"
-                       className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-bold uppercase tracking-widest text-white/80 hover:text-white transition-all"
+                       className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-bold uppercase tracking-wider text-white/80 hover:text-white transition-all"
                      >
                        Edit My Profile
                      </Link>
@@ -300,20 +300,20 @@ export default async function UserProfilePage({
                <div className="flex gap-6 sm:gap-8 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-8 w-full sm:w-auto shrink-0">
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-primary block leading-none">{avgRating || "—"}</span>
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Avg Rating</span>
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Avg Rating</span>
                  </div>
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-white block leading-none">{profileUser.reviews.length}</span>
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Reviews</span>
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Reviews</span>
                  </div>
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-sky-400 block leading-none">{cardsCompleted}</span>
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Cards Done</span>
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Cards Done</span>
                  </div>
                  {predictionAccuracy !== null && (
                    <div className="space-y-0.5">
                      <span className="text-2xl sm:text-3xl font-black italic text-emerald-400 block leading-none">{predictionAccuracy}%</span>
-                     <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Predictions</span>
+                     <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Predictions</span>
                    </div>
                  )}
                </div>
@@ -331,8 +331,8 @@ export default async function UserProfilePage({
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
-              <p className="text-xs sm:text-sm font-bold italic truncate">{memberSince}</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Joined</p>
+              <p className="text-xs sm:text-sm font-bold truncate">{memberSince}</p>
             </div>
           </div>
           <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
@@ -340,8 +340,8 @@ export default async function UserProfilePage({
               <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
-              <p className="text-xs sm:text-sm font-bold italic truncate">{favPromotion ?? "—"}</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Fav Promotion</p>
+              <p className="text-xs sm:text-sm font-bold truncate">{favPromotion ?? "—"}</p>
             </div>
           </div>
           <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6 group">
@@ -349,14 +349,14 @@ export default async function UserProfilePage({
               <Target className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Predictions</p>
               {predictionCount > 0 ? (
-                <p className="text-xs sm:text-sm font-bold italic">
+                <p className="text-xs sm:text-sm font-bold ">
                   {predictionScore}/{predictionCount}
                   <span className="text-emerald-400 ml-1 sm:ml-2">{predictionAccuracy}%</span>
                 </p>
               ) : (
-                <p className="text-xs sm:text-sm font-bold italic text-muted-foreground/80">None yet</p>
+                <p className="text-xs sm:text-sm font-bold text-muted-foreground/80">None yet</p>
               )}
             </div>
           </div>
@@ -387,7 +387,7 @@ export default async function UserProfilePage({
             </div>
             <div className="flex-1 h-[1px] bg-gradient-to-r from-red-500/20 to-transparent" />
             <div className="flex items-center gap-4">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
                 {profileUser.favoriteMatches?.length || 0} Saved
               </span>
               {profileUser.favoriteMatches && profileUser.favoriteMatches.length > 6 && (
@@ -414,11 +414,11 @@ export default async function UserProfilePage({
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                       <span className="text-[11px] font-bold text-white/75 uppercase tracking-widest">
+                       <span className="text-[11px] font-bold text-white/75 uppercase tracking-wider">
                         {fav.match.event.promotion}
                       </span>
                       <span className="w-1 h-1 rounded-full bg-white/10" />
-                      <span className="text-[11px] font-bold text-white/75 italic">
+                      <span className="text-[11px] font-bold text-white/75 ">
                         {new Date(fav.match.event.date).getFullYear()}
                       </span>
                     </div>
@@ -438,7 +438,7 @@ export default async function UserProfilePage({
               ))}
             </div>
           ) : (
-            <div className="bg-card/85 border border-dashed border-white/5 rounded-[3rem] p-20 text-center">
+            <div className="bg-card/85 border border-dashed border-white/5 rounded-[3rem] p-8 sm:p-20 text-center">
               <Heart className="w-12 h-12 text-white/5 mx-auto mb-4" />
               <p className="text-white/75 font-bold italic text-lg uppercase tracking-tighter">
                 No favorite matches saved yet.
@@ -460,7 +460,7 @@ export default async function UserProfilePage({
               </div>
               <div className="flex-1 h-[1px] bg-gradient-to-r from-emerald-500/20 to-transparent" />
               <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
                   {predictionScore}/{predictionCount} correct · {predictionAccuracy}% accuracy
                 </span>
               </div>
@@ -483,7 +483,7 @@ export default async function UserProfilePage({
             <div className="flex-1 h-[1px] bg-gradient-to-r from-primary/20 to-transparent" />
             <div className="flex items-center gap-3">
                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-               <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
+               <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
                  {profileUser.reviews.length} Written
                </span>
             </div>
@@ -533,7 +533,7 @@ export default async function UserProfilePage({
               ))}
             </div>
           ) : (
-            <div className="bg-card/85 border border-dashed border-white/5 rounded-[3rem] p-20 text-center">
+            <div className="bg-card/85 border border-dashed border-white/5 rounded-[3rem] p-8 sm:p-20 text-center">
               <Star className="w-12 h-12 text-white/5 mx-auto mb-4" />
               <p className="text-white/75 font-bold italic text-lg uppercase tracking-tighter">
                 No reviews posted yet.

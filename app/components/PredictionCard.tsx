@@ -68,19 +68,19 @@ function MatchHeader({ match, status }: { match: { type?: string | null; title?:
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5 mb-1">
             {champ ? (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/30 px-2 py-0.5">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/10 border border-primary/30 px-2 py-0.5">
                 <Crown className="w-3 h-3" /> Title match
               </span>
             ) : (
-              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Match</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Match</span>
             )}
             {stipulation && (
-              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground border border-border px-2 py-0.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground border border-border px-2 py-0.5">
                 {stipulation}
               </span>
             )}
           </div>
-          <h4 className="text-base font-black italic uppercase tracking-tight leading-tight break-words">{heading}</h4>
+          <h4 className="text-base font-bold uppercase tracking-tight leading-tight break-words">{heading}</h4>
         </div>
       </div>
       {status}
@@ -182,11 +182,11 @@ export default function PredictionCard({
     const resolved = userPredictionIsCorrect !== null;
     const badge = predicted ? (
       resolved ? (
-        <div className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest border shrink-0 ${userPredictionIsCorrect ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-red-500/10 border-red-500/30 text-red-400"}`}>
+        <div className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border shrink-0 ${userPredictionIsCorrect ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-red-500/10 border-red-500/30 text-red-400"}`}>
           {userPredictionIsCorrect ? <><CheckCircle className="w-3 h-3" /> Called it</> : <><XCircle className="w-3 h-3" /> Missed</>}
         </div>
       ) : (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest border border-border text-muted-foreground shrink-0">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-border text-muted-foreground shrink-0">
           <Lock className="w-3 h-3" /> Pending
         </div>
       )
@@ -199,7 +199,7 @@ export default function PredictionCard({
           <div className="space-y-3">
             <FaceOff sides={groupSides(participants)} reveal />
             {predicted && (
-              <p className={`pr-rise flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${userPredictionIsCorrect ? "text-emerald-400" : "text-red-400"}`}>
+              <p className={`pr-rise flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${userPredictionIsCorrect ? "text-emerald-400" : "text-red-400"}`}>
                 {userPredictionIsCorrect ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
                 You picked {predicted.name}
               </p>
@@ -217,9 +217,9 @@ export default function PredictionCard({
       {saving ? (
         <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
       ) : saved ? (
-        <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-emerald-400"><Check className="w-3.5 h-3.5" /> Saved</span>
+        <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-400"><Check className="w-3.5 h-3.5" /> Saved</span>
       ) : selectedId ? (
-        <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary"><CheckCircle className="w-3.5 h-3.5" /> Picked</span>
+        <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary"><CheckCircle className="w-3.5 h-3.5" /> Picked</span>
       ) : null}
     </div>
   );
@@ -231,7 +231,7 @@ export default function PredictionCard({
   const footer = error ? (
     <p className="text-[11px] font-bold text-red-400" role="alert">{error}</p>
   ) : (
-    <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+    <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
       <Users className="w-3 h-3" />
       {totalPicks > 0
         ? `${totalPicks} ${totalPicks === 1 ? "pick" : "picks"} so far`
@@ -245,7 +245,7 @@ export default function PredictionCard({
     <div className="bg-card/85 border border-border p-5 sm:p-6 hover:border-primary/30 transition-colors">
       <MatchHeader match={match} status={statusChip} />
 
-      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 mb-3">
+      <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
         <Zap className="w-3 h-3 text-primary" /> Pick your winner
       </p>
 
@@ -273,20 +273,20 @@ export default function PredictionCard({
                   </div>
                   <div className="absolute inset-x-0 bottom-0 space-y-0.5 p-2.5">
                     {side.members.map((m) => (
-                      <p key={m.wrestler.id} className={`truncate text-xs font-bold italic uppercase leading-tight tracking-tight sm:text-sm ${isSel ? "text-primary" : "text-white"}`}>
+                      <p key={m.wrestler.id} className={`truncate text-xs font-bold uppercase leading-tight tracking-tight sm:text-sm ${isSel ? "text-primary" : "text-white"}`}>
                         {m.wrestler.name}
                       </p>
                     ))}
                   </div>
                   {isSel && (
-                    <span className="pr-rise absolute right-2 top-2 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
+                    <span className="pr-rise absolute right-2 top-2 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">
                       <Check className="h-3 w-3" /> Your pick
                     </span>
                   )}
                 </button>
               );
             })}
-            <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center border border-white/20 bg-slate-950 text-[11px] font-bold italic text-white">
+            <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center border border-white/20 bg-slate-950 text-[11px] font-bold text-white">
               VS
             </span>
           </div>
@@ -303,7 +303,7 @@ export default function PredictionCard({
                 </div>
                 <div className="mt-1 flex justify-between text-[11px] font-bold tabular-nums text-muted-foreground">
                   <span className="text-primary">{none ? "—" : `${a}%`}</span>
-                  <span className="uppercase tracking-widest">Community</span>
+                  <span className="uppercase tracking-wider">Community</span>
                   <span className="text-sky-400">{none ? "—" : `${b}%`}</span>
                 </div>
               </div>
@@ -338,7 +338,7 @@ export default function PredictionCard({
               </div>
               <div className="w-full space-y-0.5">
                 {side.members.map((m) => (
-                  <p key={m.wrestler.id} className={`text-xs font-bold italic uppercase tracking-tight leading-tight break-words ${isSel ? "text-primary" : "text-foreground"}`}>
+                  <p key={m.wrestler.id} className={`text-xs font-bold uppercase tracking-tight leading-tight break-words ${isSel ? "text-primary" : "text-foreground"}`}>
                     {m.wrestler.name}
                   </p>
                 ))}

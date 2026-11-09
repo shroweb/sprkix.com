@@ -68,7 +68,7 @@ export default async function FeedPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">
             Social Feed
           </span>
         </div>
@@ -82,7 +82,7 @@ export default async function FeedPage() {
       </div>
 
       {reviews.length === 0 ? (
-        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center space-y-6">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-20 text-center space-y-6">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
             <Rss className="w-8 h-8 text-primary/40" />
           </div>
@@ -122,14 +122,14 @@ export default async function FeedPage() {
                   href={`/users/${review.user.slug || review.user.id}`}
                   className="flex items-center gap-3 group/user"
                 >
-                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-black text-black group-hover/user:scale-110 transition-transform">
+                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-black group-hover/user:scale-110 transition-transform">
                     {review.user.name?.charAt(0).toUpperCase() ?? "U"}
                   </div>
                   <div>
-                    <p className="text-sm font-black italic group-hover/user:text-primary transition-colors">
+                    <p className="text-sm font-bold group-hover/user:text-primary transition-colors">
                       {review.user.name}
                     </p>
-                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                       {timeAgo(review.createdAt)}
                     </p>
                   </div>
@@ -138,7 +138,7 @@ export default async function FeedPage() {
                 {/* Star rating */}
                 <div className="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-xl">
                   <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                  <span className="text-sm font-black text-primary">
+                  <span className="text-sm font-bold text-primary">
                     {review.rating}
                   </span>
                   <span className="text-[11px] font-bold text-primary/60">
@@ -165,7 +165,7 @@ export default async function FeedPage() {
                     <span className="inline-block px-2 py-0.5 bg-primary text-black text-[11px] font-bold uppercase rounded mb-2">
                       {review.event.promotion}
                     </span>
-                    <h2 className="font-semibold text-base uppercase italic tracking-tighter leading-tight group-hover:text-primary transition-colors">
+                    <h2 className="font-semibold text-base uppercase tracking-tighter leading-tight group-hover:text-primary transition-colors">
                       {review.event.title.replace(/–\s\d{4}.*$/, "")}
                     </h2>
                     <p className="text-[11px] font-bold text-muted-foreground mt-0.5">

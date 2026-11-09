@@ -84,7 +84,7 @@ export default async function WatchlistPage() {
                   />
                 </Link>
                 <div className="flex-1 flex flex-col min-w-0 pt-2">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded w-fit mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded w-fit mb-2">
                     {item.event.promotion}
                   </span>
                   <Link
@@ -111,7 +111,7 @@ export default async function WatchlistPage() {
                 ) : (
                   <Link
                     href={`/events/${item.event.slug}`}
-                    className="btn-secondary w-full py-2.5 text-xs font-bold uppercase tracking-widest bg-white/5 border-none hover:bg-primary hover:text-black transition-colors"
+                    className="btn-secondary w-full py-2.5 text-xs font-bold uppercase tracking-wider bg-white/5 border-none hover:bg-primary hover:text-black transition-colors"
                   >
                     Log Review
                   </Link>

@@ -76,7 +76,7 @@ export default function ShareReviewModal({
         </button>
 
         {/* Shareable Card Header Info */}
-        <p className="text-white/75 text-xs font-bold uppercase tracking-[0.2em] animate-pulse">
+        <p className="text-white/75 text-xs font-bold uppercase tracking-wider animate-pulse">
             Ready to share!
         </p>
 
@@ -100,7 +100,7 @@ export default function ShareReviewModal({
           </div>
 
           {/* Content Wrapper */}
-          <div className="absolute inset-0 p-10 flex flex-col justify-between items-center text-center">
+          <div className="absolute inset-0 p-6 sm:p-10 flex flex-col justify-between items-center text-center">
             {/* Top: Logo */}
             <div className="mt-2 h-14 flex items-center justify-center">
               {siteLogo ? (
@@ -142,10 +142,10 @@ export default function ShareReviewModal({
                 <div className="inline-flex px-4 py-1.5 bg-primary text-black text-[11px] font-bold uppercase rounded-lg shadow-xl shadow-primary/20">
                     {event.promotion}
                 </div>
-                <h3 className="text-base font-bold italic uppercase tracking-tighter text-white leading-tight">
+                <h3 className="text-base font-bold uppercase tracking-tighter text-white leading-tight">
                     {event.title}
                 </h3>
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary pt-2">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-primary pt-2">
                     WWW.POISONRANA.COM
                 </p>
             </div>
@@ -156,7 +156,7 @@ export default function ShareReviewModal({
         <button
           onClick={handleDownload}
           disabled={isGenerating}
-          className="w-full bg-primary hover:bg-[var(--primary-hover)] text-black py-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
+          className="w-full bg-primary hover:bg-[var(--primary-hover)] text-black py-4 rounded-2xl font-black uppercase tracking-wider flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50"
         >
           {isGenerating ? (
             <Loader2 className="w-5 h-5 animate-spin" />

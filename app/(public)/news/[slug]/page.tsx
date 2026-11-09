@@ -203,7 +203,7 @@ export default async function NewsArticlePage({
 
       <article className="space-y-8">
         <header className="space-y-5">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">News Article</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-primary">News Article</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
             {post.title}
           </h1>

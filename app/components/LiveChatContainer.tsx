@@ -213,8 +213,8 @@ export default function LiveChatContainer({
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse border-2 border-background" />
           </div>
           <div>
-            <h3 className="text-sm font-bold uppercase italic tracking-tighter">Watch Party Chat</h3>
-            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+            <h3 className="text-sm font-bold uppercase tracking-tighter">Watch Party Chat</h3>
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
               {comments.length > 0
                 ? `${comments.length} message${comments.length === 1 ? "" : "s"}`
                 : readOnly ? "No messages were recorded" : "Be the first to react"}
@@ -223,12 +223,12 @@ export default function LiveChatContainer({
         </div>
         {readOnly ? (
           <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Archived</span>
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Archived</span>
           </div>
         ) : (
           <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-            <span className="text-[11px] font-bold text-red-400 uppercase tracking-widest">Live</span>
+            <span className="text-[11px] font-bold text-red-400 uppercase tracking-wider">Live</span>
           </div>
         )}
       </div>
@@ -242,7 +242,7 @@ export default function LiveChatContainer({
         {comments.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center opacity-25 text-center px-10 gap-4">
             <MessageSquare className="w-14 h-14" />
-            <p className="text-sm font-black italic uppercase tracking-tighter">The arena is quiet… be the first to roar!</p>
+            <p className="text-sm font-bold uppercase tracking-tighter">The arena is quiet… be the first to roar!</p>
           </div>
         ) : (
           comments.map((comment) => {
@@ -270,7 +270,7 @@ export default function LiveChatContainer({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2 mb-0.5">
-                    <span className={`text-[11px] font-bold uppercase italic tracking-tight leading-none ${comment.user.isAdmin ? "text-primary" : "text-white/80"}`}>
+                    <span className={`text-[11px] font-bold uppercase tracking-tight leading-none ${comment.user.isAdmin ? "text-primary" : "text-white/80"}`}>
                       {comment.user.name}
                       {comment.user.isAdmin && (
                         <span className="ml-1 text-[11px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold uppercase tracking-wider not-italic">Admin</span>
@@ -322,7 +322,7 @@ export default function LiveChatContainer({
       {/* Input / Read-only notice */}
       <div className="p-4 bg-secondary/20 border-t border-white/5">
         {readOnly ? (
-          <p className="text-center text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest py-1">
+          <p className="text-center text-[11px] font-bold text-muted-foreground/80 uppercase tracking-wider py-1">
             This event has ended — chat is read-only
           </p>
         ) : user ? (
@@ -346,7 +346,7 @@ export default function LiveChatContainer({
         ) : (
           <Link
             href="/login"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest hover:bg-[var(--primary-hover)] hover:text-black hover:border-[var(--primary-hover)] transition-all group"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider hover:bg-[var(--primary-hover)] hover:text-black hover:border-[var(--primary-hover)] transition-all group"
           >
             <LogIn className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             Login to join the watch party

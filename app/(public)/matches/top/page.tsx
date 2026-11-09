@@ -116,7 +116,7 @@ export default async function TopMatchesPage() {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="h-[1px] w-8 bg-primary" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary ">
               Community Rated
             </span>
           </div>
@@ -131,7 +131,7 @@ export default async function TopMatchesPage() {
       </div>
 
       {ranked.length === 0 ? (
-        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-20 text-center">
           <Swords className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
           <p className="text-muted-foreground font-bold ">
             No match ratings yet. Start rating matches on event pages!
@@ -185,7 +185,7 @@ export default async function TopMatchesPage() {
                     {/* Match info */}
                     <div>
                       <BeltImage type={match.type} title={match.title} height={26} framed className="block mb-1" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-primary">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                         {match.type}
                       </span>
                       <Link href={`/events/${match.event.slug}`}>
@@ -227,7 +227,7 @@ export default async function TopMatchesPage() {
                   className="group relative flex items-center gap-5 bg-card/85 border border-white/5 hover:border-primary/20 hover:bg-card/50 rounded-2xl px-6 py-4 transition-all"
                 >
                   {/* Rank */}
-                  <span className="relative z-10 text-sm font-black text-muted-foreground/80 w-7 text-right shrink-0">
+                  <span className="relative z-10 text-sm font-bold text-muted-foreground/80 w-7 text-right shrink-0">
                     #{i + 4}
                   </span>
 
@@ -246,7 +246,7 @@ export default async function TopMatchesPage() {
                   {/* Info */}
                   <div className="relative z-10 flex-1 min-w-0 space-y-0.5">
                     <Link href={`/events/${match.event.slug}`} className="block">
-                      <p className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate">
+                      <p className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                         {match.title}
                       </p>
                     </Link>
@@ -280,7 +280,7 @@ export default async function TopMatchesPage() {
                   {/* Rating */}
                   <div className="relative z-10 flex items-center gap-2 shrink-0">
                     <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                    <span className="text-sm font-black">
+                    <span className="text-sm font-bold">
                       {match.avgRating.toFixed(2)}
                     </span>
                     <span className="text-[11px] font-bold text-muted-foreground hidden sm:block">

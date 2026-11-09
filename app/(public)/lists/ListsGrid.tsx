@@ -86,7 +86,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
             <button
               key={f.value}
               onClick={() => setTypeFilter(f.value)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border ${
                 typeFilter === f.value
                   ? "bg-primary text-black border-primary"
                   : "bg-transparent border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
@@ -111,7 +111,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-20 text-center">
           <List className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
           <p className="text-muted-foreground font-bold ">
             {publicLists.length === 0
@@ -150,7 +150,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
 
               {/* Card body */}
               <div className="p-4 space-y-3">
-                <h3 className="font-bold italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                <h3 className="font-bold uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                   {list.title}
                 </h3>
 

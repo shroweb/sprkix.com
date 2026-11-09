@@ -271,7 +271,7 @@ export default async function Home() {
         stats={{ events: eventCount, wrestlers: wrestlerCount, promotions: promotionCount }}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 md:space-y-28 relative z-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-16 md:space-y-28 relative z-10">
 
         {/* ── Quick discovery rail ── */}
         <nav aria-label="Quick links" className="-mt-7 relative z-20">
@@ -318,7 +318,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/events"
-                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 All Events <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -363,7 +363,7 @@ export default async function Home() {
                         </div>
                       )}
                     </div>
-                    <h3 className="font-bold text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-xs uppercase group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
                     <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
@@ -412,7 +412,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/rankings"
-                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 Full Rankings{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -454,7 +454,7 @@ export default async function Home() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate">
+                    <p className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </p>
                     <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">
@@ -465,7 +465,7 @@ export default async function Home() {
                   {/* Rating */}
                   <div className="flex items-center gap-1.5 shrink-0">
                     <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                    <span className="font-black text-sm">
+                    <span className="font-bold text-sm">
                       {event.avgRating.toFixed(2)}
                     </span>
                     <span className="text-[11px] text-muted-foreground font-bold">
@@ -491,8 +491,8 @@ export default async function Home() {
                 <List className="w-5 h-5 text-primary" />
               </div>
               <div className="relative z-10 flex-1 min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-1">Community Lists</p>
-                <h3 className="font-bold italic uppercase tracking-tight text-base leading-tight group-hover:text-primary transition-colors">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1">Community Lists</p>
+                <h3 className="font-bold uppercase tracking-tight text-base leading-tight group-hover:text-primary transition-colors">
                   Build your own<br />top lists
                 </h3>
                 <p className="text-xs text-muted-foreground/80 mt-1.5 font-medium">Curate events and matches into shareable ranked collections.</p>
@@ -510,8 +510,8 @@ export default async function Home() {
                 <Trophy className="w-5 h-5 text-blue-400" />
               </div>
               <div className="relative z-10 flex-1 min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-400 mb-1">Your Watchlist</p>
-                <h3 className="font-bold italic uppercase tracking-tight text-base leading-tight group-hover:text-blue-400 transition-colors">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-blue-400 mb-1">Your Watchlist</p>
+                <h3 className="font-bold uppercase tracking-tight text-base leading-tight group-hover:text-blue-400 transition-colors">
                   Track what you've<br />watched
                 </h3>
                 <p className="text-xs text-muted-foreground/80 mt-1.5 font-medium">Mark events as watched, attended, or on your list.</p>
@@ -538,7 +538,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/events"
-                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 All Events{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -570,7 +570,7 @@ export default async function Home() {
                         </span>
                       </div>
                     </div>
-                    <h3 className="font-bold text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-xs uppercase group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
                     <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
@@ -609,7 +609,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/promotions"
-                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 All Promotions{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -662,12 +662,12 @@ export default async function Home() {
                         </div>
                       )}
                     </div>
-                    <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       Latest:{" "}
                       {new Date(promo.latestDate).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
                     </div>
                   </div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-1.5 group-hover:gap-2 transition-all">
+                  <div className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 group-hover:gap-2 transition-all">
                     View All Events
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -694,7 +694,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/matches/top"
-                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 View All{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -725,7 +725,7 @@ export default async function Home() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate">
+                      <p className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                         {match.title}
                       </p>
                       <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 truncate">
@@ -734,7 +734,7 @@ export default async function Home() {
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       <Star className="w-3.5 h-3.5 text-primary fill-current" />
-                      <span className="font-black text-sm">
+                      <span className="font-bold text-sm">
                         {(match.rating ?? 0).toFixed(2)}
                       </span>
                     </div>
@@ -754,7 +754,7 @@ export default async function Home() {
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-primary" />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">The Community</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary">The Community</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold italic uppercase tracking-tighter leading-none">
                   See who's leading<br className="hidden sm:block" /> the archive
@@ -762,7 +762,7 @@ export default async function Home() {
                 <p className="text-sm text-muted-foreground/80 font-medium">
                   Rank up by rating, reviewing, and predicting. Every action counts.
                 </p>
-                <div className="flex gap-4 pt-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                <div className="flex gap-4 pt-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   <span><strong className="text-primary text-sm">{eventCount}</strong> events</span>
                   <span><strong className="text-primary text-sm">{wrestlerCount}</strong> wrestlers</span>
                 </div>
@@ -770,13 +770,13 @@ export default async function Home() {
               <div className="flex flex-wrap gap-3 shrink-0">
                 <Link
                   href="/leaderboard"
-                  className="h-11 px-6 bg-primary text-black text-xs font-bold uppercase italic tracking-widest flex items-center gap-2 rounded-xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                  className="h-11 px-6 bg-primary text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 rounded-xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                 >
                   <Trophy className="w-3.5 h-3.5" /> Leaderboard
                 </Link>
                 <Link
                   href="/feed"
-                  className="h-11 px-6 bg-card/60 border border-white/10 text-sm font-black uppercase italic tracking-widest flex items-center gap-2 rounded-xl hover:border-primary/30 hover:bg-card transition-all"
+                  className="h-11 px-6 bg-card/60 border border-white/10 text-sm font-bold uppercase tracking-wider flex items-center gap-2 rounded-xl hover:border-primary/30 hover:bg-card transition-all"
                 >
                   <Activity className="w-3.5 h-3.5" /> Activity Feed
                 </Link>
@@ -795,7 +795,7 @@ export default async function Home() {
             <div className="relative z-10 flex-1 space-y-4 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
                 <Send className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Community</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Community</span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tighter leading-none">
                 Know an event<br />we&apos;re missing?
@@ -808,7 +808,7 @@ export default async function Home() {
             <div className="relative z-10 shrink-0 flex flex-col items-center gap-3">
               <Link
                 href="/submit-event"
-                className="h-14 px-10 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all"
+                className="h-14 px-10 bg-primary text-black text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-3 rounded-2xl shadow-2xl shadow-primary/40 hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all"
               >
                 Submit an Event <ArrowRight className="w-4 h-4" />
               </Link>

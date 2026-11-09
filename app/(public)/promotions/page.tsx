@@ -91,7 +91,7 @@ export default async function PromotionsPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">
             Browse By
           </span>
         </div>
@@ -161,7 +161,7 @@ export default async function PromotionsPage() {
                 )}
               </div>
 
-              <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Latest:{" "}
                 {new Date(promo.latestDate).toLocaleDateString("en-US", {
                   month: "long",
@@ -170,7 +170,7 @@ export default async function PromotionsPage() {
               </div>
             </div>
 
-            <div className="text-xs font-bold uppercase tracking-widest text-primary group-hover:gap-2 flex items-center gap-1.5 transition-all">
+            <div className="text-xs font-bold uppercase tracking-wider text-primary group-hover:gap-2 flex items-center gap-1.5 transition-all">
               View All Events
               <svg
                 className="w-3 h-3 group-hover:translate-x-1 transition-transform"

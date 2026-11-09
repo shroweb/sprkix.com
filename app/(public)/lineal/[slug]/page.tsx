@@ -123,7 +123,7 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
 
       <header className="space-y-3">
         <BeltArt style={styleForName(title.name)} label={initials(title.name)} name={title.name} height={96} framed className="mb-2" />
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+        <p className="text-xs font-bold uppercase tracking-wider text-primary ">
           {title.kind === "novelty" ? "Lineal novelty prize" : "Lineal championship"}
         </p>
         <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic leading-[0.95]">
@@ -142,7 +142,7 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-1.5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
               <Crown className="w-3.5 h-3.5" /> Current lineal holder
             </p>
             <Link href={`/wrestlers/${current.wrestler.slug}`} className="text-2xl sm:text-3xl font-black italic uppercase tracking-tight hover:text-primary transition-colors">
@@ -157,19 +157,19 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
 
       {title.reigns.length > 1 && (
         <section className="space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Records</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-primary ">Records</h2>
           <div className="grid grid-cols-2 gap-px bg-white/10 sm:grid-cols-3">
             {records.map((r) => (
               <div key={r.k} className="bg-slate-950 p-4">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{r.k}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{r.k}</p>
                 <p className="text-2xl font-black tabular-nums">{r.v}</p>
-                <Link href={`/wrestlers/${r.slug}`} className="block truncate text-xs font-bold uppercase italic text-primary hover:underline">{r.who}</Link>
+                <Link href={`/wrestlers/${r.slug}`} className="block truncate text-xs font-bold uppercase text-primary hover:underline">{r.who}</Link>
               </div>
             ))}
           </div>
 
           <div>
-            <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Timeline · width = days held</p>
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Timeline · width = days held</p>
             <div className="flex h-8 w-full gap-px overflow-hidden bg-white/5" role="img" aria-label="Reign lengths over time">
               {chronological.map((r) => (
                 <Link
@@ -192,7 +192,7 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
       )}
 
       <section className="space-y-4">
-        <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Reign history</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-primary ">Reign history</h2>
         <ol className="space-y-3">
           {title.reigns.map((r) => {
             const via = beatenBy(r);
@@ -226,7 +226,7 @@ export default async function LinealTitlePage({ params }: { params: Promise<{ sl
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-card/85 p-5 space-y-2 text-sm text-muted-foreground">
-        <p className="flex items-center gap-2 font-bold uppercase tracking-widest text-[11px] text-foreground">
+        <p className="flex items-center gap-2 font-bold uppercase tracking-wider text-[11px] text-foreground">
           <Info className="w-3.5 h-3.5" /> How this works
         </p>
         <p>

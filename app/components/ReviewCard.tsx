@@ -46,7 +46,7 @@ export default function ReviewCard({
         <div className="flex items-center gap-3">
           <Link href={`/users/${review.user.slug || review.user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
             <UserAvatar name={review.user.name} avatarUrl={(review.user as any).avatarUrl} size="md" />
-            <span className="text-sm font-black italic">{review.user.name || "Anonymous"}</span>
+            <span className="text-sm font-bold ">{review.user.name || "Anonymous"}</span>
           </Link>
         </div>
         <div className="flex items-center gap-3">
@@ -59,7 +59,7 @@ export default function ReviewCard({
           </span>
           <div className="flex items-center gap-1.5 text-primary">
             <span className="w-3.5 h-3.5 flex items-center justify-center">★</span>
-            <span className="text-sm font-black text-primary">{review.rating.toFixed(2)}</span>
+            <span className="text-sm font-bold text-primary">{review.rating.toFixed(2)}</span>
           </div>
           {event && (
             <ShareReviewButton 

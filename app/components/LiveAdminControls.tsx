@@ -42,7 +42,7 @@ export default function LiveAdminControls({
     <div className="bg-primary/5 border border-primary/20 rounded-[2rem] p-6 mb-8">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-widest text-primary italic">Admin Match Tracker</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-primary ">Admin Match Tracker</h4>
           <p className="text-[11px] text-muted-foreground font-bold">Update this in real-time to highlight matches for fans.</p>
         </div>
         {isUpdating && <Loader2 className="w-4 h-4 text-primary animate-spin" />}
@@ -79,14 +79,14 @@ export default function LiveAdminControls({
         <button
            onClick={() => updateMatch(0)}
            disabled={current === 0 || isUpdating}
-           className="text-[11px] font-bold uppercase tracking-widest py-2 rounded-lg border border-white/5 hover:bg-white/5"
+           className="text-[11px] font-bold uppercase tracking-wider py-2 rounded-lg border border-white/5 hover:bg-white/5"
         >
            Reset Tracker
         </button>
         <button
            onClick={() => updateMatch(totalMatches)}
            disabled={current === totalMatches || isUpdating}
-           className="text-[11px] font-bold uppercase tracking-widest py-2 rounded-lg border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
+           className="text-[11px] font-bold uppercase tracking-wider py-2 rounded-lg border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
         >
            Final Match
         </button>

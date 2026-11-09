@@ -147,7 +147,7 @@ export default function NotificationBell() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-border">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-primary" />
-              <span className="text-sm font-black uppercase italic tracking-tight">Notifications</span>
+              <span className="text-sm font-bold uppercase tracking-tight">Notifications</span>
               {count > 0 && (
                 <span className="px-1.5 py-0.5 bg-primary text-black text-[11px] font-bold rounded">
                   {count} new
@@ -155,7 +155,7 @@ export default function NotificationBell() {
               )}
             </div>
             <div className="flex items-center gap-1">
-              <Link href="/profile/edit#notifications" onClick={() => setOpen(false)} className="px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary">
+              <Link href="/profile/edit#notifications" onClick={() => setOpen(false)} className="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary">
                 Settings
               </Link>
               <button onClick={() => setOpen(false)} aria-label="Close notifications" className="p-1 hover:bg-secondary rounded-lg transition-colors">
@@ -202,10 +202,10 @@ export default function NotificationBell() {
                       )}
                       <div className="flex items-center gap-1.5 pt-0.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${config.dot} opacity-70`} />
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                           {timeAgo(notif.createdAt)}
                         </span>
-                        {notif.isNew && <span className="text-[11px] font-bold text-primary uppercase tracking-widest">· new</span>}
+                        {notif.isNew && <span className="text-[11px] font-bold text-primary uppercase tracking-wider">· new</span>}
                       </div>
                     </div>
                   </Link>

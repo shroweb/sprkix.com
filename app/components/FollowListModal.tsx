@@ -81,7 +81,7 @@ export default function FollowListModal({
         <span className="text-2xl font-black italic text-white leading-none">
           {count}
         </span>
-        <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
           {label}
         </span>
       </button>
@@ -109,7 +109,7 @@ export default function FollowListModal({
                     <span className="font-black uppercase italic tracking-tighter text-lg">
                       {label}
                     </span>
-                    <span className="text-[12px] font-black text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                    <span className="text-[12px] font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                       {count}
                     </span>
                   </div>
@@ -147,7 +147,7 @@ export default function FollowListModal({
                             className="flex min-w-0 flex-1 items-center gap-3 hover:text-primary transition-colors group"
                           >
                             <UserAvatar name={u.name} avatarUrl={(u as any).avatarUrl} size="lg" />
-                            <span className="font-black text-sm italic group-hover:text-primary transition-colors truncate">
+                            <span className="font-bold text-sm group-hover:text-primary transition-colors truncate">
                               {u.name ?? "Unknown"}
                             </span>
                           </Link>

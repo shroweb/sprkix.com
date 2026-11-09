@@ -108,7 +108,7 @@ export default function AddToListButton({
       className="w-64 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
     >
       <div className="p-3 border-b border-border">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
           Your {targetType === "matches" ? "Match" : "Event"} Lists
         </p>
       </div>

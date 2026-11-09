@@ -82,7 +82,7 @@ export default function WatchListButton({
       className={`${minimal ? "w-12" : "flex-1"} h-12 rounded-xl font-bold flex items-center justify-center gap-2 transition-all border text-sm active:scale-95 disabled:opacity-50 ${className}`}
     >
       <Icon className="w-4 h-4" />
-      {!minimal && <span className="text-sm font-black italic">{label}</span>}
+      {!minimal && <span className="text-sm font-bold ">{label}</span>}
     </button>
   );
 }

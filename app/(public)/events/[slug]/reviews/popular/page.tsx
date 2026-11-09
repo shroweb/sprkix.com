@@ -91,16 +91,16 @@ export default async function PopularReviewsPage(props: {
     <div className="flex justify-center items-center gap-4 mt-8">
       <a
         href={`?page=${Math.max(1, page - 1)}`}
-        className={`px-4 py-2 rounded-lg bg-secondary text-foreground text-sm font-bold uppercase tracking-widest hover:bg-primary hover:text-black transition-colors ${page === 1 ? "opacity-50 pointer-events-none" : ""}`}
+        className={`px-4 py-2 rounded-lg bg-secondary text-foreground text-sm font-bold uppercase tracking-wider hover:bg-primary hover:text-black transition-colors ${page === 1 ? "opacity-50 pointer-events-none" : ""}`}
       >
         Previous
       </a>
-      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
+      <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
         Page {page} of {totalPages} {isUpcoming ? "comments" : "reviews"}
       </span>
       <a
         href={`?page=${Math.min(totalPages, page + 1)}`}
-        className={`px-4 py-2 rounded-lg bg-secondary text-foreground text-sm font-bold uppercase tracking-widest hover:bg-primary hover:text-black transition-colors ${page === totalPages ? "opacity-50 pointer-events-none" : ""}`}
+        className={`px-4 py-2 rounded-lg bg-secondary text-foreground text-sm font-bold uppercase tracking-wider hover:bg-primary hover:text-black transition-colors ${page === totalPages ? "opacity-50 pointer-events-none" : ""}`}
       >
         Next
       </a>
@@ -149,7 +149,7 @@ export default async function PopularReviewsPage(props: {
             />
           ))
         ) : (
-          <p className="text-muted-foreground text-center p-12 bg-secondary/20 rounded-[2rem]">
+          <p className="text-muted-foreground text-center p-6 sm:p-12 bg-secondary/20 rounded-[2rem]">
             No {isUpcoming ? "comments" : "reviews"} yet.
           </p>
         )}

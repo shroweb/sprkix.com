@@ -167,11 +167,11 @@ export default function HomePoll({
 
   const closedOrEnding = endsAt ? (
     isClosed ? (
-      <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold uppercase tracking-widest text-red-500">
+      <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold uppercase tracking-wider text-red-500">
         Closed
       </div>
     ) : (
-      <div className="px-3 py-1.5 bg-muted border border-border rounded-full text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+      <div className="px-3 py-1.5 bg-muted border border-border rounded-full text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
         Closes {new Date(endsAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
       </div>
     )
@@ -186,7 +186,7 @@ export default function HomePoll({
         <div className="flex items-center gap-3 flex-wrap">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full animate-pulse">
             <span className="text-primary text-xs">⚡</span>
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
               Community Poll
             </span>
           </span>
@@ -255,7 +255,7 @@ export default function HomePoll({
               return (
                 <div
                   key={option.id}
-                  className="px-5 py-3 border border-border rounded-2xl text-sm font-black italic uppercase tracking-tight text-muted-foreground"
+                  className="px-5 py-3 border border-border rounded-2xl text-sm font-bold uppercase tracking-tight text-muted-foreground"
                 >
                   {option.text}
                 </div>
@@ -267,7 +267,7 @@ export default function HomePoll({
                 key={option.id}
                 onClick={() => handleVote(option.id)}
                 disabled={loading}
-                className="w-full px-5 py-3 border border-border rounded-2xl text-sm font-black italic uppercase tracking-tight text-left hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-5 py-3 border border-border rounded-2xl text-sm font-bold uppercase tracking-tight text-left hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {option.text}
               </button>
@@ -403,7 +403,7 @@ export default function HomePoll({
             <button
               onClick={handleDownload}
               disabled={isGenerating}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-black font-black uppercase italic tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/20] hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-black font-black uppercase italic tracking-wider rounded-2xl shadow-2xl shadow-primary/20 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/20] hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
             >
               {isGenerating ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Generating...</>
@@ -429,7 +429,7 @@ export default function HomePoll({
 
             <button
               onClick={() => setShareOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-white/10 text-white font-black uppercase italic tracking-widest rounded-2xl hover:bg-white/20 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-white/10 text-white font-black uppercase italic tracking-wider rounded-2xl hover:bg-white/20 transition-all"
             >
               <X className="w-4 h-4" /> Close
             </button>

@@ -89,7 +89,7 @@ export default function WrestlersGrid({
               )}
               <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
             </div>
-            <h2 className="font-semibold text-sm text-center uppercase italic tracking-tight group-hover:text-primary transition-colors">
+            <h2 className="font-semibold text-sm text-center uppercase tracking-tight group-hover:text-primary transition-colors">
               {wrestler.name}
             </h2>
           </Link>
@@ -109,7 +109,7 @@ export default function WrestlersGrid({
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <span className="text-sm font-black italic uppercase tracking-widest text-muted-foreground">
+          <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
             ROSTER PAGE {currentPage} / {totalPages}
           </span>
           <button

@@ -532,7 +532,7 @@ const METHOD_STYLES: Record<HttpMethod, string> = {
 function MethodBadge({ method }: { method: HttpMethod }) {
   return (
     <span
-      className={`inline-block text-[11px] font-bold uppercase tracking-widest border rounded px-1.5 py-0.5 ${METHOD_STYLES[method]}`}
+      className={`inline-block text-[11px] font-bold uppercase tracking-wider border rounded px-1.5 py-0.5 ${METHOD_STYLES[method]}`}
     >
       {method}
     </span>
@@ -542,20 +542,20 @@ function MethodBadge({ method }: { method: HttpMethod }) {
 function ParamTable({ params, label }: { params: Param[]; label: string }) {
   return (
     <div className="mt-4">
-      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+      <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
         {label}
       </p>
       <div className="rounded-xl overflow-hidden border border-white/5">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-white/3 border-b border-white/5">
-              <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Name
               </th>
-              <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Type
               </th>
-              <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <th className="text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Description
               </th>
             </tr>
@@ -596,12 +596,12 @@ function EndpointCard({ ep }: { ep: Endpoint }) {
         <MethodBadge method={ep.method} />
         <code className="font-mono text-sm font-bold text-foreground">{ep.path}</code>
         {ep.auth && (
-          <span className="ml-auto flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+          <span className="ml-auto flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary">
             <Lock className="w-3 h-3" /> Auth required
           </span>
         )}
         {!ep.auth && ep.method !== "GET" && (
-          <span className="ml-auto flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <span className="ml-auto flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             <Unlock className="w-3 h-3" /> Public
           </span>
         )}
@@ -620,7 +620,7 @@ function EndpointCard({ ep }: { ep: Endpoint }) {
         )}
 
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Returns
           </span>
           <code className="text-xs font-mono text-primary">{ep.returns}</code>
@@ -630,14 +630,14 @@ function EndpointCard({ ep }: { ep: Endpoint }) {
           <div className="space-y-3">
             {ep.example.request && (
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                   Example Request Body
                 </p>
                 <CodeBlock code={ep.example.request} />
               </div>
             )}
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 Example Response
               </p>
               <CodeBlock code={ep.example.response} />
@@ -678,11 +678,11 @@ export default function ApiDocsPage({
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-[220px_1fr] gap-12">
+      <div className="grid lg:grid-cols-[220px_1fr] gap-8 lg:gap-12">
         {/* Sidebar nav */}
         <aside className="hidden lg:block">
           <div className="sticky top-28 space-y-1">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3 px-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3 px-2">
               Sections
             </p>
             {[
@@ -700,7 +700,7 @@ export default function ApiDocsPage({
               </a>
             ))}
             <div className="pt-4 px-2">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
                 Base URL
               </p>
               <code className="text-xs font-mono text-primary break-all">{BASE_URL}</code>
@@ -754,7 +754,7 @@ export default function ApiDocsPage({
             </div>
 
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 Quick Example
               </p>
               <CodeBlock
@@ -790,7 +790,7 @@ curl "${BASE_URL}/me" \\
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
-                <p className="text-sm font-black uppercase italic tracking-tight">Login and retrieve your token</p>
+                <p className="text-sm font-bold uppercase tracking-tight">Login and retrieve your token</p>
               </div>
               <p className="text-sm text-muted-foreground font-medium leading-relaxed pl-7">
                 Call <code className="font-mono text-xs text-primary">/auth/login</code> with your credentials. Store the returned{" "}
@@ -819,7 +819,7 @@ const currentUser = user; // { id, name, email, slug, avatarUrl, isAdmin }`}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
-                <p className="text-sm font-black uppercase italic tracking-tight">Pass the token on authenticated requests</p>
+                <p className="text-sm font-bold uppercase tracking-tight">Pass the token on authenticated requests</p>
               </div>
               <p className="text-sm text-muted-foreground font-medium leading-relaxed pl-7">
                 Include the token in the <code className="font-mono text-xs bg-white/5 px-1.5 py-0.5 rounded">Authorization</code> header as a Bearer token.
@@ -840,7 +840,7 @@ console.log(user.name); // "TombstonePiledriver"`}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
-                <p className="text-sm font-black uppercase italic tracking-tight">Use a client wrapper (recommended)</p>
+                <p className="text-sm font-bold uppercase tracking-tight">Use a client wrapper (recommended)</p>
               </div>
               <p className="text-sm text-muted-foreground font-medium leading-relaxed pl-7">
                 Drop this small wrapper into your project to avoid repeating headers and base URLs everywhere. Works in React Native, plain JS, or any fetch-compatible environment.
@@ -908,7 +908,7 @@ await api.post("/matches/clxm1/rate", { rating: 4.5 });`}
             {/* Token storage note */}
             <div className="pl-7 space-y-3">
               <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 space-y-1">
-                <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">Token Storage</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-yellow-400">Token Storage</p>
                 <p className="text-xs text-muted-foreground font-medium leading-relaxed">
                   In <strong className="text-foreground">React Native / Expo</strong>, store the token with{" "}
                   <code className="font-mono text-primary">expo-secure-store</code> or{" "}
@@ -921,7 +921,7 @@ await api.post("/matches/clxm1/rate", { rating: 4.5 });`}
               </div>
 
               <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 space-y-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-400">Social Login (Google / Facebook) — Mobile</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-blue-400">Social Login (Google / Facebook) — Mobile</p>
                 <p className="text-xs text-muted-foreground font-medium leading-relaxed">
                   Open <code className="font-mono text-primary">/api/auth/google?platform=app</code> (or{" "}
                   <code className="font-mono text-primary">/api/auth/facebook?platform=app</code>) in an in-app browser (e.g.{" "}
@@ -983,7 +983,7 @@ if (result.type === "success") {
           <div className="mt-12 bg-card/85 border border-white/5 rounded-2xl p-6 text-center space-y-3">
             <div className="flex items-center justify-center gap-2">
               <Terminal className="w-4 h-4 text-primary" />
-              <span className="text-sm font-black italic uppercase tracking-tight">
+              <span className="text-sm font-bold uppercase tracking-tight">
                 Questions or issues?
               </span>
             </div>

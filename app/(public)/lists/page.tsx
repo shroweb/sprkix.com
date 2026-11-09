@@ -48,11 +48,11 @@ export default async function ListsDiscoveryPage() {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto pb-20 space-y-16">
+    <div className="max-w-6xl mx-auto pb-20 space-y-10 sm:space-y-16">
       {/* Page header */}
       <div className="flex items-center justify-between gap-4 pt-4">
         <div className="space-y-1">
-          <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+          <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter leading-none">
             Community Lists
           </h1>
           <p className="text-muted-foreground font-medium">
@@ -62,7 +62,7 @@ export default async function ListsDiscoveryPage() {
         {user && (
           <Link
             href="/lists/create"
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-2xl hover:opacity-90 transition-opacity shrink-0"
+            className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold uppercase tracking-wider text-xs rounded-2xl hover:opacity-90 transition-opacity shrink-0"
           >
             <Plus className="w-4 h-4" /> Create a List
           </Link>
@@ -123,7 +123,7 @@ export default async function ListsDiscoveryPage() {
                   <div className="space-y-1 min-w-0">
                     <Link
                       href={`/lists/${list.id}`}
-                      className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight block"
+                      className="font-bold uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight block"
                     >
                       {list.title}
                     </Link>

@@ -34,7 +34,7 @@ export default async function RankingsPage() {
       <div className="space-y-4">
         <div className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 border border-primary/20 rounded-full">
           <TrendingUp className="w-4 h-4 text-primary" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
             Community Voted
           </span>
         </div>
@@ -50,7 +50,7 @@ export default async function RankingsPage() {
       </div>
 
       {ranked.length === 0 && (
-        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-20 text-center">
           <Trophy className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
           <p className="text-muted-foreground font-bold ">
             No rated events yet. Be the first to leave a review!
@@ -172,7 +172,7 @@ export default async function RankingsPage() {
                     {new Date(event.date).getFullYear()}
                   </span>
                 </div>
-                <h3 className="font-bold text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors truncate">
+                <h3 className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                   {event.title.replace(/–\s\d{4}.*$/, "")}
                 </h3>
               </div>
@@ -180,7 +180,7 @@ export default async function RankingsPage() {
               {/* Score */}
               <div className="flex items-center gap-1.5 text-primary shrink-0">
                 <Star className="w-3.5 h-3.5 fill-current" />
-                <span className="font-black text-sm">
+                <span className="font-bold text-sm">
                   {event.avgRating.toFixed(2)}
                 </span>
                 <span className="text-[11px] text-muted-foreground font-bold">

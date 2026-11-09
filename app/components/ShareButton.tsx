@@ -30,12 +30,12 @@ export default function ShareButton({ minimal = false }: { minimal?: boolean }) 
       {copied ? (
         <>
           <Check className="w-4 h-4 text-emerald-400" />
-          {!minimal && <span className="text-emerald-400 text-sm font-black italic">Copied!</span>}
+          {!minimal && <span className="text-emerald-400 text-sm font-bold ">Copied!</span>}
         </>
       ) : (
         <>
           <Share2 className="w-4 h-4" />
-          {!minimal && <span className="text-sm font-black italic">Share</span>}
+          {!minimal && <span className="text-sm font-bold ">Share</span>}
         </>
       )}
     </button>

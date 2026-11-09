@@ -299,15 +299,15 @@ export default function Header({
                     <img src={user.avatarUrl} alt="" className="w-12 h-12 rounded-full object-cover border border-primary/30 shrink-0" />
                   ) : (
                     <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-black text-white shadow-md shrink-0"
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-md shrink-0"
                       style={{ background: `linear-gradient(135deg, ${getHeaderGradient(user.name || "user")[0]}, ${getHeaderGradient(user.name || "user")[1]})` }}
                     >
                       {(user.name || "U").charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-base font-black text-white truncate">{user.name}</p>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
+                    <p className="text-base font-bold text-white truncate">{user.name}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
                       {user.isAdmin ? "Administrator" : "Community Member"}
                     </p>
                   </div>
@@ -334,7 +334,7 @@ export default function Header({
                 <Link href="/login" className="flex-1 py-3 text-center rounded-xl border border-white/15 bg-white/5 text-sm font-bold text-white hover:bg-white/10 transition-colors" onClick={() => setMenuOpen(false)}>
                   Login
                 </Link>
-                <Link href="/register" className="flex-1 py-3 text-center rounded-xl bg-primary text-slate-950 text-sm font-black uppercase italic tracking-wider hover:bg-[var(--primary-hover)] transition-all shadow-lg shadow-primary/20" onClick={() => setMenuOpen(false)}>
+                <Link href="/register" className="flex-1 py-3 text-center rounded-xl bg-primary text-slate-950 text-sm font-bold uppercase tracking-wider hover:bg-[var(--primary-hover)] transition-all shadow-lg shadow-primary/20" onClick={() => setMenuOpen(false)}>
                   Join
                 </Link>
               </div>
@@ -345,7 +345,7 @@ export default function Header({
 
             {/* Main Section */}
             <div className="space-y-1">
-              <span className="block px-4 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              <span className="block px-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 Main Menu
               </span>
               <Link href="/events" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
@@ -367,12 +367,12 @@ export default function Header({
 
             {/* Discover Section */}
             <div className="space-y-1 border-t border-white/10 pt-4">
-              <span className="block px-4 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              <span className="block px-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 Discover & Rankings
               </span>
               <Link href="/matches/finder" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Match Finder</span>
-                <span className="text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-primary/10 text-primary">Tool</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary">Tool</span>
               </Link>
               <Link href="/rankings" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Top Events</span>
@@ -385,7 +385,7 @@ export default function Header({
               </Link>
               <Link href="/champions" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Current Champions</span>
-                <span className="text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-400/10 text-amber-400">Belts</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400/10 text-amber-400">Belts</span>
               </Link>
               <Link href="/lineal" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Lineal Titles</span>

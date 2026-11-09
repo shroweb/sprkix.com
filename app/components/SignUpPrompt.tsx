@@ -95,7 +95,7 @@ export default function SignUpPrompt({
           <Link
             href={`/register?next=${next}`}
             onClick={() => rememberReturnPath(returnTo)}
-            className="h-12 bg-primary text-black text-sm font-black uppercase italic tracking-widest flex items-center justify-center rounded-xl hover:bg-[var(--primary-hover)] transition-colors"
+            className="h-12 bg-primary text-black text-sm font-bold uppercase tracking-wider flex items-center justify-center rounded-xl hover:bg-[var(--primary-hover)] transition-colors"
           >
             Create free account
           </Link>

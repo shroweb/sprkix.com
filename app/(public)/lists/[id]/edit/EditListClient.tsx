@@ -150,7 +150,7 @@ export default function EditListClient({ list }: { list: List }) {
         <button
           onClick={handleSave}
           disabled={saving || !title.trim()}
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-2xl hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold uppercase tracking-wider text-xs rounded-2xl hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {saving ? (
             <RefreshCcw className="w-4 h-4 animate-spin" />
@@ -170,7 +170,7 @@ export default function EditListClient({ list }: { list: List }) {
       {/* List metadata */}
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
         <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Title
           </label>
           <input
@@ -182,7 +182,7 @@ export default function EditListClient({ list }: { list: List }) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Description
           </label>
           <textarea
@@ -220,12 +220,12 @@ export default function EditListClient({ list }: { list: List }) {
 
       {/* Items */}
       <div className="space-y-4">
-        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           Items ({items.length})
         </h2>
 
         {items.length === 0 ? (
-          <div className="bg-card/85 border border-dashed border-border rounded-2xl p-12 text-center">
+          <div className="bg-card/85 border border-dashed border-border rounded-2xl p-6 sm:p-12 text-center">
             <p className="text-muted-foreground font-bold ">
               No {isMatchList ? "matches" : "events"} on this list yet.
             </p>
@@ -271,7 +271,7 @@ export default function EditListClient({ list }: { list: List }) {
                   {/* Content */}
                   <div className="flex-1 min-w-0 space-y-2">
                     <div>
-                      <p className="font-black text-sm italic uppercase tracking-tight leading-tight truncate">
+                      <p className="font-bold text-sm uppercase tracking-tight leading-tight truncate">
                         {mainTitle}
                       </p>
                       <p className="text-[11px] font-bold text-muted-foreground uppercase truncate">

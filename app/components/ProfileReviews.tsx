@@ -108,7 +108,7 @@ export default function ProfileReviews({
 
   if (reviews.length === 0) {
     return (
-      <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+      <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-16 text-center">
         <Star className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
         <p className="text-muted-foreground font-bold ">
           You haven&apos;t reviewed any events yet.
@@ -152,7 +152,7 @@ export default function ProfileReviews({
                 <div className="flex items-start justify-between gap-4">
                   <Link
                     href={`/events/${review.event.slug}`}
-                    className="font-black text-sm uppercase italic tracking-tight hover:text-primary transition-colors leading-tight line-clamp-2 group"
+                    className="font-bold text-sm uppercase tracking-tight hover:text-primary transition-colors leading-tight line-clamp-2 group"
                   >
                     {review.event.title.replace(/–\s\d{4}.*$/, "")}
                   </Link>
@@ -293,7 +293,7 @@ export default function ProfileReviews({
               <div className="border-t border-white/5">
                 <button
                   onClick={() => toggleReplies(review.id)}
-                  className="w-full flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+                  className="w-full flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
                   {review.Reply.length}{" "}
@@ -318,7 +318,7 @@ export default function ProfileReviews({
                         <div className="flex-1 min-w-0">
                           <Link
                             href={`/users/${reply.user.slug || reply.user.id}`}
-                            className="text-[11px] font-bold text-primary hover:underline uppercase tracking-widest"
+                            className="text-[11px] font-bold text-primary hover:underline uppercase tracking-wider"
                           >
                             {reply.user.name}
                           </Link>

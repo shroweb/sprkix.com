@@ -15,7 +15,7 @@ export default function BioExpand({ bio }: { bio: string }) {
       {isLong && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-primary/70 transition-colors"
+          className="text-[11px] font-bold uppercase tracking-wider text-primary hover:text-primary/70 transition-colors"
         >
           {expanded ? "Show less ↑" : "Read more ↓"}
         </button>

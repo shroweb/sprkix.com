@@ -431,7 +431,7 @@ export default async function EventPage({
   ]);
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="relative min-h-screen pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
@@ -442,7 +442,7 @@ export default async function EventPage({
       />
       {/* Poster colour gradient backdrop */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none"
+        className="pointer-events-none absolute -top-28 bottom-0 left-1/2 z-0 w-screen -translate-x-1/2"
         style={{
           background: `
             radial-gradient(ellipse 80% 50% at 15% 10%, rgba(${c1},0.55) 0%, transparent 60%),
@@ -451,29 +451,26 @@ export default async function EventPage({
           `,
         }}
       />
-      <div className="fixed inset-0 z-0 bg-background/80" />
+      <div className="pointer-events-none absolute -top-28 bottom-0 left-1/2 z-0 w-screen -translate-x-1/2 bg-background/80" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 relative z-10">
+      <div className="relative z-10 pt-1 sm:pt-3">
         {/* Back Link */}
-        <Link
-          href="/events"
-          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mb-6 sm:mb-8 group rounded-full border border-white/10 bg-black/20 px-4 py-2 backdrop-blur-md"
-        >
+        <Link href="/events" className="group mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground/75 transition-colors hover:text-primary sm:mb-6">
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to All Events
         </Link>
 
         {/* Mobile-first Title & Metadata Header */}
-        <div className="space-y-6 mb-8 sm:mb-10 rounded-2xl sm:rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl p-5 sm:p-8 shadow-2xl shadow-black/20">
+        <div className="space-y-6 mb-8 sm:mb-10 border border-white/10 bg-black/60 backdrop-blur-xl p-5 sm:p-8 lg:p-10 shadow-2xl shadow-black/30">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-4 flex-1">
               <div className="flex items-center gap-3">
                 <div className="h-[1px] w-8 bg-primary"></div>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary ">
                   {isUpcoming ? "Upcoming Event" : isLive ? "Live Now" : "Archive Record"}
                 </span>
                 {isLive && (
-                  <span className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500 text-white rounded text-[11px] font-bold uppercase tracking-widest animate-pulse">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500 text-white rounded text-[11px] font-bold uppercase tracking-wider animate-pulse">
                     <Activity className="w-2.5 h-2.5" /> Live
                   </span>
                 )}
@@ -532,6 +529,11 @@ export default async function EventPage({
                   </Link>
                 </div>
               )}
+              {event.description && (
+                <p className="max-w-3xl border-t border-white/10 pt-5 text-base leading-7 text-foreground/90 sm:text-lg sm:leading-8">
+                  {event.description}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -539,7 +541,7 @@ export default async function EventPage({
         <div className="grid lg:grid-cols-[300px_1fr] xl:grid-cols-[330px_1fr] gap-7 lg:gap-10 items-start">
           {/* Left Column: Poster & Quick Info */}
           <div className="space-y-5 lg:sticky lg:top-24">
-            <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group max-w-[320px] mx-auto lg:mx-0">
+            <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group max-w-[200px] sm:max-w-[260px] lg:max-w-[320px] mx-auto lg:mx-0">
               <Image
                 src={event.posterUrl || "/placeholder.svg"}
                 alt={event.title}
@@ -559,7 +561,7 @@ export default async function EventPage({
             <aside aria-label="Event details and actions" className="bg-card/65 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/20">
               <dl className="grid grid-cols-2 gap-2">
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Promotion</dt>
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Promotion</dt>
                   <dd className="mt-2">
                     <span className="inline-flex rounded-lg bg-primary px-2.5 py-1 text-[11px] font-bold uppercase text-black">
                       {event.promotion}
@@ -567,14 +569,14 @@ export default async function EventPage({
                   </dd>
                 </div>
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Event type</dt>
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Event type</dt>
                   <dd className="mt-2 truncate text-xs font-bold text-white/90" title={formatEventType(event.type)}>
                     {formatEventType(event.type)}
                   </dd>
                 </div>
                 <div className="col-span-2 flex items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
                   <div>
-                    <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Community rating</dt>
+                    <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Community rating</dt>
                     {averageRating ? (
                       <dd className="mt-1 flex items-baseline gap-1.5">
                         <Star className="h-3.5 w-3.5 fill-primary text-primary" />
@@ -590,7 +592,7 @@ export default async function EventPage({
                   {averageRating ? <VisualRating rating={averageRating} size="xs" /> : null}
                 </div>
                 <div className="col-span-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                     Where to watch
                   </dt>
                   <dd>
@@ -606,7 +608,7 @@ export default async function EventPage({
 
               {userReview && (
                 <div className="mt-3 flex justify-between items-center gap-4 rounded-xl border border-primary/15 bg-primary/5 p-3">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground shrink-0">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
                     Your Rating
                   </span>
                   <div className="flex items-center gap-1 shrink-0">
@@ -616,13 +618,13 @@ export default async function EventPage({
                         className={`w-3 h-3 ${i < userReview.rating ? "text-primary fill-current" : "text-muted-foreground/80"}`}
                       />
                     ))}
-                    <span className="text-xs font-bold italic text-primary ml-1">{userReview.rating.toFixed(1)}</span>
+                    <span className="text-xs font-bold text-primary ml-1">{userReview.rating.toFixed(1)}</span>
                   </div>
                 </div>
               )}
 
               <div className="mt-4 border-t border-white/10 pt-4">
-                <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Your event</p>
+                <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Your event</p>
                 <div className="grid grid-cols-3 gap-x-2 gap-y-4">
                   {user && (
                     <>
@@ -640,7 +642,7 @@ export default async function EventPage({
               {/* Completion Progress for Archived Shows */}
               {isArchive && totalMatches > 0 && (
                 <div className="mt-4 border-t border-white/10 pt-4">
-                  <div className="mb-3 flex justify-between items-center text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  <div className="mb-3 flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     <span>Card Progress</span>
                     <span className="text-primary">{ratedMatches}/{totalMatches} Rated</span>
                   </div>
@@ -661,7 +663,7 @@ export default async function EventPage({
               {/* Countdown for Upcoming */}
               {isUpcoming && (
                 <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
-                   <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-widest">
+                   <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wider">
                       <span className="flex items-center gap-2 text-primary "><Clock className="w-3 h-3" /> Starts in</span>
                       <span className="text-muted-foreground font-bold normal-case tracking-normal">
                         {new Date(startTime).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}
@@ -674,11 +676,11 @@ export default async function EventPage({
               {/* Live Status for Sidebar */}
               {isLive && (
                 <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
-                   <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-red-500 italic">
+                   <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-red-500 ">
                       <Activity className="w-3 h-3 animate-pulse" /> Live Now
                    </div>
                    <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl">
-                      <p className="text-[11px] font-bold text-red-500 uppercase tracking-widest mb-1 text-center">Watch Party Active</p>
+                      <p className="text-[11px] font-bold text-red-500 uppercase tracking-wider mb-1 text-center">Watch Party Active</p>
                       <p className="text-[11px] text-muted-foreground text-center">Join the conversation on the right.</p>
                    </div>
                 </div>
@@ -688,36 +690,28 @@ export default async function EventPage({
 
           {/* Right Column: Content */}
           <div className="space-y-8 sm:space-y-12 min-w-0">
-            <div className="relative rounded-2xl border border-white/15 bg-black/70 backdrop-blur-md p-5 sm:p-7">
-              <div className="hidden sm:block absolute top-0 left-0 w-1 h-full bg-primary/20 rounded-full"></div>
-              <p className="sm:pl-6 text-base sm:text-lg text-foreground/95 font-normal not-italic leading-8 max-w-prose">
-                {event.description ||
-                  "The curtains are drawn on this chapter of history. No description has been salvaged yet."}
-              </p>
-            </div>
-
             {/* At a Glance Dashboard */}
             {processedMatches.length > 0 && (
-              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
-                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+              <div className="grid gap-3 md:gap-4 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
+                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-5 flex flex-col items-center justify-center gap-1.5 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                     {processedMatches.length}
                   </span>
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-foreground/75">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-foreground/75">
                     Matches on this Card
                   </span>
                 </div>
                 {!isUpcoming && (
-                  <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                  <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-5 flex flex-col items-center justify-center gap-1.5 text-center hover:bg-card/60 transition-colors shadow-lg">
                     <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                       {durationStr ?? "—"}
                     </span>
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-foreground/75 whitespace-nowrap">
+                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-foreground/75 whitespace-nowrap">
                       Card Duration
                     </span>
                   </div>
                 )}
-                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-5 flex flex-col items-center justify-center gap-1.5 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <div className="flex items-center gap-1.5">
                     <Star className="w-5 h-5 text-primary fill-current" />
                     <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-primary tracking-tighter">
@@ -729,22 +723,22 @@ export default async function EventPage({
                       <VisualRating rating={topMatch.averageRating} size="xs" />
                     )}
                   </div>
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-primary whitespace-nowrap">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-primary whitespace-nowrap">
                     Peak Performance
                   </span>
                 </div>
-                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center gap-1 text-center hover:bg-card/60 transition-colors shadow-lg">
+                <div className="bg-black/60 border border-white/15 rounded-2xl md:rounded-3xl p-4 sm:p-5 flex flex-col items-center justify-center gap-1.5 text-center hover:bg-card/60 transition-colors shadow-lg">
                   <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-foreground tracking-tighter">
                     {watchCount}
                   </span>
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-foreground/75 whitespace-nowrap">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-foreground/75 whitespace-nowrap">
                     Watchers
                   </span>
                 </div>
               </div>
             )}
 
-          <div className="mt-10">
+          <div className="mt-8">
             {(() => {
               // ── Card tab content ─────────────────────────────────────────
               const cardContent = processedMatches.length > 0 ? (
@@ -755,7 +749,7 @@ export default async function EventPage({
                   compact={isUpcoming}
                 />
               ) : (
-                <div className="bg-card/85 border border-border border-dashed rounded-[2rem] p-20 text-center">
+                <div className="bg-card/85 border border-border border-dashed rounded-[2rem] p-8 sm:p-20 text-center">
                   <Info className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
                   <p className="text-muted-foreground font-bold ">
                     {isUpcoming ? "No matches announced yet." : "No matches have been logged for this event."}
@@ -792,7 +786,7 @@ export default async function EventPage({
                     </div>
                   </PredictionSlip>
                 ) : (
-                  <div className="bg-card/85 border border-border border-dashed rounded-[2rem] p-20 text-center">
+                  <div className="bg-card/85 border border-border border-dashed rounded-[2rem] p-8 sm:p-20 text-center">
                     <Info className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
                     <p className="text-muted-foreground font-bold ">No participants announced yet.</p>
                   </div>
@@ -818,7 +812,7 @@ export default async function EventPage({
                       />
                     )}
                     {resolvedPicks.length > 0 && user && !recap && (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card/85 text-sm font-black italic w-fit">
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card/85 text-sm font-bold w-fit">
                         <Trophy className="w-4 h-4 text-primary" />
                         <span className="text-primary">{correctPicks}</span>
                         <span className="text-muted-foreground">/ {resolvedPicks.length} correct</span>
@@ -862,13 +856,13 @@ export default async function EventPage({
                       averageRating={averageRating || undefined}
                       totalCount={event.reviews.length}
                     />
-                    <div className="grid xl:grid-cols-2 gap-12">
+                    <div className="grid xl:grid-cols-2 gap-8 lg:gap-12">
                     {/* Review Form */}
                     <div className="space-y-6">
                       <h2 className="text-3xl font-semibold uppercase italic tracking-tighter underline decoration-primary decoration-4 underline-offset-8">
                         Write a Review
                       </h2>
-                      <div className="bg-card border border-border rounded-[2rem] p-8">
+                      <div className="bg-card border border-border rounded-[2rem] p-5 sm:p-8">
                         {user ? (
                           <ReviewForm event={event} user={user} initialReview={userReview} />
                         ) : (
@@ -942,7 +936,7 @@ export default async function EventPage({
                                       review.user?.name ? review.user.name.charAt(0).toUpperCase() : "A"
                                     )}
                                   </div>
-                                  <span className="text-sm font-black italic flex items-center gap-1 group-hover/user:text-primary transition-colors">
+                                  <span className="text-sm font-bold flex items-center gap-1 group-hover/user:text-primary transition-colors">
                                     {review.user?.name || "Anonymous"}
                                     {(review.user as any)?.isVerified && (
                                       <CheckCircle className="w-3.5 h-3.5 text-blue-400 fill-blue-400/10" />
@@ -954,7 +948,7 @@ export default async function EventPage({
                                     <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-white/20">
                                       U
                                     </div>
-                                    <span className="font-black text-sm uppercase italic tracking-tight text-white/20">
+                                    <span className="font-bold text-sm uppercase tracking-tight text-white/20">
                                       Anonymous
                                     </span>
                                   </div>
@@ -997,7 +991,7 @@ export default async function EventPage({
                           ))}
                         </div>
                         ) : (
-                          <p className="text-muted-foreground font-medium p-12 text-center bg-secondary/20 rounded-[2rem]">
+                          <p className="text-muted-foreground font-medium p-6 sm:p-12 text-center bg-secondary/20 rounded-[2rem]">
                             Silence from the crowd. No reviews yet.
                           </p>
                         );
@@ -1081,7 +1075,7 @@ export default async function EventPage({
                 </h2>
                 <Link
                   href={`/events?promotion=${encodeURIComponent(event.promotion)}`}
-                  className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline border border-primary/20 bg-primary/5 px-4 py-2 rounded-full"
+                  className="text-[11px] font-bold uppercase tracking-wider text-primary hover:underline border border-primary/20 bg-primary/5 px-4 py-2 rounded-full"
                 >
                   View All
                 </Link>
@@ -1110,7 +1104,7 @@ export default async function EventPage({
                         </div>
                       )}
                     </div>
-                    <h3 className="font-bold text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                    <h3 className="font-bold text-xs uppercase tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {rel.title.replace(/–\s\d{4}.*$/, "")}
                     </h3>
                     <p className="text-[11px] font-bold text-muted-foreground mt-1">

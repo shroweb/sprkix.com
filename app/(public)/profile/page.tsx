@@ -269,7 +269,7 @@ export default async function ProfilePage() {
          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
-            <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/75 hover:text-white transition-colors group mb-8">
+            <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/75 hover:text-white transition-colors group mb-8">
               <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Home
             </Link>
 
@@ -292,7 +292,7 @@ export default async function ProfilePage() {
                      <CheckCircle className="w-5 h-5 text-blue-400 fill-blue-400/20 shrink-0" />
                    )}
                    {(currentUser as any)?.isFoundingMember && (
-                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] font-bold uppercase tracking-widest shrink-0">
+                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] font-bold uppercase tracking-wider shrink-0">
                        ⚡ Founding Member
                      </span>
                    )}
@@ -302,7 +302,7 @@ export default async function ProfilePage() {
                    <RankBadge ratings={matchRatings.length} reviews={reviews.length} predictions={predictionCount} submissions={approvedSubmissionsCount} />
                    <Link
                      href="/profile/edit"
-                     className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-bold uppercase tracking-widest text-white/80 hover:text-white transition-all"
+                     className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-bold uppercase tracking-wider text-white/80 hover:text-white transition-all"
                    >
                      <Pencil className="w-3 h-3" /> Edit Profile
                    </Link>
@@ -315,20 +315,20 @@ export default async function ProfilePage() {
                    <span className="text-2xl sm:text-3xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
                      {avgRating || "—"}
                    </span>
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Avg Rating</span>
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Avg Rating</span>
                  </div>
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-white block leading-none">{reviews.length}</span>
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Reviews</span>
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Reviews</span>
                  </div>
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-sky-400 block leading-none">{cardsCompleted}</span>
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Cards Done</span>
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Cards Done</span>
                  </div>
                  {predictionAccuracy !== null && (
                    <div className="space-y-0.5">
                      <span className="text-2xl sm:text-3xl font-black italic text-emerald-400 block leading-none">{predictionAccuracy}%</span>
-                     <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Predictions</span>
+                     <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">Predictions</span>
                    </div>
                  )}
                </div>
@@ -337,7 +337,7 @@ export default async function ProfilePage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-6 space-y-16">
+      <div className="max-w-6xl mx-auto px-0 sm:px-4 lg:px-6 space-y-10 sm:space-y-16">
 
         {/* Quick Info Bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 -mt-6 relative z-30">
@@ -346,8 +346,8 @@ export default async function ProfilePage() {
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
-              <p className="text-xs sm:text-sm font-bold italic truncate">{memberSince}</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Joined</p>
+              <p className="text-xs sm:text-sm font-bold truncate">{memberSince}</p>
             </div>
           </div>
           <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
@@ -355,8 +355,8 @@ export default async function ProfilePage() {
               <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
-              <p className="text-xs sm:text-sm font-bold italic truncate">{favPromotion ?? "—"}</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Fav Promotion</p>
+              <p className="text-xs sm:text-sm font-bold truncate">{favPromotion ?? "—"}</p>
             </div>
           </div>
           <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6 group">
@@ -364,14 +364,14 @@ export default async function ProfilePage() {
               <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Predictions</p>
               {predictionCount > 0 ? (
-                <p className="text-xs sm:text-sm font-bold italic">
+                <p className="text-xs sm:text-sm font-bold ">
                   {predictionScore}/{predictionCount}
                   <span className="text-emerald-400 ml-1 sm:ml-2">{predictionAccuracy}%</span>
                 </p>
               ) : (
-                <p className="text-xs sm:text-sm font-bold italic text-muted-foreground/80">None yet</p>
+                <p className="text-xs sm:text-sm font-bold text-muted-foreground/80">None yet</p>
               )}
             </div>
           </div>
@@ -403,7 +403,7 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-red-500/20 to-transparent" />
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
               {favMatches.length} Saved
             </span>
             {favMatches.length > 12 && (
@@ -434,11 +434,11 @@ export default async function ProfilePage() {
                     <span className="text-[11px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded">
                       {fav.match.event.promotion}
                     </span>
-                    <span className="text-[11px] font-bold text-muted-foreground italic">
+                    <span className="text-[11px] font-bold text-muted-foreground ">
                       {new Date(fav.match.event.date).getFullYear()}
                     </span>
                   </div>
-                  <h3 className="font-bold text-sm uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
+                  <h3 className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-6">
                     {fav.match.title}
                   </h3>
                   <div className="flex flex-wrap items-center gap-1.5 pt-2">
@@ -458,7 +458,7 @@ export default async function ProfilePage() {
           </div>
           </div>
         ) : (
-          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-16 text-center">
             <Heart className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
             <p className="text-muted-foreground font-bold ">
               Your favorite matches list is empty.
@@ -478,7 +478,7 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
               {reviews.length} Written
             </span>
           </div>
@@ -499,7 +499,7 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
           <div className="flex items-center gap-3">
              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-             <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
+             <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
                {watchList.length} Events Saved
              </span>
           </div>
@@ -527,14 +527,14 @@ export default async function ProfilePage() {
                     </span>
                   </div>
                 </div>
-                <h3 className="font-bold text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                <h3 className="font-bold text-xs uppercase tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                   {item.event.title.replace(/–\s\d{4}.*$/, "")}
                 </h3>
               </Link>
             ))}
           </div>
         ) : (
-          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-16 text-center">
             <BookMarked className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
             <p className="text-muted-foreground font-bold ">
               Your watch list is empty.
@@ -560,7 +560,7 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-white/75">
               {userLists.length} Lists
             </span>
             <Link
@@ -610,7 +610,7 @@ export default async function ProfilePage() {
                   <div className="space-y-1 min-w-0">
                     <Link
                       href={`/lists/${list.id}`}
-                      className="font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight block"
+                      className="font-bold uppercase tracking-tight text-sm group-hover:text-primary transition-colors line-clamp-2 leading-tight block"
                     >
                       {list.title}
                     </Link>
@@ -632,7 +632,7 @@ export default async function ProfilePage() {
             ))}
           </div>
         ) : (
-          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-16 text-center">
             <List className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
             <p className="text-muted-foreground font-bold ">
               You haven&apos;t created any lists yet.

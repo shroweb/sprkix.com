@@ -31,7 +31,7 @@ export default function Countdown({ targetDate }: { targetDate: string | Date })
 
   if (left === "started") {
     return (
-      <p className="border border-primary/30 bg-primary/10 px-3 py-3 text-center text-xs font-bold uppercase tracking-widest text-primary">
+      <p className="border border-primary/30 bg-primary/10 px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-primary">
         Showtime
       </p>
     );
@@ -50,7 +50,7 @@ export default function Countdown({ targetDate }: { targetDate: string | Date })
           <div className="text-xl font-black italic tabular-nums leading-none">
             {value === null ? "--" : label === "Days" ? value : String(value).padStart(2, "0")}
           </div>
-          <div className="mt-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{label}</div>
+          <div className="mt-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
         </div>
       ))}
     </div>

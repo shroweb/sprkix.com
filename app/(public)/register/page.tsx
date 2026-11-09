@@ -107,7 +107,7 @@ export default function RegisterPage() {
           {/* Top accent bar */}
           <div className="h-1 bg-gradient-to-r from-yellow-400/0 via-yellow-400 to-yellow-400/0" />
 
-          <div className="p-8 sm:p-10 space-y-6">
+          <div className="p-5 sm:p-8 sm:p-10 space-y-6">
             {/* Header */}
             <div className="text-center space-y-1">
               <h1 className="text-3xl font-black text-white tracking-tighter uppercase italic">
@@ -218,7 +218,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-yellow-400 text-black font-black py-4 rounded-xl hover:bg-yellow-300 transition-all uppercase italic tracking-widest shadow-lg shadow-yellow-400/20 disabled:opacity-50 active:scale-[0.98] mt-2"
+                className="w-full bg-yellow-400 text-black font-black py-4 rounded-xl hover:bg-yellow-300 transition-all uppercase italic tracking-wider shadow-lg shadow-yellow-400/20 disabled:opacity-50 active:scale-[0.98] mt-2"
               >
                 {loading ? "Creating Account…" : "Create Account"}
               </button>

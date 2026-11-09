@@ -81,7 +81,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
                 </span>
               )}
             </Link>
-            <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+            <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
               Built for wrestling fans
             </span>
 
@@ -89,7 +89,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
               Rate shows. Write reviews. Make predictions. Discuss with fans. Everything wrestling in one place.
             </p>
 
-            <Link href="/events" className="group inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white transition-colors hover:text-primary">
+            <Link href="/events" className="group inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors hover:text-primary">
               Browse latest events
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
@@ -136,7 +136,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
           {/* Discover */}
           <div className="space-y-4">
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
+            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
               Discover
             </p>
             <ul className="space-y-1">
@@ -155,7 +155,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
           {/* Community */}
           <div className="space-y-4">
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
+            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
               Community
             </p>
             <ul className="space-y-1">
@@ -174,7 +174,7 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
 
           {/* Account */}
           <div className="space-y-4">
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
+            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/55 before:h-1 before:w-1 before:rounded-full before:bg-primary">
               Account
             </p>
             <ul className="space-y-1">
@@ -195,17 +195,17 @@ export default function Footer({ siteLogo, socialX, socialFacebook, socialInstag
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-5 sm:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:justify-start">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/45">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/45">
               © {new Date().getFullYear()} Poison Rana
             </p>
-            <Link href="/privacy" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/45 transition-colors hover:text-primary">
+            <Link href="/privacy" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/45 transition-colors hover:text-primary">
               Privacy
             </Link>
-            <Link href="/terms" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/45 transition-colors hover:text-primary">
+            <Link href="/terms" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/45 transition-colors hover:text-primary">
               Terms
             </Link>
           </div>
-          <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/45">
+          <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/45">
             A{" "}
             <a
               href="https://shro.co.uk"

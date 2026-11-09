@@ -50,7 +50,7 @@ export default function MatchFinderPage() {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Search className="w-5 h-5 text-amber-400" />
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
               Advanced Search
             </span>
           </div>
@@ -124,7 +124,7 @@ export default function MatchFinderPage() {
             <div className="animate-spin w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full mx-auto" />
           </div>
         ) : matches.length === 0 ? (
-          <div className="glass-card p-12 text-center text-slate-400 space-y-2">
+          <div className="glass-card p-6 sm:p-12 text-center text-slate-400 space-y-2">
             <p className="text-lg font-bold">No matches found matching these filters.</p>
             <p className="text-xs">Try lowering the minimum rating threshold or clearing filters.</p>
           </div>
@@ -145,7 +145,7 @@ export default function MatchFinderPage() {
                       {match.event.title}
                     </Link>
                   </div>
-                  <h3 className="text-base font-bold italic uppercase tracking-tight text-white group-hover:text-amber-400 transition-colors truncate">
+                  <h3 className="text-base font-bold uppercase tracking-tight text-white group-hover:text-amber-400 transition-colors truncate">
                     {match.title}
                   </h3>
                   <div className="flex items-center gap-2 text-xs text-slate-400">

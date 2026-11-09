@@ -71,7 +71,7 @@ export default function PredictionSlip({
               {complete ? <Check className="h-5 w-5" /> : <Target className="h-5 w-5" />}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold uppercase italic tracking-tight">
+              <p className="text-xs font-bold uppercase tracking-tight">
                 {!signedIn
                   ? "Sign in to lock in your picks"
                   : complete

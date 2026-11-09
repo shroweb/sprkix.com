@@ -90,8 +90,8 @@ export default async function ForYou({ userId }: { userId: string }) {
               {e.posterUrl ? <Image src={e.posterUrl} alt="" fill sizes="64px" className="object-cover" /> : <Calendar className="absolute inset-0 m-auto h-5 w-5 text-muted-foreground/80" />}
             </div>
             <div className="min-w-0 space-y-1">
-              <p className="line-clamp-2 text-sm font-black italic uppercase leading-tight group-hover:text-primary">{e.title}</p>
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <p className="line-clamp-2 text-sm font-bold uppercase leading-tight group-hover:text-primary">{e.title}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 {e.date.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} · {e.promotion}
               </p>
               <p className="text-[11px] font-bold uppercase tracking-wider text-primary">{reasons[0]}</p>

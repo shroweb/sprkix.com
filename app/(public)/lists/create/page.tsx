@@ -44,11 +44,11 @@ export default function CreateListPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">
             Your Collection
           </span>
         </div>
-        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+        <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter leading-none">
           Create a List
         </h1>
         <p className="text-muted-foreground font-medium ">
@@ -58,7 +58,7 @@ export default function CreateListPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-card/85 border border-white/5 rounded-[2rem] p-8 space-y-6"
+        className="bg-card/85 border border-white/5 rounded-[2rem] p-5 sm:p-8 space-y-6"
       >
         {error && (
           <p className="text-sm font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
@@ -67,7 +67,7 @@ export default function CreateListPage() {
         )}
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             List Title *
           </label>
           <input
@@ -80,7 +80,7 @@ export default function CreateListPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Description
           </label>
           <textarea
@@ -93,7 +93,7 @@ export default function CreateListPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             List Type
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -115,7 +115,7 @@ export default function CreateListPage() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Visibility
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -139,7 +139,7 @@ export default function CreateListPage() {
         <button
           type="submit"
           disabled={saving || !title.trim()}
-          className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-sm font-black disabled:opacity-50"
+          className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-sm font-bold disabled:opacity-50"
         >
           {saving ? (
             <RefreshCcw className="w-4 h-4 animate-spin" />

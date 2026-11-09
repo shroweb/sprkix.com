@@ -44,7 +44,7 @@ export default function AttendButton({
     >
       <MapPin className={`w-4 h-4 ${attended ? "fill-current" : ""}`} />
       {!minimal && (
-        <span className="text-sm font-black italic">
+        <span className="text-sm font-bold ">
           {attended ? "Attended" : "I was there"}
         </span>
       )}

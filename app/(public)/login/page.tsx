@@ -62,7 +62,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-4">
         <form
           onSubmit={handleLogin}
-          className="space-y-4 backdrop-blur p-8 rounded-2xl shadow-lg border border-white/10"
+          className="space-y-4 backdrop-blur p-5 sm:p-8 rounded-2xl shadow-lg border border-white/10"
         >
           <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white text-center mb-6">
             Login to Poison Rana

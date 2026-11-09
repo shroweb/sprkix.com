@@ -229,7 +229,7 @@ export default function PollCard({
               return (
                 <div
                   key={option.id}
-                  className="px-5 py-3 border border-border rounded-2xl text-sm font-black italic uppercase tracking-tight text-muted-foreground"
+                  className="px-5 py-3 border border-border rounded-2xl text-sm font-bold uppercase tracking-tight text-muted-foreground"
                 >
                   {option.text}
                 </div>
@@ -241,7 +241,7 @@ export default function PollCard({
                 key={option.id}
                 onClick={() => handleVote(option.id)}
                 disabled={loading}
-                className="w-full px-5 py-3 border border-border rounded-2xl text-sm font-black italic uppercase tracking-tight text-left hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-5 py-3 border border-border rounded-2xl text-sm font-bold uppercase tracking-tight text-left hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {option.text}
               </button>
@@ -267,12 +267,12 @@ export default function PollCard({
               </span>
             )}
             {isClosed && !isActive && (
-              <span className="px-2 py-1 bg-muted border border-border rounded-full text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <span className="px-2 py-1 bg-muted border border-border rounded-full text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Archived
               </span>
             )}
             {isClosed && isActive && endsAt && (
-              <span className="px-2 py-1 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold uppercase tracking-widest text-red-500">
+              <span className="px-2 py-1 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold uppercase tracking-wider text-red-500">
                 Closed
               </span>
             )}
@@ -379,7 +379,7 @@ export default function PollCard({
             <button
               onClick={handleDownload}
               disabled={isGenerating}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-black font-black uppercase italic tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/20] hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-black font-black uppercase italic tracking-wider rounded-2xl shadow-2xl shadow-primary/20 hover:bg-[var(--primary-hover)] hover:shadow-[var(--primary-hover)/20] hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
             >
               {isGenerating ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Generating...</>
@@ -405,7 +405,7 @@ export default function PollCard({
 
             <button
               onClick={() => setShareOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-white/10 text-white font-black uppercase italic tracking-widest rounded-2xl hover:bg-white/20 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-white/10 text-white font-black uppercase italic tracking-wider rounded-2xl hover:bg-white/20 transition-all"
             >
               <X className="w-4 h-4" /> Close
             </button>

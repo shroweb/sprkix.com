@@ -44,7 +44,7 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
       <div className="space-y-4 mb-10">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-red-500"></div>
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-red-500 italic">
+          <span className="text-xs font-bold uppercase tracking-wider text-red-500 ">
             Public Collection
           </span>
         </div>
@@ -72,12 +72,12 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
                   <span className="text-[11px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded">
                     {fav.match.event.promotion}
                   </span>
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/80 italic">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/80 ">
                     <Calendar className="w-3 h-3" />
                     {new Date(fav.match.event.date).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
                   </div>
                 </div>
-                <h3 className="font-bold text-base md:text-lg uppercase italic tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-8">
+                <h3 className="font-bold text-base md:text-lg uppercase tracking-tight group-hover:text-primary transition-colors leading-tight line-clamp-2 pr-8">
                   {fav.match.title}
                 </h3>
                 <div className="flex flex-wrap items-center gap-1.5 pt-2">
@@ -89,7 +89,7 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
                   ))}
                 </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 group-hover:text-primary/40 transition-colors">
+              <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 group-hover:text-primary/40 transition-colors">
                 <span>View Event Card</span>
                 <span>→</span>
               </div>

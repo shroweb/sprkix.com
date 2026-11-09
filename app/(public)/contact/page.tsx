@@ -27,7 +27,7 @@ export default function ContactPage() {
             <Mail className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
               Email
             </p>
             <p className="font-black italic uppercase text-lg group-hover:text-primary transition-colors">
@@ -49,7 +49,7 @@ export default function ContactPage() {
             <Twitter className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
               Twitter / X
             </p>
             <p className="font-black italic uppercase text-lg group-hover:text-primary transition-colors">
@@ -77,7 +77,7 @@ export default function ContactPage() {
         </p>
         <a
           href="mailto:poisonrana.app@gmail.com?subject=Bug%20Report"
-          className="inline-flex items-center gap-2 text-sm font-black uppercase italic text-primary hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-2 text-sm font-bold uppercase text-primary hover:opacity-80 transition-opacity"
         >
           <Mail className="w-4 h-4" />
           Send a bug report
@@ -98,7 +98,7 @@ export default function ContactPage() {
         </p>
         <Link
           href="/faq"
-          className="inline-flex items-center gap-2 text-sm font-black uppercase italic text-primary hover:opacity-80 transition-opacity"
+          className="inline-flex items-center gap-2 text-sm font-bold uppercase text-primary hover:opacity-80 transition-opacity"
         >
           <HelpCircle className="w-4 h-4" />
           How it Works

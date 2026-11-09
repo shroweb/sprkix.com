@@ -126,7 +126,7 @@ export default function StarRating({
         })}
       </div>
       {showAverage && avg !== null && (
-        <span className="text-[11px] font-bold italic tracking-tighter opacity-50 mt-1">
+        <span className="text-[11px] font-bold tracking-tighter opacity-50 mt-1">
           {!hideStarLabel && "COMMUNITY: "}
           {avg.toFixed(2)}
         </span>

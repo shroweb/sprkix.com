@@ -62,11 +62,11 @@ export default async function ListPage({
               ) : (
                 <Lock className="w-3.5 h-3.5 text-muted-foreground" />
               )}
-              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 {list.isPublic ? "Public" : "Private"} List by {list.user.name}
               </span>
             </div>
-            <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+            <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter leading-none">
               {list.title}
             </h1>
             {list.description && (
@@ -91,7 +91,7 @@ export default async function ListPage({
 
       {/* Items */}
       {list.items.length === 0 ? (
-        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-20 text-center">
           <p className="text-muted-foreground font-bold ">
             No {isMatchList ? "matches" : "events"} on this list yet.
           </p>
@@ -137,7 +137,7 @@ export default async function ListPage({
                   <div className="flex-1 min-w-0 space-y-0.5">
                     <Link
                       href={`/events/${match.event.slug}`}
-                      className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate block"
+                      className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors truncate block"
                     >
                       {match.title}
                     </Link>
@@ -192,7 +192,7 @@ export default async function ListPage({
                 <div className="flex-1 min-w-0 space-y-0.5">
                   <Link
                     href={`/events/${event.slug}`}
-                    className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate block"
+                    className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors truncate block"
                   >
                     {event.title.replace(/–\s*\d{4}.*$/, "").trim()}
                   </Link>

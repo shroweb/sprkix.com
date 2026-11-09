@@ -51,7 +51,7 @@ function ResetPasswordForm() {
     <div className="py-20 px-4 flex justify-center">
       <div className="w-full max-w-sm space-y-4">
         {success ? (
-          <div className="backdrop-blur p-8 rounded-2xl shadow-lg border border-white/10 space-y-4 text-center">
+          <div className="backdrop-blur p-5 sm:p-8 rounded-2xl shadow-lg border border-white/10 space-y-4 text-center">
             <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
               <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -71,7 +71,7 @@ function ResetPasswordForm() {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="space-y-4 backdrop-blur p-8 rounded-2xl shadow-lg border border-white/10"
+            className="space-y-4 backdrop-blur p-5 sm:p-8 rounded-2xl shadow-lg border border-white/10"
           >
             <div className="space-y-1">
               <h1 className="text-2xl font-extrabold text-white text-center">New Password</h1>

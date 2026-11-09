@@ -70,7 +70,7 @@ export default async function TonightHero() {
     <section aria-label="Tonight" className="relative -mt-4 overflow-hidden border border-rose-500/30 bg-gradient-to-br from-rose-950/60 via-slate-950 to-slate-950 p-5 sm:p-8">
       <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
         <div className="space-y-4">
-          <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-rose-300">
+          <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-rose-300">
             <span className="pr-live-dot h-2 w-2 bg-rose-500" />
             {live ? "Live now" : "Tonight"}
             <span className="text-muted-foreground">· {event.promotion}</span>
@@ -83,11 +83,11 @@ export default async function TonightHero() {
             </div>
           )}
           <div className="flex flex-wrap gap-3">
-            <Link href={`/events/${event.slug}${event.enablePredictions && !live ? "#predictions" : ""}`} className="inline-flex items-center gap-2 bg-primary px-5 py-3 text-xs font-bold uppercase tracking-widest text-primary-foreground hover:opacity-90">
+            <Link href={`/events/${event.slug}${event.enablePredictions && !live ? "#predictions" : ""}`} className="inline-flex items-center gap-2 bg-primary px-5 py-3 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:opacity-90">
               {live ? <Radio className="h-4 w-4" /> : <Target className="h-4 w-4" />}
               {live ? "Join the watch party" : event.enablePredictions ? "Predict now" : "View event"}
             </Link>
-            <Link href={`/events/${event.slug}`} className="inline-flex items-center gap-2 border border-white/20 px-5 py-3 text-xs font-bold uppercase tracking-widest hover:border-white/50">
+            <Link href={`/events/${event.slug}`} className="inline-flex items-center gap-2 border border-white/20 px-5 py-3 text-xs font-bold uppercase tracking-wider hover:border-white/50">
               Full card <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -104,7 +104,7 @@ export default async function TonightHero() {
                 </div>
                 <div className="mt-1 flex justify-between text-[11px] font-bold tabular-nums text-muted-foreground">
                   <span className="text-primary">{split[0]}%</span>
-                  <span className="uppercase tracking-widest">Community picks</span>
+                  <span className="uppercase tracking-wider">Community picks</span>
                   <span className="text-sky-400">{split[1] ?? 0}%</span>
                 </div>
               </div>

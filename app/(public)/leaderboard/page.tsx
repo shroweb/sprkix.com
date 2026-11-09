@@ -74,9 +74,9 @@ export default async function LeaderboardPage({
         <div className="space-y-4 mb-12">
           <div className="flex items-center gap-3">
             <div className="h-[1px] w-8 bg-primary" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Community</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-primary ">Community</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
             Prediction<br />Leaderboard
           </h1>
           <p className="text-muted-foreground font-medium max-w-xl">
@@ -139,7 +139,7 @@ export default async function LeaderboardPage({
                       <span className="grid h-full w-full place-items-center text-xl font-black text-muted-foreground">{e.name?.charAt(0).toUpperCase() || "?"}</span>
                     )}
                   </div>
-                  <p className="max-w-full truncate text-xs font-bold italic uppercase group-hover:text-primary sm:text-sm">{e.name}</p>
+                  <p className="max-w-full truncate text-xs font-bold uppercase group-hover:text-primary sm:text-sm">{e.name}</p>
                   <div className={`flex w-full flex-col items-center justify-start gap-1 border-t-2 bg-gradient-to-b to-transparent pt-3 ${h} ${tone}`}>
                     <span className="text-3xl">{medals[i]}</span>
                     <span className="text-lg font-black tabular-nums">{e.accuracy}%</span>
@@ -152,7 +152,7 @@ export default async function LeaderboardPage({
           </div>
         )}
         {ranked.length === 0 ? (
-          <div className="bg-card/85 border border-dashed border-white/10 rounded-[2.5rem] p-20 text-center space-y-4">
+          <div className="bg-card/85 border border-dashed border-white/10 rounded-[2.5rem] p-8 sm:p-20 text-center space-y-4">
             <Target className="w-16 h-16 text-white/10 mx-auto" />
             <p className="text-white/75 font-black italic text-xl uppercase tracking-tighter">
               No predictions resolved yet.
@@ -191,7 +191,7 @@ export default async function LeaderboardPage({
                   </div>
 
                   {/* Avatar */}
-                  <div className={`w-10 h-10 rounded-full overflow-hidden border shrink-0 flex items-center justify-center font-black text-sm ${
+                  <div className={`w-10 h-10 rounded-full overflow-hidden border shrink-0 flex items-center justify-center font-bold text-sm ${
                     idx === 0 ? "border-yellow-400/40 bg-yellow-400/10" : "border-white/10 bg-secondary"
                   }`}>
                     {entry.avatarUrl ? (
@@ -205,7 +205,7 @@ export default async function LeaderboardPage({
 
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className={`font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors ${isCurrentUser ? "text-primary" : ""}`}>
+                    <p className={`font-bold uppercase tracking-tight text-sm group-hover:text-primary transition-colors ${isCurrentUser ? "text-primary" : ""}`}>
                       {entry.name}
                       {isCurrentUser && <span className="ml-2 text-[11px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold not-italic uppercase tracking-wider">You</span>}
                     </p>
@@ -228,7 +228,7 @@ export default async function LeaderboardPage({
                         style={{ width: `${entry.accuracy}%` }}
                       />
                     </div>
-                    <span className={`text-sm font-black italic ${
+                    <span className={`text-sm font-bold ${
                       entry.accuracy >= 70 ? "text-emerald-400" :
                       entry.accuracy >= 50 ? "text-primary" : "text-orange-400"
                     }`}>
@@ -237,7 +237,7 @@ export default async function LeaderboardPage({
                   </div>
 
                   {/* Mobile accuracy */}
-                  <span className={`sm:hidden text-sm font-black italic shrink-0 ${
+                  <span className={`sm:hidden text-sm font-bold shrink-0 ${
                     entry.accuracy >= 70 ? "text-emerald-400" :
                     entry.accuracy >= 50 ? "text-primary" : "text-orange-400"
                   }`}>
@@ -253,7 +253,7 @@ export default async function LeaderboardPage({
       {currentUserRank >= 0 && ranked[currentUserRank] && (
         <div className="sticky bottom-20 z-30 mx-auto mt-6 max-w-4xl px-4 sm:px-6 md:bottom-4">
           <div className="flex items-center gap-4 border border-primary/40 bg-slate-950/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-primary">Your rank</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Your rank</span>
             <span className="text-2xl font-black italic text-primary">#{currentUserRank + 1}</span>
             <span className="min-w-0 truncate text-sm font-bold text-muted-foreground">
               {ranked[currentUserRank].accuracy}% · {ranked[currentUserRank].predictionScore}/{ranked[currentUserRank].predictionCount} correct

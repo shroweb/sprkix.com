@@ -71,9 +71,9 @@ export default async function LinealIndexPage() {
       <header className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Fan-tracked</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">Fan-tracked</span>
         </div>
-        <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
           Lineal<br />Championships
         </h1>
         <p className="text-muted-foreground font-medium max-w-2xl">
@@ -87,7 +87,7 @@ export default async function LinealIndexPage() {
       </header>
 
       {titles.length === 0 ? (
-        <div className="bg-card/85 border border-dashed border-white/10 rounded-[2.5rem] p-16 text-center">
+        <div className="bg-card/85 border border-dashed border-white/10 rounded-[2.5rem] p-8 sm:p-16 text-center">
           <Crown className="w-14 h-14 text-white/10 mx-auto mb-4" />
           <p className="text-white/75 font-black italic text-xl uppercase tracking-tighter">No lineal titles yet</p>
           <p className="text-muted-foreground text-sm mt-2">Check back soon.</p>
@@ -96,7 +96,7 @@ export default async function LinealIndexPage() {
         <>
           {board.length > 0 && (
             <section className="space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Holding the most right now</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-primary ">Holding the most right now</h2>
               <div className="flex flex-wrap gap-3">
                 {board.map((h, i) => (
                   <Link
@@ -107,7 +107,7 @@ export default async function LinealIndexPage() {
                     }`}
                   >
                     <span className="text-2xl font-black italic text-primary leading-none">{h.count}</span>
-                    <span className="font-black italic uppercase tracking-tight text-sm">{h.name}</span>
+                    <span className="font-bold uppercase tracking-tight text-sm">{h.name}</span>
                   </Link>
                 ))}
               </div>
@@ -127,7 +127,7 @@ export default async function LinealIndexPage() {
                     {t.name}
                   </h3>
                   {t.kind === "novelty" && (
-                    <span className="shrink-0 text-[11px] font-bold uppercase tracking-widest text-primary border border-primary/30 rounded-full px-2 py-0.5">
+                    <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-primary border border-primary/30 rounded-full px-2 py-0.5">
                       Novelty
                     </span>
                   )}
@@ -143,7 +143,7 @@ export default async function LinealIndexPage() {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Lineal holder</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Lineal holder</p>
                       <p className="font-black italic uppercase tracking-tight truncate">{t.holder.wrestler.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {daysBetween(t.holder.startedAt, now)} days · {t.changes} title change{t.changes === 1 ? "" : "s"} tracked

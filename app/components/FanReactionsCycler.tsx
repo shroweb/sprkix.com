@@ -50,7 +50,7 @@ export default function FanReactionsCycler({
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold group-hover/user:bg-primary group-hover/user:text-black transition-colors">
                   {r.user?.name ? r.user.name.charAt(0).toUpperCase() : "A"}
                 </div>
-                <span className="text-sm font-black italic">
+                <span className="text-sm font-bold ">
                   {r.user?.name || "Anonymous"}
                 </span>
               </Link>

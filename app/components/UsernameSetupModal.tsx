@@ -33,7 +33,7 @@ export default function UsernameSetupModal({
         {/* Top accent */}
         <div className="h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0" />
 
-        <div className="p-8 space-y-5">
+        <div className="p-5 sm:p-8 space-y-5">
           {/* Header */}
           <div className="flex items-start justify-between gap-4">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -63,7 +63,7 @@ export default function UsernameSetupModal({
             <Link
               href="/profile/edit"
               onClick={dismiss}
-              className="flex-1 flex items-center justify-center gap-2 bg-primary text-black font-black py-3 px-5 rounded-xl text-sm uppercase italic tracking-wider hover:opacity-90 transition-opacity"
+              className="flex-1 flex items-center justify-center gap-2 bg-primary text-black font-bold py-3 px-5 rounded-xl text-sm uppercase tracking-wider hover:opacity-90 transition-opacity"
             >
               <Pencil className="w-4 h-4" />
               Edit Profile

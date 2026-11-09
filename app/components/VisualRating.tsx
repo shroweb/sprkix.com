@@ -49,7 +49,7 @@ export default function VisualRating({
         })}
       </div>
       {showNumber && (
-        <span className="text-xs font-bold italic text-primary ml-1">
+        <span className="text-xs font-bold text-primary ml-1">
           {rating.toFixed(2)}
         </span>
       )}

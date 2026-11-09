@@ -23,16 +23,16 @@ export default async function PollsPage() {
   const archivedPolls = polls.filter((p) => !p.isActive);
 
   return (
-    <div className="max-w-3xl mx-auto pb-20 space-y-16">
+    <div className="max-w-3xl mx-auto pb-20 space-y-10 sm:space-y-16">
       {/* Header */}
       <div className="space-y-2 pt-4">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">
             Community
           </span>
         </div>
-        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+        <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter leading-none">
           Polls
         </h1>
         <p className="text-muted-foreground font-medium ">
@@ -143,7 +143,7 @@ export default async function PollsPage() {
       )}
 
       {polls.length === 0 && (
-        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-8 sm:p-20 text-center">
           <BarChart2 className="w-10 h-10 text-muted-foreground/80 mx-auto mb-4" />
           <p className="text-muted-foreground font-bold ">
             No polls yet. Check back soon.

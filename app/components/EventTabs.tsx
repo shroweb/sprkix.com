@@ -41,15 +41,15 @@ export default function EventTabs({
   return (
     <div className="space-y-8">
       {/* Tab Bar */}
-      <div className="flex gap-1 bg-card/85 border border-border rounded-2xl p-1.5 overflow-x-auto">
+      <div className="sticky top-[68px] z-30 -mx-4 flex gap-1 overflow-x-auto border-y border-white/10 bg-slate-950/90 px-4 py-2 backdrop-blur-xl sm:mx-0 sm:border sm:px-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 flex-shrink-0 py-2 px-3 sm:py-2.5 sm:px-5 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${
+            className={`flex items-center gap-2 flex-shrink-0 py-2.5 px-4 sm:px-6 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
               activeTab === tab.id
                 ? "bg-primary text-black shadow-md shadow-primary/20"
-                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                : "text-foreground/75 hover:text-foreground hover:bg-white/5"
             }`}
           >
             {tab.label}

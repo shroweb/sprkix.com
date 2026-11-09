@@ -11,7 +11,7 @@ export default function RecentRatingsSidebar({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+      <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
         <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
         Recent Activity
       </h3>
@@ -45,7 +45,7 @@ export default function RecentRatingsSidebar({
                   </Link>
                   <div className="flex items-center gap-0.5 shrink-0">
                     <Star className="w-2.5 h-2.5 text-primary fill-current" />
-                    <span className="text-[11px] font-bold italic">{review.rating.toFixed(1)}</span>
+                    <span className="text-[11px] font-bold ">{review.rating.toFixed(1)}</span>
                   </div>
                 </div>
                 {review.comment && (
@@ -53,7 +53,7 @@ export default function RecentRatingsSidebar({
                     "{review.comment}"
                   </p>
                 )}
-                <p className="text-[11px] text-muted-foreground/80 font-bold uppercase tracking-widest mt-1">
+                <p className="text-[11px] text-muted-foreground/80 font-bold uppercase tracking-wider mt-1">
                     {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </p>
               </div>

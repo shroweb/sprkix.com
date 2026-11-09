@@ -120,7 +120,7 @@ export default function EditProfilePage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary ">
             Account
           </span>
         </div>
@@ -132,7 +132,7 @@ export default function EditProfilePage() {
       <div className="bg-card/85 border border-white/5 rounded-[2rem] p-5 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-3">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Profile Picture
             </label>
             <div className="flex items-center gap-5">
@@ -148,7 +148,7 @@ export default function EditProfilePage() {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-bold uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
+                <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-tighter hover:opacity-90 transition-opacity">
                   {uploading ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
                   ) : (
@@ -179,7 +179,7 @@ export default function EditProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Display Name
             </label>
             <input
@@ -196,7 +196,7 @@ export default function EditProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Profile Handle (URL)
             </label>
             <div className="relative">
@@ -216,7 +216,7 @@ export default function EditProfilePage() {
           </div>
 
           <div className="space-y-2 pt-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Favorite Promotion
             </label>
             <select
@@ -237,7 +237,7 @@ export default function EditProfilePage() {
           </div>
 
           <div className="space-y-2 pt-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Profile Theme
             </label>
             {profileThemeEventId ? (
@@ -248,7 +248,7 @@ export default function EditProfilePage() {
                 <button
                   type="button"
                   onClick={() => setProfileThemeEventId("")}
-                  className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors"
+                  className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive transition-colors"
                 >
                   Remove
                 </button>
@@ -263,7 +263,7 @@ export default function EditProfilePage() {
           </div>
           
           <div className="space-y-4 pt-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Notifications
             </label>
             <div className="flex items-center justify-between gap-4 bg-black/20 border border-border rounded-xl px-4 py-4">

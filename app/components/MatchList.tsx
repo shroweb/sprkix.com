@@ -75,7 +75,7 @@ export default function MatchList({
           <button
             type="button"
             onClick={() => setShowSpoilers((prev) => !prev)}
-            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors pr-2"
+            className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors pr-2"
           >
             {showSpoilers ? (
               <>
@@ -102,11 +102,11 @@ export default function MatchList({
             className="group relative block w-full overflow-hidden border border-primary/30 bg-gradient-to-b from-primary/10 to-slate-950/60 p-4 text-left sm:p-6"
           >
             <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 bg-primary px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-foreground">
+              <span className="inline-flex items-center gap-1.5 bg-primary px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">
                 <Trophy className="h-3 w-3" /> Main Event
               </span>
               <BeltImage type={main.type} title={main.title} height={34} className="shrink-0" />
-              <p className="min-w-0 flex-1 truncate text-sm font-black italic uppercase tracking-tight sm:text-base group-hover:text-primary transition-colors">
+              <p className="min-w-0 flex-1 truncate text-sm font-bold uppercase tracking-tight sm:text-base group-hover:text-primary transition-colors">
                 {main.title}
               </p>
             </div>
@@ -145,7 +145,7 @@ export default function MatchList({
           const isMotN = motNMatchId === match.id;
 
           const label = sectionLabel ? (
-            <p key={`lbl-${match.id}`} className="flex items-center gap-3 pt-3 text-[11px] font-bold uppercase tracking-[0.25em] text-muted-foreground">
+            <p key={`lbl-${match.id}`} className="flex items-center gap-3 pt-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               {sectionLabel}
               <span className="h-px flex-1 bg-white/10" />
             </p>
@@ -173,13 +173,13 @@ export default function MatchList({
                   )}
 
                   {/* Type pill — hidden on small screens */}
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-primary/60 italic shrink-0 hidden lg:inline truncate max-w-[140px]">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary/60 shrink-0 hidden lg:inline truncate max-w-[140px]">
                     {match.type}
                   </span>
                   <BeltImage type={match.type} title={match.title} height={22} className="shrink-0 hidden sm:block" />
 
                   {/* Title */}
-                  <p className="text-xs sm:text-sm font-bold italic uppercase tracking-tight flex-1 group-hover:text-primary transition-colors break-words line-clamp-2 md:line-clamp-none">
+                  <p className="text-xs sm:text-sm font-bold uppercase tracking-tight flex-1 group-hover:text-primary transition-colors break-words line-clamp-2 md:line-clamp-none">
                     {match.title}
                   </p>
 
@@ -245,7 +245,7 @@ export default function MatchList({
                       <span className="text-[11px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded">
                         MATCH {idx + 1}
                       </span>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-primary italic">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-primary ">
                         {match.type}
                       </span>
                       <BeltImage type={match.type} title={match.title} height={36} framed className="shrink-0" />
@@ -282,7 +282,7 @@ export default function MatchList({
                             className="flex flex-wrap items-center gap-1.5"
                           >
                             {tIdx > 0 && (
-                              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest px-1">
+                              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-1">
                                 vs
                               </span>
                             )}
@@ -355,7 +355,7 @@ export default function MatchList({
                     {!compact && (
                       <div className="flex flex-col items-center gap-3 shrink-0">
                         <div className="bg-secondary/30 px-4 py-3 rounded-2xl flex flex-col items-center justify-center min-w-[130px]">
-                          <div className="text-[11px] font-bold text-muted-foreground uppercase mb-2 tracking-widest">
+                          <div className="text-[11px] font-bold text-muted-foreground uppercase mb-2 tracking-wider">
                             Rate Match
                           </div>
                           <StarRating
@@ -376,7 +376,7 @@ export default function MatchList({
                                 toggleFavorite(match.id);
                               }}
                               disabled={isFavoriting[match.id]}
-                              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all ${
+                              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-wider transition-all ${
                                 favorites[match.id]
                                   ? "bg-red-500/10 border-red-500/30 text-red-500"
                                   : "bg-secondary/30 border-border text-muted-foreground hover:text-red-500 hover:border-red-500/30"

@@ -81,7 +81,7 @@ export default function ReviewForm({
           
           {!isUpcoming && (
             <div className="flex flex-col gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground ml-1">
                     Your Rating
                 </span>
                 <div className="flex gap-1.5" onMouseLeave={() => setHoveredRating(null)}>
@@ -144,7 +144,7 @@ export default function ReviewForm({
         <button
           type="submit"
           disabled={submitting || (!isUpcoming && rating === 0)}
-          className="w-full h-14 bg-primary hover:bg-[var(--primary-hover)] text-black rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+          className="w-full h-14 bg-primary hover:bg-[var(--primary-hover)] text-black rounded-2xl font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
         >
           {submitting ? (isUpcoming ? "Posting..." : "Reviewing...") : (initialReview ? "Update Review" : (isUpcoming ? "Post Comment" : "Post Review"))}
         </button>
