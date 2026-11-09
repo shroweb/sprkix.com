@@ -365,7 +365,7 @@ export default async function EventPage({
     .filter((e) => e.id !== event.id && e.promotion === event.promotion)
     .slice(0, 4);
 
-  const [c1, c2, c3] = await getPosterColors(event.posterUrl);
+  const [c1, c2] = await getPosterColors(event.posterUrl);
 
   // Structured data for rich results (Google Event / SportsEvent)
   const siteUrl = getSiteUrl();
@@ -440,18 +440,19 @@ export default async function EventPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbs) }}
       />
-      {/* Poster colour gradient backdrop */}
+      {/* Poster colour glow: a soft, top-anchored wash that fades to the page background */}
       <div
-        className="pointer-events-none absolute -top-28 bottom-0 left-1/2 z-0 w-screen -translate-x-1/2"
+        aria-hidden
+        className="pointer-events-none absolute -top-28 left-1/2 z-0 h-[680px] w-screen -translate-x-1/2"
         style={{
           background: `
-            radial-gradient(ellipse 80% 50% at 15% 10%, rgba(${c1},0.55) 0%, transparent 60%),
-            radial-gradient(ellipse 60% 40% at 85% 20%, rgba(${c2},0.35) 0%, transparent 55%),
-            radial-gradient(ellipse 100% 60% at 50% 100%, rgba(${c3},0.25) 0%, transparent 70%)
+            radial-gradient(ellipse 60% 70% at 50% 0%, rgba(${c1},0.20) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 50% at 100% 0%, rgba(${c2},0.12) 0%, transparent 70%)
           `,
+          WebkitMaskImage: "linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%)",
+          maskImage: "linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%)",
         }}
       />
-      <div className="pointer-events-none absolute -top-28 bottom-0 left-1/2 z-0 w-screen -translate-x-1/2 bg-background/80" />
 
       <div className="relative z-10 pt-1 sm:pt-3">
         {/* Back Link */}
