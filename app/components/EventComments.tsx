@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { MessageSquare, Reply, Trash2, Loader2, LogIn, Shield } from "lucide-react";
+import { MessageSquare, Reply, Trash2, Loader2, LogIn, Shield, Heart } from "lucide-react";
 import UserAvatar from "@components/UserAvatar";
 
 interface Author {
@@ -17,8 +17,17 @@ interface Comment {
   text: string;
   createdAt: string;
   user: Author;
+  likeCount: number;
+  likedByMe: boolean;
   replies?: Comment[];
 }
+
+type Sort = "newest" | "top" | "oldest";
+const SORTS: { id: Sort; label: string }[] = [
+  { id: "newest", label: "Newest" },
+  { id: "top", label: "Top" },
+  { id: "oldest", label: "Oldest" },
+];
 
 const MAX = 1000;
 
@@ -105,10 +114,11 @@ export default function EventComments({
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [sort, setSort] = useState<Sort>("newest");
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch(`/api/events/${eventId}/comments`, { cache: "no-store" });
+      const res = await fetch(`/api/events/${eventId}/comments?sort=${sort}`, { cache: "no-store" });
       if (!res.ok) throw new Error();
       const data = await res.json();
       setComments(data.comments ?? []);
@@ -117,7 +127,7 @@ export default function EventComments({
       setLoadError(true);
       setComments((c) => c ?? []);
     }
-  }, [eventId]);
+  }, [eventId, sort]);
 
   useEffect(() => {
     load();
@@ -152,6 +162,24 @@ export default function EventComments({
     );
   };
 
+  const toggleLike = async (commentId: string, parentId?: string) => {
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
+    const flip = (c: Comment): Comment =>
+      c.id === commentId ? { ...c, likedByMe: !c.likedByMe, likeCount: c.likeCount + (c.likedByMe ? -1 : 1) } : c;
+    const apply = () =>
+      setComments((cur) => (cur ?? []).map((c) => (parentId ? (c.id === parentId ? { ...c, replies: (c.replies ?? []).map(flip) } : c) : flip(c))));
+    apply(); // optimistic
+    const res = await fetch(`/api/events/${eventId}/comments/like`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ commentId }),
+    });
+    if (!res.ok) apply(); // revert (flip is its own inverse)
+  };
+
   const canDelete = (c: Comment) => !!user && (user.isAdmin || c.user.id === user.id);
 
   const renderItem = (c: Comment, parentId?: string): React.ReactNode => (
@@ -179,13 +207,23 @@ export default function EventComments({
         </div>
         <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/90">{c.text}</p>
         <div className="mt-1.5 flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => toggleLike(c.id, parentId)}
+            aria-pressed={c.likedByMe}
+            aria-label={c.likedByMe ? "Unlike" : "Like"}
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors ${c.likedByMe ? "text-primary" : "text-muted-foreground hover:text-primary"}`}
+          >
+            <Heart className={`h-3.5 w-3.5 ${c.likedByMe ? "fill-current" : ""}`} />
+            {c.likeCount > 0 ? c.likeCount : "Like"}
+          </button>
           {!parentId && user && (
             <button
               type="button"
               onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary"
             >
-              <Reply className="h-3.5 w-3.5" /> Reply
+              <Reply className="h-3.5 w-3.5" /> {(c.replies?.length ?? 0) > 0 ? `Reply (${c.replies!.length})` : "Reply"}
             </button>
           )}
           {canDelete(c) && (
@@ -231,6 +269,24 @@ export default function EventComments({
       </div>
 
       <div className="border border-white/10 bg-slate-950/70 p-4 sm:p-6">
+        {comments !== null && comments.length > 1 && (
+          <div className="mb-5 flex items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <span className="text-sm font-bold">{comments.length} comments</span>
+            <div role="group" aria-label="Sort comments" className="flex gap-1">
+              {SORTS.map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => setSort(o.id)}
+                  aria-pressed={sort === o.id}
+                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${sort === o.id ? "bg-primary text-primary-foreground" : "text-foreground/75 hover:bg-white/5 hover:text-foreground"}`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {comments === null ? (
           <div className="flex justify-center py-10 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />

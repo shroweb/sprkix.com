@@ -38,6 +38,7 @@ model User {
   predictions   Prediction[]
   liveComments  LiveComment[]
   eventComments EventComment[]
+  eventCommentLikes EventCommentLike[]
 
   followers     Follow[]       @relation("followers")
   following     Follow[]       @relation("following")
@@ -463,10 +464,24 @@ model EventComment {
   user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   parent    EventComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   EventComment[] @relation("CommentReplies")
+  likes     EventCommentLike[]
 
   @@index([eventId, createdAt])
   @@index([userId])
   @@index([parentId])
+}
+
+model EventCommentLike {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment   EventComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([userId])
 }
 
 model RateLimitEntry {

@@ -7,19 +7,53 @@ const MAX_LEN = 1000;
 
 const authorSelect = { select: { id: true, name: true, slug: true, avatarUrl: true, isAdmin: true } } as const;
 
-/** GET /api/events/[id]/comments: top-level comments (newest first) with their replies (oldest first). */
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+type Raw = {
+  id: string;
+  text: string;
+  createdAt: Date;
+  user: { id: string; name: string | null; slug: string; avatarUrl: string | null; isAdmin: boolean };
+  _count: { likes: number };
+  likes?: { userId: string }[];
+  replies?: Raw[];
+};
+
+function shape(c: Raw): any {
+  return {
+    id: c.id,
+    text: c.text,
+    createdAt: c.createdAt,
+    user: c.user,
+    likeCount: c._count.likes,
+    likedByMe: (c.likes?.length ?? 0) > 0,
+    replies: (c.replies ?? []).map(shape),
+  };
+}
+
+/** GET /api/events/[id]/comments?sort=newest|oldest|top: top-level comments with replies (oldest first). */
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const sort = new URL(req.url).searchParams.get("sort") ?? "newest";
+  const me = await getUserFromServerCookie().catch(() => null);
+  const likeInfo = {
+    _count: { select: { likes: true } },
+    likes: me ? { where: { userId: me.id }, select: { userId: true } } : false,
+  } as const;
   try {
-    const comments = await prisma.eventComment.findMany({
+    const rows = (await prisma.eventComment.findMany({
       where: { eventId: id, parentId: null },
-      orderBy: { createdAt: "desc" },
-      take: 100,
+      orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
+      take: 200,
       include: {
         user: authorSelect,
-        replies: { orderBy: { createdAt: "asc" }, take: 50, include: { user: authorSelect } },
+        ...likeInfo,
+        replies: { orderBy: { createdAt: "asc" }, take: 50, include: { user: authorSelect, ...likeInfo } },
       },
-    });
+    })) as unknown as Raw[];
+    const comments = rows.map(shape);
+    if (sort === "top") {
+      // most liked first; ties fall back to newest
+      comments.sort((a, b) => b.likeCount - a.likeCount || +new Date(b.createdAt) - +new Date(a.createdAt));
+    }
     return NextResponse.json({ comments });
   } catch {
     return NextResponse.json({ error: "Failed to load comments" }, { status: 500 });
@@ -56,9 +90,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     const comment = await prisma.eventComment.create({
       data: { text, eventId: id, userId: user.id, parentId },
-      include: { user: authorSelect, replies: { include: { user: authorSelect } } },
+      include: { user: authorSelect, _count: { select: { likes: true } } },
     });
-    return NextResponse.json({ success: true, comment });
+    return NextResponse.json({ success: true, comment: shape({ ...(comment as unknown as Raw), likes: [], replies: [] }) });
   } catch {
     return NextResponse.json({ error: "Failed to post comment" }, { status: 500 });
   }
