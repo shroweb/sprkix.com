@@ -511,7 +511,7 @@ export default async function EventPage({
                   title={event.title}
                   variant="header-pill"
                 />
-                {!event.venue && !event.city && (
+                {!event.venue && !event.city && !isUpcoming && (
                   <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/40 px-3 py-2">
                     <Clock className="w-4 h-4 text-primary" />
                     <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Archive Record</span>
@@ -540,7 +540,7 @@ export default async function EventPage({
 
         <div className="grid lg:grid-cols-[300px_1fr] xl:grid-cols-[330px_1fr] gap-7 lg:gap-10 items-start">
           {/* Left Column: Poster & Quick Info */}
-          <div className="space-y-5 lg:sticky lg:top-24">
+          <div className="order-2 space-y-5 lg:order-1 lg:sticky lg:top-24">
             <div className="relative aspect-[2/3] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 group max-w-[200px] sm:max-w-[260px] lg:max-w-[320px] mx-auto lg:mx-0">
               <Image
                 src={event.posterUrl || "/placeholder.svg"}
@@ -558,9 +558,9 @@ export default async function EventPage({
               )}
             </div>
 
-            <aside aria-label="Event details and actions" className="bg-card/65 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/20">
+            <aside aria-label="Event details and actions" className="bg-slate-950/85 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/30">
               <dl className="grid grid-cols-2 gap-2">
-                <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
                   <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Promotion</dt>
                   <dd className="mt-2">
                     <span className="inline-flex rounded-lg bg-primary px-2.5 py-1 text-[11px] font-bold uppercase text-black">
@@ -568,13 +568,13 @@ export default async function EventPage({
                     </span>
                   </dd>
                 </div>
-                <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
                   <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Event type</dt>
                   <dd className="mt-2 truncate text-xs font-bold text-white/90" title={formatEventType(event.type)}>
                     {formatEventType(event.type)}
                   </dd>
                 </div>
-                <div className="col-span-2 flex items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                <div className="col-span-2 flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
                   <div>
                     <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Community rating</dt>
                     {averageRating ? (
@@ -591,7 +591,7 @@ export default async function EventPage({
                   </div>
                   {averageRating ? <VisualRating rating={averageRating} size="xs" /> : null}
                 </div>
-                <div className="col-span-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+                <div className="col-span-2 rounded-xl border border-white/10 bg-white/[0.04] p-3">
                   <dt className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                     Where to watch
                   </dt>
@@ -689,7 +689,7 @@ export default async function EventPage({
           </div>
 
           {/* Right Column: Content */}
-          <div className="space-y-8 sm:space-y-12 min-w-0">
+          <div className="order-1 min-w-0 space-y-6 sm:space-y-10 lg:order-2">
             {/* At a Glance Dashboard */}
             {processedMatches.length > 0 && (
               <div className="grid gap-3 md:gap-4 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
