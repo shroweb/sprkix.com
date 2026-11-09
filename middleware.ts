@@ -7,7 +7,16 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Max-Age": "86400",
 };
 
+const CANONICAL_HOST = "poisonrana.com";
+
 export function middleware(req: NextRequest) {
+  // www.poisonrana.com -> poisonrana.com (permanent), keeping path and query
+  const host = (req.headers.get("host") || "").toLowerCase();
+  if (host === `www.${CANONICAL_HOST}`) {
+    const url = new URL(req.nextUrl.pathname + req.nextUrl.search, `https://${CANONICAL_HOST}`);
+    return NextResponse.redirect(url, 301);
+  }
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
@@ -33,11 +42,14 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  // Pages only need the host check above; CORS headers are for the API.
+  if (!req.nextUrl.pathname.startsWith("/api/")) return NextResponse.next();
+
   const res = NextResponse.next();
   Object.entries(CORS_HEADERS).forEach(([k, v]) => res.headers.set(k, v));
   return res;
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: ["/api/:path*", "/((?!_next/static|_next/image|favicon.ico|media/).*)"],
 };

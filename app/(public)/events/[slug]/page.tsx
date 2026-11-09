@@ -58,7 +58,7 @@ export async function generateMetadata({
     ? trimDesc(event.description)
     : `Ratings, reviews and match results for ${cleanTitle} (${year}) by ${event.promotion}.`;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.poisonrana.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://poisonrana.com";
 
   // Only pass poster to OG endpoint if it's a real hosted URL (not base64)
   const rawPoster = event.posterUrl || "";

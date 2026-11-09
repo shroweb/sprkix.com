@@ -120,7 +120,7 @@ function getEmailLayout(contentHtml: string, primaryColor: string, siteUrl: stri
  * Fetches common site branding and checks user notification preference.
  */
 async function getEmailConfig(toEmail: string) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.poisonrana.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://poisonrana.com';
   let siteLogo = "";
   let primaryColor = "#ffbd2e";
   let emailEnabled = true;

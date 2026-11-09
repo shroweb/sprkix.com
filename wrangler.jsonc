@@ -33,6 +33,8 @@
   "images": {
     "binding": "IMAGES"
   },
+  // www is proxied by Cloudflare but its origin is a disabled Vercel project; the Worker answers first and 301s to the apex.
+  "routes": [{ "pattern": "www.poisonrana.com/*", "zone_name": "poisonrana.com" }],
   "observability": {
     "enabled": true
   }
