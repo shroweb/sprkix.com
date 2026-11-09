@@ -6,7 +6,7 @@ import SignUpPrompt from "@components/SignUpPrompt";
 import { BeltArt } from "@components/BeltImage";
 import { parseChampionship } from "@lib/belts";
 import { inferTeams, groupSides } from "@lib/match-sides";
-import FaceOff, { Photo } from "@components/FaceOff";
+import FaceOff, { Photo, COLS, colsFor, aspectFor } from "@components/FaceOff";
 
 interface Wrestler {
   id: string;
@@ -266,18 +266,22 @@ export default function PredictionCard({
                   onClick={() => pick(ids[0])}
                   className={`group relative overflow-hidden text-left outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary ${isSel ? "ring-2 ring-primary" : "ring-1 ring-white/10 hover:ring-white/30"} ${other ? "opacity-60" : ""}`}
                 >
-                  <div className={`grid gap-px ${side.members.length > 1 ? "aspect-[3/4] grid-cols-2" : "grid-cols-1"}`}>
-                    {side.members.slice(0, 4).map((m) => (
-                      <Photo key={m.wrestler.id} name={m.wrestler.name} src={m.wrestler.imageUrl} tall fill={side.members.length > 1} />
-                    ))}
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 space-y-0.5 p-2.5">
-                    {side.members.map((m) => (
-                      <p key={m.wrestler.id} className={`truncate text-xs font-bold uppercase leading-tight tracking-tight sm:text-sm ${isSel ? "text-primary" : "text-white"}`}>
-                        {m.wrestler.name}
-                      </p>
-                    ))}
-                  </div>
+                  {side.members.length > 1 ? (
+                    <div className={`grid gap-px ${COLS[colsFor(Math.min(side.members.length, 6))]} ${aspectFor(Math.min(side.members.length, 6), true)}`}>
+                      {side.members.slice(0, 6).map((m) => (
+                        <Photo key={m.wrestler.id} name={m.wrestler.name} src={m.wrestler.imageUrl} tall fill label />
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <Photo name={side.members[0].wrestler.name} src={side.members[0].wrestler.imageUrl} tall />
+                      <div className="absolute inset-x-0 bottom-0 p-2.5">
+                        <p className={`truncate text-xs font-bold uppercase leading-tight tracking-tight sm:text-sm ${isSel ? "text-primary" : "text-white"}`}>
+                          {side.members[0].wrestler.name}
+                        </p>
+                      </div>
+                    </>
+                  )}
                   {isSel && (
                     <span className="pr-rise absolute right-2 top-2 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">
                       <Check className="h-3 w-3" /> Your pick
