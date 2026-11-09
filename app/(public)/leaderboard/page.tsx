@@ -74,12 +74,12 @@ export default async function LeaderboardPage({
         <div className="space-y-4 mb-12">
           <div className="flex items-center gap-3">
             <div className="h-[1px] w-8 bg-primary" />
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">Community</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">Community</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
             Prediction<br />Leaderboard
           </h1>
-          <p className="text-muted-foreground font-medium italic max-w-xl">
+          <p className="text-muted-foreground font-medium max-w-xl">
             Ranked by accuracy across resolved match predictions for the selected period. Minimum 3 predictions to qualify. Updated every few minutes.
           </p>
         </div>
@@ -94,7 +94,7 @@ export default async function LeaderboardPage({
               href={href(period, t.id)}
               role="tab"
               aria-selected={(t.id === "following") === following}
-              className={`px-4 py-2 text-xs font-black uppercase tracking-wider border transition-colors ${
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border transition-colors ${
                 (t.id === "following") === following ? "bg-white text-black border-white" : "border-white/10 text-muted-foreground hover:text-white hover:border-white/30"
               }`}
             >
@@ -113,7 +113,7 @@ export default async function LeaderboardPage({
               href={href(p.id, following ? "following" : "all")}
               role="tab"
               aria-selected={p.id === period}
-              className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider border transition-colors ${
+              className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border transition-colors ${
                 p.id === period
                   ? "bg-primary text-black border-primary"
                   : "border-white/10 text-muted-foreground hover:text-primary hover:border-primary/40"
@@ -139,12 +139,12 @@ export default async function LeaderboardPage({
                       <span className="grid h-full w-full place-items-center text-xl font-black text-muted-foreground">{e.name?.charAt(0).toUpperCase() || "?"}</span>
                     )}
                   </div>
-                  <p className="max-w-full truncate text-xs font-black italic uppercase group-hover:text-primary sm:text-sm">{e.name}</p>
+                  <p className="max-w-full truncate text-xs font-bold italic uppercase group-hover:text-primary sm:text-sm">{e.name}</p>
                   <div className={`flex w-full flex-col items-center justify-start gap-1 border-t-2 bg-gradient-to-b to-transparent pt-3 ${h} ${tone}`}>
                     <span className="text-3xl">{medals[i]}</span>
                     <span className="text-lg font-black tabular-nums">{e.accuracy}%</span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{e.predictionScore}/{e.predictionCount}</span>
-                    {e.streak >= 2 && <span className="text-[10px] font-black text-orange-400">🔥 {e.streak}</span>}
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{e.predictionScore}/{e.predictionCount}</span>
+                    {e.streak >= 2 && <span className="text-[11px] font-bold text-orange-400">🔥 {e.streak}</span>}
                   </div>
                 </Link>
               );
@@ -152,9 +152,9 @@ export default async function LeaderboardPage({
           </div>
         )}
         {ranked.length === 0 ? (
-          <div className="bg-card/30 border border-dashed border-white/10 rounded-[2.5rem] p-20 text-center space-y-4">
+          <div className="bg-card/85 border border-dashed border-white/10 rounded-[2.5rem] p-20 text-center space-y-4">
             <Target className="w-16 h-16 text-white/10 mx-auto" />
-            <p className="text-white/40 font-black italic text-xl uppercase tracking-tighter">
+            <p className="text-white/75 font-black italic text-xl uppercase tracking-tighter">
               No predictions resolved yet.
             </p>
             <p className="text-muted-foreground text-sm">
@@ -176,7 +176,7 @@ export default async function LeaderboardPage({
                       ? "bg-primary/10 border-primary/30 hover:border-primary/50"
                       : idx === 0
                       ? "bg-yellow-400/5 border-yellow-400/20 hover:border-yellow-400/40"
-                      : "bg-card/40 border-white/5 hover:border-white/15 hover:bg-card/60"
+                      : "bg-card/85 border-white/5 hover:border-white/15 hover:bg-card/60"
                   }`}
                 >
                   {/* Rank */}
@@ -184,7 +184,7 @@ export default async function LeaderboardPage({
                     {isMedal ? (
                       <span className="text-2xl">{medals[idx]}</span>
                     ) : (
-                      <span className={`text-lg font-black italic ${isCurrentUser ? "text-primary" : "text-muted-foreground/50"}`}>
+                      <span className={`text-lg font-black italic ${isCurrentUser ? "text-primary" : "text-muted-foreground/80"}`}>
                         #{idx + 1}
                       </span>
                     )}
@@ -207,9 +207,9 @@ export default async function LeaderboardPage({
                   <div className="flex-1 min-w-0">
                     <p className={`font-black italic uppercase tracking-tight text-sm group-hover:text-primary transition-colors ${isCurrentUser ? "text-primary" : ""}`}>
                       {entry.name}
-                      {isCurrentUser && <span className="ml-2 text-[9px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-black not-italic uppercase tracking-wider">You</span>}
+                      {isCurrentUser && <span className="ml-2 text-[11px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-bold not-italic uppercase tracking-wider">You</span>}
                     </p>
-                    <p className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-wider">
+                    <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-wider">
                       {entry.predictionScore} correct of {entry.predictionCount}
                       {entry.streak >= 2 && (
                         <span className="ml-1.5 text-orange-400">🔥 {entry.streak} streak</span>
@@ -253,7 +253,7 @@ export default async function LeaderboardPage({
       {currentUserRank >= 0 && ranked[currentUserRank] && (
         <div className="sticky bottom-20 z-30 mx-auto mt-6 max-w-4xl px-4 sm:px-6 md:bottom-4">
           <div className="flex items-center gap-4 border border-primary/40 bg-slate-950/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Your rank</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-primary">Your rank</span>
             <span className="text-2xl font-black italic text-primary">#{currentUserRank + 1}</span>
             <span className="min-w-0 truncate text-sm font-bold text-muted-foreground">
               {ranked[currentUserRank].accuracy}% · {ranked[currentUserRank].predictionScore}/{ranked[currentUserRank].predictionCount} correct

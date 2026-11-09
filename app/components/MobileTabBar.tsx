@@ -40,7 +40,7 @@ export default function MobileTabBar({ signedIn }: { signedIn: boolean }) {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`relative flex flex-col items-center gap-1 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors ${
+                className={`relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors ${
                   active ? "text-primary" : "text-muted-foreground active:text-foreground"
                 }`}
               >

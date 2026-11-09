@@ -23,7 +23,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/events"
-            className="inline-flex items-center justify-center gap-2 bg-card/40 border border-white/10 text-foreground font-black uppercase italic text-sm px-6 py-3 rounded-xl hover:border-primary/30 hover:bg-card/60 transition-all"
+            className="inline-flex items-center justify-center gap-2 bg-card/85 border border-white/10 text-foreground font-black uppercase italic text-sm px-6 py-3 rounded-xl hover:border-primary/30 hover:bg-card/60 transition-all"
           >
             Browse Events
           </Link>

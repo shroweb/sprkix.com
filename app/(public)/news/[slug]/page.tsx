@@ -203,7 +203,7 @@ export default async function NewsArticlePage({
 
       <article className="space-y-8">
         <header className="space-y-5">
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-primary">News Article</p>
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">News Article</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
             {post.title}
           </h1>
@@ -231,7 +231,7 @@ export default async function NewsArticlePage({
           </div>
         ) : null}
 
-        <div className="rounded-[2rem] border border-white/5 bg-card/20 p-6 sm:p-8 md:p-10">
+        <div className="rounded-[2rem] border border-white/5 bg-card/85 p-6 sm:p-8 md:p-10">
           <NewsContent content={post.content} />
         </div>
       </article>

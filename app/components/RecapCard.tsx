@@ -57,18 +57,18 @@ export default function RecapCard({
     }
   };
 
-  const tone = perfect ? "border-emerald-400/50 bg-emerald-950/40" : "border-white/10 bg-card/40";
+  const tone = perfect ? "border-emerald-400/50 bg-emerald-950/40" : "border-white/10 bg-card/85";
   return (
     <section className={`space-y-4 border p-5 sm:p-6 ${tone}`} aria-label="Your recap">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-primary">
+        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-primary">
           <Sparkles className="h-4 w-4" /> {perfect ? "Perfect card!" : "Your recap"}
         </p>
         <div className="flex gap-2">
-          <button onClick={share} className="inline-flex items-center gap-1.5 border border-white/20 px-3 py-2 text-[10px] font-black uppercase tracking-widest hover:border-white/50">
+          <button onClick={share} className="inline-flex items-center gap-1.5 border border-white/20 px-3 py-2 text-[11px] font-bold uppercase tracking-widest hover:border-white/50">
             {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Share2 className="h-3.5 w-3.5" />} {copied ? "Link copied" : "Share"}
           </button>
-          <a href={imgPath} download={`${eventSlug}-recap.png`} className="inline-flex items-center gap-1.5 border border-white/20 px-3 py-2 text-[10px] font-black uppercase tracking-widest hover:border-white/50">
+          <a href={imgPath} download={`${eventSlug}-recap.png`} className="inline-flex items-center gap-1.5 border border-white/20 px-3 py-2 text-[11px] font-bold uppercase tracking-widest hover:border-white/50">
             <Download className="h-3.5 w-3.5" /> Image
           </a>
         </div>
@@ -76,14 +76,14 @@ export default function RecapCard({
       <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">
         <div className="text-center sm:pr-6">
           <p className="text-6xl font-black tabular-nums leading-none">{correct}<span className="text-muted-foreground">/{total}</span></p>
-          <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{pct}% correct</p>
+          <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{pct}% correct</p>
         </div>
         <ul className="space-y-2 text-sm">
           {bestCall && (
-            <li><span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Best call · </span><strong>{bestCall.picked}</strong> <span className="text-muted-foreground">— only {bestCall.communityPct}% agreed</span></li>
+            <li><span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Best call · </span><strong>{bestCall.picked}</strong> <span className="text-muted-foreground">— only {bestCall.communityPct}% agreed</span></li>
           )}
           {worstMiss && (
-            <li><span className="text-[10px] font-black uppercase tracking-widest text-red-400">Toughest miss · </span><strong>{worstMiss.picked}</strong> <span className="text-muted-foreground">— {worstMiss.communityPct}% had them too</span></li>
+            <li><span className="text-[11px] font-bold uppercase tracking-widest text-red-400">Toughest miss · </span><strong>{worstMiss.picked}</strong> <span className="text-muted-foreground">— {worstMiss.communityPct}% had them too</span></li>
           )}
         </ul>
       </div>

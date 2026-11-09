@@ -62,7 +62,7 @@ export default async function ListPage({
               ) : (
                 <Lock className="w-3.5 h-3.5 text-muted-foreground" />
               )}
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 {list.isPublic ? "Public" : "Private"} List by {list.user.name}
               </span>
             </div>
@@ -70,7 +70,7 @@ export default async function ListPage({
               {list.title}
             </h1>
             {list.description && (
-              <p className="text-muted-foreground font-medium italic max-w-2xl">
+              <p className="text-muted-foreground font-medium max-w-2xl">
                 {list.description}
               </p>
             )}
@@ -91,8 +91,8 @@ export default async function ListPage({
 
       {/* Items */}
       {list.items.length === 0 ? (
-        <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-          <p className="text-muted-foreground font-bold italic">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+          <p className="text-muted-foreground font-bold ">
             No {isMatchList ? "matches" : "events"} on this list yet.
           </p>
           {isOwner && (
@@ -121,9 +121,9 @@ export default async function ListPage({
               return (
                 <div
                   key={item.id}
-                  className="group flex items-center gap-5 bg-card/40 border border-white/5 hover:border-primary/20 rounded-2xl p-4 transition-all"
+                  className="group flex items-center gap-5 bg-card/85 border border-white/5 hover:border-primary/20 rounded-2xl p-4 transition-all"
                 >
-                  <span className="text-xl font-black text-muted-foreground/30 w-8 text-right shrink-0">
+                  <span className="text-xl font-black text-muted-foreground/80 w-8 text-right shrink-0">
                     {idx + 1}
                   </span>
                   <div className="relative w-12 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
@@ -141,7 +141,7 @@ export default async function ListPage({
                     >
                       {match.title}
                     </Link>
-                    <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground">
+                    <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground">
                       <span className="text-primary/70 uppercase">
                         {match.event.promotion}
                       </span>
@@ -151,12 +151,12 @@ export default async function ListPage({
                       </span>
                     </div>
                     {vsLabel && (
-                      <p className="text-[10px] text-muted-foreground font-medium truncate">
+                      <p className="text-[11px] text-muted-foreground font-medium truncate">
                         {vsLabel}
                       </p>
                     )}
                     {item.note && (
-                      <p className="text-xs text-muted-foreground italic mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         "{item.note}"
                       </p>
                     )}
@@ -176,9 +176,9 @@ export default async function ListPage({
             return (
               <div
                 key={item.id}
-                className="group flex items-center gap-5 bg-card/40 border border-white/5 hover:border-primary/20 rounded-2xl p-4 transition-all"
+                className="group flex items-center gap-5 bg-card/85 border border-white/5 hover:border-primary/20 rounded-2xl p-4 transition-all"
               >
-                <span className="text-xl font-black text-muted-foreground/30 w-8 text-right shrink-0">
+                <span className="text-xl font-black text-muted-foreground/80 w-8 text-right shrink-0">
                   {idx + 1}
                 </span>
                 <div className="relative w-12 aspect-[2/3] rounded-xl overflow-hidden shrink-0 border border-white/5">
@@ -196,7 +196,7 @@ export default async function ListPage({
                   >
                     {event.title.replace(/–\s*\d{4}.*$/, "").trim()}
                   </Link>
-                  <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground">
+                  <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground">
                     <span className="text-primary/70 uppercase">
                       {(event as any).promotion}
                     </span>
@@ -212,7 +212,7 @@ export default async function ListPage({
                     )}
                   </div>
                   {item.note && (
-                    <p className="text-xs text-muted-foreground italic mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       "{item.note}"
                     </p>
                   )}

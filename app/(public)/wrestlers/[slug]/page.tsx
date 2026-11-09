@@ -239,14 +239,14 @@ export default async function WrestlerPage({ params }: { params: any }) {
     <>
       {heldNow.length > 0 && (
         <section className="space-y-4">
-          <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-amber-400"><Crown className="h-4 w-4" /> Current champion</h2>
+          <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-amber-400"><Crown className="h-4 w-4" /> Current champion</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {heldNow.map((c) => (
               <Link key={c.id} href="/champions" className="flex items-center gap-4 border border-amber-400/30 bg-amber-400/5 p-4 hover:border-amber-400/60">
                 <BeltArt style={c.style} label={c.shortName ?? c.title} name={c.title} height={56} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-black italic uppercase">{c.title}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     {getDaysHeld(c.wonDate)} days · since {new Date(c.wonDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </p>
                 </div>
@@ -257,7 +257,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
       )}
       {reigns.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Lineal title timeline</h2>
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Lineal title timeline</h2>
           <ol className="relative space-y-4 border-l border-white/10 pl-6">
             {reigns.map((r) => {
               const days = daysBetween(new Date(r.startedAt), r.endedAt ? new Date(r.endedAt) : new Date());
@@ -267,7 +267,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                   <Link href={`/lineal/${r.title.slug}`} className="font-black italic uppercase hover:text-primary">
                     {r.title.emoji ? `${r.title.emoji} ` : ""}{r.title.name} <span className="text-muted-foreground">· reign #{r.reignNumber}</span>
                   </Link>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     {new Date(r.startedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" })} – {r.endedAt ? new Date(r.endedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "present"} · {days.toLocaleString()} days
                   </p>
                 </li>
@@ -277,7 +277,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
         </section>
       )}
       {heldNow.length === 0 && reigns.length === 0 && (
-        <div className="border border-dashed border-border p-16 text-center text-muted-foreground font-bold italic">No title history on record yet.</div>
+        <div className="border border-dashed border-border p-16 text-center text-muted-foreground font-bold ">No title history on record yet.</div>
       )}
     </>
   );
@@ -285,9 +285,9 @@ export default async function WrestlerPage({ params }: { params: any }) {
   const statsPanel = (
     <>
       <section className="space-y-4">
-        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Record by year</h2>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Record by year</h2>
         {years.length === 0 ? (
-          <p className="text-sm italic text-muted-foreground">No matches yet.</p>
+          <p className="text-sm text-muted-foreground">No matches yet.</p>
         ) : (
           <div className="space-y-2">
             {years.map(([y, v]) => {
@@ -307,10 +307,10 @@ export default async function WrestlerPage({ params }: { params: any }) {
         )}
       </section>
       <section className="space-y-4">
-        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Head to head</h2>
+        <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Head to head</h2>
         <div className="overflow-hidden border border-white/10">
           <table className="w-full text-sm">
-            <thead className="bg-white/[0.03] text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <thead className="bg-white/[0.03] text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               <tr><th className="px-4 py-2 text-left">Opponent</th><th className="px-4 py-2 text-right">Met</th><th className="px-4 py-2 text-right">W–L</th></tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -344,7 +344,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
               <Link
                 key={mp.match.id}
                 href={`/events/${mp.match.event.slug}`}
-                className="group relative bg-card/40 border border-white/5 hover:border-primary/30 rounded-[2rem] p-8 transition-all space-y-4 overflow-hidden"
+                className="group relative bg-card/85 border border-white/5 hover:border-primary/30 rounded-[2rem] p-8 transition-all space-y-4 overflow-hidden"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <Trophy className="w-16 h-16 text-primary" />
@@ -358,7 +358,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                   </div>
                   {mp.isWinner && (
                     <div className="px-3 py-1 bg-emerald-500/10 rounded-full">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Victor</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Victor</span>
                     </div>
                   )}
                 </div>
@@ -366,7 +366,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                   {mp.match.title}
                 </p>
                 <div className="pt-4 border-t border-white/5 relative z-10">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest truncate">
                     {mp.match.event.title.replace(/–\s*\d{4}.*$/, "").trim()}
                     </p>
                 </div>
@@ -393,7 +393,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                 <Link
                   key={r.wrestler.slug}
                   href={`/rivalry/${wrestler.slug}/${r.wrestler.slug}`}
-                  className="group bg-card/40 border border-white/5 hover:border-primary/30 rounded-2xl p-5 transition-all flex items-center gap-4"
+                  className="group bg-card/85 border border-white/5 hover:border-primary/30 rounded-2xl p-5 transition-all flex items-center gap-4"
                 >
                   <div className="w-11 h-11 rounded-full overflow-hidden bg-secondary flex items-center justify-center shrink-0">
                     {r.wrestler.imageUrl ? (
@@ -405,14 +405,14 @@ export default async function WrestlerPage({ params }: { params: any }) {
                         className="object-cover"
                       />
                     ) : (
-                      <UserCircle className="w-6 h-6 text-muted-foreground/40" />
+                      <UserCircle className="w-6 h-6 text-muted-foreground/80" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-black text-sm uppercase italic tracking-tight truncate group-hover:text-primary transition-colors">
                       {r.wrestler.name}
                     </p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                       {r.meets} meeting{r.meets === 1 ? "" : "s"} · {r.wins}W / {r.losses}L
                     </p>
                   </div>
@@ -420,7 +420,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                     <p className={`text-sm font-black italic ${h2hRate >= 50 ? "text-emerald-400" : "text-red-400"}`}>
                       {h2hRate}%
                     </p>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       vs {wrestler.name.split(" ")[0]}
                     </p>
                   </div>
@@ -440,7 +440,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
             Match History
           </h2>
           <div className="flex-1 h-[1px] bg-border" />
-          <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             {totalMatches} Bouts
           </span>
         </div>
@@ -473,7 +473,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
               return (
                 <div
                   key={mp.match.id}
-                  className={`bg-card/40 border rounded-2xl p-5 flex items-center gap-5 transition-colors hover:bg-card/60 ${mp.isWinner ? "border-emerald-500/20" : "border-white/5"}`}
+                  className={`bg-card/85 border rounded-2xl p-5 flex items-center gap-5 transition-colors hover:bg-card/60 ${mp.isWinner ? "border-emerald-500/20" : "border-white/5"}`}
                 >
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${mp.isWinner ? "bg-emerald-500/10" : "bg-secondary"}`}
@@ -495,13 +495,13 @@ export default async function WrestlerPage({ params }: { params: any }) {
                           .trim()}
                       </Link>
                       {mp.match.title && (
-                        <span className="text-[9px] font-black uppercase tracking-widest bg-secondary px-2 py-0.5 rounded text-muted-foreground shrink-0">
+                        <span className="text-[11px] font-bold uppercase tracking-widest bg-secondary px-2 py-0.5 rounded text-muted-foreground shrink-0">
                           {mp.match.title}
                         </span>
                       )}
                     </div>
                     <p
-                      className="text-sm text-muted-foreground font-medium italic"
+                      className="text-sm text-muted-foreground font-medium "
                       dangerouslySetInnerHTML={{ __html: resultText }}
                     />
                   </div>
@@ -509,7 +509,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                     {matchAvgRating && (
                       <div className="flex items-center gap-1 text-primary">
                         <Star className="w-3 h-3 fill-current" />
-                        <span className="text-xs font-black">
+                        <span className="text-xs font-bold">
                           {matchAvgRating}
                         </span>
                       </div>
@@ -524,9 +524,9 @@ export default async function WrestlerPage({ params }: { params: any }) {
             })}
           </div>
         ) : (
-          <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-            <TrendingUp className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground font-bold italic">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+            <TrendingUp className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
+            <p className="text-muted-foreground font-bold ">
               No matches logged for this competitor yet.
             </p>
           </div>
@@ -571,13 +571,13 @@ export default async function WrestlerPage({ params }: { params: any }) {
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-secondary">
-                <UserCircle className="w-20 h-20 text-muted-foreground/30" />
+                <UserCircle className="w-20 h-20 text-muted-foreground/80" />
               </div>
             )}
           </div>
           <div className="space-y-6 text-center md:text-left flex-1">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
                 Wrestler Profile
               </p>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
@@ -595,25 +595,25 @@ export default async function WrestlerPage({ params }: { params: any }) {
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
               <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black text-emerald-400">{wins}</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
                   Wins
                 </p>
               </div>
               <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black text-red-400">{losses}</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
                   Losses
                 </p>
               </div>
               <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black">{totalMatches}</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
                   Matches
                 </p>
               </div>
               <div className="bg-card/60 backdrop-blur-md border border-white/5 rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center">
                 <p className="text-3xl font-black">{uniqueEvents}</p>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
                   Events
                 </p>
               </div>
@@ -622,7 +622,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                   <p className={`text-3xl font-black ${streakType === "win" ? "text-emerald-400" : "text-red-400"}`}>
                     {currentStreak}
                   </p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
                     {streakType === "win" ? "🔥 Win Streak" : "Loss Streak"}
                   </p>
                 </div>
@@ -635,7 +635,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
                       {overallAvgRating}
                     </p>
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
                     Career Avg
                   </p>
                 </div>
@@ -645,7 +645,7 @@ export default async function WrestlerPage({ params }: { params: any }) {
             {/* Win rate bar */}
             {totalMatches > 0 && (
               <div className="max-w-xs space-y-1.5">
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                   <span>Win Rate</span>
                   <span className="text-foreground">{winRate}%</span>
                 </div>
@@ -660,13 +660,13 @@ export default async function WrestlerPage({ params }: { params: any }) {
 
             {form.length > 0 && (
               <div className="space-y-1.5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Last {form.length}</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Last {form.length}</p>
                 <div className="flex justify-center gap-1.5 md:justify-start">
                   {form.map((f) => (
                     <span
                       key={f.id}
                       title={f.label}
-                      className={`grid h-7 w-7 place-items-center text-[10px] font-black ${f.r === "W" ? "bg-emerald-500/20 text-emerald-400" : f.r === "L" ? "bg-red-500/20 text-red-400" : "bg-white/10 text-muted-foreground"}`}
+                      className={`grid h-7 w-7 place-items-center text-[11px] font-bold ${f.r === "W" ? "bg-emerald-500/20 text-emerald-400" : f.r === "L" ? "bg-red-500/20 text-red-400" : "bg-white/10 text-muted-foreground"}`}
                     >
                       {f.r}
                     </span>

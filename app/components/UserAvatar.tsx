@@ -24,8 +24,8 @@ function getGradient(seed: string): [string, string] {
 }
 
 const sizeMap = {
-  xs:  { container: "w-5 h-5",   text: "text-[8px]",  border: "" },
-  sm:  { container: "w-7 h-7",   text: "text-[10px]", border: "" },
+  xs:  { container: "w-5 h-5",   text: "text-[11px]",  border: "" },
+  sm:  { container: "w-7 h-7",   text: "text-[11px]", border: "" },
   md:  { container: "w-8 h-8",   text: "text-xs",     border: "" },
   lg:  { container: "w-10 h-10", text: "text-sm",     border: "" },
   xl:  { container: "w-16 h-16", text: "text-xl",     border: "border-2 border-background" },

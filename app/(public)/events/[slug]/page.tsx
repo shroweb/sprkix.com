@@ -457,7 +457,7 @@ export default async function EventPage({
         {/* Back Link */}
         <Link
           href="/events"
-          className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mb-6 sm:mb-8 group rounded-full border border-white/10 bg-black/20 px-4 py-2 backdrop-blur-md"
+          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mb-6 sm:mb-8 group rounded-full border border-white/10 bg-black/20 px-4 py-2 backdrop-blur-md"
         >
           <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to All Events
@@ -469,11 +469,11 @@ export default async function EventPage({
             <div className="space-y-4 flex-1">
               <div className="flex items-center gap-3">
                 <div className="h-[1px] w-8 bg-primary"></div>
-                <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
                   {isUpcoming ? "Upcoming Event" : isLive ? "Live Now" : "Archive Record"}
                 </span>
                 {isLive && (
-                  <span className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500 text-white rounded text-[9px] font-black uppercase tracking-widest animate-pulse">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500 text-white rounded text-[11px] font-bold uppercase tracking-widest animate-pulse">
                     <Activity className="w-2.5 h-2.5" /> Live
                   </span>
                 )}
@@ -525,7 +525,7 @@ export default async function EventPage({
                 <div className="flex items-center gap-2 mt-1">
                   <Link
                     href={`/users/${submittedByUser.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/5 border border-primary/20 rounded-full text-[10px] font-bold text-primary hover:bg-primary/10 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/5 border border-primary/20 rounded-full text-[11px] font-bold text-primary hover:bg-primary/10 transition-colors"
                   >
                     <Send className="w-3 h-3" />
                     Submitted by {submittedByUser.name || submittedByUser.slug}
@@ -548,7 +548,7 @@ export default async function EventPage({
               />
               {eventRank !== -1 && (
                 <div className="absolute top-4 left-4">
-                  <div className="bg-yellow-400 text-black px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-tighter flex items-center gap-1.5 shadow-xl">
+                  <div className="bg-yellow-400 text-black px-3 py-1.5 rounded-xl font-bold text-[11px] uppercase tracking-tighter flex items-center gap-1.5 shadow-xl">
                     <Trophy className="w-3 h-3 fill-current" />
                     Top 10 Rated (# {eventRank + 1})
                   </div>
@@ -559,27 +559,27 @@ export default async function EventPage({
             <aside aria-label="Event details and actions" className="bg-card/65 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/20">
               <dl className="grid grid-cols-2 gap-2">
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Promotion</dt>
+                  <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Promotion</dt>
                   <dd className="mt-2">
-                    <span className="inline-flex rounded-lg bg-primary px-2.5 py-1 text-[10px] font-black uppercase text-black">
+                    <span className="inline-flex rounded-lg bg-primary px-2.5 py-1 text-[11px] font-bold uppercase text-black">
                       {event.promotion}
                     </span>
                   </dd>
                 </div>
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Event type</dt>
+                  <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Event type</dt>
                   <dd className="mt-2 truncate text-xs font-bold text-white/90" title={formatEventType(event.type)}>
                     {formatEventType(event.type)}
                   </dd>
                 </div>
                 <div className="col-span-2 flex items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
                   <div>
-                    <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Community rating</dt>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Community rating</dt>
                     {averageRating ? (
                       <dd className="mt-1 flex items-baseline gap-1.5">
                         <Star className="h-3.5 w-3.5 fill-primary text-primary" />
                         <span className="text-lg font-black italic text-primary">{averageRating.toFixed(2)}</span>
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">out of 5</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">out of 5</span>
                       </dd>
                     ) : (
                       <dd className="mt-1 text-xs font-bold text-muted-foreground">
@@ -590,7 +590,7 @@ export default async function EventPage({
                   {averageRating ? <VisualRating rating={averageRating} size="xs" /> : null}
                 </div>
                 <div className="col-span-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-                  <dt className="text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                  <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2">
                     Where to watch
                   </dt>
                   <dd>
@@ -606,41 +606,41 @@ export default async function EventPage({
 
               {userReview && (
                 <div className="mt-3 flex justify-between items-center gap-4 rounded-xl border border-primary/15 bg-primary/5 p-3">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground shrink-0">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground shrink-0">
                     Your Rating
                   </span>
                   <div className="flex items-center gap-1 shrink-0">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-3 h-3 ${i < userReview.rating ? "text-primary fill-current" : "text-muted-foreground/20"}`}
+                        className={`w-3 h-3 ${i < userReview.rating ? "text-primary fill-current" : "text-muted-foreground/80"}`}
                       />
                     ))}
-                    <span className="text-xs font-black italic text-primary ml-1">{userReview.rating.toFixed(1)}</span>
+                    <span className="text-xs font-bold italic text-primary ml-1">{userReview.rating.toFixed(1)}</span>
                   </div>
                 </div>
               )}
 
               <div className="mt-4 border-t border-white/10 pt-4">
-                <p className="mb-3 text-[9px] font-black uppercase tracking-[0.18em] text-muted-foreground">Your event</p>
+                <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Your event</p>
                 <div className="grid grid-cols-3 gap-x-2 gap-y-4">
                   {user && (
                     <>
-                      <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchlistIcon eventId={event.id} initialActive={inWatchList ? (inWatchList as any).watchlist : false} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Watchlist</span></div>
-                      <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchedIcon eventId={event.id} initialActive={inWatchList ? inWatchList.watched : false} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Watched</span></div>
-                      <div className="flex min-w-0 flex-col items-center gap-1.5"><AttendButton eventId={event.id} initialAttended={(inWatchList as any)?.attended || false} minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Attended</span></div>
-                      <div className="flex min-w-0 flex-col items-center gap-1.5"><SetThemeButton eventId={event.id} minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Theme</span></div>
-                      <div className="flex min-w-0 flex-col items-center gap-1.5"><AddToListButton eventId={event.id} isLoggedIn={!!user} minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Add to list</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchlistIcon eventId={event.id} initialActive={inWatchList ? (inWatchList as any).watchlist : false} /><span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Watchlist</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><WatchedIcon eventId={event.id} initialActive={inWatchList ? inWatchList.watched : false} /><span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Watched</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><AttendButton eventId={event.id} initialAttended={(inWatchList as any)?.attended || false} minimal={true} /><span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Attended</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><SetThemeButton eventId={event.id} minimal={true} /><span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Theme</span></div>
+                      <div className="flex min-w-0 flex-col items-center gap-1.5"><AddToListButton eventId={event.id} isLoggedIn={!!user} minimal={true} /><span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Add to list</span></div>
                     </>
                   )}
-                  <div className="flex min-w-0 flex-col items-center gap-1.5"><ShareButton minimal={true} /><span className="text-[8px] font-bold uppercase tracking-wide text-muted-foreground">Share</span></div>
+                  <div className="flex min-w-0 flex-col items-center gap-1.5"><ShareButton minimal={true} /><span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Share</span></div>
                 </div>
               </div>
 
               {/* Completion Progress for Archived Shows */}
               {isArchive && totalMatches > 0 && (
                 <div className="mt-4 border-t border-white/10 pt-4">
-                  <div className="mb-3 flex justify-between items-center text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+                  <div className="mb-3 flex justify-between items-center text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                     <span>Card Progress</span>
                     <span className="text-primary">{ratedMatches}/{totalMatches} Rated</span>
                   </div>
@@ -650,7 +650,7 @@ export default async function EventPage({
                       style={{ width: `${completionPercentage}%` }}
                     />
                   </div>
-                  <p className="mt-2.5 text-[9px] font-medium text-muted-foreground leading-relaxed">
+                  <p className="mt-2.5 text-[11px] font-medium text-muted-foreground leading-relaxed">
                     {completionPercentage === 100 
                       ? "✨ Card Completed! You're a true completionist." 
                       : `Rate ${totalMatches - ratedMatches} more match${totalMatches - ratedMatches === 1 ? "" : "es"} to finish the card.`}
@@ -661,8 +661,8 @@ export default async function EventPage({
               {/* Countdown for Upcoming */}
               {isUpcoming && (
                 <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
-                   <div className="flex items-center justify-between gap-2 text-[10px] font-black uppercase tracking-widest">
-                      <span className="flex items-center gap-2 text-primary italic"><Clock className="w-3 h-3" /> Starts in</span>
+                   <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-widest">
+                      <span className="flex items-center gap-2 text-primary "><Clock className="w-3 h-3" /> Starts in</span>
                       <span className="text-muted-foreground font-bold normal-case tracking-normal">
                         {new Date(startTime).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}
                       </span>
@@ -674,12 +674,12 @@ export default async function EventPage({
               {/* Live Status for Sidebar */}
               {isLive && (
                 <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
-                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500 italic">
+                   <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-red-500 italic">
                       <Activity className="w-3 h-3 animate-pulse" /> Live Now
                    </div>
                    <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl">
-                      <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1 text-center">Watch Party Active</p>
-                      <p className="text-[9px] text-muted-foreground text-center">Join the conversation on the right.</p>
+                      <p className="text-[11px] font-bold text-red-500 uppercase tracking-widest mb-1 text-center">Watch Party Active</p>
+                      <p className="text-[11px] text-muted-foreground text-center">Join the conversation on the right.</p>
                    </div>
                 </div>
               )}
@@ -755,9 +755,9 @@ export default async function EventPage({
                   compact={isUpcoming}
                 />
               ) : (
-                <div className="bg-card/30 border border-border border-dashed rounded-[2rem] p-20 text-center">
-                  <Info className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-muted-foreground font-bold italic">
+                <div className="bg-card/85 border border-border border-dashed rounded-[2rem] p-20 text-center">
+                  <Info className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
+                  <p className="text-muted-foreground font-bold ">
                     {isUpcoming ? "No matches announced yet." : "No matches have been logged for this event."}
                   </p>
                 </div>
@@ -792,9 +792,9 @@ export default async function EventPage({
                     </div>
                   </PredictionSlip>
                 ) : (
-                  <div className="bg-card/30 border border-border border-dashed rounded-[2rem] p-20 text-center">
-                    <Info className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                    <p className="text-muted-foreground font-bold italic">No participants announced yet.</p>
+                  <div className="bg-card/85 border border-border border-dashed rounded-[2rem] p-20 text-center">
+                    <Info className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
+                    <p className="text-muted-foreground font-bold ">No participants announced yet.</p>
                   </div>
                 );
               }
@@ -818,7 +818,7 @@ export default async function EventPage({
                       />
                     )}
                     {resolvedPicks.length > 0 && user && !recap && (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card/40 text-sm font-black italic w-fit">
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card/85 text-sm font-black italic w-fit">
                         <Trophy className="w-4 h-4 text-primary" />
                         <span className="text-primary">{correctPicks}</span>
                         <span className="text-muted-foreground">/ {resolvedPicks.length} correct</span>
@@ -873,7 +873,7 @@ export default async function EventPage({
                           <ReviewForm event={event} user={user} initialReview={userReview} />
                         ) : (
                           <div className="text-center py-6">
-                            <p className="italic font-bold text-muted-foreground mb-4">
+                            <p className="font-bold text-muted-foreground mb-4">
                               You must enter the arena to leave a review.
                             </p>
                             <Link href="/login" className="btn-primary inline-block">
@@ -892,7 +892,7 @@ export default async function EventPage({
                         </h2>
                         <Link
                           href={`/events/${event.slug}/reviews/popular`}
-                          className="text-xs font-black uppercase text-primary hover:underline"
+                          className="text-xs font-bold uppercase text-primary hover:underline"
                         >
                           See All
                         </Link>
@@ -935,7 +935,7 @@ export default async function EventPage({
                               <div className="flex items-center justify-between mb-4">
                                 {review.user ? (
                                   <Link href={`/users/${review.user.slug || review.user.id}`} className="flex items-center gap-3 group/user">
-                                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black text-white group-hover/user:ring-2 group-hover/user:ring-primary/50 transition-all overflow-hidden relative">
+                                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-white group-hover/user:ring-2 group-hover/user:ring-primary/50 transition-all overflow-hidden relative">
                                     {review.user?.avatarUrl ? (
                                       <Image src={review.user.avatarUrl} fill className="object-cover" alt="" />
                                     ) : (
@@ -951,7 +951,7 @@ export default async function EventPage({
                                 </Link>
                                 ) : (
                                   <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black text-white/20">
+                                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-white/20">
                                       U
                                     </div>
                                     <span className="font-black text-sm uppercase italic tracking-tight text-white/20">
@@ -968,7 +968,7 @@ export default async function EventPage({
                                   className="opacity-0 group-hover:opacity-100 p-2 hover:bg-white/10 rounded-lg transition-all text-muted-foreground hover:text-primary active:scale-90"
                                 />
                               </div>
-                              <p className="text-sm text-foreground/80 font-medium italic leading-relaxed">
+                              <p className="text-sm text-foreground/80 font-medium leading-relaxed">
                                 "{review.comment}"
                               </p>
                               {review.Reply && review.Reply.length > 0 && (
@@ -976,7 +976,7 @@ export default async function EventPage({
                                   {review.Reply.slice(0, 1).map((reply: any) => (
                                     <div
                                       key={reply.id}
-                                      className="flex flex-col gap-1 text-xs bg-secondary/50 p-3 rounded-xl italic leading-snug"
+                                      className="flex flex-col gap-1 text-xs bg-secondary/50 p-3 rounded-xl leading-snug"
                                     >
                                       <span className="font-black text-primary uppercase shrink-0">{reply.user?.name}</span>
                                       <span className="text-muted-foreground break-words">{reply.comment}</span>
@@ -997,7 +997,7 @@ export default async function EventPage({
                           ))}
                         </div>
                         ) : (
-                          <p className="italic text-muted-foreground font-medium p-12 text-center bg-secondary/20 rounded-[2rem]">
+                          <p className="text-muted-foreground font-medium p-12 text-center bg-secondary/20 rounded-[2rem]">
                             Silence from the crowd. No reviews yet.
                           </p>
                         );
@@ -1081,7 +1081,7 @@ export default async function EventPage({
                 </h2>
                 <Link
                   href={`/events?promotion=${encodeURIComponent(event.promotion)}`}
-                  className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline border border-primary/20 bg-primary/5 px-4 py-2 rounded-full"
+                  className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline border border-primary/20 bg-primary/5 px-4 py-2 rounded-full"
                 >
                   View All
                 </Link>
@@ -1104,7 +1104,7 @@ export default async function EventPage({
                       {rel.reviewCount > 0 && (
                         <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
                           <Star className="w-2.5 h-2.5 text-primary fill-current" />
-                          <span className="text-[10px] font-black text-white">
+                          <span className="text-[11px] font-bold text-white">
                             {rel.avgRating.toFixed(1)}
                           </span>
                         </div>
@@ -1113,7 +1113,7 @@ export default async function EventPage({
                     <h3 className="font-bold text-xs uppercase italic tracking-tight group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {rel.title.replace(/–\s\d{4}.*$/, "")}
                     </h3>
-                    <p className="text-[10px] font-bold text-muted-foreground mt-1">
+                    <p className="text-[11px] font-bold text-muted-foreground mt-1">
                       {new Date(rel.date).getFullYear()}
                     </p>
                   </Link>

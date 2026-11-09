@@ -93,7 +93,7 @@ export default async function ChampionsPage() {
       <header className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
             Title Belts & Honours
           </span>
         </div>
@@ -102,7 +102,7 @@ export default async function ChampionsPage() {
             <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
               Current<br />Champions
             </h1>
-            <p className="text-muted-foreground font-medium italic max-w-2xl text-sm sm:text-base">
+            <p className="text-muted-foreground font-medium max-w-2xl text-sm sm:text-base">
               The reigning gold across world professional wrestling: WWE, AEW, NXT, TNA, NJPW, and ROH.
             </p>
           </div>

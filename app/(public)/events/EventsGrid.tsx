@@ -108,7 +108,7 @@ export default function EventsGrid({
       </Link>
       <div className="flex flex-col justify-between gap-6 rounded-2xl border border-white/10 bg-gradient-to-br from-card/80 via-card/40 to-card/10 p-5 shadow-xl shadow-black/20 sm:rounded-3xl sm:p-8 lg:flex-row lg:items-end">
         <div className="space-y-2">
-          <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-primary">
+          <span className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
             {events.length.toLocaleString()} shows indexed
           </span>
           <h1 className="text-3xl sm:text-5xl font-black italic uppercase tracking-tighter">
@@ -151,7 +151,7 @@ export default function EventsGrid({
                     if (random) window.location.href = `/events/${random.slug}`;
                 }}
                 aria-label="Open a random event"
-                className="group flex h-12 shrink-0 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-4 text-xs font-black uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-black sm:px-5"
+                className="group flex h-12 shrink-0 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-4 text-xs font-bold uppercase tracking-widest text-primary transition-colors hover:bg-primary hover:text-black sm:px-5"
             >
                 <Zap className="w-3 h-3 group-hover:scale-110 transition-transform" />
                 <span className="hidden sm:inline">Random</span>
@@ -162,7 +162,7 @@ export default function EventsGrid({
 
       {/* Year Pills */}
       <div className="flex gap-2 items-center overflow-x-auto no-scrollbar pb-2 [scrollbar-width:none]">
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mr-1">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-1">
           Year
         </span>
         {["All", ...uniqueYears.map(String)].map((year) => (
@@ -172,7 +172,7 @@ export default function EventsGrid({
               setCurrentPage(1);
               setYearFilter(year);
             }}
-            className={`shrink-0 self-center px-3 py-1.5 rounded-lg text-xs font-black transition-all border ${
+            className={`shrink-0 self-center px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
               yearFilter === year
                 ? "bg-primary border-primary text-black shadow-sm shadow-primary/20"
                 : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
@@ -184,7 +184,7 @@ export default function EventsGrid({
       </div>
 
       {/* Filters Row */}
-      <div className="grid grid-cols-2 items-center gap-2 rounded-2xl border border-white/10 bg-card/40 p-3 sm:flex sm:flex-wrap sm:gap-3 sm:p-4">
+      <div className="grid grid-cols-2 items-center gap-2 rounded-2xl border border-white/10 bg-card/85 p-3 sm:flex sm:flex-wrap sm:gap-3 sm:p-4">
         <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border bg-secondary/50 px-3 py-2 sm:px-4">
           <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
           <select
@@ -254,7 +254,7 @@ export default function EventsGrid({
 
         <div className="hidden flex-1 sm:block"></div>
 
-        <span aria-live="polite" className="col-span-2 pt-1 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground sm:col-auto sm:pt-0 sm:text-left sm:text-xs">
+        <span aria-live="polite" className="col-span-2 pt-1 text-center text-[11px] font-bold uppercase tracking-widest text-muted-foreground sm:col-auto sm:pt-0 sm:text-left sm:text-xs">
           {filteredEvents.length} {filteredEvents.length === 1 ? "entry" : "entries"} found
         </span>
       </div>
@@ -281,7 +281,7 @@ export default function EventsGrid({
 
                 {/* Promotion & Watch badge */}
                 <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
-                  <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
+                  <span className="px-2 py-1 bg-primary text-black text-[11px] font-bold uppercase rounded shadow-lg w-fit">
                     {event.promotion}
                   </span>
                   <WhereToWatchBadge promotion={event.promotion} title={event.title} size="sm" />
@@ -299,14 +299,14 @@ export default function EventsGrid({
 
                     if (isLive) {
                       return (
-                        <span className="px-2 py-1 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
+                        <span className="px-2 py-1 bg-red-600 text-white text-[11px] font-bold uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
                           <Activity className="w-2.5 h-2.5" /> Live
                         </span>
                       );
                     }
                     if (isUpcoming) {
                       return (
-                        <span className="px-2 py-1 bg-green-500 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                        <span className="px-2 py-1 bg-green-500 text-white text-[11px] font-bold uppercase rounded shadow-lg w-fit">
                           Upcoming
                         </span>
                       );
@@ -337,19 +337,19 @@ export default function EventsGrid({
                             />
                           ))}
                         </div>
-                        <span className="text-xs font-black text-white">
+                        <span className="text-xs font-bold text-white">
                           {(event.avgRating ?? 0).toFixed(2)}{" "}
-                          <span className="text-white/40 font-medium">
+                          <span className="text-white/75 font-medium">
                             ({event.reviewCount})
                           </span>
                         </span>
                       </div>
                     ) : (
-                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      <p className="text-[11px] font-bold text-white/75 uppercase tracking-widest">
                         No reviews yet
                       </p>
                     )}
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
                       {isReviewed ? "✓ You reviewed this" : "View Event →"}
                     </p>
                   </div>
@@ -362,7 +362,7 @@ export default function EventsGrid({
                   .trim()}
               </h2>
               <div className="flex items-center justify-between mt-2">
-                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-bold uppercase tracking-widest">
                   <Calendar className="w-3 h-3 text-primary" />
                   {new Date(event.date).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -371,7 +371,7 @@ export default function EventsGrid({
                   })}
                 </div>
                 {hasRating && (
-                  <div className="flex items-center gap-1 text-[10px] font-black text-primary">
+                  <div className="flex items-center gap-1 text-[11px] font-bold text-primary">
                     <Star className="w-2.5 h-2.5 fill-current" />
                     {(event.avgRating ?? 0).toFixed(2)}
                   </div>
@@ -381,7 +381,7 @@ export default function EventsGrid({
           );
         })}
       </div> : (
-        <div className="rounded-2xl border border-dashed border-white/15 bg-card/20 px-6 py-16 text-center">
+        <div className="rounded-2xl border border-dashed border-white/15 bg-card/85 px-6 py-16 text-center">
           <Search className="mx-auto h-8 w-8 text-primary/60" />
           <h2 className="mt-4 text-xl font-black uppercase italic">No events found</h2>
           <p className="mt-2 text-sm text-muted-foreground">Try another search or clear the active filters.</p>
@@ -393,7 +393,7 @@ export default function EventsGrid({
               setSearch("");
               setCurrentPage(1);
             }}
-            className="mt-5 rounded-xl bg-primary px-5 py-2.5 text-xs font-black uppercase tracking-wider text-black"
+            className="mt-5 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-black"
           >
             Reset filters
           </button>
@@ -402,7 +402,7 @@ export default function EventsGrid({
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 sm:gap-6 mt-12 pt-7 border-t border-border rounded-2xl bg-card/20">
+        <div className="flex justify-center items-center gap-4 sm:gap-6 mt-12 pt-7 border-t border-border rounded-2xl bg-card/85">
           <button
             aria-label="Previous page"
             className="p-2 rounded-full border border-border hover:bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"

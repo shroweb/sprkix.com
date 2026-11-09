@@ -57,8 +57,8 @@ export default function ChampionsClient({ initialChampions }: Props) {
     <div className="space-y-8">
       {/* Quick stats banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <div className="rounded-2xl border border-white/10 bg-card/40 p-4 sm:p-5 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-wider mb-1">
+        <div className="rounded-2xl border border-white/10 bg-card/85 p-4 sm:p-5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-wider mb-1">
             <Trophy className="w-4 h-4" /> Titles Active
           </div>
           <div className="text-2xl sm:text-3xl font-black italic text-white tracking-tight">
@@ -67,8 +67,8 @@ export default function ChampionsClient({ initialChampions }: Props) {
           <p className="text-[11px] text-muted-foreground mt-0.5">Across 6 major promotions</p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-card/40 p-4 sm:p-5 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-wider mb-1">
+        <div className="rounded-2xl border border-white/10 bg-card/85 p-4 sm:p-5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-wider mb-1">
             <Flame className="w-4 h-4" /> Longest Reign
           </div>
           <div className="text-xl sm:text-2xl font-black italic text-white truncate tracking-tight">
@@ -79,8 +79,8 @@ export default function ChampionsClient({ initialChampions }: Props) {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-card/40 p-4 sm:p-5 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-wider mb-1">
+        <div className="rounded-2xl border border-white/10 bg-card/85 p-4 sm:p-5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-wider mb-1">
             <Shield className="w-4 h-4" /> Top Promotions
           </div>
           <div className="text-xl sm:text-2xl font-black italic text-white tracking-tight">
@@ -91,8 +91,8 @@ export default function ChampionsClient({ initialChampions }: Props) {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-card/40 p-4 sm:p-5 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-wider mb-1">
+        <div className="rounded-2xl border border-white/10 bg-card/85 p-4 sm:p-5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-wider mb-1">
             <Clock className="w-4 h-4" /> Lineage Tracker
           </div>
           <Link
@@ -116,7 +116,7 @@ export default function ChampionsClient({ initialChampions }: Props) {
               <button
                 key={p.code}
                 onClick={() => setSelectedPromo(p.code)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-black uppercase italic tracking-wider transition-all shrink-0 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold uppercase italic tracking-wider transition-all shrink-0 ${
                   active
                     ? "bg-primary text-slate-950 shadow-lg shadow-primary/20 scale-[1.02]"
                     : "border border-white/10 bg-white/[0.03] text-muted-foreground hover:bg-white/[0.08] hover:text-white"
@@ -124,8 +124,8 @@ export default function ChampionsClient({ initialChampions }: Props) {
               >
                 <span>{p.label}</span>
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
-                    active ? "bg-slate-950/20 text-slate-950 font-black" : "bg-white/10 text-muted-foreground"
+                  className={`text-[11px] font-mono px-1.5 py-0.5 rounded-full ${
+                    active ? "bg-slate-950/20 text-slate-950 font-bold" : "bg-white/10 text-muted-foreground"
                   }`}
                 >
                   {count}
@@ -158,8 +158,8 @@ export default function ChampionsClient({ initialChampions }: Props) {
 
       {/* Championship Cards Grid */}
       {filteredChampions.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-white/10 bg-card/20 p-12 text-center space-y-3">
-          <Trophy className="w-10 h-10 text-muted-foreground/30 mx-auto" />
+        <div className="rounded-3xl border border-dashed border-white/10 bg-card/85 p-12 text-center space-y-3">
+          <Trophy className="w-10 h-10 text-muted-foreground/80 mx-auto" />
           <p className="text-lg font-black italic uppercase text-white tracking-tight">
             No championships matched your search
           </p>
@@ -180,7 +180,7 @@ export default function ChampionsClient({ initialChampions }: Props) {
             return (
               <div
                 key={c.id}
-                className="group relative rounded-3xl border border-white/10 bg-card/40 hover:border-primary/40 hover:bg-card/60 transition-all p-5 flex flex-col justify-between overflow-hidden shadow-lg shadow-black/20"
+                className="group relative rounded-3xl border border-white/10 bg-card/85 hover:border-primary/40 hover:bg-card/60 transition-all p-5 flex flex-col justify-between overflow-hidden shadow-lg shadow-black/20"
               >
                 <div>
                   {/* Belt artwork plate */}
@@ -197,7 +197,7 @@ export default function ChampionsClient({ initialChampions }: Props) {
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <PromotionBadge promotion={c.promotion} />
                     {c.brand && (
-                      <span className="text-[10px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                      <span className="text-[11px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
                         {c.brand}
                       </span>
                     )}
@@ -210,7 +210,7 @@ export default function ChampionsClient({ initialChampions }: Props) {
 
                   {/* Champions */}
                   <div className="space-y-3 pt-3 border-t border-white/10">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground block">
                       {c.champions.length > 1 ? "Reigning Champions" : "Reigning Champion"}
                     </span>
                     <div className="space-y-2.5">
@@ -255,18 +255,18 @@ export default function ChampionsClient({ initialChampions }: Props) {
                 {/* Footer metadata */}
                 <div className="mt-5 pt-3.5 border-t border-white/10 space-y-2 text-xs">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-primary font-black text-[11px] uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1.5 text-primary font-bold text-[11px] uppercase tracking-wider">
                       <Clock className="w-3.5 h-3.5 shrink-0" />
                       {days.toLocaleString()} Days Held
                     </span>
                     {typeof c.defenses === "number" && (
-                      <span className="text-[10px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                      <span className="text-[11px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
                         {c.defenses} {c.defenses === 1 ? "defense" : "defenses"}
                       </span>
                     )}
                   </div>
                   <div className="flex items-start gap-1.5 text-muted-foreground text-[11px]">
-                    <Calendar className="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground/60" />
+                    <Calendar className="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground/80" />
                     <span className="truncate">
                       Won at {c.wonAt} · {formattedDate}
                     </span>

@@ -28,14 +28,14 @@ export default async function PollsPage() {
       <div className="space-y-2 pt-4">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
             Community
           </span>
         </div>
         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
           Polls
         </h1>
-        <p className="text-muted-foreground font-medium italic">
+        <p className="text-muted-foreground font-medium ">
           Vote on the hottest topics in wrestling.
         </p>
       </div>
@@ -143,9 +143,9 @@ export default async function PollsPage() {
       )}
 
       {polls.length === 0 && (
-        <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-          <BarChart2 className="w-10 h-10 text-muted-foreground/20 mx-auto mb-4" />
-          <p className="text-muted-foreground font-bold italic">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+          <BarChart2 className="w-10 h-10 text-muted-foreground/80 mx-auto mb-4" />
+          <p className="text-muted-foreground font-bold ">
             No polls yet. Check back soon.
           </p>
         </div>

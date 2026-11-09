@@ -40,7 +40,7 @@ export default function ReplyForm({
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        className="w-full bg-white text-slate-900 text-sm font-bold border border-border rounded-xl px-4 py-3 outline-none focus:border-primary/50 transition-all placeholder:text-muted-foreground placeholder:italic resize-y"
+        className="w-full bg-white text-slate-900 text-sm font-bold border border-border rounded-xl px-4 py-3 outline-none focus:border-primary/50 transition-all placeholder:text-muted-foreground placeholder:resize-y"
         rows={2}
         placeholder={isUpcoming ? "Write a comment..." : "Write a reply..."}
       />

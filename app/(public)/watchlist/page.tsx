@@ -51,12 +51,12 @@ export default async function WatchlistPage() {
       </div>
 
       {watchListItems.length === 0 ? (
-        <div className="bg-card/40 border border-white/5 border-dashed rounded-[3rem] p-24 text-center">
-          <TrendingUp className="w-16 h-16 text-muted-foreground/30 mx-auto mb-6" />
+        <div className="bg-card/85 border border-white/5 border-dashed rounded-[3rem] p-24 text-center">
+          <TrendingUp className="w-16 h-16 text-muted-foreground/80 mx-auto mb-6" />
           <h2 className="text-3xl font-semibold uppercase italic tracking-tighter mb-4 text-muted-foreground">
             Your Queue is Empty
           </h2>
-          <p className="text-muted-foreground font-medium italic mb-8 max-w-md mx-auto">
+          <p className="text-muted-foreground font-medium mb-8 max-w-md mx-auto">
             Build your backlog of legendary events to watch later. When you find
             an event you want to remember, hit the bookmark icon.
           </p>
@@ -69,7 +69,7 @@ export default async function WatchlistPage() {
           {watchListItems.map((item) => (
             <div
               key={item.id}
-              className="bg-card/40 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/20 transition-all flex flex-col items-stretch h-full shadow-xl"
+              className="bg-card/85 border border-white/5 rounded-3xl overflow-hidden hover:border-primary/20 transition-all flex flex-col items-stretch h-full shadow-xl"
             >
               <div className="flex gap-4 p-6 relative">
                 <Link
@@ -84,7 +84,7 @@ export default async function WatchlistPage() {
                   />
                 </Link>
                 <div className="flex-1 flex flex-col min-w-0 pt-2">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded w-fit mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded w-fit mb-2">
                     {item.event.promotion}
                   </span>
                   <Link
@@ -93,7 +93,7 @@ export default async function WatchlistPage() {
                   >
                     {item.event.title.replace(/–\s*\d{4}.*$/, "").trim()}
                   </Link>
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-3">
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-3">
                     <Calendar className="w-3 h-3 text-primary/70" />
                     {new Date(item.event.date).getFullYear()}
                   </div>
@@ -111,7 +111,7 @@ export default async function WatchlistPage() {
                 ) : (
                   <Link
                     href={`/events/${item.event.slug}`}
-                    className="btn-secondary w-full py-2.5 text-xs font-black uppercase tracking-widest bg-white/5 border-none hover:bg-primary hover:text-black transition-colors"
+                    className="btn-secondary w-full py-2.5 text-xs font-bold uppercase tracking-widest bg-white/5 border-none hover:bg-primary hover:text-black transition-colors"
                   >
                     Log Review
                   </Link>

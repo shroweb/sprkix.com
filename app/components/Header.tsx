@@ -115,7 +115,7 @@ export default function Header({
               href={bannerLink?.trim() || "#"}
               target={bannerLink?.trim()?.startsWith("http") ? "_blank" : undefined}
               rel={bannerLink?.trim()?.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="mx-auto max-w-7xl block rounded-2xl bg-primary text-black px-5 py-3 text-center text-xs sm:text-sm font-black uppercase tracking-wider hover:bg-[var(--primary-hover)] transition-colors"
+              className="mx-auto max-w-7xl block rounded-2xl bg-primary text-black px-5 py-3 text-center text-xs sm:text-sm font-bold uppercase tracking-wider hover:bg-[var(--primary-hover)] transition-colors"
               onClick={(e) => {
                 if (!bannerLink?.trim()) e.preventDefault();
               }}
@@ -210,7 +210,7 @@ export default function Header({
                     <img src={user.avatarUrl} alt={user.name || "Avatar"} className="w-8 h-8 rounded-full object-cover shrink-0" />
                   ) : (
                     <div
-                      className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-black text-white shadow-sm"
+                      className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-sm"
                       style={{ background: `linear-gradient(135deg, ${getHeaderGradient(user.name || "user")[0]}, ${getHeaderGradient(user.name || "user")[1]})` }}
                     >
                       {(user.name || "U").charAt(0).toUpperCase()}
@@ -280,7 +280,7 @@ export default function Header({
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-base font-black text-white truncate">{user.name}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
                       {user.isAdmin ? "Administrator" : "Community Member"}
                     </p>
                   </div>
@@ -318,7 +318,7 @@ export default function Header({
 
             {/* Main Section */}
             <div className="space-y-1">
-              <span className="block px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              <span className="block px-4 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
                 Main Menu
               </span>
               <Link href="/events" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
@@ -340,12 +340,12 @@ export default function Header({
 
             {/* Discover Section */}
             <div className="space-y-1 border-t border-white/10 pt-4">
-              <span className="block px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              <span className="block px-4 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
                 Discover & Rankings
               </span>
               <Link href="/matches/finder" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Match Finder</span>
-                <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-primary/10 text-primary">Tool</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-primary/10 text-primary">Tool</span>
               </Link>
               <Link href="/rankings" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Top Events</span>
@@ -358,7 +358,7 @@ export default function Header({
               </Link>
               <Link href="/champions" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Current Champions</span>
-                <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-amber-400/10 text-amber-400">Belts</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-amber-400/10 text-amber-400">Belts</span>
               </Link>
               <Link href="/lineal" className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-bold text-slate-100 hover:bg-white/5 hover:text-primary transition-colors" onClick={() => setMenuOpen(false)}>
                 <span>Lineal Titles</span>

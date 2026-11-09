@@ -48,7 +48,7 @@ export default function WrestlerRatingChart({
               </div>
 
               <span className="text-xs font-bold text-white">{year}</span>
-              <span className="text-[10px] text-slate-400 font-mono">
+              <span className="text-[11px] text-slate-400 font-mono">
                 {matchCount} {matchCount === 1 ? "match" : "matches"}
               </span>
             </div>

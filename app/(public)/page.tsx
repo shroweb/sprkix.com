@@ -289,8 +289,8 @@ export default async function Home() {
                     <Icon className="h-4 w-4" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-xs font-black uppercase tracking-wide text-white group-hover:text-primary transition-colors">{item.label}</span>
-                    <span className="hidden sm:block truncate text-[10px] font-medium text-muted-foreground">{item.detail}</span>
+                    <span className="block text-xs font-bold uppercase tracking-wide text-white group-hover:text-primary transition-colors">{item.label}</span>
+                    <span className="hidden sm:block truncate text-[11px] font-medium text-muted-foreground">{item.detail}</span>
                   </span>
                 </Link>
               );
@@ -312,13 +312,13 @@ export default async function Home() {
                     Latest Events
                   </h2>
                 </div>
-                <p className="text-muted-foreground font-medium italic pl-4">
+                <p className="text-muted-foreground font-medium pl-4">
                   Upcoming and recently added events.
                 </p>
               </div>
               <Link
                 href="/events"
-                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 All Events <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -342,16 +342,16 @@ export default async function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                       <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
-                        <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
+                        <span className="px-2 py-1 bg-primary text-black text-[11px] font-bold uppercase rounded shadow-lg w-fit">
                           {event.promotion}
                         </span>
                         {isLive && (
-                          <span className="px-2 py-1 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
+                          <span className="px-2 py-1 bg-red-600 text-white text-[11px] font-bold uppercase rounded shadow-lg flex items-center gap-1 animate-pulse w-fit">
                             <Activity className="w-2.5 h-2.5" /> Live
                           </span>
                         )}
                         {isUpcoming && !isLive && (
-                          <span className="px-2 py-1 bg-green-500 text-white text-[8px] font-black uppercase rounded shadow-lg w-fit">
+                          <span className="px-2 py-1 bg-green-500 text-white text-[11px] font-bold uppercase rounded shadow-lg w-fit">
                             Upcoming
                           </span>
                         )}
@@ -359,17 +359,17 @@ export default async function Home() {
                       {rating > 0 && (
                         <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
                           <Star className="w-2.5 h-2.5 text-primary fill-current" />
-                          <span className="text-[10px] font-black text-white">{rating.toFixed(1)}</span>
+                          <span className="text-[11px] font-bold text-white">{rating.toFixed(1)}</span>
                         </div>
                       )}
                     </div>
                     <h3 className="font-bold text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
                       {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </p>
-                    <p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                       {event.reviewCount ? `${event.reviewCount} community review${event.reviewCount === 1 ? "" : "s"}` : "Be the first to rate"}
                     </p>
                   </Link>
@@ -406,13 +406,13 @@ export default async function Home() {
                     Hall of Fame
                   </h2>
                 </div>
-                <p className="text-muted-foreground font-medium italic pl-4">
+                <p className="text-muted-foreground font-medium pl-4">
                   The community&apos;s highest-rated events of all time.
                 </p>
               </div>
               <Link
                 href="/rankings"
-                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 Full Rankings{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -423,7 +423,7 @@ export default async function Home() {
                 <Link
                   key={event.id}
                   href={`/events/${event.slug}`}
-                  className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 sm:gap-5 bg-card/40 border border-white/10 hover:border-primary/30 hover:bg-card/70 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-5 transition-all"
+                  className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 sm:gap-5 bg-card/85 border border-white/10 hover:border-primary/30 hover:bg-card/70 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-5 transition-all"
                 >
                   {/* Rank */}
                   <span
@@ -434,7 +434,7 @@ export default async function Home() {
                         ? "text-slate-400"
                         : i === 2
                         ? "text-amber-700"
-                        : "text-muted-foreground/40"
+                        : "text-muted-foreground/80"
                     }`}
                   >
                     #{i + 1}
@@ -457,7 +457,7 @@ export default async function Home() {
                     <p className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">
                       {(event as any).promotion}
                     </p>
                   </div>
@@ -468,7 +468,7 @@ export default async function Home() {
                     <span className="font-black text-sm">
                       {event.avgRating.toFixed(2)}
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-bold">
+                    <span className="text-[11px] text-muted-foreground font-bold">
                       ({event.reviewCount})
                     </span>
                   </div>
@@ -484,39 +484,39 @@ export default async function Home() {
             {/* Lists */}
             <Link
               href="/lists"
-              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-primary/30 bg-card/40 hover:bg-card/70 p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition-all"
+              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-primary/30 bg-card/85 hover:bg-card/70 p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10 w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                 <List className="w-5 h-5 text-primary" />
               </div>
               <div className="relative z-10 flex-1 min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-1">Community Lists</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-1">Community Lists</p>
                 <h3 className="font-bold italic uppercase tracking-tight text-base leading-tight group-hover:text-primary transition-colors">
                   Build your own<br />top lists
                 </h3>
-                <p className="text-xs text-muted-foreground/60 mt-1.5 font-medium">Curate events and matches into shareable ranked collections.</p>
+                <p className="text-xs text-muted-foreground/80 mt-1.5 font-medium">Curate events and matches into shareable ranked collections.</p>
               </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground/80 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
             </Link>
 
             {/* Watchlist */}
             <Link
               href={user ? "/watchlist" : "/register"}
-              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-blue-400/30 bg-card/40 hover:bg-card/70 p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition-all"
+              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-blue-400/30 bg-card/85 hover:bg-card/70 p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition-all"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10 w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                 <Trophy className="w-5 h-5 text-blue-400" />
               </div>
               <div className="relative z-10 flex-1 min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400 mb-1">Your Watchlist</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-400 mb-1">Your Watchlist</p>
                 <h3 className="font-bold italic uppercase tracking-tight text-base leading-tight group-hover:text-blue-400 transition-colors">
                   Track what you've<br />watched
                 </h3>
-                <p className="text-xs text-muted-foreground/60 mt-1.5 font-medium">Mark events as watched, attended, or on your list.</p>
+                <p className="text-xs text-muted-foreground/80 mt-1.5 font-medium">Mark events as watched, attended, or on your list.</p>
               </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-blue-400 group-hover:translate-x-1 transition-all shrink-0" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground/80 group-hover:text-blue-400 group-hover:translate-x-1 transition-all shrink-0" />
             </Link>
           </div>
         </section>
@@ -532,13 +532,13 @@ export default async function Home() {
                     Trending
                   </h2>
                 </div>
-                <p className="text-muted-foreground font-medium italic pl-4">
+                <p className="text-muted-foreground font-medium pl-4">
                   Most reviewed events in the last 7 days.
                 </p>
               </div>
               <Link
                 href="/events"
-                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 All Events{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -562,10 +562,10 @@ export default async function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
                       <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
-                        <span className="px-2 py-1 bg-primary text-black text-[9px] font-black uppercase rounded shadow-lg w-fit">
+                        <span className="px-2 py-1 bg-primary text-black text-[11px] font-bold uppercase rounded shadow-lg w-fit">
                           {event.promotion}
                         </span>
-                        <span className="px-2 py-1 bg-primary/80 text-black text-[8px] font-black uppercase rounded shadow-lg flex items-center gap-1 w-fit">
+                        <span className="px-2 py-1 bg-primary/80 text-black text-[11px] font-bold uppercase rounded shadow-lg flex items-center gap-1 w-fit">
                           <Flame className="w-2.5 h-2.5" /> Hot
                         </span>
                       </div>
@@ -573,13 +573,13 @@ export default async function Home() {
                     <h3 className="font-bold text-xs uppercase italic group-hover:text-primary transition-colors line-clamp-2 leading-tight">
                       {event.title.replace(/– \d{4}(?:[-–]\d{2}){0,2}$/, "").trim()}
                     </h3>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-1">
                       {new Date(event.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </p>
                     {rating > 0 && (
                       <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3 h-3 text-primary fill-current" />
-                        <span className="text-[10px] font-black text-primary">
+                        <span className="text-[11px] font-bold text-primary">
                           {rating.toFixed(2)}
                         </span>
                       </div>
@@ -603,13 +603,13 @@ export default async function Home() {
                     Explore by Promotion
                   </h2>
                 </div>
-                <p className="text-muted-foreground font-medium italic pl-4">
+                <p className="text-muted-foreground font-medium pl-4">
                   Browse events by your favourite promotion.
                 </p>
               </div>
               <Link
                 href="/promotions"
-                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 All Promotions{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -620,7 +620,7 @@ export default async function Home() {
                 <Link
                   key={promo.name}
                   href={`/events?promotion=${encodeURIComponent(promo.name)}`}
-                  className="group w-[82vw] max-w-[340px] shrink-0 snap-start sm:w-auto sm:max-w-none bg-card/40 border border-white/10 rounded-2xl p-5 hover:border-primary/30 hover:bg-card/70 transition-all space-y-4"
+                  className="group w-[82vw] max-w-[340px] shrink-0 snap-start sm:w-auto sm:max-w-none bg-card/85 border border-white/10 rounded-2xl p-5 hover:border-primary/30 hover:bg-card/70 transition-all space-y-4"
                 >
                   {/* Poster collage */}
                   <div className="flex gap-2 h-28">
@@ -639,7 +639,7 @@ export default async function Home() {
                     ))}
                     {promo.posters.length === 0 && (
                       <div className="flex-1 rounded-xl bg-secondary/50 flex items-center justify-center">
-                        <Trophy className="w-8 h-8 text-muted-foreground/20" />
+                        <Trophy className="w-8 h-8 text-muted-foreground/80" />
                       </div>
                     )}
                   </div>
@@ -658,16 +658,16 @@ export default async function Home() {
                         <div className="flex items-center gap-1.5 text-muted-foreground">
                           <Star className="w-3.5 h-3.5 text-primary fill-current" />
                           <span className="font-black text-foreground">{promo.avgRating}</span>
-                          <span className="text-[10px] font-bold">({promo.reviewCount} reviews)</span>
+                          <span className="text-[11px] font-bold">({promo.reviewCount} reviews)</span>
                         </div>
                       )}
                     </div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       Latest:{" "}
                       {new Date(promo.latestDate).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
                     </div>
                   </div>
-                  <div className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-1.5 group-hover:gap-2 transition-all">
+                  <div className="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-1.5 group-hover:gap-2 transition-all">
                     View All Events
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -688,13 +688,13 @@ export default async function Home() {
                     Top Matches
                   </h2>
                 </div>
-                <p className="text-muted-foreground font-medium italic pl-4">
+                <p className="text-muted-foreground font-medium pl-4">
                   The community&apos;s highest-rated individual bouts.
                 </p>
               </div>
               <Link
                 href="/matches/top"
-                className="group flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
+                className="group flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-primary border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors"
               >
                 View All{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
@@ -709,9 +709,9 @@ export default async function Home() {
                   <Link
                     key={match.id}
                     href={`/events/${match.event.slug}`}
-                    className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 sm:gap-4 bg-card/40 border border-white/10 hover:border-primary/30 hover:bg-card/70 rounded-xl sm:rounded-2xl px-4 sm:px-5 py-4 transition-all"
+                    className="group grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 sm:gap-4 bg-card/85 border border-white/10 hover:border-primary/30 hover:bg-card/70 rounded-xl sm:rounded-2xl px-4 sm:px-5 py-4 transition-all"
                   >
-                    <span className="text-2xl font-black italic text-muted-foreground/40 w-8 shrink-0">
+                    <span className="text-2xl font-black italic text-muted-foreground/80 w-8 shrink-0">
                       #{i + 1}
                     </span>
                     {match.event.posterUrl && (
@@ -728,7 +728,7 @@ export default async function Home() {
                       <p className="font-black text-sm italic uppercase tracking-tight group-hover:text-primary transition-colors truncate">
                         {match.title}
                       </p>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 truncate">
+                      <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 truncate">
                         {names} · {match.event.title.replace(/– \d{4}.*$/, "").trim()}
                       </p>
                     </div>
@@ -748,21 +748,21 @@ export default async function Home() {
 
         {/* ── Community CTA ── */}
         <section>
-          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-card/30 p-6 md:p-8">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-card/85 p-6 md:p-8">
             <div className="absolute inset-0 bg-[radial-gradient(600px_400px_at_80%_50%,rgba(59,130,246,0.06)_0%,transparent_70%)]" />
             <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-primary" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">The Community</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">The Community</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold italic uppercase tracking-tighter leading-none">
                   See who's leading<br className="hidden sm:block" /> the archive
                 </h3>
-                <p className="text-sm text-muted-foreground/60 font-medium">
+                <p className="text-sm text-muted-foreground/80 font-medium">
                   Rank up by rating, reviewing, and predicting. Every action counts.
                 </p>
-                <div className="flex gap-4 pt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                <div className="flex gap-4 pt-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                   <span><strong className="text-primary text-sm">{eventCount}</strong> events</span>
                   <span><strong className="text-primary text-sm">{wrestlerCount}</strong> wrestlers</span>
                 </div>
@@ -770,7 +770,7 @@ export default async function Home() {
               <div className="flex flex-wrap gap-3 shrink-0">
                 <Link
                   href="/leaderboard"
-                  className="h-11 px-6 bg-primary text-black text-xs font-black uppercase italic tracking-widest flex items-center gap-2 rounded-xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                  className="h-11 px-6 bg-primary text-black text-xs font-bold uppercase italic tracking-widest flex items-center gap-2 rounded-xl hover:bg-[var(--primary-hover)] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                 >
                   <Trophy className="w-3.5 h-3.5" /> Leaderboard
                 </Link>
@@ -795,12 +795,12 @@ export default async function Home() {
             <div className="relative z-10 flex-1 space-y-4 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
                 <Send className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Community</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Community</span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold italic uppercase tracking-tighter leading-none">
                 Know an event<br />we&apos;re missing?
               </h2>
-              <p className="text-muted-foreground font-medium italic max-w-md">
+              <p className="text-muted-foreground font-medium max-w-md">
                 Help grow the archive. Submit an event with a Cagematch or ProFightDB link and we&apos;ll import the full match card automatically. Approved submissions earn you <span className="text-foreground font-bold">5 rank points</span>.
               </p>
             </div>
@@ -812,7 +812,7 @@ export default async function Home() {
               >
                 Submit an Event <ArrowRight className="w-4 h-4" />
               </Link>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Free account required</p>
+              <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider">Free account required</p>
             </div>
           </div>
         </section>

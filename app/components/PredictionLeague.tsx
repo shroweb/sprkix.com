@@ -50,14 +50,14 @@ export default function PredictionLeague({
               className="flex items-center justify-between p-3.5 bg-slate-950/60 rounded-xl border border-slate-800/80 hover:border-slate-700 transition-all"
             >
               <div className="flex items-center gap-3">
-                <span className="w-6 text-center text-xs font-black font-mono text-amber-400">
+                <span className="w-6 text-center text-xs font-bold font-mono text-amber-400">
                   #{idx + 1}
                 </span>
                 <div className="relative w-9 h-9 rounded-full overflow-hidden bg-slate-800 border border-slate-700">
                   {user.avatarUrl ? (
                     <Image src={user.avatarUrl} fill className="object-cover" alt="" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-bold text-xs text-white/40">
+                    <div className="w-full h-full flex items-center justify-center font-bold text-xs text-white/75">
                       {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                     </div>
                   )}
@@ -69,7 +69,7 @@ export default function PredictionLeague({
                   >
                     {user.name || "Anonymous User"}
                   </Link>
-                  <div className="flex items-center gap-2 text-[10px] text-slate-400 font-medium">
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
                     <span>{user.predictionScore} Correct Picks</span>
                     <span>•</span>
                     <span>{accuracy}% Accuracy</span>
@@ -79,12 +79,12 @@ export default function PredictionLeague({
 
               <div className="flex items-center gap-2">
                 {idx === 0 && (
-                  <span className="px-2.5 py-1 bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[10px] font-black uppercase rounded-full flex items-center gap-1">
+                  <span className="px-2.5 py-1 bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[11px] font-bold uppercase rounded-full flex items-center gap-1">
                     <Award className="w-3 h-3" /> Champion
                   </span>
                 )}
                 {user.predictionScore >= 10 && (
-                  <span className="px-2 py-0.5 bg-rose-950/60 border border-rose-800/60 text-rose-300 text-[10px] font-bold rounded-full flex items-center gap-1">
+                  <span className="px-2 py-0.5 bg-rose-950/60 border border-rose-800/60 text-rose-300 text-[11px] font-bold rounded-full flex items-center gap-1">
                     <Flame className="w-3 h-3 text-rose-400" /> Hot Streak
                   </span>
                 )}

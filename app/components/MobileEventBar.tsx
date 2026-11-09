@@ -28,7 +28,7 @@ export default function MobileEventBar({
           if (el) el.scrollIntoView({ behavior: "smooth" });
           else showToast("Scroll to rate show", "info");
         }}
-        className="flex flex-col items-center gap-1 text-slate-300 hover:text-amber-400 text-[10px] font-bold uppercase tracking-wider"
+        className="flex flex-col items-center gap-1 text-slate-300 hover:text-amber-400 text-[11px] font-bold uppercase tracking-wider"
       >
         <Star className="w-5 h-5 text-amber-400" />
         <span>Rate</span>

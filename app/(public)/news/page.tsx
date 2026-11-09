@@ -51,10 +51,10 @@ export default async function NewsIndexPage() {
       {featured ? (
         <Link
           href={`/news/${featured.slug}`}
-          className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6 rounded-[2rem] border border-white/5 bg-card/40 overflow-hidden hover:border-primary/30 transition-colors"
+          className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6 rounded-[2rem] border border-white/5 bg-card/85 overflow-hidden hover:border-primary/30 transition-colors"
         >
           <div className="p-6 sm:p-8 space-y-5">
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-[0.2em]">
               Featured Story
             </div>
             <h2 className="text-3xl sm:text-4xl font-semibold italic uppercase tracking-tight">
@@ -89,7 +89,7 @@ export default async function NewsIndexPage() {
           <Link
             key={post.id}
             href={`/news/${post.slug}`}
-            className="group rounded-[2rem] border border-white/5 bg-card/30 overflow-hidden hover:border-primary/30 transition-colors"
+            className="group rounded-[2rem] border border-white/5 bg-card/85 overflow-hidden hover:border-primary/30 transition-colors"
           >
             <div className="relative aspect-[16/9]">
               {post.coverImage ? (

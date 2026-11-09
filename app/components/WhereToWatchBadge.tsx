@@ -200,7 +200,7 @@ export default function WhereToWatchBadge({
   if (variant === "hero") {
     return (
       <div className={`inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-3 py-1.5 backdrop-blur-md ${className}`}>
-        <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">
+        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-300">
           Watch on
         </span>
         <div className="flex items-center gap-1.5">
@@ -248,7 +248,7 @@ export default function WhereToWatchBadge({
             <span className="text-xs font-bold text-white/90 group-hover:text-primary transition-colors">
               {platform.name}
             </span>
-            <span className="text-[10px] text-muted-foreground group-hover:text-primary transition-colors">
+            <span className="text-[11px] text-muted-foreground group-hover:text-primary transition-colors">
               ↗
             </span>
           </a>

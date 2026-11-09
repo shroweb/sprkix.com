@@ -53,23 +53,23 @@ export default function FaceOff({
             <div className="absolute inset-x-0 bottom-0 space-y-0.5 p-2.5 sm:p-3">
               {side.members.map((m) =>
                 m.wrestler.slug ? (
-                  <Link key={m.wrestler.id} href={`/wrestlers/${m.wrestler.slug}`} className="block truncate text-xs font-black italic uppercase leading-tight tracking-tight text-white hover:text-primary sm:text-sm">
+                  <Link key={m.wrestler.id} href={`/wrestlers/${m.wrestler.slug}`} className="block truncate text-xs font-bold italic uppercase leading-tight tracking-tight text-white hover:text-primary sm:text-sm">
                     {m.wrestler.name}
                   </Link>
                 ) : (
-                  <p key={m.wrestler.id} className="truncate text-xs font-black italic uppercase leading-tight tracking-tight text-white sm:text-sm">
+                  <p key={m.wrestler.id} className="truncate text-xs font-bold italic uppercase leading-tight tracking-tight text-white sm:text-sm">
                     {m.wrestler.name}
                   </p>
                 ),
               )}
             </div>
             {won && (
-              <span className="pr-rise absolute left-2 top-2 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-primary-foreground">
+              <span className="pr-rise absolute left-2 top-2 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
                 <Crown className="h-3 w-3" /> Winner
               </span>
             )}
             {!multi && i === 0 && (
-              <span className="absolute -right-3 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center border border-white/20 bg-slate-950 text-[10px] font-black italic text-white sm:-right-4 sm:h-10 sm:w-10 sm:text-xs">
+              <span className="absolute -right-3 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center border border-white/20 bg-slate-950 text-[11px] font-bold italic text-white sm:-right-4 sm:h-10 sm:w-10 sm:text-xs">
                 VS
               </span>
             )}

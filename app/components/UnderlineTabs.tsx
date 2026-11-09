@@ -41,12 +41,12 @@ export default function UnderlineTabs({ tabs, initial }: { tabs: TabDef[]; initi
               aria-selected={on}
               aria-controls={`panel-${t.id}`}
               onClick={() => select(t.id)}
-              className={`relative whitespace-nowrap px-4 py-3 text-xs font-black uppercase tracking-[0.18em] transition-colors ${
+              className={`relative whitespace-nowrap px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] transition-colors ${
                 on ? "text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {t.label}
-              {t.count != null && <span className="ml-1.5 text-[10px] tabular-nums opacity-60">{t.count}</span>}
+              {t.count != null && <span className="ml-1.5 text-[11px] tabular-nums opacity-60">{t.count}</span>}
               <span className={`absolute inset-x-3 -bottom-px h-0.5 bg-primary transition-transform ${on ? "scale-x-100" : "scale-x-0"}`} />
             </button>
           );

@@ -12,7 +12,7 @@ export default function ContactPage() {
             Contact
           </h1>
         </div>
-        <p className="text-muted-foreground font-medium italic pl-4 text-lg max-w-2xl">
+        <p className="text-muted-foreground font-medium pl-4 text-lg max-w-2xl">
           Got a question, bug report, or idea? We'd love to hear from you.
         </p>
       </div>
@@ -21,13 +21,13 @@ export default function ContactPage() {
       <div className="grid sm:grid-cols-2 gap-4 mb-16">
         <a
           href="mailto:poisonrana.app@gmail.com"
-          className="group flex flex-col gap-4 bg-card/40 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl p-6 transition-all"
+          className="group flex flex-col gap-4 bg-card/85 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl p-6 transition-all"
         >
           <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
             <Mail className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
               Email
             </p>
             <p className="font-black italic uppercase text-lg group-hover:text-primary transition-colors">
@@ -43,13 +43,13 @@ export default function ContactPage() {
           href="https://twitter.com/poisonrana_app"
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex flex-col gap-4 bg-card/40 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl p-6 transition-all"
+          className="group flex flex-col gap-4 bg-card/85 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-2xl p-6 transition-all"
         >
           <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
             <Twitter className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
               Twitter / X
             </p>
             <p className="font-black italic uppercase text-lg group-hover:text-primary transition-colors">
@@ -63,7 +63,7 @@ export default function ContactPage() {
       </div>
 
       {/* Bug / feature note */}
-      <div className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3 mb-8">
+      <div className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3 mb-8">
         <div className="flex items-center gap-3">
           <MessageSquare className="w-5 h-5 text-primary shrink-0" />
           <h2 className="font-semibold italic uppercase tracking-tight text-lg">
@@ -85,7 +85,7 @@ export default function ContactPage() {
       </div>
 
       {/* FAQ link */}
-      <div className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+      <div className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
         <div className="flex items-center gap-3">
           <HelpCircle className="w-5 h-5 text-primary shrink-0" />
           <h2 className="font-semibold italic uppercase tracking-tight text-lg">

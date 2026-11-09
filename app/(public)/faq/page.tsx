@@ -177,7 +177,7 @@ export default function FAQPage() {
             How it Works
           </h1>
         </div>
-        <p className="text-muted-foreground font-medium italic pl-4 text-lg max-w-2xl">
+        <p className="text-muted-foreground font-medium pl-4 text-lg max-w-2xl">
           Everything you need to know about Poison Rana — the community archive for professional wrestling.
         </p>
       </div>
@@ -188,10 +188,10 @@ export default function FAQPage() {
           <a
             key={s.title}
             href={`#${s.title.toLowerCase().replace(/\s+/g, "-")}`}
-            className="flex items-center gap-2 bg-card/40 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-xl px-4 py-3 transition-all group"
+            className="flex items-center gap-2 bg-card/85 border border-white/5 hover:border-primary/30 hover:bg-card/60 rounded-xl px-4 py-3 transition-all group"
           >
             <s.icon className={`w-4 h-4 shrink-0 ${s.color}`} />
-            <span className="text-xs font-black uppercase tracking-tight group-hover:text-primary transition-colors truncate">
+            <span className="text-xs font-bold uppercase tracking-tight group-hover:text-primary transition-colors truncate">
               {s.title}
             </span>
           </a>
@@ -219,7 +219,7 @@ export default function FAQPage() {
               {section.qa.map((item, i) => (
                 <details
                   key={i}
-                  className="group bg-card/30 border border-white/5 hover:border-primary/20 rounded-2xl overflow-hidden transition-colors"
+                  className="group bg-card/85 border border-white/5 hover:border-primary/20 rounded-2xl overflow-hidden transition-colors"
                 >
                   <summary className="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer list-none">
                     <span className="font-black text-sm uppercase italic tracking-tight">
@@ -240,11 +240,11 @@ export default function FAQPage() {
       </div>
 
       {/* CTA */}
-      <div className="mt-20 bg-card/40 border border-primary/20 rounded-3xl p-8 sm:p-12 text-center space-y-4">
+      <div className="mt-20 bg-card/85 border border-primary/20 rounded-3xl p-8 sm:p-12 text-center space-y-4">
         <h3 className="text-2xl font-bold italic uppercase tracking-tight">
           Ready to get started?
         </h3>
-        <p className="text-muted-foreground font-medium italic">
+        <p className="text-muted-foreground font-medium ">
           Join the community and start rating, reviewing and predicting.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">

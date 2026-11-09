@@ -108,7 +108,7 @@ export default function AddToListButton({
       className="w-64 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
     >
       <div className="p-3 border-b border-border">
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
           Your {targetType === "matches" ? "Match" : "Event"} Lists
         </p>
       </div>
@@ -119,13 +119,13 @@ export default function AddToListButton({
         </div>
       ) : compatibleLists.length === 0 ? (
         <div className="p-4 text-center space-y-3">
-          <p className="text-xs text-muted-foreground font-medium italic">
+          <p className="text-xs text-muted-foreground font-medium ">
             No {targetType} lists yet.
           </p>
           <Link
             href={createUrl}
             onClick={() => setOpen(false)}
-            className="inline-flex items-center gap-1.5 text-xs font-black text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
           >
             <Plus className="w-3 h-3" /> Create a {targetType === "matches" ? "match" : "event"} list
           </Link>
@@ -158,7 +158,7 @@ export default function AddToListButton({
             <Link
               href={createUrl}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-xs font-black text-primary hover:bg-primary/5 rounded-xl transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-xl transition-colors"
             >
               <Plus className="w-3.5 h-3.5" /> New {targetType === "matches" ? "Match" : "Event"} List
               <ChevronRight className="w-3 h-3 ml-auto" />
@@ -178,7 +178,7 @@ export default function AddToListButton({
         className={
           minimal
             ? "w-12 h-12 bg-secondary/30 hover:bg-secondary/60 text-muted-foreground hover:text-primary border border-border rounded-xl flex items-center justify-center transition-all active:scale-95"
-            : "flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border rounded-xl text-xs font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+            : "flex items-center gap-2 px-4 py-2.5 bg-secondary border border-border rounded-xl text-xs font-bold uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
         }
       >
         <ListPlus className="w-4 h-4" />

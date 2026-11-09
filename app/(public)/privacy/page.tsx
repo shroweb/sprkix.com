@@ -16,13 +16,13 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
         </div>
-        <p className="text-muted-foreground font-medium italic pl-4 text-lg">
+        <p className="text-muted-foreground font-medium pl-4 text-lg">
           Last updated: March 2025
         </p>
       </div>
 
       <div className="prose prose-invert prose-sm max-w-none space-y-8">
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">1. Who We Are</h2>
           <p className="text-muted-foreground leading-relaxed">
             Poison Rana (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is a wrestling review and
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             2. Information We Collect
           </h2>
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             3. How We Use Your Information
           </h2>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             4. Cookies &amp; Analytics
           </h2>
@@ -77,7 +77,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             5. Third-Party Services
           </h2>
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">6. Your Rights</h2>
           <p className="text-muted-foreground leading-relaxed">
             You have the right to access, correct, or delete your personal data at any time. To
@@ -115,7 +115,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">
             7. Data Retention
           </h2>
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section className="bg-card/30 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
+        <section className="bg-card/85 border border-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
           <h2 className="text-lg font-semibold italic uppercase tracking-tight">8. Contact</h2>
           <p className="text-muted-foreground leading-relaxed">
             For any privacy-related questions, contact us at{" "}

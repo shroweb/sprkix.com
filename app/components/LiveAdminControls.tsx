@@ -42,8 +42,8 @@ export default function LiveAdminControls({
     <div className="bg-primary/5 border border-primary/20 rounded-[2rem] p-6 mb-8">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h4 className="text-xs font-black uppercase tracking-widest text-primary italic">Admin Match Tracker</h4>
-          <p className="text-[10px] text-muted-foreground font-bold">Update this in real-time to highlight matches for fans.</p>
+          <h4 className="text-xs font-bold uppercase tracking-widest text-primary italic">Admin Match Tracker</h4>
+          <p className="text-[11px] text-muted-foreground font-bold">Update this in real-time to highlight matches for fans.</p>
         </div>
         {isUpdating && <Loader2 className="w-4 h-4 text-primary animate-spin" />}
       </div>
@@ -59,7 +59,7 @@ export default function LiveAdminControls({
         </button>
 
         <div className="flex-1 text-center">
-          <p className="text-[9px] font-black uppercase text-muted-foreground mb-1">Status</p>
+          <p className="text-[11px] font-bold uppercase text-muted-foreground mb-1">Status</p>
           <p className="text-xl font-black italic uppercase tracking-tighter">
             {current === 0 ? "Show Starting..." : `Match ${current} of ${totalMatches}`}
           </p>
@@ -79,14 +79,14 @@ export default function LiveAdminControls({
         <button
            onClick={() => updateMatch(0)}
            disabled={current === 0 || isUpdating}
-           className="text-[10px] font-black uppercase tracking-widest py-2 rounded-lg border border-white/5 hover:bg-white/5"
+           className="text-[11px] font-bold uppercase tracking-widest py-2 rounded-lg border border-white/5 hover:bg-white/5"
         >
            Reset Tracker
         </button>
         <button
            onClick={() => updateMatch(totalMatches)}
            disabled={current === totalMatches || isUpdating}
-           className="text-[10px] font-black uppercase tracking-widest py-2 rounded-lg border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
+           className="text-[11px] font-bold uppercase tracking-widest py-2 rounded-lg border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
         >
            Final Match
         </button>

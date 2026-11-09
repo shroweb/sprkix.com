@@ -85,16 +85,16 @@ export default async function ForYou({ userId }: { userId: string }) {
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {rows.map(({ e, reasons }) => (
-          <Link key={e.id} href={`/events/${e.slug}`} className="group flex gap-3 border border-white/10 bg-card/40 p-3 transition-colors hover:border-primary/40">
+          <Link key={e.id} href={`/events/${e.slug}`} className="group flex gap-3 border border-white/10 bg-card/85 p-3 transition-colors hover:border-primary/40">
             <div className="relative h-24 w-16 shrink-0 overflow-hidden bg-secondary">
-              {e.posterUrl ? <Image src={e.posterUrl} alt="" fill sizes="64px" className="object-cover" /> : <Calendar className="absolute inset-0 m-auto h-5 w-5 text-muted-foreground/40" />}
+              {e.posterUrl ? <Image src={e.posterUrl} alt="" fill sizes="64px" className="object-cover" /> : <Calendar className="absolute inset-0 m-auto h-5 w-5 text-muted-foreground/80" />}
             </div>
             <div className="min-w-0 space-y-1">
               <p className="line-clamp-2 text-sm font-black italic uppercase leading-tight group-hover:text-primary">{e.title}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 {e.date.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} · {e.promotion}
               </p>
-              <p className="text-[10px] font-black uppercase tracking-wider text-primary">{reasons[0]}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-primary">{reasons[0]}</p>
             </div>
           </Link>
         ))}

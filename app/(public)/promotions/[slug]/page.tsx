@@ -160,7 +160,7 @@ export default async function PromotionDetailPage({
             </div>
           )}
           <div className="min-w-0 space-y-2">
-            <p className="text-xs font-black uppercase tracking-[0.25em]" style={{ color: accent }}>Promotion Hub</p>
+            <p className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>Promotion Hub</p>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter">{promotionName}</h1>
           </div>
         </div>
@@ -172,7 +172,7 @@ export default async function PromotionDetailPage({
           ].map(([k, v]) => (
             <div key={k} className="bg-slate-950/70 px-3 py-4">
               <dd className="text-2xl font-black tabular-nums">{v}</dd>
-              <dt className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{k}</dt>
+              <dt className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{k}</dt>
             </div>
           ))}
         </dl>
@@ -181,13 +181,13 @@ export default async function PromotionDetailPage({
       {upcoming && (
         <Link
           href={`/events/${upcoming.slug}`}
-          className="group flex items-center gap-5 border border-white/10 bg-card/40 p-4 transition-colors hover:border-white/30"
+          className="group flex items-center gap-5 border border-white/10 bg-card/85 p-4 transition-colors hover:border-white/30"
         >
           <div className="relative h-24 w-16 shrink-0 overflow-hidden bg-secondary">
             {upcoming.posterUrl && <Image src={upcoming.posterUrl} alt="" fill sizes="64px" className="object-cover" />}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: accent }}>
+            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
               <Radio className="h-3 w-3" /> Next show
             </p>
             <p className="truncate text-xl font-black italic uppercase tracking-tight group-hover:text-primary">{upcoming.title}</p>
@@ -196,7 +196,7 @@ export default async function PromotionDetailPage({
               {upcoming.city ? ` · ${upcoming.city}` : ""}
             </p>
           </div>
-          <span className="hidden items-center gap-1.5 border px-3 py-2 text-[10px] font-black uppercase tracking-widest sm:flex" style={{ borderColor: accent, color: accent }}>
+          <span className="hidden items-center gap-1.5 border px-3 py-2 text-[11px] font-bold uppercase tracking-widest sm:flex" style={{ borderColor: accent, color: accent }}>
             <Target className="h-3.5 w-3.5" /> Predict
           </span>
         </Link>
@@ -204,7 +204,7 @@ export default async function PromotionDetailPage({
 
       {champions.length > 0 && (
         <section className="space-y-4">
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider" style={{ color: accent }}>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style={{ color: accent }}>
             <Crown className="h-4 w-4" /> Current Champions
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -216,7 +216,7 @@ export default async function PromotionDetailPage({
               >
                 <BeltArt style={c.style} label={c.shortName ?? c.title} name={c.title} height={52} />
                 <div className="min-w-0">
-                  <p className="truncate text-[10px] font-black uppercase tracking-widest text-muted-foreground">{c.shortName ?? c.title}</p>
+                  <p className="truncate text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{c.shortName ?? c.title}</p>
                   <p className="truncate text-sm font-black italic uppercase group-hover:text-primary">
                     {c.champions.map((p) => p.name).join(" & ")}
                   </p>
@@ -229,10 +229,10 @@ export default async function PromotionDetailPage({
 
       {topPredictors.length > 0 && (
         <section className="space-y-3">
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider" style={{ color: accent }}>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style={{ color: accent }}>
             <Target className="h-4 w-4" /> Top {promotion.shortName} Predictors
           </div>
-          <ol className="divide-y divide-white/5 border border-white/10 bg-card/30">
+          <ol className="divide-y divide-white/5 border border-white/10 bg-card/85">
             {topPredictors.map((p, i) => (
               <li key={p.user.id}>
                 <Link href={`/users/${p.user.slug || p.user.id}`} className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.03]">
@@ -249,7 +249,7 @@ export default async function PromotionDetailPage({
 
       {championships.length > 0 && (
         <div className="glass-card p-6 space-y-4">
-          <div className="flex items-center gap-2 text-amber-400 font-black uppercase tracking-wider text-xs">
+          <div className="flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider text-xs">
             <Trophy className="w-4 h-4" /> Championship Belts
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -260,7 +260,7 @@ export default async function PromotionDetailPage({
               >
                 <span className="text-xs font-bold text-white">{belt.title}</span>
                 {belt.shortName && (
-                  <span className="text-[10px] font-mono text-amber-400 font-bold px-2 py-0.5 bg-amber-400/10 rounded">
+                  <span className="text-[11px] font-mono text-amber-400 font-bold px-2 py-0.5 bg-amber-400/10 rounded">
                     {belt.shortName}
                   </span>
                 )}
@@ -279,7 +279,7 @@ export default async function PromotionDetailPage({
             <Link
               key={event.id}
               href={`/events/${event.slug}`}
-              className="group rounded-[2rem] border border-white/5 bg-card/30 overflow-hidden hover:border-primary/30 transition-colors"
+              className="group rounded-[2rem] border border-white/5 bg-card/85 overflow-hidden hover:border-primary/30 transition-colors"
             >
               <div className="relative aspect-[2/3]">
                 {event.posterUrl ? (

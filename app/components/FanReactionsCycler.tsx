@@ -47,7 +47,7 @@ export default function FanReactionsCycler({
                 href={`/users/${r.user?.slug || r.user?.id}`}
                 className="flex items-center gap-3 hover:text-primary transition-colors group/user"
               >
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-black group-hover/user:bg-primary group-hover/user:text-black transition-colors">
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold group-hover/user:bg-primary group-hover/user:text-black transition-colors">
                   {r.user?.name ? r.user.name.charAt(0).toUpperCase() : "A"}
                 </div>
                 <span className="text-sm font-black italic">
@@ -56,10 +56,10 @@ export default function FanReactionsCycler({
               </Link>
               <div className="flex text-primary">
                 <Star className="w-3 h-3 fill-current" />
-                <span className="text-xs font-black ml-1">{r.rating}</span>
+                <span className="text-xs font-bold ml-1">{r.rating}</span>
               </div>
             </div>
-            <p className="text-sm text-foreground/80 font-medium italic leading-relaxed flex-1">
+            <p className="text-sm text-foreground/80 font-medium leading-relaxed flex-1">
               "{r.comment}"
             </p>
 
@@ -68,7 +68,7 @@ export default function FanReactionsCycler({
                 {r.Reply.slice(0, 1).map((reply: any) => (
                   <div
                     key={reply.id}
-                    className="flex gap-3 text-xs bg-secondary/50 p-3 rounded-xl italic"
+                    className="flex gap-3 text-xs bg-secondary/50 p-3 rounded-xl "
                   >
                     <span className="font-black text-primary uppercase">
                       {reply.user?.name}

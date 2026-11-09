@@ -120,7 +120,7 @@ export default function EditProfilePage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
             Account
           </span>
         </div>
@@ -129,10 +129,10 @@ export default function EditProfilePage() {
         </h1>
       </div>
 
-      <div className="bg-card/40 border border-white/5 rounded-[2rem] p-5 sm:p-8">
+      <div className="bg-card/85 border border-white/5 rounded-[2rem] p-5 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               Profile Picture
             </label>
             <div className="flex items-center gap-5">
@@ -148,7 +148,7 @@ export default function EditProfilePage() {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-black uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
+                <label className="cursor-pointer inline-flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg text-xs font-bold uppercase italic tracking-tighter hover:opacity-90 transition-opacity">
                   {uploading ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
                   ) : (
@@ -166,12 +166,12 @@ export default function EditProfilePage() {
                   <button
                     type="button"
                     onClick={() => setAvatarUrl("")}
-                    className="block text-[10px] font-bold text-muted-foreground hover:text-destructive transition-colors"
+                    className="block text-[11px] font-bold text-muted-foreground hover:text-destructive transition-colors"
                   >
                     Remove photo
                   </button>
                 )}
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-[11px] text-muted-foreground">
                   JPG, PNG or WEBP. Max 5MB.
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default function EditProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               Display Name
             </label>
             <input
@@ -190,13 +190,13 @@ export default function EditProfilePage() {
               className="w-full bg-black/20 border border-border rounded-xl p-4 font-bold text-sm outline-none focus:border-primary/50 transition-all text-foreground"
               maxLength={50}
             />
-            <p className="text-[10px] text-muted-foreground font-medium">
+            <p className="text-[11px] text-muted-foreground font-medium">
               This is how you appear across the site.
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               Profile Handle (URL)
             </label>
             <div className="relative">
@@ -210,13 +210,13 @@ export default function EditProfilePage() {
                 maxLength={32}
               />
             </div>
-            <p className="text-[10px] text-muted-foreground font-medium italic">
+            <p className="text-[11px] text-muted-foreground font-medium ">
               Your profile: <span className="text-primary">poisonrana.com/users/{slug || "username"}</span>
             </p>
           </div>
 
           <div className="space-y-2 pt-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               Favorite Promotion
             </label>
             <select
@@ -231,13 +231,13 @@ export default function EditProfilePage() {
                 </option>
               ))}
             </select>
-            <p className="text-[10px] text-muted-foreground font-medium">
+            <p className="text-[11px] text-muted-foreground font-medium">
               Manually pin your favorite promotion to your profile stats.
             </p>
           </div>
 
           <div className="space-y-2 pt-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               Profile Theme
             </label>
             {profileThemeEventId ? (
@@ -248,7 +248,7 @@ export default function EditProfilePage() {
                 <button
                   type="button"
                   onClick={() => setProfileThemeEventId("")}
-                  className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors"
+                  className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors"
                 >
                   Remove
                 </button>
@@ -263,13 +263,13 @@ export default function EditProfilePage() {
           </div>
           
           <div className="space-y-4 pt-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               Notifications
             </label>
             <div className="flex items-center justify-between gap-4 bg-black/20 border border-border rounded-xl px-4 py-4">
               <div className="space-y-0.5">
                 <p className="text-sm font-bold">Email Notifications</p>
-                <p className="text-[10px] text-muted-foreground">Receive updates on events, news, and your activity.</p>
+                <p className="text-[11px] text-muted-foreground">Receive updates on events, news, and your activity.</p>
               </div>
               <button
                 type="button"

@@ -23,7 +23,7 @@ export default function HeroReviewCycler({ reviews }: { reviews: any[] }) {
       {reviews.map((r, i) => (
         <p
           key={r.id || i}
-          className={`absolute inset-0 text-xs text-white/60 font-medium italic leading-relaxed line-clamp-2 border-l-2 border-primary/50 pl-3 transition-opacity duration-1000 ${
+          className={`absolute inset-0 text-xs text-white/75 font-medium leading-relaxed line-clamp-2 border-l-2 border-primary/50 pl-3 transition-opacity duration-1000 ${
             i === index ? "opacity-100 z-10" : "opacity-0 z-0"
           }`}
         >

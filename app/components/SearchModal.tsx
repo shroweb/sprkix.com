@@ -62,7 +62,7 @@ function Thumb({ row }: { row: Row }) {
         />
       ) : (
         <div className="absolute inset-0 grid place-items-center">
-          <Icon className="w-4 h-4 text-muted-foreground/40" />
+          <Icon className="w-4 h-4 text-muted-foreground/80" />
         </div>
       )}
     </div>
@@ -191,7 +191,7 @@ export default function SearchModal({ className }: { className?: string }) {
       >
         <Search className="w-4 h-4 shrink-0" />
         <span className="font-medium hidden md:inline">Search...</span>
-        <kbd className="hidden md:inline ml-2 text-[10px] font-black bg-background border border-border px-1.5 py-0.5 text-muted-foreground">⌘K</kbd>
+        <kbd className="hidden md:inline ml-2 text-[11px] font-bold bg-background border border-border px-1.5 py-0.5 text-muted-foreground">⌘K</kbd>
       </button>
     );
   }
@@ -231,7 +231,7 @@ export default function SearchModal({ className }: { className?: string }) {
               return (
                 <div key={row.key}>
                   {header && (
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-3 pt-3 pb-1.5">{header}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-3 pt-3 pb-1.5">{header}</p>
                   )}
                   <button
                     data-idx={i}
@@ -242,7 +242,7 @@ export default function SearchModal({ className }: { className?: string }) {
                     <Thumb row={row} />
                     <div className="min-w-0 flex-1">
                       <p className={`truncate text-sm font-black uppercase italic tracking-tight ${i === active ? "text-primary" : ""}`}>{row.title}</p>
-                      {row.sub && <p className="mt-0.5 truncate text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{row.sub}</p>}
+                      {row.sub && <p className="mt-0.5 truncate text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{row.sub}</p>}
                     </div>
                     {i === active && <CornerDownLeft className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
                   </button>
@@ -254,7 +254,7 @@ export default function SearchModal({ className }: { className?: string }) {
 
         {isEmpty && (
           <div className="p-12 text-center">
-            <p className="text-muted-foreground font-bold italic text-sm">No results for “{query}”</p>
+            <p className="text-muted-foreground font-bold text-sm">No results for “{query}”</p>
           </div>
         )}
 
@@ -262,7 +262,7 @@ export default function SearchModal({ className }: { className?: string }) {
           <div className="p-5 space-y-5">
             {recent.length > 0 && (
               <div>
-                <p className="mb-2 flex items-center gap-1.5 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   <Clock className="w-3 h-3" /> Recent
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -275,13 +275,13 @@ export default function SearchModal({ className }: { className?: string }) {
               </div>
             )}
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2">Browse by Promotion</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2">Browse by Promotion</p>
               <div className="flex flex-wrap gap-2">
                 {PROMOS.map((promo) => (
                   <button
                     key={promo}
                     onClick={() => setQuery(promo)}
-                    className="px-3 py-1.5 bg-secondary border border-border text-xs font-black uppercase tracking-wider hover:bg-primary hover:text-black hover:border-primary transition-all"
+                    className="px-3 py-1.5 bg-secondary border border-border text-xs font-bold uppercase tracking-wider hover:bg-primary hover:text-black hover:border-primary transition-all"
                   >
                     {promo}
                   </button>
@@ -290,14 +290,14 @@ export default function SearchModal({ className }: { className?: string }) {
             </div>
             {trending && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
                   <TrendingUp className="w-3 h-3" /> Trending
                 </p>
                 <button onClick={() => go(trending)} className="group flex w-full items-center gap-4 px-3 py-2.5 text-left hover:bg-secondary transition-colors">
                   <Thumb row={trending} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-black uppercase italic tracking-tight group-hover:text-primary">{trending.title}</p>
-                    <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{trending.sub}</p>
+                    <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{trending.sub}</p>
                   </div>
                 </button>
               </div>
@@ -305,7 +305,7 @@ export default function SearchModal({ className }: { className?: string }) {
           </div>
         )}
 
-        <div className="px-5 py-3 border-t border-border flex items-center gap-4 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+        <div className="px-5 py-3 border-t border-border flex items-center gap-4 text-[11px] text-muted-foreground font-bold uppercase tracking-widest">
           <span>↑↓ Navigate</span>
           <span>↵ Open</span>
           <span>Esc Close</span>

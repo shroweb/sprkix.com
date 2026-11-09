@@ -71,7 +71,7 @@ export default function ReviewCard({
         </div>
       </div>
 
-      <p className="text-sm text-foreground/80 font-medium italic leading-relaxed">
+      <p className="text-sm text-foreground/80 font-medium leading-relaxed">
         "{review.comment}"
       </p>
 
@@ -80,7 +80,7 @@ export default function ReviewCard({
           {review.Reply.map((reply) => (
             <div
               key={reply.id}
-              className="w-full flex items-start gap-3 p-3 bg-secondary/50 rounded-xl italic"
+              className="w-full flex items-start gap-3 p-3 bg-secondary/50 rounded-xl "
             >
               <div className="flex-shrink-0">
                 <UserAvatar name={reply.user.name} avatarUrl={(reply.user as any).avatarUrl} size="sm" />
@@ -91,7 +91,7 @@ export default function ReviewCard({
                   <span className="font-black text-primary uppercase">
                     {reply.user.name}
                   </span>
-                  <span className="text-[10px] font-medium text-muted-foreground">
+                  <span className="text-[11px] font-medium text-muted-foreground">
                     {new Date(reply.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",

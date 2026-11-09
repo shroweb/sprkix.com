@@ -86,7 +86,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
             <button
               key={f.value}
               onClick={() => setTypeFilter(f.value)}
-              className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${
+              className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${
                 typeFilter === f.value
                   ? "bg-primary text-black border-primary"
                   : "bg-transparent border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
@@ -101,7 +101,7 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as SortOption)}
-          className="bg-secondary border border-border rounded-xl px-3 py-1.5 text-xs font-black uppercase tracking-wider text-foreground focus:outline-none focus:border-primary/30 cursor-pointer"
+          className="bg-secondary border border-border rounded-xl px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-foreground focus:outline-none focus:border-primary/30 cursor-pointer"
         >
           <option value="newest">Newest</option>
           <option value="most-items">Most Items</option>
@@ -111,9 +111,9 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-          <List className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-          <p className="text-muted-foreground font-bold italic">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+          <List className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
+          <p className="text-muted-foreground font-bold ">
             {publicLists.length === 0
               ? "No public lists yet. Be the first!"
               : "No lists match your filter."}
@@ -166,15 +166,15 @@ export default function ListsGrid({ publicLists, isLoggedIn, userHasMyLists }: P
                         className="object-cover w-full h-full"
                       />
                     ) : (
-                      <span className="text-[8px] font-black text-primary">
+                      <span className="text-[11px] font-bold text-primary">
                         {list.user.name?.charAt(0).toUpperCase() ?? "U"}
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] font-bold text-muted-foreground truncate">
+                  <span className="text-[11px] font-bold text-muted-foreground truncate">
                     {list.user.name}
                   </span>
-                  <span className="text-[10px] text-muted-foreground/40 ml-auto shrink-0">
+                  <span className="text-[11px] text-muted-foreground/80 ml-auto shrink-0">
                     {list._count.items}{" "}
                     {list.listType === "matches" ? "matches" : "events"}
                   </span>

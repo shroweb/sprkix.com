@@ -44,14 +44,14 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
       <div className="space-y-4 mb-10">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-red-500"></div>
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-red-500 italic">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-red-500 italic">
             Public Collection
           </span>
         </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase italic leading-[0.9]">
           {user.name}&apos;s Favorites
         </h1>
-        <p className="text-muted-foreground font-bold italic max-w-2xl">
+        <p className="text-muted-foreground font-bold max-w-2xl">
           A showcase of {user.name}&apos;s top-tier wrestling selections. Totaling {favMatches.length} gems.
         </p>
       </div>
@@ -62,17 +62,17 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
             <Link
               key={fav.match.id}
               href={`/events/${fav.match.event.slug}`}
-              className="bg-card/40 border border-white/5 rounded-2xl p-6 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden flex flex-col justify-between h-full"
+              className="bg-card/85 border border-white/5 rounded-2xl p-6 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden flex flex-col justify-between h-full"
             >
               <div className="absolute top-0 right-0 p-4">
                 <Heart className="w-5 h-5 text-red-500 fill-current" />
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black text-muted-foreground bg-secondary px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded">
                     {fav.match.event.promotion}
                   </span>
-                  <div className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 italic">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/80 italic">
                     <Calendar className="w-3 h-3" />
                     {new Date(fav.match.event.date).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
                   </div>
@@ -83,13 +83,13 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
                 <div className="flex flex-wrap items-center gap-1.5 pt-2">
                   {(fav.match.participants as any[]).map((p: any, i: number) => (
                     <span key={`${p.wrestler.id}-${i}`} className="flex items-center gap-1.5">
-                      {i > 0 && <span className="text-[10px] text-muted-foreground">&amp;</span>}
+                      {i > 0 && <span className="text-[11px] text-muted-foreground">&amp;</span>}
                       <span className="text-xs font-bold whitespace-nowrap">{p.wrestler.name}</span>
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 group-hover:text-primary/40 transition-colors">
+              <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 group-hover:text-primary/40 transition-colors">
                 <span>View Event Card</span>
                 <span>→</span>
               </div>
@@ -97,10 +97,10 @@ export default async function UserFavoritesPage({ params }: { params: Promise<{ 
           ))}
         </div>
       ) : (
-        <div className="bg-card/20 border border-dashed border-border rounded-[3rem] p-32 text-center">
+        <div className="bg-card/85 border border-dashed border-border rounded-[3rem] p-32 text-center">
           <Heart className="w-16 h-16 text-muted-foreground/10 mx-auto mb-6" />
-          <h2 className="text-2xl font-semibold italic uppercase text-muted-foreground/40 mb-2">Still Searching</h2>
-          <p className="text-muted-foreground font-bold italic">
+          <h2 className="text-2xl font-semibold italic uppercase text-muted-foreground/80 mb-2">Still Searching</h2>
+          <p className="text-muted-foreground font-bold ">
             {user.name} hasn&apos;t enshrined any matches in their hall of fame yet.
           </p>
         </div>

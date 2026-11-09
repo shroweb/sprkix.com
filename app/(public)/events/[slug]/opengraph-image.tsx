@@ -166,7 +166,7 @@ export default async function OGImage({
             color: "#fff",
             fontSize: title.length > 30 ? 48 : 60,
             fontWeight: 900,
-            fontStyle: "italic",
+            fontStyle: "",
             textTransform: "uppercase",
             letterSpacing: "-2px",
             lineHeight: 0.9,
@@ -216,7 +216,7 @@ export default async function OGImage({
                   color: "#eab308",
                   fontSize: 32,
                   fontWeight: 900,
-                  fontStyle: "italic",
+                  fontStyle: "",
                 }}
               >
                 {avgRating}

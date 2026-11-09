@@ -62,7 +62,7 @@ export default async function ListsDiscoveryPage() {
         {user && (
           <Link
             href="/lists/create"
-            className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:opacity-90 transition-opacity shrink-0"
+            className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-2xl hover:opacity-90 transition-opacity shrink-0"
           >
             <Plus className="w-4 h-4" /> Create a List
           </Link>
@@ -111,7 +111,7 @@ export default async function ListsDiscoveryPage() {
                       })
                     ) : (
                       <div className="flex-1 bg-secondary flex items-center justify-center">
-                        <List className="w-8 h-8 text-muted-foreground/20" />
+                        <List className="w-8 h-8 text-muted-foreground/80" />
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent pointer-events-none" />
@@ -127,7 +127,7 @@ export default async function ListsDiscoveryPage() {
                     >
                       {list.title}
                     </Link>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground">
                       {list.isPublic ? (
                         <>
                           <Globe className="w-3 h-3" />
@@ -145,7 +145,7 @@ export default async function ListsDiscoveryPage() {
                   </div>
                   <Link
                     href={`/lists/${list.id}/edit`}
-                    className="shrink-0 px-3 py-1.5 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+                    className="shrink-0 px-3 py-1.5 bg-secondary border border-border rounded-xl text-[11px] font-bold uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
                   >
                     Edit
                   </Link>

@@ -93,26 +93,26 @@ export default async function RivalryPage({ params }: { params: Promise<{ a: str
       </Link>
 
       <header className="space-y-6 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.3em] text-primary">Rivalry</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Rivalry</p>
         <h1 className="text-3xl font-black italic uppercase tracking-tighter sm:text-5xl">
           {a.name} <span className="text-muted-foreground">vs</span> {b.name}
         </h1>
         <FaceOff sides={sides} size="lg" className="mx-auto max-w-xl" />
       </header>
 
-      <section className="space-y-3 border border-white/10 bg-card/30 p-5 sm:p-6">
+      <section className="space-y-3 border border-white/10 bg-card/85 p-5 sm:p-6">
         <div className="flex items-end justify-between text-center">
           <div>
             <p className="text-4xl font-black tabular-nums text-primary">{aWins}</p>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{a.name.split(" ")[0]} wins</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{a.name.split(" ")[0]} wins</p>
           </div>
           <div>
             <p className="text-lg font-black tabular-nums text-muted-foreground">{draws}</p>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Draws / NC</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Draws / NC</p>
           </div>
           <div>
             <p className="text-4xl font-black tabular-nums text-sky-400">{bWins}</p>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{b.name.split(" ")[0]} wins</p>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{b.name.split(" ")[0]} wins</p>
           </div>
         </div>
         <div className="flex h-2.5 overflow-hidden bg-white/10">
@@ -132,24 +132,24 @@ export default async function RivalryPage({ params }: { params: Promise<{ a: str
         >
           <Target className="h-8 w-8 shrink-0 text-primary" />
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Next meeting</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Next meeting</p>
             <p className="truncate text-lg font-black italic uppercase">{next.event.title}</p>
             <p className="text-xs font-bold text-muted-foreground">
               {new Date(next.event.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
             </p>
           </div>
-          <span className="shrink-0 text-xs font-black uppercase tracking-widest text-primary group-hover:underline">
+          <span className="shrink-0 text-xs font-bold uppercase tracking-widest text-primary group-hover:underline">
             {next.event.enablePredictions ? "Who do you pick?" : "View"}
           </span>
         </Link>
       )}
 
       <section className="space-y-4">
-        <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+        <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
           <Swords className="h-4 w-4" /> Past meetings
         </h2>
         {past.length === 0 ? (
-          <p className="border border-dashed border-border p-12 text-center font-bold italic text-muted-foreground">They haven&apos;t faced each other yet.</p>
+          <p className="border border-dashed border-border p-12 text-center font-bold text-muted-foreground">They haven&apos;t faced each other yet.</p>
         ) : (
           <ul className="divide-y divide-white/5 border border-white/10">
             {past.map((m) => {
@@ -159,7 +159,7 @@ export default async function RivalryPage({ params }: { params: Promise<{ a: str
               return (
                 <li key={m.id}>
                   <Link href={`/events/${m.event.slug}`} className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.03]">
-                    <span className="flex w-24 shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <span className="flex w-24 shrink-0 items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       <Calendar className="h-3 w-3" />
                       {new Date(m.event.date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
                     </span>
@@ -167,7 +167,7 @@ export default async function RivalryPage({ params }: { params: Promise<{ a: str
                       <span className="block truncate text-sm font-black italic uppercase">{m.event.title.replace(/–\s*\d{4}.*$/, "").trim()}</span>
                       <span className="block truncate text-[11px] text-muted-foreground">{m.title}</span>
                     </span>
-                    <span className={`shrink-0 text-[10px] font-black uppercase tracking-widest ${winner ? (winner.id === a.id ? "text-primary" : "text-sky-400") : "text-muted-foreground"}`}>
+                    <span className={`shrink-0 text-[11px] font-bold uppercase tracking-widest ${winner ? (winner.id === a.id ? "text-primary" : "text-sky-400") : "text-muted-foreground"}`}>
                       {winner ? `${winner.name.split(" ")[0]} won` : "No winner"}
                     </span>
                   </Link>

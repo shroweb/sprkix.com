@@ -26,7 +26,7 @@ export default function PromotionBadge({
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border backdrop-blur-md ${style.bg} ${style.text} ${style.border} ${className}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider border backdrop-blur-md ${style.bg} ${style.text} ${style.border} ${className}`}
     >
       {promotion}
     </span>

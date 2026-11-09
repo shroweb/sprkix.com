@@ -11,11 +11,11 @@ export default function BioExpand({ bio }: { bio: string }) {
 
   return (
     <div className="border-l-2 border-primary/30 pl-4 space-y-2 max-w-2xl">
-      <p className="text-foreground/70 font-medium italic leading-relaxed">{visible}</p>
+      <p className="text-foreground/70 font-medium leading-relaxed">{visible}</p>
       {isLong && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="text-[11px] font-black uppercase tracking-widest text-primary hover:text-primary/70 transition-colors"
+          className="text-[11px] font-bold uppercase tracking-widest text-primary hover:text-primary/70 transition-colors"
         >
           {expanded ? "Show less ↑" : "Read more ↓"}
         </button>

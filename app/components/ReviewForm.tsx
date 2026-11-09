@@ -70,7 +70,7 @@ export default function ReviewForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
           <textarea
-            className="w-full bg-white border border-border rounded-xl p-4 text-sm font-bold text-slate-900 outline-none focus:border-primary/50 transition-all placeholder:text-muted-foreground placeholder:italic resize-none"
+            className="w-full bg-white border border-border rounded-xl p-4 text-sm font-bold text-slate-900 outline-none focus:border-primary/50 transition-all placeholder:text-muted-foreground placeholder:resize-none"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={3}
@@ -81,7 +81,7 @@ export default function ReviewForm({
           
           {!isUpcoming && (
             <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
                     Your Rating
                 </span>
                 <div className="flex gap-1.5" onMouseLeave={() => setHoveredRating(null)}>
@@ -115,7 +115,7 @@ export default function ReviewForm({
                             <div className="flex-1 cursor-pointer" />
                           </div>
                           <div className="relative">
-                            <Star className="w-8 h-8 text-muted-foreground/20" />
+                            <Star className="w-8 h-8 text-muted-foreground/80" />
                             {(() => {
                               const diff = displayRating - (s - 1);
                               if (diff >= 1) return <Star className="absolute inset-0 w-8 h-8 text-primary fill-current transition-all duration-200" />;

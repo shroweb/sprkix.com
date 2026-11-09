@@ -108,9 +108,9 @@ export default function ProfileReviews({
 
   if (reviews.length === 0) {
     return (
-      <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
-        <Star className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-        <p className="text-muted-foreground font-bold italic">
+      <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+        <Star className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
+        <p className="text-muted-foreground font-bold ">
           You haven&apos;t reviewed any events yet.
         </p>
         <Link href="/events" className="btn-primary inline-block mt-4 text-sm">
@@ -131,7 +131,7 @@ export default function ProfileReviews({
         return (
           <div
             key={review.id}
-            className="bg-card/40 border border-white/5 rounded-2xl overflow-hidden hover:border-primary/10 transition-all"
+            className="bg-card/85 border border-white/5 rounded-2xl overflow-hidden hover:border-primary/10 transition-all"
           >
             {/* Main row */}
             <div className="flex gap-5 p-5">
@@ -156,7 +156,7 @@ export default function ProfileReviews({
                   >
                     {review.event.title.replace(/–\s\d{4}.*$/, "")}
                   </Link>
-                  <span className="text-[10px] font-black text-muted-foreground shrink-0">
+                  <span className="text-[11px] font-bold text-muted-foreground shrink-0">
                     {new Date(review.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
@@ -186,7 +186,7 @@ export default function ProfileReviews({
                               <div className="flex-1 cursor-pointer" />
                             </div>
                             <div className="relative">
-                              <Star className="w-6 h-6 text-muted-foreground/20" />
+                              <Star className="w-6 h-6 text-muted-foreground/80" />
                               {isFull ? (
                                 <Star className="absolute inset-0 w-6 h-6 text-primary fill-current" />
                               ) : isHalf ? (
@@ -210,7 +210,7 @@ export default function ProfileReviews({
                       <button
                         onClick={() => handleSaveEdit(review.id)}
                         disabled={isSaving || editRating === 0}
-                        className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-black text-xs font-black rounded-lg disabled:opacity-50"
+                        className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-black text-xs font-bold rounded-lg disabled:opacity-50"
                       >
                         {isSaving ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
@@ -221,7 +221,7 @@ export default function ProfileReviews({
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="flex items-center gap-1.5 px-4 py-1.5 bg-secondary text-xs font-black rounded-lg hover:bg-muted transition-colors"
+                        className="flex items-center gap-1.5 px-4 py-1.5 bg-secondary text-xs font-bold rounded-lg hover:bg-muted transition-colors"
                       >
                         <X className="w-3 h-3" /> Cancel
                       </button>
@@ -236,7 +236,7 @@ export default function ProfileReviews({
                         const isHalf = review.rating >= s - 0.5 && review.rating < s;
                         return (
                           <div key={s} className="relative w-3 h-3">
-                            <Star className="w-3 h-3 text-muted-foreground/20" />
+                            <Star className="w-3 h-3 text-muted-foreground/80" />
                             {isFull ? (
                               <Star className="absolute inset-0 w-3 h-3 text-primary fill-current" />
                             ) : isHalf ? (
@@ -249,7 +249,7 @@ export default function ProfileReviews({
                       })}
                     </div>
                     {review.comment && (
-                      <p className="text-sm text-foreground/60 font-medium italic line-clamp-2">
+                      <p className="text-sm text-foreground/60 font-medium line-clamp-2">
                         {review.comment}
                       </p>
                     )}
@@ -293,7 +293,7 @@ export default function ProfileReviews({
               <div className="border-t border-white/5">
                 <button
                   onClick={() => toggleReplies(review.id)}
-                  className="w-full flex items-center gap-2 px-5 py-3 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+                  className="w-full flex items-center gap-2 px-5 py-3 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
                   {review.Reply.length}{" "}
@@ -312,17 +312,17 @@ export default function ProfileReviews({
                         key={reply.id}
                         className="flex gap-3 bg-secondary/30 rounded-xl p-3"
                       >
-                        <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[9px] font-black shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[11px] font-bold shrink-0">
                           {reply.user.name?.charAt(0).toUpperCase() ?? "U"}
                         </div>
                         <div className="flex-1 min-w-0">
                           <Link
                             href={`/users/${reply.user.slug || reply.user.id}`}
-                            className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest"
+                            className="text-[11px] font-bold text-primary hover:underline uppercase tracking-widest"
                           >
                             {reply.user.name}
                           </Link>
-                          <p className="text-xs text-muted-foreground font-medium italic mt-0.5">
+                          <p className="text-xs text-muted-foreground font-medium mt-0.5">
                             {reply.comment}
                           </p>
                         </div>

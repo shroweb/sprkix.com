@@ -33,7 +33,7 @@ export default function VisualRating({
           const diff = rating - (s - 1);
           return (
             <div key={s} className="relative">
-              <Star className={`${iconSize} text-muted-foreground/20`} />
+              <Star className={`${iconSize} text-muted-foreground/80`} />
               {diff >= 1 ? (
                 <Star className={`absolute inset-0 ${iconSize} text-primary fill-current`} />
               ) : diff > 0 ? (
@@ -49,7 +49,7 @@ export default function VisualRating({
         })}
       </div>
       {showNumber && (
-        <span className="text-xs font-black italic text-primary ml-1">
+        <span className="text-xs font-bold italic text-primary ml-1">
           {rating.toFixed(2)}
         </span>
       )}

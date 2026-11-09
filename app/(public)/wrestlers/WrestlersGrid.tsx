@@ -45,7 +45,7 @@ export default function WrestlersGrid({
           <h1 className="text-3xl sm:text-5xl font-black italic uppercase tracking-tighter">
             The Roster
           </h1>
-          <p className="text-muted-foreground font-medium italic">
+          <p className="text-muted-foreground font-medium ">
             Documenting every legend and rising star in the square circle.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function WrestlersGrid({
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <UserCircle className="w-12 h-12 text-muted-foreground/20" />
+                  <UserCircle className="w-12 h-12 text-muted-foreground/80" />
                 </div>
               )}
               <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />

@@ -48,7 +48,7 @@ export default function RankBadge({ ratings, reviews, predictions, submissions =
         className={`flex items-center gap-2 bg-background/80 backdrop-blur-md border border-white/10 rounded-full px-3 py-1 shadow-lg hover:scale-105 transition-transform ${rank.color}`}
       >
         <Award className="w-3 h-3" />
-        <span className="text-[10px] font-black italic uppercase tracking-widest whitespace-nowrap">{rank.name}</span>
+        <span className="text-[11px] font-bold italic uppercase tracking-widest whitespace-nowrap">{rank.name}</span>
       </button>
 
       {open && createPortal(
@@ -66,7 +66,7 @@ export default function RankBadge({ ratings, reviews, predictions, submissions =
 
             {/* Progress bar */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 <span>{score} pts</span>
                 {nextRank && <span>Next: {nextRank.name} ({nextRank.min} pts)</span>}
               </div>
@@ -77,17 +77,17 @@ export default function RankBadge({ ratings, reviews, predictions, submissions =
                 />
               </div>
               {nextRank ? (
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-[11px] text-muted-foreground">
                   {nextRank.min - score} more points to reach <span className="font-bold text-foreground">{nextRank.name}</span>
                 </p>
               ) : (
-                <p className="text-[10px] text-primary font-bold">Maximum rank achieved.</p>
+                <p className="text-[11px] text-primary font-bold">Maximum rank achieved.</p>
               )}
             </div>
 
             {/* Breakdown */}
             <div className="border-t border-white/5 pt-3 space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Your score breakdown</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Your score breakdown</p>
               <div className="flex items-center justify-between text-[11px]">
                 <span className="text-muted-foreground">Match ratings</span>
                 <span className="font-bold text-foreground">{ratings} × {RANK_WEIGHTS.rating} = <span className="text-primary">{ratings * RANK_WEIGHTS.rating} pts</span></span>
@@ -110,7 +110,7 @@ export default function RankBadge({ ratings, reviews, predictions, submissions =
 
             {/* How it works note */}
             <div className="border-t border-white/5 pt-2">
-              <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
+              <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
                 Rate matches, write reviews, make predictions, and submit events to earn points and climb the ranks.
               </p>
             </div>

@@ -68,21 +68,21 @@ export default async function FeedPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
             Social Feed
           </span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black tracking-tighter uppercase italic">
           Following
         </h1>
-        <p className="text-muted-foreground font-medium italic">
+        <p className="text-muted-foreground font-medium ">
           Reviews from the {followingIds.length}{" "}
           {followingIds.length === 1 ? "person" : "people"} you follow.
         </p>
       </div>
 
       {reviews.length === 0 ? (
-        <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center space-y-6">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center space-y-6">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
             <Rss className="w-8 h-8 text-primary/40" />
           </div>
@@ -92,7 +92,7 @@ export default async function FeedPage() {
             </p>
             {followingIds.length === 0 ? (
               <>
-                <p className="text-muted-foreground font-medium italic text-sm">
+                <p className="text-muted-foreground font-medium text-sm">
                   Follow other members to see their reviews here.
                 </p>
                 <Link
@@ -103,7 +103,7 @@ export default async function FeedPage() {
                 </Link>
               </>
             ) : (
-              <p className="text-muted-foreground font-medium italic text-sm">
+              <p className="text-muted-foreground font-medium text-sm">
                 The people you follow haven&apos;t posted any reviews yet.
               </p>
             )}
@@ -114,7 +114,7 @@ export default async function FeedPage() {
           {reviews.map((review) => (
             <article
               key={review.id}
-              className="bg-card/40 border border-white/5 rounded-3xl p-6 hover:border-primary/20 transition-all group"
+              className="bg-card/85 border border-white/5 rounded-3xl p-6 hover:border-primary/20 transition-all group"
             >
               {/* User + time header */}
               <div className="flex items-center justify-between mb-5">
@@ -129,7 +129,7 @@ export default async function FeedPage() {
                     <p className="text-sm font-black italic group-hover/user:text-primary transition-colors">
                       {review.user.name}
                     </p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                       {timeAgo(review.createdAt)}
                     </p>
                   </div>
@@ -141,7 +141,7 @@ export default async function FeedPage() {
                   <span className="text-sm font-black text-primary">
                     {review.rating}
                   </span>
-                  <span className="text-[10px] font-bold text-primary/60">
+                  <span className="text-[11px] font-bold text-primary/60">
                     / 5
                   </span>
                 </div>
@@ -162,7 +162,7 @@ export default async function FeedPage() {
                 </div>
                 <div className="flex-1 min-w-0 space-y-3">
                   <div>
-                    <span className="inline-block px-2 py-0.5 bg-primary text-black text-[9px] font-black uppercase rounded mb-2">
+                    <span className="inline-block px-2 py-0.5 bg-primary text-black text-[11px] font-bold uppercase rounded mb-2">
                       {review.event.promotion}
                     </span>
                     <h2 className="font-semibold text-base uppercase italic tracking-tighter leading-tight group-hover:text-primary transition-colors">
@@ -178,13 +178,13 @@ export default async function FeedPage() {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-3 h-3 ${i < review.rating ? "fill-current text-primary" : "text-muted-foreground/20"}`}
+                        className={`w-3 h-3 ${i < review.rating ? "fill-current text-primary" : "text-muted-foreground/80"}`}
                       />
                     ))}
                   </div>
 
                   {review.comment && (
-                    <p className="text-sm text-foreground/70 font-medium italic leading-relaxed line-clamp-3">
+                    <p className="text-sm text-foreground/70 font-medium leading-relaxed line-clamp-3">
                       &ldquo;{review.comment}&rdquo;
                     </p>
                   )}
@@ -198,8 +198,8 @@ export default async function FeedPage() {
       {/* Discover section when few results */}
       {reviews.length > 0 && reviews.length < 10 && (
         <div className="border-t border-border pt-8 text-center space-y-3">
-          <Users className="w-8 h-8 text-muted-foreground/20 mx-auto" />
-          <p className="text-sm text-muted-foreground font-medium italic">
+          <Users className="w-8 h-8 text-muted-foreground/80 mx-auto" />
+          <p className="text-sm text-muted-foreground font-medium ">
             Follow more members to grow your feed.
           </p>
           <Link href="/events" className="btn-primary inline-block text-sm">

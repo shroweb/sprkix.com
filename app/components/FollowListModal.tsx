@@ -81,7 +81,7 @@ export default function FollowListModal({
         <span className="text-2xl font-black italic text-white leading-none">
           {count}
         </span>
-        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">
           {label}
         </span>
       </button>
@@ -117,7 +117,7 @@ export default function FollowListModal({
                     onClick={() => setOpen(false)}
                     className="p-3 hover:bg-white/5 rounded-2xl transition-all group"
                   >
-                    <X className="w-5 h-5 text-white/40 group-hover:text-white" />
+                    <X className="w-5 h-5 text-white/75 group-hover:text-white" />
                   </button>
                 </div>
 
@@ -129,8 +129,8 @@ export default function FollowListModal({
                     </div>
                   ) : users.length === 0 ? (
                     <div className="py-16 text-center">
-                      <Users className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
-                      <p className="text-sm font-bold italic text-muted-foreground">
+                      <Users className="w-8 h-8 text-muted-foreground/80 mx-auto mb-3" />
+                      <p className="text-sm font-bold text-muted-foreground">
                         No {label.toLowerCase()} yet
                       </p>
                     </div>

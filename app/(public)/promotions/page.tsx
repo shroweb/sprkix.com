@@ -91,14 +91,14 @@ export default async function PromotionsPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="h-[1px] w-8 bg-primary" />
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
             Browse By
           </span>
         </div>
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter uppercase italic">
           Promotions
         </h1>
-        <p className="text-muted-foreground font-medium italic">
+        <p className="text-muted-foreground font-medium ">
           {promotions.length} promotions · {events.length} archived events
         </p>
       </div>
@@ -109,7 +109,7 @@ export default async function PromotionsPage() {
           <Link
             key={promo.name}
             href={`/events?promotion=${encodeURIComponent(promo.name)}`}
-            className="group bg-card/40 border border-white/5 rounded-[2rem] p-6 hover:border-primary/30 hover:bg-card/60 transition-all space-y-5"
+            className="group bg-card/85 border border-white/5 rounded-[2rem] p-6 hover:border-primary/30 hover:bg-card/60 transition-all space-y-5"
           >
             {/* Poster collage */}
             <div className="flex gap-2 h-28">
@@ -128,7 +128,7 @@ export default async function PromotionsPage() {
               ))}
               {promo.posters.length === 0 && (
                 <div className="flex-1 rounded-xl bg-secondary/50 flex items-center justify-center">
-                  <Trophy className="w-8 h-8 text-muted-foreground/20" />
+                  <Trophy className="w-8 h-8 text-muted-foreground/80" />
                 </div>
               )}
             </div>
@@ -154,14 +154,14 @@ export default async function PromotionsPage() {
                     <span className="font-black text-foreground">
                       {promo.avgRating}
                     </span>
-                    <span className="text-[10px] font-bold">
+                    <span className="text-[11px] font-bold">
                       ({promo.reviewCount} reviews)
                     </span>
                   </div>
                 )}
               </div>
 
-              <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 Latest:{" "}
                 {new Date(promo.latestDate).toLocaleDateString("en-US", {
                   month: "long",
@@ -170,7 +170,7 @@ export default async function PromotionsPage() {
               </div>
             </div>
 
-            <div className="text-xs font-black uppercase tracking-widest text-primary group-hover:gap-2 flex items-center gap-1.5 transition-all">
+            <div className="text-xs font-bold uppercase tracking-widest text-primary group-hover:gap-2 flex items-center gap-1.5 transition-all">
               View All Events
               <svg
                 className="w-3 h-3 group-hover:translate-x-1 transition-transform"

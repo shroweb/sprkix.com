@@ -29,7 +29,7 @@ export default function RecentRatingsSidebar({
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-secondary flex items-center justify-center text-[10px] font-black uppercase">
+                    <div className="w-full h-full bg-secondary flex items-center justify-center text-[11px] font-bold uppercase">
                       {(review.user.name || "U")[0]}
                     </div>
                   )}
@@ -39,21 +39,21 @@ export default function RecentRatingsSidebar({
                 <div className="flex items-center gap-2 mb-0.5">
                   <Link 
                     href={`/users/${review.user.slug || review.user.id}`}
-                    className="text-xs font-black uppercase tracking-tight truncate hover:text-primary transition-colors"
+                    className="text-xs font-bold uppercase tracking-tight truncate hover:text-primary transition-colors"
                   >
                     {review.user.name}
                   </Link>
                   <div className="flex items-center gap-0.5 shrink-0">
                     <Star className="w-2.5 h-2.5 text-primary fill-current" />
-                    <span className="text-[10px] font-black italic">{review.rating.toFixed(1)}</span>
+                    <span className="text-[11px] font-bold italic">{review.rating.toFixed(1)}</span>
                   </div>
                 </div>
                 {review.comment && (
-                  <p className="text-[11px] text-muted-foreground italic line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
                     "{review.comment}"
                   </p>
                 )}
-                <p className="text-[9px] text-muted-foreground/40 font-bold uppercase tracking-widest mt-1">
+                <p className="text-[11px] text-muted-foreground/80 font-bold uppercase tracking-widest mt-1">
                     {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </p>
               </div>

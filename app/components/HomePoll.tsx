@@ -167,11 +167,11 @@ export default function HomePoll({
 
   const closedOrEnding = endsAt ? (
     isClosed ? (
-      <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[10px] font-black uppercase tracking-widest text-red-500">
+      <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold uppercase tracking-widest text-red-500">
         Closed
       </div>
     ) : (
-      <div className="px-3 py-1.5 bg-muted border border-border rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+      <div className="px-3 py-1.5 bg-muted border border-border rounded-full text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
         Closes {new Date(endsAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
       </div>
     )
@@ -186,7 +186,7 @@ export default function HomePoll({
         <div className="flex items-center gap-3 flex-wrap">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full animate-pulse">
             <span className="text-primary text-xs">⚡</span>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
               Community Poll
             </span>
           </span>
@@ -220,18 +220,18 @@ export default function HomePoll({
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`text-xs font-black uppercase tracking-wide ${
+                      className={`text-xs font-bold uppercase tracking-wide ${
                         isUserChoice ? "text-primary" : "text-foreground"
                       }`}
                     >
                       {option.text}
                       {isUserChoice && (
-                        <span className="ml-2 text-[9px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-black">
+                        <span className="ml-2 text-[11px] bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-bold">
                           Your vote
                         </span>
                       )}
                     </span>
-                    <span className="text-xs font-black text-muted-foreground shrink-0">
+                    <span className="text-xs font-bold text-muted-foreground shrink-0">
                       {pct}% · {voteCount}
                     </span>
                   </div>
@@ -276,7 +276,7 @@ export default function HomePoll({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider pt-1 border-t border-border flex-wrap gap-2">
+        <div className="flex items-center justify-between text-[11px] font-bold text-muted-foreground uppercase tracking-wider pt-1 border-t border-border flex-wrap gap-2">
           <span>{total.toLocaleString()} {total === 1 ? "vote" : "votes"}</span>
           <div className="flex items-center gap-3">
             {!isLoggedIn && !isClosed && (
@@ -288,7 +288,7 @@ export default function HomePoll({
               </Link>
             )}
             {hasVoted && !isClosed && (
-              <span className="text-muted-foreground/60 italic normal-case font-medium text-[9px]">
+              <span className="text-muted-foreground/80 normal-case font-medium text-[11px]">
                 Click an option to change your vote
               </span>
             )}
@@ -332,7 +332,7 @@ export default function HomePoll({
                   <img src="/img/logo.png" alt="Poison Rana" style={{ height: 40, width: "auto", objectFit: "contain" }} />
                   <div className="flex items-center gap-1.5">
                     <span style={{ fontSize: 12, color: "#fbbf24" }}>⚡</span>
-                    <span style={{ fontSize: 11, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(251,191,36,0.85)" }}>
+                    <span style={{ fontSize: 11, fontWeight: 900, fontStyle: "", textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(251,191,36,0.85)" }}>
                       Community Poll
                     </span>
                   </div>
@@ -340,7 +340,7 @@ export default function HomePoll({
 
                 {/* Question */}
                 <div className="mt-10 mb-10">
-                  <p style={{ fontSize: 28, fontWeight: 900, fontStyle: "italic", textTransform: "uppercase", color: "white", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+                  <p style={{ fontSize: 28, fontWeight: 900, fontStyle: "", textTransform: "uppercase", color: "white", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
                     {poll.question}
                   </p>
                 </div>
@@ -392,7 +392,7 @@ export default function HomePoll({
                   <span style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.3)" }}>
                     {total.toLocaleString()} {total === 1 ? "vote" : "votes"}
                   </span>
-                  <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(251,191,36,0.6)", fontStyle: "italic" }}>
+                  <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(251,191,36,0.6)", fontStyle: "" }}>
                     poisonrana.com
                   </span>
                 </div>
@@ -422,7 +422,7 @@ export default function HomePoll({
                   className={`flex flex-col items-center gap-1.5 py-3 rounded-xl text-white transition-all hover:scale-105 active:scale-95 ${color}`}
                 >
                   {icon}
-                  <span className="text-[8px] font-black uppercase tracking-wide leading-none opacity-80">{label.split(" ")[0]}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide leading-none opacity-80">{label.split(" ")[0]}</span>
                 </button>
               ))}
             </div>

@@ -72,7 +72,7 @@ export default function ReviewReactions({
           >
             <span>{emoji}</span>
             <span>{label}</span>
-            {count > 0 && <span className="font-mono text-[10px] opacity-80">{count}</span>}
+            {count > 0 && <span className="font-mono text-[11px] opacity-80">{count}</span>}
           </button>
         );
       })}

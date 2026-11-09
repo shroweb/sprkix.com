@@ -34,7 +34,7 @@ export default async function ProfilePage() {
   if (!user)
     return (
       <div className="text-center py-32">
-        <p className="text-muted-foreground font-bold italic">
+        <p className="text-muted-foreground font-bold ">
           You must be logged in to view your profile.
         </p>
         <Link href="/login" className="btn-primary inline-block mt-6">
@@ -269,7 +269,7 @@ export default async function ProfilePage() {
          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
 
          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
-            <Link href="/" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group mb-8">
+            <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/75 hover:text-white transition-colors group mb-8">
               <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Home
             </Link>
 
@@ -292,7 +292,7 @@ export default async function ProfilePage() {
                      <CheckCircle className="w-5 h-5 text-blue-400 fill-blue-400/20 shrink-0" />
                    )}
                    {(currentUser as any)?.isFoundingMember && (
-                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest shrink-0">
+                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] font-bold uppercase tracking-widest shrink-0">
                        ⚡ Founding Member
                      </span>
                    )}
@@ -302,7 +302,7 @@ export default async function ProfilePage() {
                    <RankBadge ratings={matchRatings.length} reviews={reviews.length} predictions={predictionCount} submissions={approvedSubmissionsCount} />
                    <Link
                      href="/profile/edit"
-                     className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-all"
+                     className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-[11px] font-bold uppercase tracking-widest text-white/80 hover:text-white transition-all"
                    >
                      <Pencil className="w-3 h-3" /> Edit Profile
                    </Link>
@@ -315,20 +315,20 @@ export default async function ProfilePage() {
                    <span className="text-2xl sm:text-3xl font-black italic text-primary block leading-none" style={{ color: 'var(--profile-theme-color, var(--primary))' }}>
                      {avgRating || "—"}
                    </span>
-                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Avg Rating</span>
+                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Avg Rating</span>
                  </div>
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-white block leading-none">{reviews.length}</span>
-                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Reviews</span>
+                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Reviews</span>
                  </div>
                  <div className="space-y-0.5">
                    <span className="text-2xl sm:text-3xl font-black italic text-sky-400 block leading-none">{cardsCompleted}</span>
-                   <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Cards Done</span>
+                   <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Cards Done</span>
                  </div>
                  {predictionAccuracy !== null && (
                    <div className="space-y-0.5">
                      <span className="text-2xl sm:text-3xl font-black italic text-emerald-400 block leading-none">{predictionAccuracy}%</span>
-                     <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Predictions</span>
+                     <span className="text-[11px] font-bold uppercase tracking-widest text-white/75">Predictions</span>
                    </div>
                  )}
                </div>
@@ -341,41 +341,41 @@ export default async function ProfilePage() {
 
         {/* Quick Info Bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 -mt-6 relative z-30">
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
+          <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
-              <p className="text-xs sm:text-sm font-black italic truncate">{memberSince}</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Joined</p>
+              <p className="text-xs sm:text-sm font-bold italic truncate">{memberSince}</p>
             </div>
           </div>
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
+          <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
               <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
-              <p className="text-xs sm:text-sm font-black italic truncate">{favPromotion ?? "—"}</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Fav Promotion</p>
+              <p className="text-xs sm:text-sm font-bold italic truncate">{favPromotion ?? "—"}</p>
             </div>
           </div>
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6 group">
+          <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex items-center gap-3 sm:gap-6 group">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
               <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
+              <p className="text-[11px] sm:text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Predictions</p>
               {predictionCount > 0 ? (
-                <p className="text-xs sm:text-sm font-black italic">
+                <p className="text-xs sm:text-sm font-bold italic">
                   {predictionScore}/{predictionCount}
                   <span className="text-emerald-400 ml-1 sm:ml-2">{predictionAccuracy}%</span>
                 </p>
               ) : (
-                <p className="text-xs sm:text-sm font-black italic text-muted-foreground/50">None yet</p>
+                <p className="text-xs sm:text-sm font-bold italic text-muted-foreground/80">None yet</p>
               )}
             </div>
           </div>
-          <div className="bg-card/40 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex flex-row items-center justify-around">
+          <div className="bg-card/85 backdrop-blur-xl border border-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 flex flex-row items-center justify-around">
               <FollowListModal
                 userId={user.id}
                 type="followers"
@@ -403,13 +403,13 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-red-500/20 to-transparent" />
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
               {favMatches.length} Saved
             </span>
             {favMatches.length > 12 && (
               <Link
                 href="/profile/favorites"
-                className="text-[10px] font-black uppercase text-red-500 hover:text-red-400 underline underline-offset-4 decoration-2"
+                className="text-[11px] font-bold uppercase text-red-500 hover:text-red-400 underline underline-offset-4 decoration-2"
               >
                 See All
               </Link>
@@ -424,17 +424,17 @@ export default async function ProfilePage() {
               <Link
                 key={fav.match.id}
                 href={`/events/${fav.match.event.slug}`}
-                className="bg-card/40 border border-white/5 rounded-2xl p-5 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden"
+                className="bg-card/85 border border-white/5 rounded-2xl p-5 hover:bg-card/60 hover:border-red-500/20 transition-all group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 p-3">
                   <Heart className="w-4 h-4 text-red-500 fill-current" />
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-muted-foreground bg-secondary px-2 py-0.5 rounded">
+                    <span className="text-[11px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded">
                       {fav.match.event.promotion}
                     </span>
-                    <span className="text-[10px] font-black text-muted-foreground italic">
+                    <span className="text-[11px] font-bold text-muted-foreground italic">
                       {new Date(fav.match.event.date).getFullYear()}
                     </span>
                   </div>
@@ -444,7 +444,7 @@ export default async function ProfilePage() {
                   <div className="flex flex-wrap items-center gap-1.5 pt-2">
                     {(fav.match.participants as any[]).slice(0, 3).map((p: any, i: number) => (
                       <span key={i} className="flex items-center gap-1.5">
-                        {i > 0 && <span className="text-[10px] text-muted-foreground">&amp;</span>}
+                        {i > 0 && <span className="text-[11px] text-muted-foreground">&amp;</span>}
                         <span className="text-xs font-bold">{p.wrestler.name}</span>
                       </span>
                     ))}
@@ -458,9 +458,9 @@ export default async function ProfilePage() {
           </div>
           </div>
         ) : (
-          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
-            <Heart className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-bold italic">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+            <Heart className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
+            <p className="text-muted-foreground font-bold ">
               Your favorite matches list is empty.
             </p>
           </div>
@@ -478,7 +478,7 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
               {reviews.length} Written
             </span>
           </div>
@@ -499,7 +499,7 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
           <div className="flex items-center gap-3">
              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+             <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
                {watchList.length} Events Saved
              </span>
           </div>
@@ -522,7 +522,7 @@ export default async function ProfilePage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   <div className="absolute bottom-3 left-3">
-                    <span className="px-2 py-0.5 bg-primary text-black text-[9px] font-black uppercase rounded">
+                    <span className="px-2 py-0.5 bg-primary text-black text-[11px] font-bold uppercase rounded">
                       {item.event.promotion}
                     </span>
                   </div>
@@ -534,9 +534,9 @@ export default async function ProfilePage() {
             ))}
           </div>
         ) : (
-          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
-            <BookMarked className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-bold italic">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+            <BookMarked className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
+            <p className="text-muted-foreground font-bold ">
               Your watch list is empty.
             </p>
             <Link
@@ -560,12 +560,12 @@ export default async function ProfilePage() {
           <div className="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent" />
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/75">
               {userLists.length} Lists
             </span>
             <Link
               href="/lists/create"
-              className="text-[10px] font-black uppercase text-primary hover:text-primary/80 underline underline-offset-4 decoration-2"
+              className="text-[11px] font-bold uppercase text-primary hover:text-primary/80 underline underline-offset-4 decoration-2"
             >
               + New List
             </Link>
@@ -598,7 +598,7 @@ export default async function ProfilePage() {
                       })
                     ) : (
                       <div className="flex-1 bg-secondary flex items-center justify-center">
-                        <List className="w-8 h-8 text-muted-foreground/20" />
+                        <List className="w-8 h-8 text-muted-foreground/80" />
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent pointer-events-none" />
@@ -614,7 +614,7 @@ export default async function ProfilePage() {
                     >
                       {list.title}
                     </Link>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground">
                       {list.isPublic ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
                       <span>{list.isPublic ? "Public" : "Private"}</span>
                       <span className="mx-1">·</span>
@@ -623,7 +623,7 @@ export default async function ProfilePage() {
                   </div>
                   <Link
                     href={`/lists/${list.id}/edit`}
-                    className="shrink-0 px-3 py-1.5 bg-secondary border border-border rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
+                    className="shrink-0 px-3 py-1.5 bg-secondary border border-border rounded-xl text-[11px] font-bold uppercase tracking-wider hover:border-primary/30 hover:text-primary transition-all"
                   >
                     Edit
                   </Link>
@@ -632,9 +632,9 @@ export default async function ProfilePage() {
             ))}
           </div>
         ) : (
-          <div className="bg-card/20 border border-dashed border-border rounded-[2rem] p-16 text-center">
-            <List className="w-10 h-10 text-muted-foreground/20 mx-auto mb-3" />
-            <p className="text-muted-foreground font-bold italic">
+          <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-16 text-center">
+            <List className="w-10 h-10 text-muted-foreground/80 mx-auto mb-3" />
+            <p className="text-muted-foreground font-bold ">
               You haven&apos;t created any lists yet.
             </p>
             <Link

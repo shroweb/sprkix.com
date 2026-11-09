@@ -90,14 +90,14 @@ export default function FeaturedEventCycler({ events, eventSlugs, fallbackImage,
       <div className="relative z-10 mx-auto flex min-h-[760px] max-w-7xl flex-col justify-end px-4 pb-7 pt-32 sm:min-h-[800px] sm:px-8 sm:pb-8 lg:min-h-[86vh] lg:justify-center lg:px-10 lg:pb-44 lg:pt-40">
         <div key={event.id} className="max-w-3xl rounded-3xl border border-white/10 bg-slate-950/70 p-5 backdrop-blur-md sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none animate-in fade-in slide-in-from-left-5 duration-700">
           <div className="mb-4 flex flex-wrap items-center gap-2.5">
-            <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] ${state === "live" ? "bg-red-600 text-white" : state === "upcoming" ? "bg-emerald-500 text-slate-950" : "bg-primary text-slate-950"}`}>
+            <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] ${state === "live" ? "bg-red-600 text-white" : state === "upcoming" ? "bg-emerald-500 text-slate-950" : "bg-primary text-slate-950"}`}>
               {state === "live" && <span className="h-2 w-2 animate-pulse rounded-full bg-white" />}
               {isFallback ? "Community rated" : state === "live" ? "Live now" : state === "upcoming" ? "Coming up" : "Recently added"}
             </span>
-            <span className="rounded-full border border-white/15 bg-black/50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-white backdrop-blur-md">{isFallback ? "Discover the archive" : "Featured event"}</span>
+            <span className="rounded-full border border-white/15 bg-black/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white backdrop-blur-md">{isFallback ? "Discover the archive" : "Featured event"}</span>
             <WhereToWatchBadge promotion={event.promotion} title={event.title} variant="hero" />
           </div>
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-primary sm:text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">{event.promotion}</p>
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-primary sm:text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">{event.promotion}</p>
           <h1 className="max-w-3xl text-[2.75rem] font-black uppercase italic leading-[0.9] tracking-[-0.055em] text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)] sm:text-6xl md:text-7xl lg:text-[5.2rem]">{title}</h1>
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-bold text-slate-100 sm:text-base drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
             {!isFallback && <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" /> {date}</span>}
@@ -110,7 +110,7 @@ export default function FeaturedEventCycler({ events, eventSlugs, fallbackImage,
             {!isFallback && <Link href="/events" className="inline-flex h-14 items-center justify-center rounded-xl border border-white/20 bg-black/40 px-7 text-sm font-black uppercase italic tracking-wider text-white backdrop-blur-md transition-colors hover:border-primary/50 hover:bg-white/10">Explore archive</Link>}
             {eventSlugs.length > 0 && <RandomRingButton eventSlugs={eventSlugs} label="Surprise me" className="group inline-flex h-14 items-center justify-center gap-2.5 rounded-xl border border-white/20 bg-black/40 px-6 text-sm font-black uppercase italic tracking-wider text-slate-200 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/60 hover:bg-amber-400/10 hover:text-amber-300 hover:shadow-lg hover:shadow-amber-400/20 active:translate-y-0 disabled:opacity-50" />}
           </div>
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/15 pt-4 text-[10px] font-black uppercase tracking-widest text-slate-300 sm:text-xs">
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/15 pt-4 text-[11px] font-bold uppercase tracking-widest text-slate-300 sm:text-xs">
             <span className="inline-flex items-center gap-2"><Database className="h-3.5 w-3.5 text-primary" />{stats.events.toLocaleString()} events</span>
             <span className="inline-flex items-center gap-2"><Users className="h-3.5 w-3.5 text-primary" />{stats.wrestlers.toLocaleString()} wrestlers</span>
             <span className="inline-flex items-center gap-2"><Trophy className="h-3.5 w-3.5 text-primary" />{stats.promotions.toLocaleString()} promotions</span>
@@ -121,7 +121,7 @@ export default function FeaturedEventCycler({ events, eventSlugs, fallbackImage,
       {displayEvents.length > 1 && (
         <div className="relative z-20 mx-auto -mt-1 max-w-7xl px-5 pb-9 sm:px-8 lg:absolute lg:inset-x-0 lg:bottom-0 lg:px-10 lg:pb-8">
           <div className="mb-3 flex items-end justify-between">
-            <div><p className="text-[10px] font-black uppercase tracking-[0.22em] text-primary">On the card</p><p className="text-xs font-bold text-slate-400">Choose another featured show</p></div>
+            <div><p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">On the card</p><p className="text-xs font-bold text-slate-400">Choose another featured show</p></div>
             <div className="flex gap-2">
               <button onClick={() => show(index - 1)} aria-label="Previous featured event" className="grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur hover:border-primary/60 hover:text-primary"><ChevronLeft className="h-4 w-4" /></button>
               <button onClick={() => show(index + 1)} aria-label="Next featured event" className="grid h-9 w-9 place-items-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur hover:border-primary/60 hover:text-primary"><ChevronRight className="h-4 w-4" /></button>
@@ -131,7 +131,7 @@ export default function FeaturedEventCycler({ events, eventSlugs, fallbackImage,
             {displayEvents.map((item, itemIndex) => (
               <button key={item.id} onClick={() => show(itemIndex)} aria-label={`Show ${item.title}`} aria-current={itemIndex === index} className={`group relative flex min-w-[190px] max-w-[240px] flex-1 snap-start items-center gap-3 overflow-hidden rounded-xl border p-2 text-left backdrop-blur-md transition-all ${itemIndex === index ? "border-primary bg-primary/10" : "border-white/10 bg-black/35 hover:border-white/30 hover:bg-white/[0.07]"}`}>
                 <span className="relative h-14 w-11 shrink-0 overflow-hidden rounded-lg bg-white/5"><Image src={item.posterUrl || fallbackImage || "/placeholder.svg"} alt="" fill sizes="44px" className="object-cover" /></span>
-                <span className="min-w-0"><span className="block truncate text-[9px] font-black uppercase tracking-widest text-primary">{item.promotion}</span><span className="mt-1 line-clamp-2 text-xs font-black uppercase italic leading-tight text-white">{item.title}</span></span>
+                <span className="min-w-0"><span className="block truncate text-[11px] font-bold uppercase tracking-widest text-primary">{item.promotion}</span><span className="mt-1 line-clamp-2 text-xs font-bold uppercase italic leading-tight text-white">{item.title}</span></span>
               </button>
             ))}
           </div>

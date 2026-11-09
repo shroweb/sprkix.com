@@ -150,7 +150,7 @@ export default function EditListClient({ list }: { list: List }) {
         <button
           onClick={handleSave}
           disabled={saving || !title.trim()}
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-2xl hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {saving ? (
             <RefreshCcw className="w-4 h-4 animate-spin" />
@@ -170,7 +170,7 @@ export default function EditListClient({ list }: { list: List }) {
       {/* List metadata */}
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
         <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             Title
           </label>
           <input
@@ -182,7 +182,7 @@ export default function EditListClient({ list }: { list: List }) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             Description
           </label>
           <textarea
@@ -197,7 +197,7 @@ export default function EditListClient({ list }: { list: List }) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsPublic(true)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${
               isPublic
                 ? "bg-primary text-black border-primary"
                 : "border-border text-muted-foreground hover:border-primary/30"
@@ -207,7 +207,7 @@ export default function EditListClient({ list }: { list: List }) {
           </button>
           <button
             onClick={() => setIsPublic(false)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${
               !isPublic
                 ? "bg-primary text-black border-primary"
                 : "border-border text-muted-foreground hover:border-primary/30"
@@ -220,13 +220,13 @@ export default function EditListClient({ list }: { list: List }) {
 
       {/* Items */}
       <div className="space-y-4">
-        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <h2 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
           Items ({items.length})
         </h2>
 
         {items.length === 0 ? (
-          <div className="bg-card/30 border border-dashed border-border rounded-2xl p-12 text-center">
-            <p className="text-muted-foreground font-bold italic">
+          <div className="bg-card/85 border border-dashed border-border rounded-2xl p-12 text-center">
+            <p className="text-muted-foreground font-bold ">
               No {isMatchList ? "matches" : "events"} on this list yet.
             </p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -274,7 +274,7 @@ export default function EditListClient({ list }: { list: List }) {
                       <p className="font-black text-sm italic uppercase tracking-tight leading-tight truncate">
                         {mainTitle}
                       </p>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase truncate">
+                      <p className="text-[11px] font-bold text-muted-foreground uppercase truncate">
                         {subtitle}
                       </p>
                     </div>

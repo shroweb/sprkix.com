@@ -77,14 +77,14 @@ export default async function TopMatchesPage() {
         {teams.map((team, ti) => (
           <span key={ti} className="flex items-center gap-1.5">
             {ti > 0 && (
-              <span className="text-[10px] font-black text-muted-foreground uppercase px-1">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase px-1">
                 vs
               </span>
             )}
             {team.map((p, pi) => (
               <span key={p.wrestler.slug} className="flex items-center gap-1">
                 {pi > 0 && (
-                  <span className="text-muted-foreground/50 text-xs">
+                  <span className="text-muted-foreground/80 text-xs">
                     &amp;
                   </span>
                 )}
@@ -116,14 +116,14 @@ export default async function TopMatchesPage() {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="h-[1px] w-8 bg-primary" />
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-primary italic">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary italic">
               Community Rated
             </span>
           </div>
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-none">
             Top Matches
           </h1>
-          <p className="text-muted-foreground font-medium italic">
+          <p className="text-muted-foreground font-medium ">
             The {ranked.length} highest-rated matches as judged by the
             community.
           </p>
@@ -131,9 +131,9 @@ export default async function TopMatchesPage() {
       </div>
 
       {ranked.length === 0 ? (
-        <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-          <Swords className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-          <p className="text-muted-foreground font-bold italic">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+          <Swords className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
+          <p className="text-muted-foreground font-bold ">
             No match ratings yet. Start rating matches on event pages!
           </p>
         </div>
@@ -145,7 +145,7 @@ export default async function TopMatchesPage() {
               {top3.map((match, i) => (
                 <div
                   key={match.id}
-                  className="group relative bg-card/40 border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/30 transition-all"
+                  className="group relative bg-card/85 border border-white/5 rounded-[2rem] overflow-hidden hover:border-primary/30 transition-all"
                 >
                   {/* Event poster bg */}
                   {match.event.posterUrl && (
@@ -161,7 +161,7 @@ export default async function TopMatchesPage() {
                   <div className="relative z-10 p-6 space-y-4">
                     {/* Rank badge */}
                     <div
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-black uppercase tracking-wider ${medalColor(i)}`}
+                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider ${medalColor(i)}`}
                     >
                       <Trophy className="w-3.5 h-3.5 fill-current" />#{i + 1}
                     </div>
@@ -171,7 +171,7 @@ export default async function TopMatchesPage() {
                       {[...Array(5)].map((_, s) => (
                         <Star
                           key={s}
-                          className={`w-4 h-4 ${s < Math.round(match.avgRating) ? "fill-current text-primary" : "text-muted-foreground/20"}`}
+                          className={`w-4 h-4 ${s < Math.round(match.avgRating) ? "fill-current text-primary" : "text-muted-foreground/80"}`}
                         />
                       ))}
                       <span className="text-2xl font-black italic ml-1">
@@ -185,7 +185,7 @@ export default async function TopMatchesPage() {
                     {/* Match info */}
                     <div>
                       <BeltImage type={match.type} title={match.title} height={26} framed className="block mb-1" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-primary">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-primary">
                         {match.type}
                       </span>
                       <Link href={`/events/${match.event.slug}`}>
@@ -198,7 +198,7 @@ export default async function TopMatchesPage() {
                     <ParticipantNames match={match} />
 
                     {/* Event + duration */}
-                    <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-bold text-muted-foreground">
+                    <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-bold text-muted-foreground">
                       <Link
                         href={`/events/${match.event.slug}`}
                         className="truncate max-w-[160px] hover:text-primary transition-colors"
@@ -224,10 +224,10 @@ export default async function TopMatchesPage() {
               {rest.map((match, i) => (
                 <div
                   key={match.id}
-                  className="group relative flex items-center gap-5 bg-card/30 border border-white/5 hover:border-primary/20 hover:bg-card/50 rounded-2xl px-6 py-4 transition-all"
+                  className="group relative flex items-center gap-5 bg-card/85 border border-white/5 hover:border-primary/20 hover:bg-card/50 rounded-2xl px-6 py-4 transition-all"
                 >
                   {/* Rank */}
-                  <span className="relative z-10 text-sm font-black text-muted-foreground/40 w-7 text-right shrink-0">
+                  <span className="relative z-10 text-sm font-black text-muted-foreground/80 w-7 text-right shrink-0">
                     #{i + 4}
                   </span>
 
@@ -250,7 +250,7 @@ export default async function TopMatchesPage() {
                         {match.title}
                       </p>
                     </Link>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground">
+                    <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground">
                       <BeltImage type={match.type} title={match.title} height={20} className="shrink-0" />
                       <span className="text-primary/70 uppercase">
                         {match.type}
@@ -283,7 +283,7 @@ export default async function TopMatchesPage() {
                     <span className="text-sm font-black">
                       {match.avgRating.toFixed(2)}
                     </span>
-                    <span className="text-[10px] font-bold text-muted-foreground hidden sm:block">
+                    <span className="text-[11px] font-bold text-muted-foreground hidden sm:block">
                       ({match.ratingCount})
                     </span>
                   </div>

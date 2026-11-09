@@ -189,7 +189,7 @@ export default function RegisterPage() {
                     <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
                       <div className={`h-full rounded-full transition-all duration-300 ${strength.color} ${strength.width}`} />
                     </div>
-                    <p className={`text-[10px] font-bold ${strength.color.replace("bg-", "text-")}`}>
+                    <p className={`text-[11px] font-bold ${strength.color.replace("bg-", "text-")}`}>
                       {strength.label}
                     </p>
                   </div>

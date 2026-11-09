@@ -16,19 +16,19 @@ export default function StarDisplay({ rating, showNumber = false }: { rating: nu
           } else if (starValue === fullStars + 1 && rating % 1 >= 0.25) {
             return (
               <div key={i} className="relative w-4 h-4">
-                <Star className="absolute inset-0 w-4 h-4 text-muted-foreground/30" />
+                <Star className="absolute inset-0 w-4 h-4 text-muted-foreground/80" />
                 <div className="absolute inset-0 w-[50%] overflow-hidden">
                   <Star className="w-4 h-4 text-primary fill-current" />
                 </div>
               </div>
             );
           } else {
-            return <Star key={i} className="w-4 h-4 text-muted-foreground/30" />;
+            return <Star key={i} className="w-4 h-4 text-muted-foreground/80" />;
           }
         })}
       </div>
       {showNumber && (
-        <span className="text-xs font-black italic tracking-tighter text-primary">
+        <span className="text-xs font-bold italic tracking-tighter text-primary">
           {rating.toFixed(2)}
         </span>
       )}

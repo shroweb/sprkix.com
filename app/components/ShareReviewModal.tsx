@@ -76,7 +76,7 @@ export default function ShareReviewModal({
         </button>
 
         {/* Shareable Card Header Info */}
-        <p className="text-white/60 text-xs font-black uppercase tracking-[0.2em] animate-pulse">
+        <p className="text-white/75 text-xs font-bold uppercase tracking-[0.2em] animate-pulse">
             Ready to share!
         </p>
 
@@ -139,13 +139,13 @@ export default function ShareReviewModal({
 
             {/* Bottom: Event Info */}
             <div className="mb-6 space-y-3 w-full">
-                <div className="inline-flex px-4 py-1.5 bg-primary text-black text-[10px] font-black uppercase rounded-lg shadow-xl shadow-primary/20">
+                <div className="inline-flex px-4 py-1.5 bg-primary text-black text-[11px] font-bold uppercase rounded-lg shadow-xl shadow-primary/20">
                     {event.promotion}
                 </div>
                 <h3 className="text-base font-bold italic uppercase tracking-tighter text-white leading-tight">
                     {event.title}
                 </h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary pt-2">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary pt-2">
                     WWW.POISONRANA.COM
                 </p>
             </div>

@@ -149,7 +149,7 @@ export default async function PopularReviewsPage(props: {
             />
           ))
         ) : (
-          <p className="text-muted-foreground italic text-center p-12 bg-secondary/20 rounded-[2rem]">
+          <p className="text-muted-foreground text-center p-12 bg-secondary/20 rounded-[2rem]">
             No {isUpcoming ? "comments" : "reviews"} yet.
           </p>
         )}

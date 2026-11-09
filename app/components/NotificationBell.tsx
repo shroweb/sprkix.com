@@ -135,7 +135,7 @@ export default function NotificationBell() {
       >
         <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
         {count > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-black text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-black text-[11px] font-bold rounded-full flex items-center justify-center animate-pulse">
             {count > 9 ? "9+" : count}
           </span>
         )}
@@ -149,13 +149,13 @@ export default function NotificationBell() {
               <Bell className="w-4 h-4 text-primary" />
               <span className="text-sm font-black uppercase italic tracking-tight">Notifications</span>
               {count > 0 && (
-                <span className="px-1.5 py-0.5 bg-primary text-black text-[9px] font-black rounded">
+                <span className="px-1.5 py-0.5 bg-primary text-black text-[11px] font-bold rounded">
                   {count} new
                 </span>
               )}
             </div>
             <div className="flex items-center gap-1">
-              <Link href="/profile/edit#notifications" onClick={() => setOpen(false)} className="px-2 py-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary">
+              <Link href="/profile/edit#notifications" onClick={() => setOpen(false)} className="px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary">
                 Settings
               </Link>
               <button onClick={() => setOpen(false)} aria-label="Close notifications" className="p-1 hover:bg-secondary rounded-lg transition-colors">
@@ -168,9 +168,9 @@ export default function NotificationBell() {
           <div className="max-h-[420px] overflow-y-auto divide-y divide-border/50">
             {notifications.length === 0 ? (
               <div className="py-12 text-center">
-                <Bell className="w-8 h-8 text-muted-foreground/20 mx-auto mb-3" />
-                <p className="text-sm font-bold italic text-muted-foreground">No notifications yet</p>
-                <p className="text-xs text-muted-foreground/50 mt-1">Predictions, replies, and upvotes appear here</p>
+                <Bell className="w-8 h-8 text-muted-foreground/80 mx-auto mb-3" />
+                <p className="text-sm font-bold text-muted-foreground">No notifications yet</p>
+                <p className="text-xs text-muted-foreground/80 mt-1">Predictions, replies, and upvotes appear here</p>
               </div>
             ) : (
               notifications.map((notif) => {
@@ -187,7 +187,7 @@ export default function NotificationBell() {
                       {notif.avatarUrl ? (
                         <img src={notif.avatarUrl} alt="" className="w-full h-full object-cover" />
                       ) : notif.avatarName ? (
-                        <span className="text-xs font-black text-primary">{notif.avatarName.charAt(0).toUpperCase()}</span>
+                        <span className="text-xs font-bold text-primary">{notif.avatarName.charAt(0).toUpperCase()}</span>
                       ) : (
                         config.icon
                       )}
@@ -196,16 +196,16 @@ export default function NotificationBell() {
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <p className="text-xs font-semibold leading-snug text-foreground">{notif.message}</p>
                       {notif.detail && (
-                        <p className="text-xs text-muted-foreground italic line-clamp-1">
+                        <p className="text-xs text-muted-foreground line-clamp-1">
                           {notif.type === "reply" ? `"${notif.detail}"` : notif.detail}
                         </p>
                       )}
                       <div className="flex items-center gap-1.5 pt-0.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${config.dot} opacity-70`} />
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                           {timeAgo(notif.createdAt)}
                         </span>
-                        {notif.isNew && <span className="text-[10px] font-black text-primary uppercase tracking-widest">· new</span>}
+                        {notif.isNew && <span className="text-[11px] font-bold text-primary uppercase tracking-widest">· new</span>}
                       </div>
                     </div>
                   </Link>

@@ -66,7 +66,7 @@ export default function TrophyCase({ picks, badges }: { picks: TrophyPick[]; bad
           { k: "Badges", v: badges.length, icon: <Medal className="h-4 w-4 text-primary" /> },
         ].map((s) => (
           <div key={s.k} className="bg-slate-950 p-4">
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{s.icon}{s.k}</p>
+            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{s.icon}{s.k}</p>
             <p className="mt-1 text-3xl font-black tabular-nums">{s.v}</p>
           </div>
         ))}
@@ -75,7 +75,7 @@ export default function TrophyCase({ picks, badges }: { picks: TrophyPick[]; bad
       {badges.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {badges.map((b) => (
-            <span key={b.id} className="inline-flex items-center gap-2 border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-black uppercase tracking-wider">
+            <span key={b.id} className="inline-flex items-center gap-2 border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold uppercase tracking-wider">
               <span className="text-base">{b.icon}</span>{b.title}
             </span>
           ))}
@@ -84,7 +84,7 @@ export default function TrophyCase({ picks, badges }: { picks: TrophyPick[]; bad
 
       {recent.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Last {recent.length} picks</p>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Last {recent.length} picks</p>
           <div className="flex flex-wrap gap-1" role="img" aria-label="Recent prediction results">
             {recent.map((p, i) => (
               <span key={i} className={`h-4 w-4 ${p.correct ? "bg-emerald-400" : "bg-red-500/60"}`} title={`${p.promotion} · ${p.correct ? "correct" : "missed"}`} />
@@ -95,7 +95,7 @@ export default function TrophyCase({ picks, badges }: { picks: TrophyPick[]; bad
 
       {promos.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Accuracy by promotion</p>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Accuracy by promotion</p>
           {promos.map(([name, v]) => {
             const pct = Math.round((v.right / v.total) * 100);
             return (

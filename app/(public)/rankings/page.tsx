@@ -34,7 +34,7 @@ export default async function RankingsPage() {
       <div className="space-y-4">
         <div className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 border border-primary/20 rounded-full">
           <TrendingUp className="w-4 h-4 text-primary" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
             Community Voted
           </span>
         </div>
@@ -43,16 +43,16 @@ export default async function RankingsPage() {
           <br />
           Rankings
         </h1>
-        <p className="text-muted-foreground font-medium italic max-w-xl">
+        <p className="text-muted-foreground font-medium max-w-xl">
           The definitive community-driven ranking of the greatest professional
           wrestling events, ordered by Bayesian weighted score.
         </p>
       </div>
 
       {ranked.length === 0 && (
-        <div className="bg-card/30 border border-dashed border-border rounded-[2rem] p-20 text-center">
-          <Trophy className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
-          <p className="text-muted-foreground font-bold italic">
+        <div className="bg-card/85 border border-dashed border-border rounded-[2rem] p-20 text-center">
+          <Trophy className="w-12 h-12 text-muted-foreground/80 mx-auto mb-4" />
+          <p className="text-muted-foreground font-bold ">
             No rated events yet. Be the first to leave a review!
           </p>
           <Link
@@ -102,7 +102,7 @@ export default async function RankingsPage() {
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
-                  <span className="px-2 py-0.5 bg-primary text-black text-[9px] font-black uppercase rounded">
+                  <span className="px-2 py-0.5 bg-primary text-black text-[11px] font-bold uppercase rounded">
                     {event.promotion}
                   </span>
                   <h2 className="text-xl font-semibold italic uppercase tracking-tighter leading-tight">
@@ -143,11 +143,11 @@ export default async function RankingsPage() {
             <Link
               key={event.id}
               href={`/events/${event.slug}`}
-              className="flex items-center gap-5 bg-card/40 border border-white/5 rounded-2xl p-4 hover:bg-card/70 hover:border-primary/20 transition-all group"
+              className="flex items-center gap-5 bg-card/85 border border-white/5 rounded-2xl p-4 hover:bg-card/70 hover:border-primary/20 transition-all group"
             >
               {/* Rank */}
               <div className="w-10 text-center shrink-0">
-                <span className="text-lg font-black text-muted-foreground/40">
+                <span className="text-lg font-black text-muted-foreground/80">
                   #{i + 4}
                 </span>
               </div>
@@ -165,10 +165,10 @@ export default async function RankingsPage() {
               {/* Info */}
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-black uppercase rounded">
+                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-[11px] font-bold uppercase rounded">
                     {event.promotion}
                   </span>
-                  <span className="text-[10px] text-muted-foreground font-bold">
+                  <span className="text-[11px] text-muted-foreground font-bold">
                     {new Date(event.date).getFullYear()}
                   </span>
                 </div>
@@ -183,7 +183,7 @@ export default async function RankingsPage() {
                 <span className="font-black text-sm">
                   {event.avgRating.toFixed(2)}
                 </span>
-                <span className="text-[10px] text-muted-foreground font-bold">
+                <span className="text-[11px] text-muted-foreground font-bold">
                   ({event.reviewCount})
                 </span>
               </div>
