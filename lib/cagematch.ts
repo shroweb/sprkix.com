@@ -1,4 +1,5 @@
-import { prisma } from './prisma'
+
+import { buildWrestlerMap, findWrestler, addWrestler } from "./wrestler-match";import { prisma } from './prisma'
 import { uniqueWrestlerSlug } from './slug-utils'
 import * as cheerio from 'cheerio'
 import { assignTeams } from './match-teams'
@@ -437,30 +438,20 @@ export async function importMatchesFromCagematch(eventId: string, url: string) {
     const html = await res.text()
     const parsedMatches = await parseCagematchHtml(html)
 
-    const existingWrestlers = await prisma.wrestler.findMany()
-    const wrestlerByName = new Map(existingWrestlers.map(w => [w.name.toLowerCase(), w]))
+    const existingWrestlers = await prisma.wrestler.findMany({ include: { aliases: true } })
+    const wrestlerByName = buildWrestlerMap(existingWrestlers)
 
     for (const parsed of parsedMatches) {
         const participants = []
         for (let i = 0; i < parsed.wrestlers.length; i++) {
             const rawName = parsed.wrestlers[i]
-            const key = rawName.toLowerCase()
-            let wrestler = wrestlerByName.get(key)
-
-            if (!wrestler) {
-                for (const [k, w] of wrestlerByName) {
-                    if (k.includes(key) || key.includes(k)) {
-                        wrestler = w
-                        break
-                    }
-                }
-            }
+            let wrestler = findWrestler(wrestlerByName, rawName)
 
             if (!wrestler) {
                 wrestler = await prisma.wrestler.create({
                     data: { name: rawName, slug: await uniqueWrestlerSlug(rawName) }
                 })
-                wrestlerByName.set(key, wrestler)
+                addWrestler(wrestlerByName, wrestler)
             }
 
             participants.push({

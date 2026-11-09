@@ -10,6 +10,7 @@ import { uniqueEventSlug, uniqueWrestlerSlug } from "@lib/slug-utils";
 import { findEventOnTMDB } from "@lib/tmdb";
 import { postNewEventToX } from "@lib/x-event-post";
 
+import { buildWrestlerMap, findWrestler, addWrestler } from "@lib/wrestler-match";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
@@ -63,32 +64,22 @@ async function importMatchesIntoEvent(eventId: string, html: string) {
   const parsedMatches = await parseCagematchHtml(html);
   if (parsedMatches.length === 0) return 0;
 
-  const existingWrestlers = await prisma.wrestler.findMany();
-  const wrestlerByName = new Map(
-    existingWrestlers.map((w) => [w.name.toLowerCase(), w])
-  );
+  const existingWrestlers = await prisma.wrestler.findMany({ include: { aliases: true } });
+  const wrestlerByName = buildWrestlerMap(existingWrestlers);
 
   for (const parsed of parsedMatches) {
     const participants = [];
     for (let i = 0; i < parsed.wrestlers.length; i++) {
       const rawName = parsed.wrestlers[i];
       const key = rawName.toLowerCase();
-      let wrestler = wrestlerByName.get(key);
+      let wrestler = findWrestler(wrestlerByName, rawName);
 
-      if (!wrestler) {
-        for (const [knownKey, knownWrestler] of wrestlerByName) {
-          if (knownKey.includes(key) || key.includes(knownKey)) {
-            wrestler = knownWrestler;
-            break;
-          }
-        }
-      }
 
       if (!wrestler) {
         wrestler = await prisma.wrestler.create({
           data: { name: rawName, slug: await uniqueWrestlerSlug(rawName) },
         });
-        wrestlerByName.set(key, wrestler);
+        addWrestler(wrestlerByName, wrestler);
       }
 
       participants.push({

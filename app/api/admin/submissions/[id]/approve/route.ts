@@ -6,6 +6,7 @@ import { parseCagematchHtml, parseProfightDbHtml } from "@lib/cagematch";
 import { uniqueWrestlerSlug } from "@lib/slug-utils";
 import { sendSubmissionApprovedEmail } from "@lib/mail";
 
+import { buildWrestlerMap, findWrestler, addWrestler } from "@lib/wrestler-match";
 async function fetchWithFallback(url: string): Promise<string> {
   const headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -101,10 +102,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       : await parseCagematchHtml(html);
 
     if (parsedMatches.length > 0) {
-      const existingWrestlers = await prisma.wrestler.findMany();
-      const wrestlerByName = new Map(
-        existingWrestlers.map((w) => [w.name.toLowerCase(), w]),
-      );
+      const existingWrestlers = await prisma.wrestler.findMany({ include: { aliases: true } });
+      const wrestlerByName = buildWrestlerMap(existingWrestlers);
 
       for (const parsed of parsedMatches) {
         const participants = [];
@@ -112,22 +111,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         for (let i = 0; i < parsed.wrestlers.length; i++) {
           const rawName = parsed.wrestlers[i];
           const key = rawName.toLowerCase();
-          let wrestler = wrestlerByName.get(key);
+          let wrestler = findWrestler(wrestlerByName, rawName);
 
-          if (!wrestler) {
-            for (const [k, w] of wrestlerByName) {
-              if (k.includes(key) || key.includes(k)) {
-                wrestler = w;
-                break;
-              }
-            }
-          }
 
           if (!wrestler) {
             wrestler = await prisma.wrestler.create({
               data: { name: rawName, slug: await uniqueWrestlerSlug(rawName) },
             });
-            wrestlerByName.set(key, wrestler);
+            addWrestler(wrestlerByName, wrestler);
           }
 
           participants.push({

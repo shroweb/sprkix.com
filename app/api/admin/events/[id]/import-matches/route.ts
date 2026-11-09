@@ -4,6 +4,7 @@ import { getUserFromServerCookie } from "../../../../../../lib/server-auth";
 import { parseCagematchHtml, parseProfightDbHtml, parseCagematchEventInfo } from "../../../../../../lib/cagematch";
 import { uniqueWrestlerSlug } from "../../../../../../lib/slug-utils";
 
+import { buildWrestlerMap, findWrestler, addWrestler } from "@lib/wrestler-match";
 async function fetchWithFallback(url: string): Promise<string> {
   const headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -59,10 +60,8 @@ export async function POST(
       return NextResponse.json({ error: "No matches found on that page — check the URL is a valid event card" }, { status: 422 });
     }
 
-    const existingWrestlers = await prisma.wrestler.findMany();
-    const wrestlerByName = new Map(
-      existingWrestlers.map((w) => [w.name.toLowerCase(), w]),
-    );
+    const existingWrestlers = await prisma.wrestler.findMany({ include: { aliases: true } });
+    const wrestlerByName = buildWrestlerMap(existingWrestlers);
 
     let wrestlersMatched = 0;
     let wrestlersCreated = 0;
@@ -74,16 +73,8 @@ export async function POST(
       for (let i = 0; i < parsed.wrestlers.length; i++) {
         const rawName = parsed.wrestlers[i];
         const key = rawName.toLowerCase();
-        let wrestler = wrestlerByName.get(key);
+        let wrestler = findWrestler(wrestlerByName, rawName);
 
-        if (!wrestler) {
-          for (const [k, w] of wrestlerByName) {
-            if (k.includes(key) || key.includes(k)) {
-              wrestler = w;
-              break;
-            }
-          }
-        }
 
         if (wrestler) {
           wrestlersMatched++;
@@ -91,7 +82,7 @@ export async function POST(
           wrestler = await prisma.wrestler.create({
             data: { name: rawName, slug: await uniqueWrestlerSlug(rawName) },
           });
-          wrestlerByName.set(key, wrestler);
+          addWrestler(wrestlerByName, wrestler);
           wrestlersCreated++;
           createdNames.push(rawName);
         }
